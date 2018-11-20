@@ -28,7 +28,9 @@ records = []
 total = 0
 time_start = time.time()
 
-with open('./per_language_stop_words.txt') as f:
+# stopwords.txt can be found there:
+# https://github.com/algolia/dictionaries/blob/master/out/stopwords/stopwords.txt
+with open('./stopwords.txt') as f:
     for line in f:
         split = line.split('=')
         record = {
@@ -41,6 +43,7 @@ with open('./per_language_stop_words.txt') as f:
         if total % 100 == 0:
             print('%s words processed' % total)
 
+index.clear_index()
 index.add_objects(records)
 
 processingTime = round(time.time() - time_start, 2)
