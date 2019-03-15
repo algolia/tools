@@ -26,9 +26,9 @@
     name: 'Form',
     data: function () {
       return {
-        cluster: 'd119-eu',
-        appId: 'RSBCBF0EG8',
-        index: 'versace_full',
+        cluster: '',
+        appId: '',
+        index: '',
       }
     },
     methods: {
