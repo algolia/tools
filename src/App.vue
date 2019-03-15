@@ -57,6 +57,7 @@ export default {
           }
           else {
             this.output = JSON.stringify(res, null, 2)
+            this.requested = false
           }
         })
         .catch(e => window.console.warn(e))
