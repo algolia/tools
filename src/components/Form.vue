@@ -1,21 +1,25 @@
 <template>
   <div class="indexsize">
     <h1>Index Size</h1>
-    <form action="" method="post" v-on:submit.prevent>
+    <form v-on:submit.prevent>
       <p>
-        <span>Cluster: </span>
-        <input type="text" v-model="cluster" placeholder="d38-use, d119-eu..." autocomplete="off" required>
+        <label for="cluster">Cluster: </label>
+        <input type="text" id="cluster" v-model="cluster" placeholder="d38-use, d119-eu..." autocomplete="off" required>
       </p>
       <p>
-        <span>App ID: </span>
-        <input type="text" v-model="appId" placeholder="Like RSBCBF0EG8" autocomplete="off" required>
+        <label for="appId">App ID: </label>
+        <input type="text" id="appId" v-model="appId" placeholder="Like RSBCBF0EG8" autocomplete="off" required>
       </p>
       <p>
-        <span>Index: </span>
-        <input type="text" v-model="index" placeholder="great-index-name" autocomplete="off" required>
+        <label for="index">Index: </label>
+        <input type="text" id="index" v-model="index" placeholder="great-index-name" autocomplete="off" required>
+      </p>
+      <p v-if="showForceRecompute">
+        <input type="checkbox" id="forceRecompute" v-model="forceRecompute">
+        <label for="forceRecompute">Force recompute</label>
       </p>
       <p>
-        <input type="submit" value="Get" v-on:click="$emit('compute', $data)">
+        <input type="submit" value="Get" v-on:click="() => { $emit('get', $data); $data.forceRecompute = false; }">
       </p>
     </form>
   </div>
@@ -24,11 +28,15 @@
 <script>
   export default {
     name: 'Form',
+    props: {
+      showForceRecompute: Boolean
+    },
     data: function () {
       return {
         cluster: '',
         appId: '',
         index: '',
+        forceRecompute: false,
       }
     },
     methods: {

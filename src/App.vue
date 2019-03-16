@@ -4,10 +4,11 @@
       <span class="logo">
         <img alt="Algolia logo" src="./assets/Logo-algolia-nebula-blue@2x.png">
       </span>
-      <Form v-on:compute="getIndexSize({ ...$event })" />
+      <Form v-bind:show-force-recompute="showForceRecompute" v-on:get="getIndexSize({ ...$event })" />
     </div>
     <div class="right">
-      <pre>{{ output }}</pre>
+      <p>{{ this.lastDate }}</p>
+      <pre v-highlightjs="output"><code class="json"></code></pre>
     </div>
   </div>
 </template>
@@ -18,20 +19,35 @@ import Form from './components/Form.vue'
 const baseUrl = 'https://secret-fjord-79801.herokuapp.com'
 const computeUrl = baseUrl + '/compute'
 const getUrl = baseUrl + '/get-index-size'
+const computeTimeout = 10000
+const retryTimeout = 5000
+const computeMessage = '🔄 Computing the index size - be patient'
 
 export default {
   name: 'app',
   data: function () {
     return {
-      output: '⏳ Waiting for compute request',
+      lastDate: '',
+      output: '⏳ Waiting for request',
       requested: false,
+      showForceRecompute: false,
     }
   },
   methods: {
+    showLastDate(utcDateStr) {
+      this.lastDate = utcDateStr ? 'Last computation: ' + new Date(utcDateStr).toLocaleString() : ''
+    },
     getIndexSize(formData) {
       if (!this.requested) {
         this.output = '🚀 Requesting index size'
         this.requested = true
+        this.showLastDate(false)
+      }
+      if (formData.forceRecompute) {
+        this.computeIndexSize(formData)
+        formData.forceRecompute = false
+        setTimeout(() => this.getIndexSize(formData), computeTimeout)
+        return;
       }
       fetch(getUrl, {
         method: 'POST',
@@ -45,19 +61,21 @@ export default {
         .then(res => {
           if (res.message && res.message === 'No size computation available for this index') {
             this.computeIndexSize(formData)
-            setTimeout(() => {
-              this.getIndexSize(formData)
-            }, 10000)
+            setTimeout(() => this.getIndexSize(formData), computeTimeout)
           }
           else if (res.message && res.message === 'Size computing is on-going. Please try again later') {
-            this.output = '🔄 Computing the index size - be patient'
-            setTimeout(() => {
-              this.getIndexSize(formData)
-            }, 5000)
+            this.output = computeMessage
+            setTimeout(() => this.getIndexSize(formData), retryTimeout)
           }
           else {
+            // here we got the final output, so we:
+            // 1. show it
+            // 2. display a "force recompute" checkbox
+            // 3. show last date to make it explicit
             this.output = JSON.stringify(res, null, 2)
             this.requested = false
+            this.showForceRecompute = true
+            this.showLastDate(res.generatedAt)
           }
         })
         .catch(e => window.console.warn(e))
@@ -74,7 +92,7 @@ export default {
         .then(res => res.json())
         .then(res => {
           if (res.message && res.message.indexOf('Computing the index size') !== -1) {
-            this.output = '🔄 Computing the index size - be patient'
+            this.output = computeMessage
           }
         })
         .catch(e => window.console.warn(e))
@@ -104,5 +122,8 @@ export default {
 .right {
   padding-left: 50px;
   border-left: 1px solid #2c3e50;
+}
+code.hljs {
+  padding: 1em;
 }
 </style>
