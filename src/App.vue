@@ -8,7 +8,7 @@
     </div>
     <div class="right">
       <p>{{ this.lastDate }}</p>
-      <pre v-highlightjs="output"><code class="json"></code></pre>
+      <highlight-code lang="json" v-bind:code="output"></highlight-code>
     </div>
   </div>
 </template>
@@ -25,6 +25,9 @@ const computeMessage = '🔄 Computing the index size - be patient'
 
 export default {
   name: 'app',
+  components: {
+    Form
+  },
   data: function () {
     return {
       lastDate: '',
@@ -46,7 +49,6 @@ export default {
       if (formData.forceRecompute) {
         this.computeIndexSize(formData)
         formData.forceRecompute = false
-        setTimeout(() => this.getIndexSize(formData), computeTimeout)
         return;
       }
       fetch(getUrl, {
@@ -61,7 +63,6 @@ export default {
         .then(res => {
           if (res.message && res.message === 'No size computation available for this index') {
             this.computeIndexSize(formData)
-            setTimeout(() => this.getIndexSize(formData), computeTimeout)
           }
           else if (res.message && res.message === 'Size computing is on-going. Please try again later') {
             this.output = computeMessage
@@ -80,7 +81,7 @@ export default {
         })
         .catch(e => window.console.warn(e))
     },
-    async computeIndexSize(formData) {
+    computeIndexSize(formData) {
       fetch(computeUrl, {
         method: 'POST',
         mode: 'cors',
@@ -93,13 +94,15 @@ export default {
         .then(res => {
           if (res.message && res.message.indexOf('Computing the index size') !== -1) {
             this.output = computeMessage
+            // Computing has started correctly, start polling to get the results
+            setTimeout(() => this.getIndexSize(formData), computeTimeout)
+          }
+          else {
+            this.output = `⚠️ ${res.message}`
           }
         })
         .catch(e => window.console.warn(e))
     }
-  },
-  components: {
-    Form
   }
 }
 </script>
