@@ -21,7 +21,8 @@ const computeUrl = baseUrl + '/compute'
 const getUrl = baseUrl + '/get-index-size'
 const computeTimeout = 10000
 const retryTimeout = 5000
-const computeMessage = '🔄 Computing the index size - be patient'
+const computeMessage = '🔄 Computing the index size – be patient'
+const errorMessage = '⚠️ Error – check params'
 
 export default {
   name: 'app',
@@ -79,7 +80,7 @@ export default {
             this.showLastDate(res.generatedAt)
           }
         })
-        .catch(e => window.console.warn(e))
+        .catch(e => this.handleError(e))
     },
     computeIndexSize(formData) {
       fetch(computeUrl, {
@@ -101,7 +102,11 @@ export default {
             this.output = `⚠️ ${res.message}`
           }
         })
-        .catch(e => window.console.warn(e))
+        .catch(e => this.handleError(e))
+    },
+    handleError(e) {
+      window.console.warn('Request error', e)
+      this.output = errorMessage
     }
   }
 }

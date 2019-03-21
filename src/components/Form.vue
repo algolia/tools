@@ -4,15 +4,15 @@
     <form v-on:submit.prevent>
       <p>
         <label for="cluster">Cluster: </label>
-        <input type="text" id="cluster" v-model="cluster" placeholder="d38-use, d119-eu..." autocomplete="off" required>
+        <input type="text" id="cluster" v-model="cluster" placeholder="d38-use-1, d119-eu, ..." autocomplete="off" required>
       </p>
       <p>
         <label for="appId">App ID: </label>
-        <input type="text" id="appId" v-model="appId" placeholder="Like RSBCBF0EG8" autocomplete="off" required>
+        <input type="text" id="appId" v-model="appId" placeholder="e.g. RSBCBF0EG8" autocomplete="off" required>
       </p>
       <p>
         <label for="index">Index: </label>
-        <input type="text" id="index" v-model="index" placeholder="great-index-name" autocomplete="off" required>
+        <input type="text" id="index" v-model="index" placeholder="index_name" autocomplete="off" required>
       </p>
       <p v-if="showForceRecompute">
         <input type="checkbox" id="forceRecompute" v-model="forceRecompute">
