@@ -4,7 +4,11 @@
       <span class="logo">
         <img alt="Algolia logo" src="./assets/Logo-algolia-nebula-blue@2x.png">
       </span>
-      <Form v-bind:show-force-recompute="showForceRecompute" v-on:get="getIndexSize({ ...$event })" />
+      <Form
+        v-bind:show-force-recompute="showForceRecompute"
+        v-bind:disable-button="disableButton"
+        v-on:get="getIndexSize({ ...$event })"
+      />
     </div>
     <div class="right">
       <p>{{ this.lastDate }}</p>
@@ -35,6 +39,7 @@ export default {
       output: '⏳ Waiting for request',
       requested: false,
       showForceRecompute: false,
+      disableButton: false,
     }
   },
   methods: {
@@ -45,6 +50,7 @@ export default {
       if (!this.requested) {
         this.output = '🚀 Requesting index size'
         this.requested = true
+        this.disableButton = true
         this.showLastDate(false)
       }
       if (formData.forceRecompute) {
@@ -77,6 +83,7 @@ export default {
             this.output = JSON.stringify(res, null, 2)
             this.requested = false
             this.showForceRecompute = true
+            this.disableButton = false
             this.showLastDate(res.generatedAt)
           }
         })
@@ -100,6 +107,7 @@ export default {
           }
           else {
             this.output = `⚠️ ${res.message}`
+            this.disableButton = false
           }
         })
         .catch(e => this.handleError(e))
@@ -107,8 +115,9 @@ export default {
     handleError(e) {
       window.console.warn('Request error', e)
       this.output = errorMessage
-    }
-  }
+      this.disableButton = false
+    },
+  },
 }
 </script>
 

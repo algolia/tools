@@ -19,7 +19,13 @@
         <label for="forceRecompute">Force recompute</label>
       </p>
       <p>
-        <input type="submit" value="Get" v-on:click="() => { $emit('get', $data); $data.forceRecompute = false; }">
+        <input type="submit" value="Get" :disabled="disableButton"
+           v-on:click="() => {
+             $emit('get', $data);
+             $data.forceRecompute = false;
+             $data.disableButton = true;
+           }"
+        >
       </p>
     </form>
   </div>
@@ -29,7 +35,8 @@
   export default {
     name: 'Form',
     props: {
-      showForceRecompute: Boolean
+      showForceRecompute: Boolean,
+      disableButton: Boolean,
     },
     data: function () {
       return {
@@ -39,15 +46,6 @@
         forceRecompute: false,
       }
     },
-    methods: {
-      getState() {
-        return {
-          cluster: this.cluster,
-          appId: this.appId,
-          index: this.index,
-        }
-      }
-    }
   }
 </script>
 
