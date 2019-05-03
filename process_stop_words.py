@@ -34,8 +34,8 @@ with open('./stopwords.txt') as f:
     for line in f:
         split = line.split('=')
         record = {
-            'lang': split[0],
-            'word': split[1],
+            'lang': split[0].strip(),
+            'word': split[1].strip(),
         }
         records.append(record)
 
