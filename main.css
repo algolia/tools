@@ -18,15 +18,17 @@ body {
 }
 
 .topbar {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   background: rgb(254, 207, 80);
-  padding: 10px;
   height: 60px;
   width: 100%;
 }
 
 .topbar .title {
-  margin-right: 16px;
-  font-size: 30px;
+  margin-left: 16px;
+  font-size: 20px;
   font-weight: bold;
   color: rgb(62, 57, 107);
 }
