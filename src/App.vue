@@ -20,7 +20,7 @@
 <script>
 import Form from './components/Form.vue'
 
-const baseUrl = 'https://secret-fjord-79801.herokuapp.com'
+const baseUrl = 'https://index-size.herokuapp.com'
 const computeUrl = baseUrl + '/compute'
 const getUrl = baseUrl + '/get-index-size'
 const computeTimeout = 10000
