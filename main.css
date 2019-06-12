@@ -49,33 +49,35 @@ body {
   padding: 20px;
 }
 
-.ais-header {
-  color: #888;
-  font-size: 1.2em;
-  margin: 0 0 8px;
+.ais-Panel {
+  margin-bottom: 24px;
 }
 
 .left .ais-root {
   margin-bottom: 20px;
 }
 
-.ais-hits {
+.ais-Hits {
   display: flex;
   flex-wrap: wrap;
   margin-top: 20px;
 }
 
-.ais-hits--item {
-  flex: 0 0 30%;
-  padding: 10px 20px 20px;
+.ais-Hits-item {
+  flex: 0 0 100%;
+  padding: 0;
   margin-bottom: 10px;
   margin-right: 10px;
-  border: solid 1px #eee;
-  box-shadow: 0 0 3px #f6f6f6;
+  border: none;
+  box-shadow: none;
   color: #333;
 }
 
-.ais-hits--item em {
+.ais-Hits-item .info{
+  color: #787878;
+}
+
+.ais-Hits-item em {
   font-style: normal;
   background-color: rgba(254, 207, 80, .3);
 }
