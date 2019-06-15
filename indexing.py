@@ -52,8 +52,8 @@ print('%s plurals processed' % nb_plurals)
 index.replace_all_objects(records, {"autoGenerateObjectIDIfNotExist": True, 'safe': True})
 index.set_settings({
     'searchableAttributes': [
-        'words',
-        'lang',
+        'unordered(words)',
+        'unordered(lang)',
     ],
     'attributesForFaceting': [
         'searchable(lang)',
