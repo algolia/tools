@@ -1,2 +1,4 @@
 stopwords*
 venv
+.env
+dictionaries/

@@ -1,11 +1,11 @@
 // Add here your javascript code
 
+const searchClient = algoliasearch('RSBCBF0EG8', 'c56fcd479e08dadd2a943872a41d3f92');
+
 var search = instantsearch({
   // Replace with your own values
-  appId: '6B29BTPQED',
-  apiKey: '49ae085a83962db19658af549b3bac7e', // search only API key, no ADMIN key
-  indexName: 'prod_stopwords',
-  urlSync: true
+  searchClient,
+  indexName: 'prod_dictionaries',
 });
 
 // initialize SearchBox
@@ -19,18 +19,48 @@ search.addWidget(
   instantsearch.widgets.hits({
     container: '#hits',
     templates: {
-      item: '<div class="hit">{{{_highlightResult.lang.value}}}: {{{_highlightResult.word.value}}}</div>'
+      item: ` 
+        <div class="hit">
+            <div class="info">{{type}} - {{{_highlightResult.lang.value}}}</div>
+            {{#_highlightResult.words}}
+                {{{value}}}
+            {{/_highlightResult.words}}
+        </div>
+      `
     }
   })
 );
 
+const refinementListWithPanelDictionary = instantsearch.widgets.panel({
+  templates: {
+      header: 'Dictionary'
+    }
+})(instantsearch.widgets.refinementList);
+
 search.addWidget(
-  instantsearch.widgets.refinementList({
-    container: '#refinement-list',
-    attributeName: 'lang',
-    operator: 'and',
-    limit: 10,
-    searchForFacetValues: true,
+  refinementListWithPanelDictionary({
+    container: '#refinement-list-type',
+    attribute: 'type',
+    operator: 'or',
+    limit: 1000,
+    sortBy: ["name:asc"],
+  })
+);
+
+const refinementListWithPanelLanguage = instantsearch.widgets.panel({
+  templates: {
+      header: 'Language'
+    }
+})(instantsearch.widgets.refinementList);
+
+search.addWidget(
+  refinementListWithPanelLanguage({
+    container: '#refinement-list-lang',
+    attribute: 'lang',
+    operator: 'or',
+    limit: 100,
+    searchable: true,
+    sortBy: ["name:asc"],
     templates: {
       header: 'Language'
     }
