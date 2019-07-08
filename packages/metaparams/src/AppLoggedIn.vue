@@ -2,7 +2,7 @@
     <div class="overflow-hidden flex flex-col" v-if="!loadingSharingLink">
         <app-header />
         <share-view v-if="$store.state.panels.shareStatePanel" />
-        <app-management v-if="$store.state.panels.manageAppsPanel" />
+        <app-management v-if="$store.state.panels.manageAppsPanel || Object.keys($store.state.apps).length <= 0" />
         <div class="w-full">
             <search-box
                 class="mt-16 mx-16 lg:mx-auto xl:mx-auto lg:max-w-half xl:max-w-half"
