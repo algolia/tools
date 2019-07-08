@@ -1,0 +1,1016 @@
+query:
+  scope:
+    - search
+  value_type: string
+  default: ''
+
+searchableAttributes:
+  scope: settings
+  value_type: attributes_list
+  modifiers:
+    - ''
+    - unordered
+  default: []
+  settings_default: null
+
+attributesToIndex:
+  scope: settings
+  value_type: attributes_list
+  default: []
+  ignore_value: null
+
+attributesForFaceting:
+  scope: settings
+  value_type: attributes_list
+  modifiers:
+    - ''
+    - searchable
+    - filterOnly
+  default: []
+  settings_default: null
+
+unretrievableAttributes:
+  scope: settings
+  value_type: attributes_list
+  default: []
+  settings_default: null
+
+attributesToRetrieve:
+  scope:
+    - settings
+    - search
+  value_type: attributes_list
+  default: []
+  settings_default: null
+
+restrictSearchableAttributes:
+  scope:
+    - search
+  value_type: attributes_list
+  default: []
+
+ranking:
+  scope: settings
+  value_type: string_list
+  modifiers:
+    - asc
+    - desc
+  values:
+    - typo
+    - geo
+    - words
+    - filters
+    - proximity
+    - attribute
+    - exact
+    - custom
+  default:
+    - typo
+    - geo
+    - words
+    - filters
+    - proximity
+    - attribute
+    - exact
+    - custom
+  settings_default:
+    - typo
+    - geo
+    - words
+    - filters
+    - proximity
+    - attribute
+    - exact
+    - custom
+
+customRanking:
+  scope: settings
+  value_type: attributes_list
+  modifiers:
+    - asc
+    - desc
+  default: []
+  settings_default: null
+
+replicas:
+  scope: settings
+  value_type: string_list
+  default: []
+  settings_default: null
+
+filters:
+  scope:
+    - search
+  value_type: filters
+  default: ""
+
+facetFilters:
+  scope:
+    - search
+  value_type: string_list
+  default: []
+
+optionalFilters:
+  scope:
+    - search
+  value_type: string
+  default: []
+
+numericFilters:
+  scope:
+    - search
+  value_type: string_list
+  default: []
+
+numericAttributesToIndex:
+  scope: settings
+  value_type: attributes_list
+  default: []
+  settings_default: null
+
+tagFilters:
+  scope:
+    - search
+  value_type: string_list
+  default: []
+
+sumOrFiltersScores:
+  scope:
+    - search
+  value_type: boolean
+  values:
+    - true
+    - false
+  default: false
+
+facets:
+  scope:
+    - settings
+    - search
+  value_type: attributes_list
+  default: []
+  values:
+    - '*'
+
+maxValuesPerFacet:
+  scope:
+    - settings
+    - search
+  value_type: integer
+  min: 0
+  max: 1000
+  default: 10
+  settings_default: 100
+
+facetingAfterDistinct:
+  scope:
+    - search
+  value_type: boolean
+  values:
+    - true
+    - false
+  default: false
+
+sortFacetValuesBy:
+  scope:
+    - settings
+    - search
+  value_type: enum
+  values:
+    - count
+    - alpha
+  default: count
+
+attributesToHighlight:
+  scope:
+    - settings
+    - search
+  value_type: attributes_list
+  default: []
+  settings_default: null
+  values:
+    - '*'
+
+attributesToSnippet:
+  scope:
+    - settings
+    - search
+  value_type: attributes_list
+  default: []
+  settings_default: null
+  values:
+    - '*'
+
+highlightPreTag:
+  scope:
+    - settings
+    - search
+  value_type: string
+  default: '<em>'
+  settings_default: '<em>'
+
+highlightPostTag:
+  scope:
+    - settings
+    - search
+  value_type: string
+  default: '</em>'
+  settings_default: '</em>'
+
+snippetEllipsisText:
+  scope:
+    - settings
+    - search
+  value_type: string
+  default: '…'
+  settings_default: '…'
+
+restrictHighlightAndSnippetArrays:
+  scope:
+    - settings
+    - search
+  value_type: boolean
+  values:
+    - true
+    - false
+  default: false
+
+
+page:
+  scope:
+    - search
+  value_type: integer
+  min: 0
+  default: 0
+
+hitsPerPage:
+  scope:
+    - settings
+    - search
+  value_type: integer
+  min: 0
+  max: 1000
+  default: 20
+  settings_default: 20
+
+paginationLimitedTo:
+  scope: settings
+  value_type: integer
+  min: 0
+  default: 1000
+  settings_default: 1000
+
+minWordSizefor1Typo:
+  scope:
+    - settings
+    - search
+  value_type: integer
+  min: 1
+  default: 4
+  settings_default: 4
+
+minWordSizefor2Typos:
+  scope:
+    - settings
+    - search
+  value_type: integer
+  min: 1
+  default: 8
+  settings_default: 8
+
+typoTolerance:
+  scope:
+    - settings
+    - search
+  value_type: enum
+  values:
+    - true
+    - false
+    - min
+    - strict
+  default: true
+  settings_default: null
+
+allowTyposOnNumericTokens:
+  scope:
+    - settings
+    - search
+  value_type: boolean
+  values:
+    - true
+    - false
+  default: true
+  settings_default: null
+
+disableTypoToleranceOnAttributes:
+  scope:
+    - settings
+    - search
+  value_type: attributes_list
+  default: []
+  settings_default: null
+
+disableTypoToleranceOnWords:
+  scope: settings
+  value_type: string_list
+  default: []
+  settings_default: null
+
+separatorsToIndex:
+  scope: settings
+  value_type: string
+  default: ''
+  settings_default: ''
+
+aroundLatLng:
+  scope:
+    - search
+  value_type: string
+  default: ''
+
+aroundLatLngViaIP:
+  scope:
+    - search
+  value_type: boolean
+  values:
+    - true
+    - false
+  default: false
+
+aroundRadius:
+  scope:
+    - search
+  value_type: integer
+  values:
+    - all
+  default: 1000
+
+aroundPrecision:
+  scope:
+    - search
+  value_type: integer
+  min: 1
+  default: 1
+
+minimumAroundRadius:
+  scope:
+    - search
+  value_type: integer
+  min: 0
+  default: 1000
+
+insideBoundingBox:
+  scope:
+    - search
+  value_type: string
+  default: []
+
+insidePolygon:
+  scope:
+    - search
+  value_type: string
+  default: []
+
+ignorePlurals:
+  scope:
+    - settings
+    - search
+  value_type: enum
+  values:
+    - true
+    - false
+    - name: af
+      label: Afrikaans
+    - name: ar
+      label: Arabic
+    - name: az
+      label: Azerbaijani
+    - name: bg
+      label: Bulgarian
+    - name: ca
+      label: Catalan
+    - name: cs
+      label: Czech
+    - name: cy
+      label: Welsh
+    - name: da
+      label: Danish
+    - name: de
+      label: German
+    - name: en
+      label: English
+    - name: eo
+      label: Esperanto
+    - name: es
+      label: Spanish
+    - name: et
+      label: Estonian
+    - name: eu
+      label: Basque
+    - name: fi
+      label: Finnish
+    - name: fo
+      label: Faroese
+    - name: fr
+      label: French
+    - name: gl
+      label: Galician
+    - name: he
+      label: Hebrew
+    - name: hi
+      label: Hindi
+    - name: hu
+      label: Hungarian
+    - name: hy
+      label: Armenian
+    - name: id
+      label: Indonesian
+    - name: is
+      label: Icelandic
+    - name: it
+      label: Italian
+    - name: ja
+      label: Japanese
+    - name: ka
+      label: Georgian
+    - name: kk
+      label: Kazakh
+    - name: ko
+      label: Korean
+    - name: ky
+      label: Kirghiz
+    - name: lt
+      label: Lithuanian
+    - name: mi
+      label: Maori
+    - name: mn
+      label: Mongolian
+    - name: mr
+      label: Marathi
+    - name: ms
+      label: Malay
+    - name: mt
+      label: Maltese
+    - name: nb
+      label: Norwegian Bokmål
+    - name: nl
+      label: Dutch
+    - name: no
+      label: Norwegian
+    - name: ns
+      label: Northern Sotho
+    - name: pl
+      label: Polish
+    - name: ps
+      label: Pashto
+    - name: pt
+      label: Portuguese
+    - name: qu
+      label: Quechua
+    - name: ro
+      label: Romanian
+    - name: ru
+      label: Russian
+    - name: sk
+      label: Slovak
+    - name: sq
+      label: Albanian
+    - name: sv
+      label: Swedish
+    - name: sw
+      label: Swahili
+    - name: ta
+      label: Tamil
+    - name: te
+      label: Telugu
+    - name: tl
+      label: Tagalog
+    - name: tn
+      label: Tswana
+    - name: tr
+      label: Turkish
+    - name: tt
+      label: Tatar
+    - name: uk
+      label: Ukrainian
+    - name: ur
+      label: Urdu
+    - name: uz
+      label: Uzbek
+    - name: zh
+      label: Chinese
+  default: false
+  settings_default: null
+
+removeStopWords:
+  scope:
+    - settings
+    - search
+  value_type: enum
+  values:
+    - true
+    - false
+    - name: ar
+      label: Arabic
+    - name: bg
+      label: Bulgarian
+    - name: bn
+      label: Bengali
+    - name: ca
+      label: Catalan
+    - name: cs
+      label: Czech
+    - name: da
+      label: Danish
+    - name: de
+      label: German
+    - name: el
+      label: Greek
+    - name: en
+      label: English
+    - name: es
+      label: Spanish
+    - name: eu
+      label: Basque
+    - name: fa
+      label: Persian (Farsi)
+    - name: fi
+      label: Finnish
+    - name: fr
+      label: French
+    - name: ga
+      label: Irish
+    - name: gl
+      label: Galician
+    - name: hi
+      label: Hindi
+    - name: hu
+      label: Hungarian
+    - name: hy
+      label: Armenian
+    - name: id
+      label: Indonesian
+    - name: it
+      label: Italian
+    - name: ja
+      label: Japanese
+    - name: ko
+      label: Korean
+    - name: ku
+      label: Kurdish
+    - name: lt
+      label: Lithuanian
+    - name: lv
+      label: Latvian
+    - name: mr
+      label: Marathi
+    - name: nl
+      label: Dutch
+    - name: no
+      label: Norwegian
+    - name: pl
+      label: Polish
+    - name: pt
+      label: Portuguese
+    - name: pt-br
+      label: Brazilian
+    - name: ro
+      label: Romanian
+    - name: ru
+      label: Russian
+    - name: sk
+      label: Slovak
+    - name: sv
+      label: Swedish
+    - name: th
+      label: Thai
+    - name: tr
+      label: Turkish
+    - name: uk
+      label: Ukranian
+    - name: ur
+      label: Urdu
+    - name: zh
+      label: Chinese
+  default: false
+  settings_default: null
+
+camelCaseAttributes:
+  scope: settings
+  value_type: attributes_list
+  default: []
+
+#decompoundedAttributes:
+#  scope: settings
+#  value_type: attributes_list
+#  default: []
+
+keepDiacriticsOnCharacters:
+  scope: settings
+  value_type: string
+  default: ''
+
+queryLanguages:
+  scope:
+    - settings
+    - search
+  value_type: enum
+  values:
+    - name: af
+      label: Afrikaans
+    - name: ar
+      label: Arabic
+    - name: az
+      label: Azerbaijani
+    - name: bg
+      label: Bulgarian
+    - name: bn
+      label: Bengali
+    - name: ca
+      label: Catalan
+    - name: cs
+      label: Czech
+    - name: cy
+      label: Welsh
+    - name: da
+      label: Danish
+    - name: de
+      label: German
+    - name: el
+      label: Greek
+    - name: en
+      label: English
+    - name: eo
+      label: Esperanto
+    - name: es
+      label: Spanish
+    - name: et
+      label: Estonian
+    - name: eu
+      label: Basque
+    - name: fa
+      label: Persian (Farsi)
+    - name: fi
+      label: Finnish
+    - name: fo
+      label: Faroese
+    - name: fr
+      label: French
+    - name: ga
+      label: Irish
+    - name: gl
+      label: Galician
+    - name: he
+      label: Hebrew
+    - name: hi
+      label: Hindi
+    - name: hu
+      label: Hungarian
+    - name: hy
+      label: Armenian
+    - name: id
+      label: Indonesian
+    - name: is
+      label: Icelandic
+    - name: it
+      label: Italian
+    - name: ja
+      label: Japanese
+    - name: ka
+      label: Georgian
+    - name: kk
+      label: Kazakh
+    - name: ko
+      label: Korean
+    - name: ku
+      label: Kurdish
+    - name: ky
+      label: Kirghiz
+    - name: lt
+      label: Lithuanian
+    - name: lv
+      label: Latvian
+    - name: mi
+      label: Maori
+    - name: mn
+      label: Mongolian
+    - name: mr
+      label: Marathi
+    - name: ms
+      label: Malay
+    - name: mt
+      label: Maltese
+    - name: nb
+      label: Norwegian Bokmål
+    - name: nl
+      label: Dutch
+    - name: no
+      label: Norwegian
+    - name: ns
+      label: Northern Sotho
+    - name: pl
+      label: Polish
+    - name: ps
+      label: Pashto
+    - name: pt
+      label: Portuguese
+    - name: pt-br
+      label: Brazilian
+    - name: qu
+      label: Quechua
+    - name: ro
+      label: Romanian
+    - name: ru
+      label: Russian
+    - name: sk
+      label: Slovak
+    - name: sq
+      label: Albanian
+    - name: sv
+      label: Swedish
+    - name: sw
+      label: Swahili
+    - name: ta
+      label: Tamil
+    - name: te
+      label: Telugu
+    - name: th
+      label: Thai
+    - name: tl
+      label: Tagalog
+    - name: tn
+      label: Tswana
+    - name: tr
+      label: Turkish
+    - name: tt
+      label: Tatar
+    - name: uk
+      label: Ukranian
+    - name: ur
+      label: Urdu
+    - name: uz
+      label: Uzbek
+    - name: zh
+      label: Chinese
+  default: []
+
+enableRules:
+  scope:
+    - settings
+    - search
+  value_type: boolean
+  values:
+    - true
+    - false
+  default: true
+
+ruleContexts:
+  scope:
+    - search
+  value_type: string_list
+  default: []
+
+enablePersonalization:
+  scope:
+    - search
+  value_type: boolean
+  values:
+    - true
+    - false
+  default: false
+
+queryType:
+  scope:
+    - settings
+    - search
+  value_type: enum
+  values:
+    - prefixLast
+    - prefixAll
+    - prefixNone
+  default: prefixLast
+  settings_default: prefixLast
+
+removeWordsIfNoResults:
+  scope:
+    - settings
+    - search
+  value_type: enum
+  values:
+    - none
+    - lastWords
+    - firstWords
+    - allOptional
+  default: none
+  settings_default: none
+
+advancedSyntax:
+  scope:
+    - settings
+    - search
+  value_type: boolean
+  values:
+    - true
+    - false
+  default: false
+  settings_default: null
+
+optionalWords:
+  scope:
+    - settings
+    - search
+  value_type: string_list
+  default: []
+  settings_default: null
+
+disablePrefixOnAttributes:
+  scope: settings
+  value_type: attributes_list
+  default: []
+
+disableExactOnAttributes:
+  scope:
+    - settings
+    - search
+  value_type: attributes_list
+  default: []
+  settings_default: null
+
+exactOnSingleWordQuery:
+  scope:
+    - settings
+    - search
+  value_type: enum
+  values:
+    - attribute
+    - none
+    - word
+  default: attribute
+  settings_default: attribute
+
+alternativesAsExact:
+  scope:
+    - settings
+    - search
+  value_type: enum_list
+  values:
+    - ignorePlurals
+    - singleWordSynonym
+    - multiWordsSynonym
+  default: []
+  settings_default:
+    - ignorePlurals
+    - singleWordSynonym
+
+numericAttributesForFiltering:
+  scope: settings
+  value_type: attributes_list
+  modifiers:
+    - equalOnly
+  default: []
+
+allowCompressionOfIntegerArray:
+  scope: settings
+  value_type: boolean
+  values:
+    - true
+    - false
+  default: false
+
+attributeForDistinct:
+  scope: settings
+  value_type: attribute
+  default: ''
+  settings_default: null
+
+distinct:
+  scope:
+    - settings
+    - search
+  value_type: integer
+  min: 0
+  max: 1000
+  default: 0
+  settings_default: null
+
+getRankingInfo:
+  scope:
+    - search
+  value_type: boolean
+  values:
+    - true
+    - false
+  default: false
+
+clickAnalytics:
+  scope:
+    - search
+  value_type: boolean
+  values:
+    - true
+    - false
+  default: false
+
+analytics:
+  scope:
+    - search
+  value_type: boolean
+  values:
+    - true
+    - false
+  default: true
+
+analyticsTags:
+  scope:
+    - search
+  value_type: string_list
+  default: []
+
+synonyms:
+  scope:
+    - search
+  value_type: boolean
+  values:
+    - true
+    - false
+  default: true
+
+replaceSynonymsInHighlight:
+  scope:
+    - settings
+    - search
+  value_type: boolean
+  values:
+    - true
+    - false
+  default: true
+  settings_default: null
+
+minProximity:
+  scope:
+    - settings
+    - search
+  value_type: integer
+  min: 1
+  max: 8
+  default: 1
+
+maxFacetHits:
+  scope:
+    - settings
+    - search
+  value_type: integer
+  min: 1
+  max: 100
+  default: 10
+
+percentileComputation:
+  scope:
+    - search
+  value_type: boolean
+  values:
+    - true
+    - false
+  default: true
+
+userToken:
+  scope:
+    - search
+  value_type: string
+  default: ""
+
+personalizationImpact:
+  scope:
+    - search
+  value_type: integer
+  max: 100
+  min: 0
+  default: 100
+
+processingTimeoutMS:
+  scope:
+    - search
+  value_type: integer
+  default: 50
+  min: 1
+  max: 60000
+  admin_only: 1
+
+attributeCriteriaComputedByMinProximity:
+  scope:
+    - search
+    - settings
+  value_type: boolean
+  values:
+    - true
+    - false
+  default: false
+
+enableABTest:
+  scope:
+      - search
+  value_type: boolean
+  values:
+    - true
+    - false
+  default: true

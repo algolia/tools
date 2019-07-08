@@ -1,0 +1,108 @@
+<template>
+    <div v-if="panelIndexData">
+        <params-header
+            :panel-key="panelKey"
+            :config-key="configKey"
+            :keys="sortedKeys"
+            :open="open"
+            @onSetOpen="open = $event"
+        />
+        <div class="bg-white" :class="open ? 'p-8 py-12' : ''">
+            <params
+                :id="`${panelKey}-${configKey}`"
+                :panel-key="panelKey"
+                :config-key="configKey"
+                :params="params"
+                :ref-params="refParams"
+                :raw-params="rawParams"
+                :keys="sortedKeys"
+                :panelKeysIndexer="panelKeysIndexer"
+                @onSetParamValue="onSetParamValue"
+                @onSetParamEnabled="onSetParamEnabled"
+                @onAddArrayElement="onAddArrayElement"
+                @onDeleteArrayElement="onDeleteArrayElement"
+                @onDeleteKey="onDeleteKey"
+                @onRestoreKey="onRestoreKey"
+                :open="open"
+            />
+            <div v-if="configKey === 'indexSettings'">
+                <div class="mt-24 border-t border-proton-grey-opacity-20"></div>
+                <save-or-copy-settings :panel-key="panelKey"/>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+    import indexInfoMixin from "@/mixins/indexInfoMixin";
+    import ParamsHeader from "@/dashboard/ParamsHeader";
+    import Params from "@/params/Params";
+    import SaveOrCopySettings from "@/dashboard/SaveOrCopySettings";
+
+    export default {
+        name: 'ParamsPanel',
+        components: {SaveOrCopySettings, Params, ParamsHeader},
+        props: ['panelKey', 'configKey'],
+        mixins: [indexInfoMixin],
+        data: function () {
+            return {
+                open: true,
+            }
+        },
+        computed: {
+            sortedKeys: function () {
+                return Object.keys(this.params).sort(function (a, b) {
+                    if (a === 'searchableAttributes') return -1;
+                    if (b === 'searchableAttributes') return 1;
+                    if (a === 'attributesToIndex') return -1;
+                    if (b === 'attributesToIndex') return 1;
+                    if (a === 'customRanking') return -1;
+                    if (b === 'customRanking') return 1;
+                    if (a === 'attributesForFaceting') return -1;
+                    if (b === 'attributesForFaceting') return 1;
+                    if (a < b) return -1;
+                    if (a > b) return 1;
+                    return 0;
+                });
+            },
+            params: function () {
+                if (this.configKey !== 'indexSettings') return this.panelIndexData[this.configKey] || {};
+                return Object.assign({}, this.refIndexSettingsRaw, this.indexSettingsRaw);
+            },
+            rawParams: function () {
+                if (this.configKey === 'indexSettings') {
+                    return this.indexSettingsRaw;
+                }
+                return this.searchParamsRaw;
+            },
+            refParams: function () {
+                if (this.configKey === 'indexSettings') {
+                    return this.refIndexSettingsRaw;
+                }
+                return this.searchParamsRaw;
+            }
+        },
+        methods: {
+            onSetParamValue: function (key, value) {
+                this.$store.commit(`${this.panelIndexCommitPrefix}/setParamValue`, {configKey: this.configKey, key, value});
+            },
+            onSetParamEnabled: function (key, value) {
+                this.$store.commit(`${this.panelIndexCommitPrefix}/setParamEnabled`, {configKey: this.configKey, inputKey: key, value});
+            },
+            onAddArrayElement: function (inputKey) {
+                const newVal = this.params[inputKey].value;
+                newVal.push('');
+                this.onSetParamValue(inputKey, newVal);
+            },
+            onDeleteArrayElement: function (inputKey, positionKey) {
+                this.$store.commit(`${this.panelIndexCommitPrefix}/deleteArrayElement`, {configKey: this.configKey, inputKey: inputKey, positionKey: positionKey})
+            },
+            onDeleteKey: function (inputKey) {
+                this.$store.commit(`${this.panelIndexCommitPrefix}/deleteParam`, {configKey: this.configKey, inputKey: inputKey});
+            },
+            onRestoreKey: function (inputKey) {
+                this.$store.commit(`${this.panelIndexCommitPrefix}/restoreIndexSetting`, {panelKey: this.panelKey, inputKey: inputKey})
+            },
+        }
+    }
+</script>
