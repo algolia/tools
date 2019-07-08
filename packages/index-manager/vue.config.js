@@ -1,4 +1,5 @@
 module.exports = {
+  publicPath: 'index-manager',
   chainWebpack: config => {
     const svgRule = config.module.rule("svg");
     svgRule.uses.clear();
