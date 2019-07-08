@@ -13,7 +13,7 @@ module.exports = {
           .tap(options => {
               options.configFile = path.resolve(__dirname, "../../.eslintrc");
               return options;
-          })
+          });
 
     config.module
       .rule("yml")
