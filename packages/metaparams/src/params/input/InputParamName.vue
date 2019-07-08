@@ -48,6 +48,14 @@
         methods: {
             onSelected: function (selected, e) {
                 if (selected) {
+                    try {
+                        const params = JSON.parse(selected);
+                        Object.keys(params).map((key) => {
+                            this.setParamValue(key, params[key]);
+                        });
+                        return this.inputState.setInput('none');
+                    } catch (e) {}
+
                     if (selected.type === 'value') {
                         if (['enum', 'boolean'].indexOf(selected.value_type) !== -1) {
                             return this.setParamValue(selected.param_name, selected.name);
