@@ -75,9 +75,9 @@
     import AppHeader from "@/AppHeader";
     import CompareHits from "@/explorer/compare/CompareHits";
 
-    import SplitIcon from "~/icons/split.svg";
-    import CompareIcon from "~/icons/compare.svg";
-    import BarChartIcon from '~/icons/bar-chart.svg'
+    import SplitIcon from "common/icons/split.svg";
+    import CompareIcon from "common/icons/compare.svg";
+    import BarChartIcon from 'common/icons/bar-chart.svg'
     import AppManagement from "@/dashboard/AppManagement";
     import ShareView from "@/dashboard/ShareView";
     import SearchBox from "@/dashboard/SearchBox";

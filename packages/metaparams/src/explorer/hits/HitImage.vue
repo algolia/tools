@@ -51,7 +51,7 @@
 </template>
 
 <script>
-    import CameraIcon from '~/icons/camera.svg';
+    import CameraIcon from 'common/icons/camera.svg';
     import indexInfoMixin from "@/mixins/indexInfoMixin";
 
     const imageRegex = /(?:https?:)?\/\/.+\.(?:jpe?g|png|svg|webp)(?:\?.*)?$/i;

@@ -8,7 +8,7 @@
 </template>
 
 <script>
-    import SettingsChecker from "common/src/utils/settingsChecker"
+    import SettingsChecker from "common/utils/settingsChecker"
     import indexInfoMixin from "@/mixins/indexInfoMixin";
 
     export default {

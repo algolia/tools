@@ -22,7 +22,7 @@
 </template>
 
 <script>
-    import EditIcon from "~/icons/edit.svg";
+    import EditIcon from "common/icons/edit.svg";
     import indexInfoMixin from "@/mixins/indexInfoMixin";
 
     const isString = function (s) {

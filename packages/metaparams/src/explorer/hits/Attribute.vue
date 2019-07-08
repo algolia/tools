@@ -49,7 +49,7 @@
 </template>
 
 <script>
-    import {syntaxHighlight} from 'common/src/utils/formatters';
+    import {syntaxHighlight} from 'common/utils/formatters';
 
     export default {
         name: 'Attribute',

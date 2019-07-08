@@ -81,14 +81,16 @@
 </template>
 
 <script>
+    import LoaderIcon from "common/icons/loader.svg";
+    import CheckIcon from "common/icons/check.svg";
+
     import IndexSelector from "@/dashboard/IndexSelector";
-    import {Task, TasksGroup} from "@/utils/tasks";
-    import paramsSpecs from '@/utils/paramsSpecs'
-    import LoaderIcon from "@/assets/icons/loader.svg";
-    import CheckIcon from "@/assets/icons/check.svg";
     import indexInfoMixin from "@/mixins/indexInfoMixin";
-    import getSignature from "@/utils/signature";
     import Tooltip from "@/common/Tooltip";
+
+    import {Task, TasksGroup} from "common/utils/tasks";
+    import paramsSpecs from 'common/utils/paramsSpecs'
+    import getSignature from "common/utils/signature";
 
     export default {
         name: 'SaveOrCopySettings',

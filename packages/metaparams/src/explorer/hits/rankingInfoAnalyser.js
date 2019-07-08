@@ -1,5 +1,5 @@
-import {get} from 'common/src/utils/objectHelpers';
-import paramsSpecs from 'common/src/utils/paramsSpecs'
+import {get} from 'common/utils/objectHelpers';
+import paramsSpecs from 'common/utils/paramsSpecs'
 
 export default function (indexSettings) {
     this.indexSettings = indexSettings;

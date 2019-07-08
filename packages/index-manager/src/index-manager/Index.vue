@@ -66,9 +66,9 @@
 </template>
 
 <script>
-    import {formatHumanNumber} from "common/src/utils/formatters";
-    import {timeFromNow} from "common/src/utils/format_date";
-    import customClient from "common/src/utils/customClient";
+    import {formatHumanNumber} from "common/utils/formatters";
+    import {timeFromNow} from "common/utils/format_date";
+    import customClient from "common/utils/customClient";
 
     export default {
         name: 'Index',

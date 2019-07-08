@@ -168,13 +168,13 @@
 </template>
 
 <script>
-    import EditIcon from '~/icons/edit.svg';
-    import TrashIcon from '~/icons/trash.svg';
-    import FlipLeftIcon from "~/icons/flip-left.svg";
-    import FlipRightIcon from "~/icons/flip-right.svg";
+    import EditIcon from 'common/icons/edit.svg';
+    import TrashIcon from 'common/icons/trash.svg';
+    import FlipLeftIcon from "common/icons/flip-left.svg";
+    import FlipRightIcon from "common/icons/flip-right.svg";
     import HitsTransformer from "@/explorer/hits/hitsTransformer";
 
-    import {highlightJsonObject, properHighlight} from 'common/src/utils/formatters';
+    import {highlightJsonObject, properHighlight} from 'common/utils/formatters';
     import Tooltip from "@/common/Tooltip";
     import RuleDelete from "@/explorer/synonyms-rules/RuleDelete";
     import RuleEdit from "@/explorer/synonyms-rules/RuleEdit";

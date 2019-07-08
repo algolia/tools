@@ -160,13 +160,13 @@
 </template>
 
 <script>
-    import SplitIcon from "~/icons/split.svg";
-    import Slider from "~/icons/sliders.svg";
-    import CompareIcon from "~/icons/compare.svg";
-    import EyeIcon from "~/icons/eye.svg";
-    import EyeOffIcon from "~/icons/eye-off.svg";
-    import BoxIcon from "~/icons/box.svg";
-    import ShareIcon from "~/icons/share.svg";
+    import SplitIcon from "common/icons/split.svg";
+    import Slider from "common/icons/sliders.svg";
+    import CompareIcon from "common/icons/compare.svg";
+    import EyeIcon from "common/icons/eye.svg";
+    import EyeOffIcon from "common/icons/eye-off.svg";
+    import BoxIcon from "common/icons/box.svg";
+    import ShareIcon from "common/icons/share.svg";
 
     export default {
         name: 'DisplayConfig',

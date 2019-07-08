@@ -1,4 +1,4 @@
-import getSignature from "common/src/utils/signature";
+import getSignature from "common/utils/signature";
 import * as algoliasearch from "algoliasearch";
 
 const clientCache = {};

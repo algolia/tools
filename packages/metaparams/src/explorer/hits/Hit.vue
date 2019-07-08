@@ -101,18 +101,18 @@
     import Attributes from '@/explorer/hits/Attributes';
     import RankingInfo from '@/explorer/hits/RankingInfo';
     import HitsTransformer from '@/explorer/hits/hitsTransformer';
-    import flattenRecord from 'common/src/utils/flattenRecordForImagePreview';
+    import flattenRecord from 'common/utils/flattenRecordForImagePreview';
     import HitEdit from '@/explorer/hits/HitEdit';
     import HitDelete from '@/explorer/hits/HitDelete';
     import HitImage from "@/explorer/hits/HitImage";
     import indexInfoMixin from "@/mixins/indexInfoMixin";
 
-    import EditIcon from '~/icons/edit.svg';
-    import TrashIcon from '~/icons/trash.svg';
-    import FlipLeftIcon from "~/icons/flip-left.svg";
-    import FlipRightIcon from "~/icons/flip-right.svg";
-    import MaximizeIcon from "~/icons/maximize.svg";
-    import MinimizeIcon from "~/icons/minimize.svg";
+    import EditIcon from 'common/icons/edit.svg';
+    import TrashIcon from 'common/icons/trash.svg';
+    import FlipLeftIcon from "common/icons/flip-left.svg";
+    import FlipRightIcon from "common/icons/flip-right.svg";
+    import MaximizeIcon from "common/icons/maximize.svg";
+    import MinimizeIcon from "common/icons/minimize.svg";
     import Tooltip from "@/common/Tooltip";
 
     const hitsTransformer = new HitsTransformer(['_highlightResult', '_snippetResult', '_rankingInfo', '_distinctSeqID']);

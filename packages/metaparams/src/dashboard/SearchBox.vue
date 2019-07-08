@@ -13,7 +13,7 @@
 </template>
 
 <script>
-    import SearchIcon from "~/icons/search.svg";
+    import SearchIcon from "common/icons/search.svg";
     import indexInfoMixin from "@/mixins/indexInfoMixin";
 
     export default {

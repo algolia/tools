@@ -53,8 +53,8 @@
 </template>
 
 <script>
-    import TrashIcon from '~/icons/trash.svg';
-    import CloseIcon from '~/icons/x.svg';
+    import TrashIcon from 'common/icons/trash.svg';
+    import CloseIcon from 'common/icons/x.svg';
 
     export default {
         name: 'AppManagement',

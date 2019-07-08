@@ -12,7 +12,7 @@
 </template>
 
 <script>
-    import AlgoliaLogo from "~/icons/logo.svg";
+    import AlgoliaLogo from "common/icons/logo.svg";
 
     import DisplayConfig from "@/dashboard/DisplayConfig";
 

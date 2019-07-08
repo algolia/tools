@@ -57,7 +57,7 @@
 </template>
 
 <script>
-    import ChevronDownIcon from "~/icons/chevron-down.svg";
+    import ChevronDownIcon from "common/icons/chevron-down.svg";
     import Vue from 'vue';
 
     export default {

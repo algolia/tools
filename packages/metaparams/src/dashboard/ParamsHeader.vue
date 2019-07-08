@@ -59,11 +59,11 @@
 </template>
 
 <script>
-    import ChevronDownIcon from "~/icons/chevron-down.svg";
-    import TrashIcon from "~/icons/trash.svg";
-    import HistoryIcon from "~/icons/history.svg";
-    import FlipLeftIcon from "~/icons/flip-left.svg";
-    import FlipRightIcon from "~/icons/flip-right.svg";
+    import ChevronDownIcon from "common/icons/chevron-down.svg";
+    import TrashIcon from "common/icons/trash.svg";
+    import HistoryIcon from "common/icons/history.svg";
+    import FlipLeftIcon from "common/icons/flip-left.svg";
+    import FlipRightIcon from "common/icons/flip-right.svg";
     import Tooltip from "@/common/Tooltip";
     import indexInfoMixin from "@/mixins/indexInfoMixin";
 

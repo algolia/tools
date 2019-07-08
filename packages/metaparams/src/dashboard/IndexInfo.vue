@@ -42,7 +42,7 @@
 </template>
 
 <script>
-    import {formatHumanNumber, numberWithCommas} from "common/src/utils/formatters"
+    import {formatHumanNumber, numberWithCommas} from "common/utils/formatters"
     import indexMixin from "@/mixins/indexMixin";
 
     export default {

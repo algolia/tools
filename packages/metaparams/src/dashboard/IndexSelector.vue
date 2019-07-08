@@ -40,8 +40,8 @@
 
 <script>
     import Vue from "vue"
-    import BoxIcon from "~/icons/box.svg";
-    import ListIcon from "~/icons/list.svg";
+    import BoxIcon from "common/icons/box.svg";
+    import ListIcon from "common/icons/list.svg";
     import CustomSelect from "@/html-elements/CustomSelect";
 
     export default {

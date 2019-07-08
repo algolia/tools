@@ -70,7 +70,7 @@
 </template>
 
 <script>
-    import LoaderIcon from '~/icons/loader.svg'
+    import LoaderIcon from 'common/icons/loader.svg'
     import indexMixin from "@/mixins/indexMixin";
     import synonymMixin from "@/mixins/synonymMixin";
 

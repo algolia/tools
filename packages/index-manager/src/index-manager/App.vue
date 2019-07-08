@@ -84,7 +84,7 @@
 <script>
     import Index from "@/index-manager/Index";
     import * as algoliasearch from "algoliasearch";
-    import ChevronDownIcon from '~/icons/chevron-down.svg';
+    import ChevronDownIcon from 'common/icons/chevron-down.svg';
 
     export default {
         name: 'App',

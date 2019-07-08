@@ -310,8 +310,8 @@
     import PanelHitAutocomplete from "@/autocomplete/PanelHitsAutocomplete";
     import PromotedHit from "@/explorer/synonyms-rules/PromotedHit";
 
-    import TrashIcon from '~/icons/trash.svg';
-    import LoaderIcon from '~/icons/loader.svg'
+    import TrashIcon from 'common/icons/trash.svg';
+    import LoaderIcon from 'common/icons/loader.svg'
     import indexMixin from "@/mixins/indexMixin";
 
     export default {

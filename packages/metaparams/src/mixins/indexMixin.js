@@ -1,5 +1,5 @@
 import indexInfoMixin from "@/mixins/indexInfoMixin";
-import getSignature from "common/src/utils/signature";
+import getSignature from "common/utils/signature";
 
 const clientCache = {};
 const searchClientCache = {};

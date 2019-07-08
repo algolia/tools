@@ -20,10 +20,10 @@
 </template>
 
 <script>
-    import flattenRecord from 'common/src/utils/flattenRecordForImagePreview';
+    import flattenRecord from 'common/utils/flattenRecordForImagePreview';
     import HitImage from "@/explorer/hits/HitImage";
     import indexMixin from "@/mixins/indexMixin";
-    import {properHighlight} from "common/src/utils/formatters";
+    import {properHighlight} from "common/utils/formatters";
 
     export default {
         name: 'PromotedHit',

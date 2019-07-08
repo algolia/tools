@@ -21,6 +21,5 @@ module.exports = {
       .loader("js-yaml-loader");
 
     config.resolve.alias.set('@', path.resolve(__dirname, 'src'));
-    config.resolve.alias.set('~', path.resolve(__dirname, '../common/src'));
   },
 };

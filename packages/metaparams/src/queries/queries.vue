@@ -39,7 +39,7 @@
 </template>
 
 <script>
-    import ChevronDownIcon from "~/icons/chevron-down.svg";
+    import ChevronDownIcon from "common/icons/chevron-down.svg";
     import indexInfoMixin from "@/mixins/indexInfoMixin";
 
     export default {

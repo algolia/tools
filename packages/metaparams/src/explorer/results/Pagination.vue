@@ -34,7 +34,7 @@
 
 <script>
     import Paginator from '@/explorer/results/paginator'
-    import ChevronLeftIcon from '~/icons/chevron-left.svg';
+    import ChevronLeftIcon from 'common/icons/chevron-left.svg';
 
     export default {
         name: 'Pagination',

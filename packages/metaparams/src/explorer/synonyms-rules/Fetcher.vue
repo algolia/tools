@@ -76,7 +76,7 @@
     import indexMixin from "@/mixins/indexMixin";
     import Collection from "@/explorer/synonyms-rules/Collection";
 
-    import PlusCircleIcon from "~/icons/plus-circle.svg";
+    import PlusCircleIcon from "common/icons/plus-circle.svg";
     import Tooltip from "@/common/Tooltip";
     import SynonymEdit from "@/explorer/synonyms-rules/SynonymEdit";
     import RuleEdit from "@/explorer/synonyms-rules/RuleEdit";

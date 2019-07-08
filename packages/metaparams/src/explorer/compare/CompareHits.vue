@@ -130,10 +130,10 @@
 
 <script>
     import Vue from 'vue';
-    import {goToAnchor} from "common/src/utils/domHelpers";
+    import {goToAnchor} from "common/utils/domHelpers";
     import panelsMixin from "@/mixins/panelsMixin";
-    import TrashIcon from '~/icons/trash.svg';
-    import LoginIcon from '~/icons/log-in.svg';
+    import TrashIcon from 'common/icons/trash.svg';
+    import LoginIcon from 'common/icons/log-in.svg';
 
     export default {
         name: 'CompareHits',

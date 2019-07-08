@@ -24,7 +24,7 @@
 </template>
 
 <script>
-    import {humanNumber} from '../../../../common/src/utils/formatters'
+    import {humanNumber} from '../../../../common/utils/formatters'
     import indexInfoMixin from "@/mixins/indexInfoMixin";
 
     export default {

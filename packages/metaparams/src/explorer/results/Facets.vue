@@ -12,7 +12,7 @@
 </template>
 
 <script>
-    import {cleanAttributeName} from 'common/src/utils/formatters'
+    import {cleanAttributeName} from 'common/utils/formatters'
     import indexInfoMixin from "@/mixins/indexInfoMixin";
 
     export default {

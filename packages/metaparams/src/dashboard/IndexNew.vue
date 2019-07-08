@@ -41,8 +41,8 @@
 </template>
 
 <script>
-    import PlusCircleIcon from "~/icons/plus-circle.svg";
-    import LoaderIcon from '~/icons/loader.svg'
+    import PlusCircleIcon from "common/icons/plus-circle.svg";
+    import LoaderIcon from 'common/icons/loader.svg'
 
     import indexMixin from "@/mixins/indexMixin";
     import Vue from 'vue';

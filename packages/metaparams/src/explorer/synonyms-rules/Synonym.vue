@@ -75,10 +75,10 @@
 </template>
 
 <script>
-    import EditIcon from '~/icons/edit.svg';
-    import TrashIcon from '~/icons/trash.svg';
-    import FlipLeftIcon from "~/icons/flip-left.svg";
-    import FlipRightIcon from "~/icons/flip-right.svg";
+    import EditIcon from 'common/icons/edit.svg';
+    import TrashIcon from 'common/icons/trash.svg';
+    import FlipLeftIcon from "common/icons/flip-left.svg";
+    import FlipRightIcon from "common/icons/flip-right.svg";
 
     import SynonymDelete from "@/explorer/synonyms-rules/SynonymDelete";
     import Tooltip from "@/common/Tooltip";

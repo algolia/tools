@@ -50,11 +50,11 @@
     </div>
 </template>
 <script>
-    import {formatHumanNumber, cleanAttributeName} from 'common/src/utils/formatters'
+    import {formatHumanNumber, cleanAttributeName} from 'common/utils/formatters'
     import Vue from 'vue';
     import searchIndexer from '../autocomplete/search-indexer';
-    import analyseIndex from 'common/src/utils/indexAnalyzer';
-    import paramsSpecs from 'common/src/utils/paramsSpecs';
+    import analyseIndex from 'common/utils/indexAnalyzer';
+    import paramsSpecs from 'common/utils/paramsSpecs';
 
     import Results from "@/explorer/results/Results";
     import Fetcher from "@/explorer/synonyms-rules/Fetcher";
@@ -63,7 +63,7 @@
     import indexMixin from "@/mixins/indexMixin";
     import panelsMixin from "@/mixins/panelsMixin";
 
-    import {goToAnchor} from "common/src/utils/domHelpers";
+    import {goToAnchor} from "common/utils/domHelpers";
 
     export default {
         name: 'Explorer',

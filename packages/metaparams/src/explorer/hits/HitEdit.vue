@@ -34,7 +34,7 @@
 <script>
     import AceEditor from "@/editor/AceEditor";
 
-    import LoaderIcon from '~/icons/loader.svg'
+    import LoaderIcon from 'common/icons/loader.svg'
     import indexMixin from "@/mixins/indexMixin";
 
     export default {

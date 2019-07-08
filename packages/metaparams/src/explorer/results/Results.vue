@@ -63,11 +63,11 @@
 </template>
 
 <script>
-    import ListIcon from '~/icons/list.svg'
-    import BarChartIcon from '~/icons/bar-chart.svg'
-    import CodeIcon from '~/icons/code.svg'
-    import GridIcon from '~/icons/grid.svg'
-    import PlusCircleIcon from "~/icons/plus-circle.svg";
+    import ListIcon from 'common/icons/list.svg'
+    import BarChartIcon from 'common/icons/bar-chart.svg'
+    import CodeIcon from 'common/icons/code.svg'
+    import GridIcon from 'common/icons/grid.svg'
+    import PlusCircleIcon from "common/icons/plus-circle.svg";
 
     import ResultsList from "@/explorer/results/ResultsList";
     import RankingCharts from "@/explorer/analysis/RankingCharts";

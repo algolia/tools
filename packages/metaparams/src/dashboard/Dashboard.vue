@@ -91,11 +91,11 @@
     import panelsMixin from "@/mixins/panelsMixin";
     import indexMixin from "@/mixins/indexMixin";
 
-    import FlipLeftIcon from "~/icons/flip-left.svg";
-    import FlipRightIcon from "~/icons/flip-right.svg";
-    import MaximizeIcon from "~/icons/maximize.svg";
-    import MinimizeIcon from "~/icons/minimize.svg";
-    import ServerIcon from "~/icons/server.svg";
+    import FlipLeftIcon from "common/icons/flip-left.svg";
+    import FlipRightIcon from "common/icons/flip-right.svg";
+    import MaximizeIcon from "common/icons/maximize.svg";
+    import MinimizeIcon from "common/icons/minimize.svg";
+    import ServerIcon from "common/icons/server.svg";
     import IndexDelete from "@/dashboard/IndexDelete";
     import Tooltip from "@/common/Tooltip";
     import SearchBox from "@/dashboard/SearchBox";

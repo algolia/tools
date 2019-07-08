@@ -38,7 +38,7 @@
     import LineChart from "@/explorer/analysis/LineChart";
     import RankingInfoAnalyser from "@/explorer/hits/rankingInfoAnalyser"
 
-    import paramsSpecs from 'common/src/utils/paramsSpecs'
+    import paramsSpecs from 'common/utils/paramsSpecs'
     import indexInfoMixin from "@/mixins/indexInfoMixin";
 
     export default {

@@ -31,7 +31,7 @@
 </template>
 
 <script>
-    import CloseIcon from "~/icons/x.svg";
+    import CloseIcon from "common/icons/x.svg";
 
     import stateReducer from "@/store/stateReducer";
 

@@ -20,7 +20,7 @@
 
 <script>
     import IndexManager from "@/index-manager/IndexManager";
-    import LoaderIcon from "~/icons/loader.svg";
+    import LoaderIcon from "common/icons/loader.svg";
     import AlgoliaProxy from "@/AlgoliaProxy";
 
     const isProduction = process.env.NODE_ENV === 'production';

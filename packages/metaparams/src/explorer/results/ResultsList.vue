@@ -52,7 +52,7 @@
     import ResultsInfo from "@/explorer/results/ResultsInfo";
     import indexInfoMixin from "@/mixins/indexInfoMixin";
     import Hit from "@/explorer/hits/Hit";
-    import {cleanAttributeName, cleanDeepAttributeName} from 'common/src/utils/formatters'
+    import {cleanAttributeName, cleanDeepAttributeName} from 'common/utils/formatters'
     import AppliedAlternatives from "@/explorer/results/AppliedAlternatives";
 
     const isString = function (s) {
