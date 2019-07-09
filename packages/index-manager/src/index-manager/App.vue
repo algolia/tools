@@ -67,8 +67,7 @@
             <div class="min-h-0 pr-16">
                 <index
                     v-for="index in sortedIndices"
-                    :app-id="appId"
-                    :api-key="apiKey"
+                    :client="client"
                     :selected="selected"
                     :index-info="index"
                     :key="index.name"
@@ -83,13 +82,12 @@
 
 <script>
     import Index from "@/index-manager/Index";
-    import * as algoliasearch from "algoliasearch";
     import ChevronDownIcon from 'common/icons/chevron-down.svg';
 
     export default {
         name: 'App',
         components: {Index, ChevronDownIcon},
-        props: ['appId', 'apiKey'],
+        props: ['client'],
         data: function () {
             return {
                 query: '',
@@ -105,16 +103,12 @@
             this.fetchIndices();
         },
         watch: {
-            appId: function () { this.fetchIndices(); },
-            apiKey: function () { this.fetchIndices(); },
+            client: function () { this.fetchIndices(); },
             selected: function () {
                 this.$root.$emit('onSelectedUpdated', this.selected);
             }
         },
         computed: {
-            client: function () {
-                return algoliasearch(this.appId, this.apiKey);
-            },
             sortedIndices: function () {
                 return this.sortIndices(this.indices);
             }
@@ -159,8 +153,6 @@
                 this.selected = {};
             },
             fetchIndices: async function () {
-                if (this.appId === null) return; // onboarding
-
                 if (this.query.length === 0) {
                     let data = await this.client.listIndexes(0);
                     this.nbPages = data.nbPages;

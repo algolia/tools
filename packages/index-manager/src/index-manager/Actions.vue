@@ -18,20 +18,23 @@
                 {{action.name}}
             </div>
         </div>
-        <component
+        <action
             v-if="currentAction"
-            v-bind:is="currentAction.component"
             :indices="indices"
+            :client="client"
+            :action="currentAction"
             class="p-16"
         />
     </div>
 </template>
 
 <script>
-    import DeleteAction from '@/index-manager/actions/DeleteAction';
+    import Action from '@/index-manager/Action';
 
     export default {
         name: 'Actions',
+        components: {Action},
+        props: ['client'],
         data: function () {
             return {
                 selected: {},
@@ -39,37 +42,37 @@
                 actions: [
                     {
                         name: 'delete',
-                        component: DeleteAction,
+                        confirmText: 'DELETE',
                         condition: (indices) => indices.length > 0,
                     },
                     {
                         name: 'clear',
-                        component: DeleteAction,
+                        confirmText: 'CLEAR',
                         condition: (indices) => indices.length > 0,
                     },
                     {
                         name: 'rename',
-                        component: DeleteAction,
+                        confirmText: 'RENAME',
                         condition: (indices) => indices.length > 0,
                     },
                     {
                         name: 'attach',
-                        component: DeleteAction,
+                        confirmText: 'ATTACH',
                         condition: (indices) => indices.length > 0,
                     },
                     {
                         name: 'detach',
-                        component: DeleteAction,
+                        confirmText: 'DETACH',
                         condition: (indices) => indices.length > 0,
                     },
                     {
                         name: 'copy',
-                        component: DeleteAction,
+                        confirmText: 'COPY',
                         condition: (indices) => indices.length > 0,
                     },
                     {
                         name: 'resetSettings',
-                        component: DeleteAction,
+                        confirmText: 'RESET',
                         condition: (indices) => indices.length > 0,
                     },
                 ]

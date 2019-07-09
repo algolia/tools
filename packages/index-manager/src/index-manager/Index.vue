@@ -50,8 +50,7 @@
                 <div class="flex-no-shrink block w-8 h-8 mt-1 border-nebula-blue border-l border-b"></div>
             </div>
             <index
-                :app-id="appId"
-                :api-key="apiKey"
+                :client="client"
                 :index-info="replica"
                 :selected="selected"
                 :key="replica.name"
@@ -68,14 +67,12 @@
 <script>
     import {formatHumanNumber} from "common/utils/formatters";
     import {timeFromNow} from "common/utils/format_date";
-    import customClient from "common/utils/customClient";
 
     export default {
         name: 'Index',
-        props: ['appId', 'apiKey', 'indexInfo', 'selected', 'parentIndexInfo'],
+        props: ['client', 'indexInfo', 'selected', 'parentIndexInfo'],
         data: function () {
             return {
-                client: null,
                 index: null,
                 mouseDown: false,
                 /*resources: [
@@ -91,12 +88,11 @@
             },
         },
         created: async function () {
-            const client = await customClient(this.appId, this.apiKey);
-            const index = client.initIndex(this.indexInfo.name);
+            const index = this.client.initIndex(this.indexInfo.name);
 
             let indexInfo = {...this.indexInfo};
             if (this.indexInfo.updatedAt === undefined) {
-                const data = await client.listIndexes('0&prefix=' + encodeURIComponent(this.indexInfo.name));
+                const data = await this.client.listIndexes('0&prefix=' + encodeURIComponent(this.indexInfo.name));
                 indexInfo = data.items[0];
             }
 

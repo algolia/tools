@@ -1,7 +1,7 @@
 <template>
     <div>
         <div>
-            <div>Type DELETE to confirm you want to delete {{indices.length}} indices:</div>
+            <div>Type {{action.confirmText}} to confirm you want to delete {{indices.length}} {{indices.length > 1 ? 'indices' : 'index'}}:</div>
             <input v-model="confirmText" />
             <div class="flex justify-end mt-16">
                 <button
@@ -23,15 +23,20 @@
 <script>
     export default {
         name: 'DeleteAction',
-        props: ['indices'],
+        props: ['indices', 'client', 'action'],
         data: function () {
             return {
                 confirmText: '',
             }
         },
         methods: {
-            apply: function () {
+            delete: function () {
 
+            },
+            apply: function () {
+                if (this.action.name === 'delete') {
+                    this.delete();
+                }
             }
         }
     }
