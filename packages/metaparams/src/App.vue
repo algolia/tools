@@ -21,7 +21,7 @@
 <script>
     import AppLoggedIn from "@/AppLoggedIn";
     import LoaderIcon from "common/icons/loader.svg";
-    import AlgoliaProxy from "@/AlgoliaProxy";
+    import AlgoliaProxy from "common/components/AlgoliaProxy";
 
     const isProduction = process.env.NODE_ENV === 'production';
 
