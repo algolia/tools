@@ -24,11 +24,11 @@ View the full documentation at https://tailwindcss.com.
 |
 */
 
-const sizes = require('./tailwind/sizes')
-const brandColors = require('./tailwind/brand-colors')
-const opacityColors = require('./tailwind/opacity-colors')
-const languageColors = require('./tailwind/language-colors')
-const shiftColor = require('./tailwind/shift-color')
+const sizes = require('./definitions/sizes')
+const brandColors = require('./definitions/brand-colors')
+const opacityColors = require('./definitions/opacity-colors')
+const languageColors = require('./definitions/language-colors')
+const shiftColor = require('./definitions/shift-color')
 
 /*
 |-------------------------------------------------------------------------------
@@ -92,7 +92,7 @@ module.exports = {
     |
     */
 
-    screens: require('./tailwind/breakpoints'),
+    screens: require('./definitions/breakpoints'),
 
     /*
     |-----------------------------------------------------------------------------
@@ -716,7 +716,7 @@ module.exports = {
     */
 
     plugins: [
-        require('./tailwind/gradient')({
+        require('./definitions/gradient')({
             gradients: {
                 none: ['transparent', 'transparent'],
                 'white-moon-grey': [colors['white'], colors['moon-grey']],
@@ -740,18 +740,18 @@ module.exports = {
             },
             variants: ['responsive', 'hover']
         }),
-        require('./tailwind/caret')({ colors }),
-        require('./tailwind/columns')({
+        require('./definitions/caret')({ colors }),
+        require('./definitions/columns')({
             sizes: {
                 1: '1',
                 2: '2'
             },
             variants: ['responsive']
         }),
-        require('./tailwind/text-indent')({
+        require('./definitions/text-indent')({
             sizes: sizes.generated
         }),
-        require('./tailwind/shift')({
+        require('./definitions/shift')({
             sizes: sizes.all,
             variants: ['responsive', 'group-hover']
         }),

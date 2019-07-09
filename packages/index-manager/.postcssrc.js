@@ -1,7 +1,10 @@
+const tailwindcss = require('tailwindcss');
+const tailwindConfig = require('common/tailwind');
+
 module.exports = ({ file, options, env }) => {
   const baseConfig = [
-    require('tailwindcss')('tailwind.js'),
-    require('autoprefixer')(),
+      tailwindcss(tailwindConfig),
+      require('autoprefixer')(),
   ]
   const prodConfig = [
     require('@fullhuman/postcss-purgecss')({
