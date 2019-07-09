@@ -47,7 +47,7 @@
             },
             query: {
                 get() {
-                    if (this.panelKey === 'rightPanel') {
+                    if (this.panelKey === 'rightPanel' && this.panelIndexData) {
                         return this.searchParams.query || '';
                     }
                     return this.$store.state.panels.query;

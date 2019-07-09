@@ -39,7 +39,7 @@
 <script>
     import RankingInfoAnalyser from "@/explorer/hits/rankingInfoAnalyser"
     import {formatHumanDistance} from "../../../../common/utils/formatters"
-    import paramsSpecs from 'common/utils/paramsSpecs'
+    import paramsSpecs from 'common/params-specs';
     import indexInfoMixin from "@/mixins/indexInfoMixin";
 
     export default {

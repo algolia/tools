@@ -4,7 +4,7 @@ require 'algoliasearch'
 
 Dotenv.load
 
-params = YAML.load(File.read("#{File.dirname(__FILE__)}/../src/assets/data.yml"))
+params = YAML.load(File.read("#{File.dirname(__FILE__)}/data.yml"))
 
 objects = []
 

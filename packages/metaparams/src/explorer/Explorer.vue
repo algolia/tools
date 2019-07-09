@@ -54,7 +54,7 @@
     import Vue from 'vue';
     import searchIndexer from '../autocomplete/search-indexer';
     import analyseIndex from 'common/utils/indexAnalyzer';
-    import paramsSpecs from 'common/utils/paramsSpecs';
+    import paramsSpecs from 'common/params-specs';
 
     import Results from "@/explorer/results/Results";
     import Fetcher from "@/explorer/synonyms-rules/Fetcher";

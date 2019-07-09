@@ -92,7 +92,7 @@
     import Tooltip from "@/common/Tooltip";
 
     import {Task, TasksGroup} from "common/utils/tasks";
-    import paramsSpecs from 'common/utils/paramsSpecs'
+    import paramsSpecs from 'common/params-specs';
     import getSignature from "common/utils/signature";
 
     export default {

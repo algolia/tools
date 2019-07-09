@@ -753,6 +753,7 @@ queryLanguages:
     - name: zh
       label: Chinese
   default: []
+  settings_default: null
 
 enableRules:
   scope:

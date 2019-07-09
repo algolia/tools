@@ -20,7 +20,7 @@
     import InputString from '@/params/input/InputString';
     import InputFilters from '@/params/input/InputFilters';
     import InputAttribute from "@/params/input/InputAttribute";
-    import paramsSpecs from 'common/utils/paramsSpecs';
+    import paramsSpecs from 'common/params-specs';
     import inputMixin from "@/params/scripts/inputMixin";
 
     export default {

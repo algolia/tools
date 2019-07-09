@@ -26,7 +26,7 @@
 
 <script>
     import AlgoliaAutocomplete from "@/autocomplete/AlgoliaAutocomplete";
-    import paramsSpecs from 'common/utils/paramsSpecs';
+    import paramsSpecs from 'common/params-specs';
     import inputMixin from "@/params/scripts/inputMixin";
 
     export default {
