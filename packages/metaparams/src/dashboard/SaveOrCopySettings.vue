@@ -77,6 +77,9 @@
                 </div>
             </div>
         </div>
+        <div v-if="errorMessage.length > 0" class="border border-mars-1 mt-16 p-8 rounded">
+            <div>{{errorMessage}}</div>
+        </div>
     </div>
 </template>
 
@@ -99,6 +102,7 @@
         mixins: [indexInfoMixin],
         data: function () {
             return {
+                errorMessage: '',
                 appId: null,
                 inReplicaCopy: false,
                 limitCopy: {
@@ -171,7 +175,14 @@
                     this.tasksGroup = await this.differentAppCopy(config);
                 }
 
-                await this.tasksGroup.run();
+                try {
+                    await this.tasksGroup.run();
+                } catch (e) {
+                    this.errorMessage = e.message;
+                    this.tasksGroup = null;
+                    throw e;
+                }
+
                 this.tasksGroup = null;
 
                 this.$store.commit(`panels/${config.otherPanelKey}/setPanelConfig`, { appId: config.dstAppId, indexName: config.dstIndexName });
@@ -327,7 +338,14 @@
                 }));
 
                 this.tasksGroup = tasksGroup;
-                await this.tasksGroup.run();
+
+                try {
+                    await this.tasksGroup.run();
+                } catch (e) {
+                    this.errorMessage = e.message;
+                    this.tasksGroup = null;
+                    throw e;
+                }
                 this.tasksGroup = null;
                 this.$store.commit(`apps/${config.srcAppId}/${config.srcIndexName}/replaceIndexSettings`, newSettings);
             }

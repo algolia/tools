@@ -16,7 +16,7 @@ export function TasksGroup(name) {
         for (i = 0; i < this.tasks.length; i++) {
             await this.tasks[i].run();
         }
-    }
+    };
 }
 
 export function Task(name, callback) {
