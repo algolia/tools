@@ -176,6 +176,7 @@
                 }
 
                 try {
+                    this.errorMessage = '';
                     await this.tasksGroup.run();
                 } catch (e) {
                     this.errorMessage = e.message;
@@ -340,6 +341,7 @@
                 this.tasksGroup = tasksGroup;
 
                 try {
+                    this.errorMessage = '';
                     await this.tasksGroup.run();
                 } catch (e) {
                     this.errorMessage = e.message;
