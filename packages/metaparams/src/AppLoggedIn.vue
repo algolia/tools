@@ -128,7 +128,7 @@
                     }
                 }
 
-                window.history.replaceState({}, document.title, '/');
+                window.history.replaceState({}, document.title, '/metaparams');
             }
             this.loadingSharingLink = false;
         }
