@@ -39,6 +39,7 @@
         },
         watch: {
             userToken: function () { this.fetchPersoProfil(); },
+            enablePersonalization: function () { this.fetchPersoProfil(); },
         },
         mounted: function () {
             this.fetchPersoProfil();
@@ -47,11 +48,14 @@
             userToken: function () {
                 return this.searchParams.userToken;
             },
+            enablePersonalization: function () {
+                return this.searchParams.enablePersonalization;
+            }
         },
         methods: {
             humanNumber: humanNumber,
             fetchPersoProfil: async function () {
-                if (!this.userToken) {
+                if (!this.enablePersonalization || !this.userToken) {
                     this.persoProfile = false;
                     return;
                 }
