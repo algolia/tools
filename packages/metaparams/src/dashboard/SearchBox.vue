@@ -27,12 +27,21 @@
                     return this.$store.state.panels.twoInputs || false;
                 },
                 set (value) {
-                    if (!value && this.$store.state.panels.splitMode) {
-                        this.$store.commit(`apps/${this.$store.state.panels.rightPanel.appId}/${this.$store.state.panels.rightPanel.indexName}/deleteParam`, {
-                            configKey: 'searchParams2',
-                            inputKey: 'query',
-                        });
+                    if (this.$store.state.panels.splitMode) {
+                        if (!value) {
+                            this.$store.commit(`apps/${this.$store.state.panels.rightPanel.appId}/${this.$store.state.panels.rightPanel.indexName}/deleteParam`, {
+                                configKey: 'searchParams2',
+                                inputKey: 'query',
+                            });
+                        } else {
+                            this.$store.commit(`apps/${this.$store.state.panels.rightPanel.appId}/${this.$store.state.panels.rightPanel.indexName}/setParamValue`, {
+                                configKey: this.sameIndexOnEachPanel ? 'searchParams2' : 'searchParams',
+                                key: 'query',
+                                value: this.query,
+                            });
+                        }
                     }
+
                     this.$store.commit('panels/setTwoInputs', value);
                 }
             },

@@ -72,6 +72,10 @@
         mixins: [indexMixin, panelsMixin],
         data: function () {
             return {
+                requestNumber: 0,
+                requestNumberReceived: 0,
+                requestNumberAnalysis: 0,
+                requestNumberAnalysisReceived: 0,
                 nbHits: 0,
                 nbRules: 0,
                 nbSynonyms: 0,
@@ -194,10 +198,12 @@
             },
             triggerSearch: async function () {
                 const index = await this.getSearchIndex();
-                const query = this.searchParamsWithDefaults.query;
+                const requestNumber = this.requestNumber++;
 
                 index.search(this.searchParamsWithDefaults).then((res) => {
-                    if (res.query !== query) return;
+                    if (this.requestNumberReceived > requestNumber) return;
+                    this.requestNumberReceived = requestNumber;
+
                     this.algoliaResponse = Object.freeze(res);
                     this.errorMessage = '';
                     this.onUpdateHitsCount(this.algoliaResponse.nbHits);
@@ -215,8 +221,12 @@
             },
             triggerAnalyseSearch: async function () {
                 const index = await this.getSearchIndex();
+                const requestNumberAnalysis = this.requestNumberAnalysis++;
+
                 index.search(this.searchParamsForAnalysis).then((res) => {
-                    if (res.query !== this.query) return;
+                    if (this.requestNumberAnalysisReceived > requestNumberAnalysis) return;
+                    this.requestNumberAnalysisReceived = requestNumberAnalysis;
+
                     this.panelAlgoliaResponse = Object.freeze(res);
                 }).catch(() => {
                 });
