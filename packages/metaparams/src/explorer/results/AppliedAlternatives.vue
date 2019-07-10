@@ -36,7 +36,7 @@
             return {
                 // ignoreTypes: ['original', 'typo', 'conjugation']
                 keepTypes: ['excluded', 'plural', 'split', 'concat', 'synonym'],
-                originalTypes: ['original', 'stopword'],
+                originalTypes: ['original', 'stopword', 'optional'],
             }
         },
         computed: {
@@ -53,16 +53,14 @@
             },
             originals: function () {
                 return this.alternatives.filter((alternative) => {
-                    return this.originalTypes.indexOf(alternative.type) !== -1;
-                }).map((alternative) => {
                     if (alternative.type === 'original') {
-                        if (this.alternatives.findIndex((a) => { return a.type === 'optional'}) !== -1) {
-                            alternative.type = 'optional';
+                        if (this.alternatives.findIndex((a) => { return a.type === 'optional' && a.offset === alternative.offset && a.length === alternative.length}) !== -1) {
+                            return false;
                         }
                     }
 
-                    return alternative;
-                })
+                    return this.originalTypes.indexOf(alternative.type) !== -1;
+                });
             },
             getRows: function () {
                 const rows = [];
