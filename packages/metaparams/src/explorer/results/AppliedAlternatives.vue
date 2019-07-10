@@ -54,6 +54,14 @@
             originals: function () {
                 return this.alternatives.filter((alternative) => {
                     return this.originalTypes.indexOf(alternative.type) !== -1;
+                }).map((alternative) => {
+                    if (alternative.type === 'original') {
+                        if (this.alternatives.findIndex((a) => { return a.type === 'optional'}) !== -1) {
+                            alternative.type = 'optional';
+                        }
+                    }
+
+                    return alternative;
                 })
             },
             getRows: function () {

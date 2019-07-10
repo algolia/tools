@@ -282,7 +282,7 @@
                             page: 0,
                         });
                         let res = await config.srcIndex.search(params);
-                        
+
                         let resAdd = await config.dstIndex.addObjects(res.hits.map((hit) => {
                             delete(hit._highlightResult);
                             delete(hit._snippetResult);
