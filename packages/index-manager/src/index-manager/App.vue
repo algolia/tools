@@ -101,6 +101,11 @@
         },
         created: function () {
             this.fetchIndices();
+
+            this.$root.$on('finishedAction', () => {
+                this.unselectAll();
+                this.fetchIndices();
+            });
         },
         watch: {
             client: function () { this.fetchIndices(); },

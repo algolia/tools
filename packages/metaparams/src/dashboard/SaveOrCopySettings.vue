@@ -62,21 +62,7 @@
                 </div>
             </div>
         </div>
-        <div v-if="tasksGroup">
-            <div class="mb-8"><b>{{tasksGroup.name}}</b></div>
-            <div v-for="task in tasksGroup.tasks">
-                <div>
-                    {{task.name}}
-                    <span v-if="task.outOf">{{task.nth}}/{{task.outOf}}</span>
-                    <span v-if="task.done">
-                        <check-icon class="w-12 h-12" />
-                    </span>
-                    <span v-if="task.running">
-                        <loader-icon class="w-12 h-12 infinte-rotate" />
-                    </span>
-                </div>
-            </div>
-        </div>
+        <task-group-view :tasks-group="tasksGroup" />
         <div v-if="errorMessage.length > 0" class="border border-mars-1 mt-16 p-8 rounded">
             <div>{{errorMessage}}</div>
         </div>
@@ -91,13 +77,14 @@
     import indexInfoMixin from "@/mixins/indexInfoMixin";
     import Tooltip from "@/common/Tooltip";
 
+    import TaskGroupView from "common/components/TasksGroup";
     import {Task, TasksGroup} from "common/utils/tasks";
     import paramsSpecs from 'common/params-specs';
     import getSignature from "common/utils/signature";
 
     export default {
         name: 'SaveOrCopySettings',
-        components: {Tooltip, IndexSelector, LoaderIcon, CheckIcon},
+        components: {Tooltip, IndexSelector, LoaderIcon, CheckIcon, TaskGroupView},
         props: ['panelKey'],
         mixins: [indexInfoMixin],
         data: function () {

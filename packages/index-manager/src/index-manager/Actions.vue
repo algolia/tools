@@ -42,36 +42,43 @@
                 actions: [
                     {
                         name: 'delete',
+                        description: 'Delete indices',
                         confirmText: 'DELETE',
                         condition: (indices) => indices.length > 0,
                     },
                     {
                         name: 'clear',
+                        description: 'Clear indices',
                         confirmText: 'CLEAR',
                         condition: (indices) => indices.length > 0,
                     },
                     {
                         name: 'rename',
+                        description: 'Rename index',
                         confirmText: 'RENAME',
                         condition: (indices) => indices.length > 0,
                     },
                     {
                         name: 'attach',
+                        description: 'Attach replica',
                         confirmText: 'ATTACH',
                         condition: (indices) => indices.length > 0,
                     },
                     {
                         name: 'detach',
+                        description: 'Delete replica',
                         confirmText: 'DETACH',
                         condition: (indices) => indices.length > 0,
                     },
                     {
                         name: 'copy',
+                        description: 'Copy index',
                         confirmText: 'COPY',
                         condition: (indices) => indices.length > 0,
                     },
                     {
                         name: 'resetSettings',
+                        description: 'Reset settings',
                         confirmText: 'RESET',
                         condition: (indices) => indices.length > 0,
                     },
