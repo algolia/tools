@@ -102,7 +102,7 @@
                     },
                 });
                 const link = await res.json();
-                this.newLink = `${this.origin}?code=${link.short_code}`;
+                this.newLink = `${this.origin}/metaparams?code=${link.short_code}`;
             },
         }
     }
