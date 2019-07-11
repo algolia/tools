@@ -119,7 +119,6 @@
             },
             onBlur: function () {
                 if (this.allowBlur) {
-                    this.query = this.stringValue;
                     this.dropdownOpened = false;
                     this.selectedIndex = -1;
                 }
@@ -164,6 +163,8 @@
             },
             openDropDown: function () {
                 this.dropdownOpened = true;
+                this.query = this.stringValue;
+
                 if (this.refine) {
                     Vue.nextTick(() => {
                         this.$refs.input.focus();
