@@ -68,14 +68,17 @@
 
                 Object.keys(share).forEach((appId) => {
                     const indexName = share[appId];
+                    const indexData = reducedState.apps[appId][indexName];
 
-                    const {
-                        lastUsed = 0, // Remove last used to allow for caching
-                        ...appState
-                    } = reducedState.apps[appId][indexName];
-                    exportableState.apps[appId] = {};
-                    exportableState.apps[appId].lastIndexName = indexName;
-                    exportableState.apps[appId][indexName] = appState;
+                    if (indexData) {
+                        const {
+                            lastUsed = 0, // Remove last used to allow for caching
+                            ...appState
+                        } = indexData;
+                        exportableState.apps[appId] = {};
+                        exportableState.apps[appId].lastIndexName = indexName;
+                        exportableState.apps[appId][indexName] = appState;
+                    }
                 });
 
                 return exportableState;
