@@ -13,6 +13,7 @@
     "algolia-filters-js-syntax-validator": "^1.0.1",
     "algoliasearch": "^3.32.0",
     "chart.js": "^2.8.0",
+    "common": "^0.0.0",
     "copy-to-clipboard": "^3.2.0",
     "css-loader": "^2.1.0",
     "dedent": "^0.7.0",
@@ -26,19 +27,11 @@
     "vue-input-autowidth": "^1.0.3",
     "vue2-brace-editor": "^2.0.2",
     "vuedraggable": "^2.17.0",
-    "vuex": "^3.1.0",
-    "common": "file:../common"
+    "vuex": "^3.1.0"
   },
   "devDependencies": {
-    "@fullhuman/postcss-purgecss": "^1.0.1",
-    "@vue/cli-plugin-babel": "^3.3.0",
-    "@vue/cli-plugin-eslint": "^3.3.0",
-    "@vue/cli-service": "^3.3.0",
-    "babel-eslint": "^10.0.1",
     "eslint": "^5.8.0",
-    "eslint-plugin-vue": "^5.0.0",
-    "vue-svg-loader": "^0.12.0",
-    "vue-template-compiler": "^2.6"
+    "eslint-plugin-vue": "^5.0.0"
   },
   "browserslist": [
     "> 1%",

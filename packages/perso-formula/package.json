@@ -1,5 +1,5 @@
 {
-  "name": "index_manager",
+  "name": "perso-formula",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -13,7 +13,6 @@
     "algolia-filters-js-syntax-validator": "^1.0.1",
     "algoliasearch": "^3.32.0",
     "chart.js": "^2.8.0",
-    "common": "file:../common",
     "css-loader": "^2.1.0",
     "dedent": "^0.7.0",
     "express": "^4.16.4",
@@ -27,7 +26,8 @@
     "vue-chartjs": "^3.4.2",
     "vue-input-autowidth": "^1.0.3",
     "vue2-brace-editor": "^2.0.2",
-    "vuex": "^3.1.0"
+    "vuex": "^3.1.0",
+    "common": "^0.0.0"
   },
   "eslintConfig": {
     "root": true,

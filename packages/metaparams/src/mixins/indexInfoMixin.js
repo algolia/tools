@@ -42,7 +42,7 @@ export default {
         },
         panelTitleAttribute: {
             get () {
-                return this.panelIndexData.titleAttribute;
+                return this.panelIndexData.titleAttribute || '';
             },
             set (value) {
                 this.$store.commit(`${this.panelIndexCommitPrefix}/setTitleAttribute`, value);
