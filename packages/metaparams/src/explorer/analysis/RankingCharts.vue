@@ -93,11 +93,13 @@
                     const uniqueValues = [...new Set(chart.data.datasets[0].data)];
 
                     if (uniqueValues.length === 1) {
-                        if (uniqueValues[0] === null) {
-                            return;
-                        }
-                        if (uniqueValues[0] === 0 && criterion === 'filters') {
-                            return;
+                        if (criterion !== 'attribute') { // We want to display all searchable attributes in the chart even if there is no value
+                            if (uniqueValues[0] === null) {
+                                return;
+                            }
+                            if (uniqueValues[0] === 0 && criterion === 'filters') {
+                                return;
+                            }
                         }
                     }
 
@@ -143,7 +145,7 @@
                                 precision: criterion === 'position' ? 0 : null,
                                 callback: (value) => {
                                     if (criterion === 'attribute') {
-                                        return this.searchableAttributes[this.searchableAttributes.length - value];
+                                        return this.searchableAttributes[this.searchableAttributes.length - 1 - value];
                                     }
                                     return value;
                                 },
