@@ -5,10 +5,10 @@
             <input v-model="confirmText" />
             <div class="flex justify-end mt-16">
                 <button
-                    v-if="confirmText.toLowerCase() === 'delete'"
+                    v-if="confirmText.toLowerCase() === action.confirmText.toLowerCase()"
                     @click="apply"
                     class="rounded bg-mars-1 shadow-sm hover:shadow transition-fast-out text-white p-8">
-                    Confirm Delete
+                    Confirm {{action.confirmText}}
                 </button>
                 <button
                     @click="toto()"
@@ -24,6 +24,7 @@
 <script>
     import {Task, TasksGroup} from 'common/utils/tasks';
     import TaskGroupView from 'common/components/TasksGroup'
+    import {clearIndex, deleteIndex, detachReplicaIndex, renameIndex} from "@/index-manager/indexOperations";
 
     export default {
         name: 'Action',
@@ -37,64 +38,21 @@
             }
         },
         methods: {
-            doAction: async function (group, task, client, indexInfo, actionName) {
+            doAction: async function (client, indexInfo, actionName) {
                 if (actionName === 'delete') {
-                    if (indexInfo.primary === undefined) {
-                        const res = await client.deleteIndex(indexInfo.name);
-                        await client.initIndex(indexInfo.name).waitTask(res.taskID);
-                    } else {
-                        const primaryIndex = client.initIndex(indexInfo.primary);
-                        const primarySettings = await primaryIndex.getSettings();
-                        const replicas = primarySettings.replicas || [];
-                        const newReplicas = replicas.filter((replica) => { return replica !== indexInfo.name; });
-
-                        const res1 = await primaryIndex.setSettings({ replicas: newReplicas });
-                        await client.initIndex(indexInfo.primary).waitTask(res1.taskID);
-
-                        const res2 = await client.deleteIndex(indexInfo.name);
-                        await client.initIndex(indexInfo.name).waitTask(res2.taskID);
-                    }
+                    await deleteIndex(client, indexInfo);
                 }
-                if (actionName === 'clear') {
-                    const index = client.initIndex(indexInfo.name);
 
-                    const res = await index.clear();
-                    await client.initIndex(indexInfo.name).waitTask(res.taskID);
+                if (actionName === 'clear') {
+                    await clearIndex(client, indexInfo);
                 }
 
                 if (actionName === 'rename') {
-                    if (indexInfo.primary === undefined) {
-                        const res = await client.moveIndex(indexInfo.name, this.userIndexName);
-                        await client.initIndex(this.userIndexName).waitTask(res.taskID);
-                    } else {
-                        const primaryIndex = client.initIndex(indexInfo.primary);
-                        const primarySettings = await primaryIndex.getSettings();
-                        const replicas = primarySettings.replicas || [];
-                        const newReplicas = [...new Set([...replicas, this.userIndexName])];
-
-                        const res = await primaryIndex.setSettings({ replicas: newReplicas });
-                        await client.initIndex(indexInfo.primary).waitTask(res.taskID);
-
-                        const res1 = await client.copyIndex(indexInfo.name, this.userIndexName, ['settings', 'synonyms', 'rules']);
-                        await client.initIndex(this.userIndexName).waitTask(res1.taskID);
-
-                        const newReplicas2 = replicas.filter((replica) => { return replica !== indexInfo.name; });
-                        const res2 = await primaryIndex.setSettings({ replicas: [...new Set([...newReplicas2, this.userIndexName])] });
-                        await client.initIndex(indexInfo.primary).waitTask(res2.taskID);
-
-                        const res3 = await client.deleteIndex(indexInfo.name);
-                        await client.initIndex(indexInfo.name).waitTask(res3.taskID);
-                    }
+                    await renameIndex(client, indexInfo, this.userIndexName);
                 }
 
                 if (actionName === 'detach') {
-                    const primaryIndex = client.initIndex(indexInfo.primary);
-                    const primarySettings = await primaryIndex.getSettings();
-                    const replicas = primarySettings.replicas || [];
-                    const newReplicas = replicas.filter((replica) => { return replica !== indexInfo.name; });
-
-                    const res = await primaryIndex.setSettings({ replicas: newReplicas });
-                    await client.initIndex(indexInfo.primary).waitTask(res.taskID);
+                    await detachReplicaIndex(client, indexInfo);
                 }
 
                 if (actionName === 'attach') {
@@ -129,7 +87,7 @@
                 task.setCallback(async () => {
                     let i;
                     for (i = 0; i < this.indices.length; i++) {
-                        await this.doAction(group, task, client, this.indices[i], this.action.name);
+                        await this.doAction(client, this.indices[i], this.action.name);
                         task.setNth(i + 1);
                     }
                 });
