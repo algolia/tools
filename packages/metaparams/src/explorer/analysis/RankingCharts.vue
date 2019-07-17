@@ -142,6 +142,7 @@
                             ticks: {
                                 beginAtZero: ['typo', 'words', 'proximity', 'attribute', 'position', 'exact', 'filters'].indexOf(criterion) !== -1,
                                 stepSize: ['typo', 'words', 'proximity', 'attribute', 'exact', 'filters'].indexOf(criterion) !== -1 ? 1 : null,
+                                max: criterion === 'attribute' ? this.searchableAttributes.length - 1 : null,
                                 precision: criterion === 'position' ? 0 : null,
                                 callback: (value) => {
                                     if (criterion === 'attribute') {
@@ -172,7 +173,7 @@
                     points[i] = this.rankingInfoAnalyzer.getCriteriaValue(this.hits[i], criterion);
 
                     if (criterion === 'attribute') {
-                        points[i] = this.searchableAttributes.length - points[i];
+                        points[i] = this.searchableAttributes.length - 1 - points[i];
                     }
                 }
 
