@@ -6,7 +6,20 @@
             :options="Object.keys($store.state.apps)"
         >
             <template slot="icon"><box-icon class="block w-12 h-12 mr-8 fill-current"/></template>
-            <template v-slot:default="{option}">{{option}}</template>
+            <template v-slot:default="{option, inDropDown, isSelected}">
+                <div>
+                    <div>
+                        {{option}}
+                        <span v-if="inDropDown && $store.state.apps[option].__app_name">
+                            &nbsp;- {{$store.state.apps[option].__app_name}}
+                        </span>
+                    </div>
+                    <div v-if="inDropDown && $store.state.apps[option].__app_owner" :class="!isSelected ? 'text-solstice-blue-opacity-60' : ''">
+                        {{$store.state.apps[option].__app_owner}}
+                    </div>
+                </div>
+
+            </template>
         </custom-select>
         <custom-select
             v-if="!freeIndexName"

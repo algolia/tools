@@ -29,7 +29,7 @@ export default function (state) {
             ...panelsRest
         },
         apps: Object.keys(state.apps).reduce((innerAcc, appId) => {
-            const { key, lastIndexName, ...indexNames } = state.apps[appId];
+            const { key, lastIndexName, __app_name, __app_owner,  ...indexNames } = state.apps[appId];
             return ({
                 ...innerAcc,
                 [appId]: Object.keys(indexNames).reduce((innerInnerAcc, indexName) => {
@@ -54,7 +54,9 @@ export default function (state) {
                     return {...innerInnerAcc, [indexName]: rest}
                 }, {
                     key,
-                    lastIndexName
+                    lastIndexName,
+                    __app_name,
+                    __app_owner,
                 })
             })
         }, {})
