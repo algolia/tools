@@ -79,6 +79,9 @@ const SettingsChecker = function() {
 
     this.getParamValue = function (key) {
         if (this.searchParams[key] !== undefined) return this.searchParams[key];
+        if (key === 'searchableAttributes') {
+            return this.indexSettings[key] || this.indexSettings.attributesToIndex;
+        }
         return this.indexSettings[key];
     };
 
@@ -165,7 +168,8 @@ const SettingsChecker = function() {
     };
 
     this.nonConfiguredParam = function (forParam, severity) {
-        if (!Array.isArray(this.indexSettings[forParam]) || this.indexSettings[forParam].length <= 0) {
+        const paramValue = this.getParamValue(forParam);
+        if (!Array.isArray(paramValue) || paramValue.length <= 0) {
             this.reports.push(new Report(
                 severity,
                 `Non configured ${forParam}`
