@@ -1,3 +1,5 @@
+const path = require('path');
+
 module.exports = {
     publicPath: 'perso-formula',
     chainWebpack: config => {
