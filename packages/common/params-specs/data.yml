@@ -824,6 +824,15 @@ optionalWords:
   default: []
   settings_default: null
 
+optionalWords=query:
+  scope:
+    - search
+  value_type: boolean
+  default: true
+  values:
+    - true
+    - false
+
 disablePrefixOnAttributes:
   scope: settings
   value_type: attributes_list

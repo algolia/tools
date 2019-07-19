@@ -4,7 +4,7 @@
             {{ displayValue || JSON.stringify(value)}}
         </div>
         <component
-            :class="`param-${id}-${inputKey}`"
+            :class="`param-${id}-${inputKeySlug}`"
             v-if="isEditable"
             v-bind:is="paramValueComponents[paramSpec.value_type]"
             v-bind="$props"

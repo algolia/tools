@@ -18,6 +18,9 @@ export default {
         });
     },
     computed: {
+        inputKeySlug: function () {
+            return this.inputKey.replace(/\W/g, '');
+        },
         value: {
             get () {
                 if (Array.isArray(this.param.value)) {

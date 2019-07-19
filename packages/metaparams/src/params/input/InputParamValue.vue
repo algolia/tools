@@ -11,7 +11,7 @@
         :value="value"
         :search-params="{
             hitsPerPage: 8,
-            filters: `type:value AND param_name:${inputKey}`,
+            filters: `type:value AND param_name:'${inputKey}'`,
         }"
     />
 </template>

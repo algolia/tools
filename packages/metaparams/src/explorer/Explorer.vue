@@ -144,6 +144,12 @@
                     highlightPostTag: '</em>',
                 };
 
+                const optionalWordsQuery = this.searchParamsRaw['optionalWords=query'];
+
+                if (optionalWordsQuery && optionalWordsQuery.enabled && optionalWordsQuery.value) {
+                    forcedParams['optionalWords'] = this.searchParams.query || this.query;
+                }
+
                 return Object.assign(nonForcedparams, this.searchParams, forcedParams);
             },
             rankingInfoAnalyzer: function () {

@@ -116,7 +116,7 @@ export default {
             const algoliaParams = {};
 
             Object.keys(params).forEach(function (key) {
-                if (params[key].enabled) {
+                if (params[key].enabled && key !== 'optionalWords=query') {
                     algoliaParams[key] = params[key].value;
                 }
             });
