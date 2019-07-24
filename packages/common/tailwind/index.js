@@ -679,7 +679,7 @@ module.exports = {
         negativeMargin: ['responsive'],
         opacity: ['responsive', 'hover', 'group-hover'],
         outline: ['focus'],
-        overflow: ['responsive'],
+        overflow: ['responsive', 'hover'],
         padding: ['responsive'],
         pointerEvents: ['responsive'],
         position: ['responsive'],

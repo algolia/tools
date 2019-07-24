@@ -15,7 +15,7 @@
                     class="flex flex-wrap text-cosmos-black-opacity-70"
                 >
                     <span
-                        class="truncate px-2 mr-1"
+                        class="truncate hover:overflow-visible px-2 mr-1"
                         :style="criterion.val !== criterion.oldVal ? 'background: rgba(84, 104, 255, 0.1); color: #5468ff;' : ''"
                     >
                         {{criterion.val}}
