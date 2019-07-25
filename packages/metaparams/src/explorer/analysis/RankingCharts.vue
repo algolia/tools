@@ -141,9 +141,9 @@
                         yAxes: [{
                             ticks: {
                                 beginAtZero: ['typo', 'words', 'proximity', 'attribute', 'position', 'exact', 'filters'].indexOf(criterion) !== -1,
-                                stepSize: ['typo', 'words', 'proximity', 'attribute', 'exact', 'filters'].indexOf(criterion) !== -1 ? 1 : null,
-                                max: criterion === 'attribute' ? this.searchableAttributes.length - 1 : null,
-                                precision: criterion === 'position' ? 0 : null,
+                                stepSize: ['typo', 'words', 'proximity', 'attribute', 'exact', 'filters'].indexOf(criterion) !== -1 ? 1 : undefined,
+                                max: criterion === 'attribute' ? this.searchableAttributes.length - 1 : undefined,
+                                precision: criterion === 'position' ? 0 : undefined,
                                 callback: (value) => {
                                     if (criterion === 'attribute') {
                                         return this.searchableAttributes[this.searchableAttributes.length - 1 - value];

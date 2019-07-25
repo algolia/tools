@@ -19,7 +19,7 @@ export function get(obj, path, def) {
     let current = obj;
 
     for (let i = 0; i < path.length; i++) {
-        if (!current[path[i]]) return def;
+        if (current[path[i]] === undefined) return def;
         current = current[path[i]];
 
         if (Array.isArray(current)) {
