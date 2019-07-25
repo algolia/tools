@@ -31,6 +31,7 @@
                 <attributes
                     v-if="listMode"
                     :top-attributes="topAttributes"
+                    :searchable-attributes="searchableAttributes"
                     :item="transformedItem"
                 />
                 <ranking-info
@@ -123,7 +124,7 @@
             Tooltip,
             HitImage, HitDelete, HitEdit, RankingInfo, Attributes, EditIcon, TrashIcon, FlipLeftIcon, FlipRightIcon, MaximizeIcon, MinimizeIcon},
         mixins: [indexInfoMixin],
-        props: ['algoliaResponse', 'panelKey', 'topAttributes', 'hit', 'previousHit', 'hitPosition', 'displayMode', 'recordCanJump', 'titleAttribute'],
+        props: ['algoliaResponse', 'panelKey', 'topAttributes', 'searchableAttributes', 'hit', 'previousHit', 'hitPosition', 'displayMode', 'recordCanJump', 'titleAttribute'],
         data: function () {
             return {
                 confirmDelete: false,

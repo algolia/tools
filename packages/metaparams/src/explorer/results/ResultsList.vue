@@ -22,6 +22,7 @@
                      :algolia-response="algoliaResponse"
                      :panel-key="panelKey"
                      :top-attributes="topAttributes"
+                     :searchable-attributes="searchableAttributes"
                      :display-mode="displayMode"
                      :record-can-jump="recordCanJump"
                      :title-attribute="titleAttribute"
@@ -106,13 +107,18 @@
 
                 return !panelIndexData.refIndexSettings.primary;
             },
-            topAttributes: function () {
-                const topAttributes = ['objectID', this.titleAttribute];
+            searchableAttributes: function () {
                 const searchableAttributes = this.refIndexSettings.searchableAttributes || this.refIndexSettings.attributesToIndex || [];
 
                 if (searchableAttributes.length === 0) return [];
 
-                if (this.$store.state.panels.showSearchableAttributes) topAttributes.push(...this.getAllSearchableAttributes(searchableAttributes));
+                return this.getAllSearchableAttributes(searchableAttributes).map(cleanAttributeName).map(cleanDeepAttributeName);
+            },
+            topAttributes: function () {
+                const topAttributes = ['objectID', this.titleAttribute];
+
+
+                if (this.$store.state.panels.showSearchableAttributes) topAttributes.push(...this.searchableAttributes);
                 if (this.$store.state.panels.showCustomRanking) topAttributes.push(...(this.refIndexSettings.customRanking || []))
                 if (this.$store.state.panels.showAttributesForFaceting) topAttributes.push(...this.attributesForFaceting);
 

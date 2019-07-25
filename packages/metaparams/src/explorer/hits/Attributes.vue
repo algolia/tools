@@ -18,7 +18,7 @@
     export default {
         name: 'Attributes',
         components: {Attribute},
-        props: ['topAttributes', 'item'],
+        props: ['topAttributes', 'searchableAttributes', 'item'],
         data: function () {
             return {
                 isCollapsed: true,
@@ -40,7 +40,8 @@
             uncollapsedAttributes: function () {
                 if (this.$store.state.panels.showOnlyMatchingAttributes) {
                     return this.keys.filter((key) => {
-                        return key === 'objectID' || this.item[key]._b_;
+                        if (this.searchableAttributes.indexOf(key) !== -1) return this.item[key]._b_;
+                        return true;
                     });
                 }
 
