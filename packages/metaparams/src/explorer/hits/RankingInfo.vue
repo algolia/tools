@@ -3,18 +3,16 @@
         <div class="w-128 text-right mb-8 uppercase tracking-wide text-xs text-nova-grey">
             Ranking Info
         </div>
-        <div class="flex">
-            <div class="w-128 text-right">
-                <div v-for="criterion in criteria" class="truncate">
+        <div>
+            <div
+                v-for="criterion in criteria"
+                class="flex text-cosmos-black-opacity-70"
+            >
+                <div class="w-128 text-right truncate">
                     {{criterion.label}}
                 </div>
-            </div>
-            <div class="ml-12" style="width: calc(100% - 140px)">
-                <div
-                    v-for="criterion in criteria"
-                    class="flex flex-wrap text-cosmos-black-opacity-70"
-                >
-                    <span
+                <div class="ml-12 flex flex-wrap" style="width: calc(100% - 140px)">
+                    <div
                         class="truncate hover:overflow-visible px-2 mr-1"
                         :style="criterion.val !== criterion.oldVal ? 'background: rgba(84, 104, 255, 0.1); color: #5468ff;' : ''"
                     >
@@ -23,13 +21,13 @@
                                 (rankingScore: {{item._rankingInfo.personalization.rankingScore}},
                                 filtersScore: {{item._rankingInfo.personalization.filtersScore}})
                         </span>
-                    </span>
-                    <span
+                    </div>
+                    <div
                         v-if="i > 0 && criterion.val !== criterion.oldVal"
-                        class="truncate"
+                        class="truncate hover:overflow-visible"
                     >
                         <span class="text-sm">was</span> {{criterion.oldVal}}
-                    </span>
+                    </div>
                 </div>
             </div>
         </div>
