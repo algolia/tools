@@ -6,7 +6,7 @@
             </div>
             <div class="ml-auto w-8 h-8 leading-none flex items-center justify-center cursor-pointer" @click="open = !open">
                 <chevron-down-icon
-                    :class="`flex-no-grow w-8 h-8 flex-no-shrink block fill-current ${open ? '' : 'rotate-180'}`"
+                    :class="`flex-grow-0 w-8 h-8 flex-shrink-0 block fill-current ${open ? '' : 'rotate-180'}`"
                 />
             </div>
         </div>

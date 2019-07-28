@@ -3,14 +3,14 @@
         <div v-if="isArray || isObject">
             <div v-if="isArray">
                 <div class="flex relative">
-                    <div v-if="canExand" class="absolute pin-l -ml-12 cursor-pointer" @click="collapsed = !collapsed">{{collapsed ? '+' : '-'}}</div>
+                    <div v-if="canExand" class="absolute left-0 -ml-12 cursor-pointer" @click="collapsed = !collapsed">{{collapsed ? '+' : '-'}}</div>
                     <div v-if="parentKey" class="mr-4">{{parentKey}}:</div>
                     <div v-if="!isCollapsed">[</div>
                     <div v-if="isCollapsed" v-html="highlightedValue" class="whitespace-pre truncate"></div>
                 </div>
                 <div v-if="!isCollapsed" class="ml-36">
                     <div v-for="(elt, index) in item._v_" class="relative">
-                        <div class="absolute pin-l -ml-32 text-proton-grey">[{{index}}]</div>
+                        <div class="absolute left-0 -ml-32 text-proton-grey">[{{index}}]</div>
                         <attribute  :item="elt" />
                     </div>
                 </div>
@@ -18,7 +18,7 @@
             </div>
             <div v-if="isObject">
                 <div class="flex relative">
-                    <div v-if="canExand" class="absolute pin-l -ml-12 cursor-pointer" @click="collapsed = !collapsed">{{collapsed ? '+' : '-'}}</div>
+                    <div v-if="canExand" class="absolute left-0 -ml-12 cursor-pointer" @click="collapsed = !collapsed">{{collapsed ? '+' : '-'}}</div>
                     <div v-if="parentKey" class="mr-4">{{parentKey}}:</div>
                     <div v-if="!isCollapsed">{</div>
                     <div v-if="isCollapsed" v-html="highlightedValue" class="whitespace-pre truncate"></div>
@@ -39,7 +39,7 @@
         </div>
         <div v-if="isString">
             <div class="flex relative">
-                <div v-if="isLong" class="absolute pin-l -ml-12 cursor-pointer" @click="collapsed = !collapsed">{{collapsed ? '+' : '-'}}</div>
+                <div v-if="isLong" class="absolute left-0 -ml-12 cursor-pointer" @click="collapsed = !collapsed">{{collapsed ? '+' : '-'}}</div>
                 <div v-if="parentKey" class="mr-4">{{parentKey}}:</div>
                 <div v-if="collapsed" v-html="highlightedValue" class="whitespace-pre truncate"></div>
                 <div v-if="!collapsed" class="json-token string break-words w-full"><span v-html="rawStringValue"></span></div>

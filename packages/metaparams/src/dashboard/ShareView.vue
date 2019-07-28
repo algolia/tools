@@ -33,7 +33,7 @@
 <script>
     import CloseIcon from "common/icons/x.svg";
 
-    import stateReducer from "@/store/stateReducer";
+    import stateReducer from "common/store/stateReducer";
 
     import copy from 'copy-to-clipboard';
 

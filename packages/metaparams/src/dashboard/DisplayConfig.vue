@@ -1,7 +1,7 @@
 <template>
     <div class="w-full">
         <div class="flex text-telluric-blue text-sm">
-            <div class="mr-48" v-if="Object.keys($store.state.apps).length > 0">
+            <div class="ml-48 mr-48" v-if="Object.keys($store.state.apps).length > 0">
                 <div class="mb-8">
                     <h4>Hits Display</h4>
                 </div>

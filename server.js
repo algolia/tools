@@ -2,6 +2,7 @@
 var express = require('express');
 var serveStatic = require('serve-static');
 app = express();
+app.use('/api-logs', serveStatic(__dirname + "/packages/api-logs/dist"));
 app.use('/metaparams', serveStatic(__dirname + "/packages/metaparams/dist"));
 app.use('/index-manager', serveStatic(__dirname + "/packages/index-manager/dist"));
 var port = process.env.PORT || 80;

@@ -7,7 +7,7 @@
                 v-if="configKey === 'indexSettings' && isIndexSettingsDirty"
                 class="ml-8 cursor-pointer text-solstice-blue"
                 @click="$store.commit(`${panelIndexCommitPrefix}/resetIndexSettings`)"
-                :class="`flex-no-grow w-12 h-12 flex-no-shrink block ${open ? '' : 'rotate-180'}`"
+                :class="`flex-grow-0 w-12 h-12 flex-shrink-0 block ${open ? '' : 'rotate-180'}`"
             />
             <tooltip :position="panelKey === 'leftPanel' ? 'center' : 'right'">
                 Cancel all changes
@@ -18,7 +18,7 @@
                 class="ml-8 cursor-pointer text-solstice-blue"
                 v-if="panelKey === 'leftPanel' && paramsCamJump"
                 @click="$store.commit('panels/jumpParams', {panelKey, configKey})"
-                :class="`flex-no-grow w-12 h-12 flex-no-shrink block`"
+                :class="`flex-grow-0 w-12 h-12 flex-shrink-0 block`"
             />
             <tooltip :position="panelKey === 'leftPanel' ? 'center' : 'right'">
                 Apply all {{ configKey !== 'indexSettings' ? 'search params': 'index settings'}} in the right panel index.
@@ -29,7 +29,7 @@
                 class="ml-8 cursor-pointer text-solstice-blue"
                 v-if="panelKey === 'rightPanel' && paramsCamJump"
                 @click="$store.commit('panels/jumpParams', {panelKey, configKey})"
-                :class="`flex-no-grow w-12 h-12 flex-no-shrink block`"
+                :class="`flex-grow-0 w-12 h-12 flex-shrink-0 block`"
             />
             <tooltip :position="panelKey === 'leftPanel' ? 'center' : 'right'">
                 Apply all {{ configKey !== 'indexSettings' ? 'search params': 'index settings'}} in the left panel index.
@@ -40,7 +40,7 @@
                 class="ml-8 cursor-pointer text-solstice-blue"
                 v-if="keys.length > 0"
                 @click="$store.commit('panels/clearParams', {panelKey, configKey})"
-                :class="`flex-no-grow w-12 h-12 flex-no-shrink block`"
+                :class="`flex-grow-0 w-12 h-12 flex-shrink-0 block`"
             />
             <tooltip :position="panelKey === 'leftPanel' ? 'center' : 'right'">
                 {{ configKey !== 'indexSettings' ? 'Remove': 'Delete'}}
@@ -52,7 +52,7 @@
             <chevron-down-icon
                 class="text-telluric-blue ml-24 w-8 h-8 cursor-pointer"
                 @click="$emit('onSetOpen', !open)"
-                :class="`flex-no-grow w-8 h-8 flex-no-shrink block ${open ? '' : 'rotate-180'}`"
+                :class="`flex-grow-0 w-8 h-8 flex-shrink-0 block ${open ? '' : 'rotate-180'}`"
             />
         </button>
     </div>

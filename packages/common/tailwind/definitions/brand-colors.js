@@ -22,6 +22,7 @@ module.exports = {
   'jupiter-3': '#89d9d3',
   'jupiter-4': '#b0ecde',
   'jupiter-5': '#d7ffe9',
+  'jupiter-6': '#5dc56c',
   'saturn-1': '#ec8b63',
   'saturn-2': '#f3a57e',
   'saturn-3': '#f8be9a',

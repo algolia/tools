@@ -19,23 +19,22 @@ class Operation {
 const operations = [
     new Operation('GET', '/1/isalive', () => 'Is alive'),
     new Operation('GET', '/1/logs', () => 'Get logs'),
-    new Operation('GET', '/1/indexes/:idx/task/:id', () => 'Get task status'),
+    new Operation('GET', '/1/indexes/:idx/task/:id', (logItem, idx, id) => `Get <code>status of task</code> ${id} for index <code>${idx}</code>`),
     new Operation('GET', '/1/version', () => 'Get version of the engine'),
 
-    new Operation('POST', '/1/recommendation/personalization/strategy', () => 'set personalisation strategy'),
-    new Operation('GET', '/1/recommendation/personalization/users/:userID', () => 'get user profile'),
+    new Operation('GET', '/1/recommendation/personalization/strategy', () => '<code>Get perso strategy</code>'),
+    new Operation('POST', '/1/recommendation/personalization/strategy', () => '<code>Set perso strategy</code>'),
+    new Operation('GET', '/1/recommendation/personalization/users/:userID', (logItem, userID) => `<code>get perso profile</code> of user <code>${userID}</code>`),
 
     new Operation('PUT', '/1/keys/:key', () => 'Update API key'),
     new Operation('POST', '/1/keys/:key/restore', () => 'Restore API key'),
-    new Operation('GET', '/1/keys', () => 'List API keys'),
+    new Operation('GET', '/1/keys', () => '<code>List API keys</code>'),
     new Operation('POST', '/1/keys', () => 'Add API key'),
     new Operation('DELETE', '/1/keys/:key', () => 'Delete API key'),
     new Operation('GET', '/1/keys/:key', () => 'Get API key'),
 
     new Operation('POST', '/1/indexes/:idx/keys', () => 'Add index API key'),
-    new Operation('GET', '/1/indexes/:idx/keys', (logItem, idx) => {
-        return `List index API keys for index ${idx}`;
-    }),
+    new Operation('GET', '/1/indexes/:idx/keys', (logItem, idx) => `<code>List index API keys</code> for index <code>${idx}</code>`),
     new Operation('GET', '/1/indexes/:idx/keys/:key', () => 'Get index API key'),
     new Operation('PUT', '/1/indexes/:idx/keys/:key', () => 'Update index API key'),
     new Operation('DELETE', '/1/indexes/:idx/keys/:key', () => 'Delete index API key'),
@@ -56,11 +55,15 @@ const operations = [
     new Operation('GET', '/1/clusters/mapping/:userID', () => 'Get userID'),
 
     new Operation('GET', '/1/indexes/:idx/settings', () => 'Get settings'),
-    new Operation('PUT', '/1/indexes/:idx/settings', () => 'Set settings'),
+    new Operation('PUT', '/1/indexes/:idx/settings', (logItem, idx) => {
+        return `<code>Set settings</code> for index <code>${idx}</code>`;
+    }),
 
     new Operation('POST', '/1/indexes/*/objects', () => 'Multiple Get objects'),
     new Operation('POST', '/1/indexes/:idx/clear', () => 'Clear objects'),
-    new Operation('POST', '/1/indexes/:idx/batch', () => 'Batch objects'),
+    new Operation('POST', '/1/indexes/:idx/batch', (logItem, idx) => {
+        return `<code>Batch</code> ${logItem.nb_operations} objects in index <code>${idx}</code>`;
+    }),
     new Operation('POST', '/1/indexes/:idx/deleteByQuery', () => 'Delete by query'),
     new Operation('POST', '/1/indexes/:idx/:id/partial', () => 'Partial update object'),
 
@@ -82,14 +85,14 @@ const operations = [
     new Operation('PUT', '/1/indexes/:idx/rules/:id', () => 'Put rule'),
 
     new Operation('POST', '/1/indexes/:idx/query', (logItem, idx) => {
-        const query = logItem.params.query.length > 0 ? logItem.params.query : '<empty>';
-        return `Search objects containing "${query}" in index "${idx}"`;
+        const query = logItem.params.all.query && logItem.params.all.query.length > 0 ? logItem.params.all.query : '&lt;empty&gt;';
+        return `<code>Search</code> in index <code>${idx}</code> for objects containing <code>"${query}"</code>`;
     }),
     new Operation('POST', '/1/indexes/*/queries', (logItem) => {
-        const queryBody = JSON.parse(logItem.query_body);
-        const indices = queryBody.requests.map((r) => r.indexName);
+        const indices = logItem.params.bodies.map((r) => r.indexName);
+        const queries = logItem.params.bodies.map((r) => r.params.query || '').filter((q) => q.length > 0);
 
-        return `Search objects in multiple indices: ${indices.join(', ')}`
+        return `<code>Search</code> in indices ${indices.map((index) => `<code>${index}</code>`).join(', ')} for objects containing ${queries.map((q) => `<code>${q}</code>`).join(', ')}`;
     }),
     new Operation('POST', '/1/indexes/:idx/analyze', () => 'Analyse index'),
     new Operation('POST', '/1/indexes/:idx/browse', () => 'Browse records'),

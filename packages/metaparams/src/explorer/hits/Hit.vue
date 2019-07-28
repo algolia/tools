@@ -1,7 +1,7 @@
 <template>
     <div class="hit mt-24 relative max-w-full" :class="expandImage ? 'w-full' : ''" @mousemove="expandable = true" @mouseleave="expandable = false">
         <div class="px-32 min-h-56">
-            <div :id="`${panelKey}-${hitNumber}`" class="absolute pin-t pin-l">
+            <div :id="`${panelKey}-${hitNumber}`" class="absolute top-0 left-0">
                 <div class="h-24 w-24 bg-proton-grey-opacity-40 rounded text-center leading-normal">
                     {{hitNumber}}
                 </div>

@@ -1,41 +1,68 @@
 import findOperation from "@/api-logs/findOperation";
 
-
 const extractQueryParams = function (rawLog) {
-    const params = {};
+    const params = {
+        bodies: [],
+        rawBody: null,
+        url: {},
+        headers: {},
+        all: {},
+    };
 
     if (rawLog.query_body && rawLog.query_body.length > 0) {
-        const paramsJSON = JSON.parse(rawLog.query_body);
-        let paramsRaw = paramsJSON.params;
-
-        if (paramsJSON.requests) {
-            paramsRaw = paramsJSON.requests[0].params;
+        let paramsJSON;
+        try {
+            paramsJSON = JSON.parse(rawLog.query_body);
+        } catch (e) {
+            params.rawBody = rawLog.query_body;
         }
 
-        paramsRaw.split('&').forEach((e) => {
-            const parts = e.split('=');
-            params[parts[0]] = parts[1];
-        });
+        let requests = [];
+        if (paramsJSON.requests) requests = paramsJSON.requests;
+        if (paramsJSON.params) requests = [paramsJSON];
+
+        if (requests.length > 0) {
+            requests.forEach((r) => {
+                const body = {...r};
+
+                if (body.params) {
+                    const params2 = {};
+                    body.params.split('&').forEach((e) => {
+                        const parts = e.split('=');
+                        params2[parts[0]] = parts[1];
+                        params.all[parts[0]] = parts[1];
+                    });
+                    body.params = params2;
+                    params.bodies.push(body);
+                } else {
+                    params.rawBody = JSON.stringify(paramsJSON, null, 2);
+                }
+            });
+        } else {
+            if (paramsJSON && typeof paramsJSON === 'object' && paramsJSON.constructor === Object && paramsJSON.query) {
+                Object.keys(paramsJSON).forEach((k) => {
+                    params.all[k] = paramsJSON[k];
+                });
+                params.bodies.push(paramsJSON);
+            } else {
+                params.rawBody = JSON.stringify(paramsJSON, null, 2);
+            }
+        }
     }
 
-    if (rawLog.query_params) {
-        rawLog.query_params.split('&').forEach((e) => {
+    const urlsParts = rawLog.url.split('?');
+    if (urlsParts.length > 1) {
+        urlsParts[1].split('&').forEach((e) => {
             const parts = e.split('=');
-            params[parts[0]] = parts[1];
+            params.url[parts[0]] = parts[1];
+            params.all[parts[0]] = parts[1];
         });
     }
-
-    const urlParts = rawLog.url.split('?');
-    const urlsParams = urlParts.length > 0 ? urlParts[1]: '';
-
-    urlsParams.split('&').forEach((e) => {
-        const parts = e.split('=');
-        params[parts[0]] = parts[1];
-    });
 
     rawLog.query_headers.trim().split("\n").map((e) => {
         const parts = e.split(': ');
-        params[parts[0]] = parts[1];
+        params.headers[parts[0]] = parts[1];
+        params.all[parts[0]] = parts[1];
     });
 
     return params;

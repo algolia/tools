@@ -2,7 +2,7 @@
     <div class="relative h-100 w-256">
         <pre v-html="parsedValue"
              ref="pre"
-             class="filter overflow-y-auto whitespace-pre-wrap absolute pin-t block w-full h-full bg-white text-telluric-blue resize-none shadow-none outline-none p-0 border-none font-mono text-base"
+             class="filter overflow-y-auto whitespace-pre-wrap absolute top-0 block w-full h-full bg-white text-telluric-blue resize-none shadow-none outline-none p-0 border-none font-mono text-base"
         ></pre>
         <textarea
                 ref="input"
@@ -13,7 +13,7 @@
                 @scroll="$refs.pre.scrollTop = $refs.input.scrollTop"
                 @blur="inputState.setInput('none')"
                 spellcheck="false"
-                class="input absolute pin-t block w-full h-full bg-transparent text-transparent caret-color-cosmos-black resize-none shadow-none outline-none p-0 border-none font-mono text-base"
+                class="input absolute top-0 block w-full h-full bg-transparent text-transparent caret-color-cosmos-black resize-none shadow-none outline-none p-0 border-none font-mono text-base"
         />
     </div>
 </template>

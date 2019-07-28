@@ -5,7 +5,8 @@ module.exports = ({ file, options, env }) => {
   const baseConfig = [
       tailwindcss(tailwindConfig),
       require('autoprefixer')(),
-  ]
+  ];
+
   const prodConfig = [
     require('@fullhuman/postcss-purgecss')({
       content: ['./src/**/*.vue'],

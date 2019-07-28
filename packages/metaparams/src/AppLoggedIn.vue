@@ -1,8 +1,10 @@
 <template>
     <div class="overflow-hidden flex flex-col" v-if="!loadingSharingLink">
-        <app-header />
+        <app-header app-name="Metaparams">
+            <display-config class="mx-16 mt-0"/>
+        </app-header>
         <share-view v-if="$store.state.panels.shareStatePanel" />
-        <app-management v-if="$store.state.panels.manageAppsPanel || Object.keys($store.state.apps).length <= 0" />
+        <app-management />
         <div class="w-full">
             <search-box
                 class="mt-16 mx-16 lg:mx-auto xl:mx-auto lg:max-w-half xl:max-w-half"
@@ -72,21 +74,22 @@
 
 <script>
     import Dashboard from "@/dashboard/Dashboard";
-    import AppHeader from "@/AppHeader";
+    import AppHeader from "common/components/header/AppHeader";
+    import AppManagement from "common/components/configuration/AppManagement";
+    import DisplayConfig from "@/dashboard/DisplayConfig";
     import CompareHits from "@/explorer/compare/CompareHits";
 
     import SplitIcon from "common/icons/split.svg";
     import CompareIcon from "common/icons/compare.svg";
     import BarChartIcon from 'common/icons/bar-chart.svg'
-    import AppManagement from "@/dashboard/AppManagement";
     import ShareView from "@/dashboard/ShareView";
     import SearchBox from "@/dashboard/SearchBox";
 
     export default {
         name: "AppLoggedIn",
         components: {
-            SearchBox,
-            ShareView, AppManagement, CompareHits, AppHeader, Dashboard, SplitIcon, CompareIcon, BarChartIcon},
+            SearchBox, DisplayConfig,
+            ShareView, CompareHits, AppHeader, Dashboard, SplitIcon, CompareIcon, BarChartIcon, AppManagement},
         data: function () {
             return {
                 loadingSharingLink: true,

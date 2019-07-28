@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import store from '@/store/store'
+import store from 'common/store/store'
 import App from '@/App.vue'
 import algoliasearch from 'algoliasearch';
 import VueInputAutowidth from 'vue-input-autowidth'
