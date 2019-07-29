@@ -26,38 +26,44 @@ const operations = [
     new Operation('POST', '/1/recommendation/personalization/strategy', () => '<code>Set perso strategy</code>'),
     new Operation('GET', '/1/recommendation/personalization/users/:userID', (logItem, userID) => `<code>get perso profile</code> of user <code>${userID}</code>`),
 
-    new Operation('PUT', '/1/keys/:key', () => 'Update API key'),
-    new Operation('POST', '/1/keys/:key/restore', () => 'Restore API key'),
+    new Operation('PUT', '/1/keys/:key', (logItem, key) => `<code>Update API key</code> ${key}`),
+    new Operation('POST', '/1/keys/:key/restore', (logItem, key) => `<code>Restore API key</code> ${key}`),
     new Operation('GET', '/1/keys', () => '<code>List API keys</code>'),
-    new Operation('POST', '/1/keys', () => 'Add API key'),
-    new Operation('DELETE', '/1/keys/:key', () => 'Delete API key'),
-    new Operation('GET', '/1/keys/:key', () => 'Get API key'),
-
-    new Operation('POST', '/1/indexes/:idx/keys', () => 'Add index API key'),
-    new Operation('GET', '/1/indexes/:idx/keys', (logItem, idx) => `<code>List index API keys</code> for index <code>${idx}</code>`),
-    new Operation('GET', '/1/indexes/:idx/keys/:key', () => 'Get index API key'),
-    new Operation('PUT', '/1/indexes/:idx/keys/:key', () => 'Update index API key'),
-    new Operation('DELETE', '/1/indexes/:idx/keys/:key', () => 'Delete index API key'),
-    new Operation('GET', '/1/indexes/*/keys', () => 'List index API keys for all indices'),
-
-    new Operation('GET', '/1/security/sources', () => 'List allowed sources'),
-    new Operation('DELETE', '/1/security/sources/:source', () => 'Delete one allowed source'),
-    new Operation('PUT', '/1/security/sources', () => 'Replace the list of allowed sources'),
-    new Operation('POST', '/1/security/sources/append', () => 'Add a source to the allowed sources'),
-
-    new Operation('POST', '/1/clusters/mapping', () => 'Assign userID to MCM cluster'),
-    new Operation('POST', '/1/clusters/mapping/search', () => 'Search userIDs'),
-    new Operation('GET', '/1/clusters', () => 'List MCM clusters'),
-    new Operation('GET', '/1/clusters/mapping/top', () => 'Get top userIDs'),
-    new Operation('GET', '/1/clusters/mapping/configuration', () => ''),
-    new Operation('GET', '/1/clusters/mapping', () => 'List userIDs'),
-    new Operation('DELETE', '/1/clusters/mapping', () => 'Delete userID'),
-    new Operation('GET', '/1/clusters/mapping/:userID', () => 'Get userID'),
-
-    new Operation('GET', '/1/indexes/:idx/settings', () => 'Get settings'),
-    new Operation('PUT', '/1/indexes/:idx/settings', (logItem, idx) => {
-        return `<code>Set settings</code> for index <code>${idx}</code>`;
+    new Operation('POST', '/1/keys', (logItem) => {
+        const response = JSON.parse(logItem.response);
+        const key = response.key ? ` ${response.key}` : '';
+        return `<code>Add API key</code>${key}`;
     }),
+    new Operation('DELETE', '/1/keys/:key', (logItem, key) => `<code>Delete API key</code> ${key}`),
+    new Operation('GET', '/1/keys/:key', (logItem, key) => `<code>Get API key</code> ${key}`),
+
+    new Operation('POST', '/1/indexes/:idx/keys', (logItem, idx) => {
+        const response = JSON.parse(logItem.response);
+        const key = response.key ? ` ${response.key}` : '';
+        return `<code>Add index (${idx}) API key</code>${key}`
+    }),
+    new Operation('GET', '/1/indexes/:idx/keys', (logItem, idx) => `<code>List index API keys</code> for index <code>${idx}</code>`),
+    new Operation('GET', '/1/indexes/:idx/keys/:key', (logItem, idx, key) => `<code>Get index (${idx}) API key</code> ${key}`),
+    new Operation('PUT', '/1/indexes/:idx/keys/:key', (logItem, idx, key) => `<code>Update index (${idx}) API key</code> ${key}`),
+    new Operation('DELETE', '/1/indexes/:idx/keys/:key', (logItem, idx, key) => `<code>Delete index (${idx}) API key</code> ${key}`),
+    new Operation('GET', '/1/indexes/*/keys', () => '<code>List index API keys</code> for index *'),
+
+    new Operation('GET', '/1/security/sources', () => '<code>List allowed sources</code>'),
+    new Operation('DELETE', '/1/security/sources/:source', () => '<code>Delete one allowed source</code>'),
+    new Operation('PUT', '/1/security/sources', () => '<code>Replace the list of allowed sources</code>'),
+    new Operation('POST', '/1/security/sources/append', () => '<code>Add a source to the allowed sources</code>'),
+
+    new Operation('POST', '/1/clusters/mapping', () => '<code>Assign userID to MCM cluster</code>'),
+    new Operation('POST', '/1/clusters/mapping/search', () => '<code>Search userIDs</code>'),
+    new Operation('GET', '/1/clusters', () => '<code>List MCM clusters</code>'),
+    new Operation('GET', '/1/clusters/mapping/top', () => '<code>Get top userIDs</code>'),
+    //new Operation('GET', '/1/clusters/mapping/configuration', () => '<code></code>'),
+    new Operation('GET', '/1/clusters/mapping', () => '<code>List userIDs</code>'),
+    new Operation('DELETE', '/1/clusters/mapping', () => '<code>Delete userID</code>'),
+    new Operation('GET', '/1/clusters/mapping/:userID', (logItem, userID) => `<code>Get userID</code> <code>${userID}</code>`),
+
+    new Operation('GET', '/1/indexes/:idx/settings', (logItem, idx) => `<code>Get settings</code> for index <code>${idx}</code>`),
+    new Operation('PUT', '/1/indexes/:idx/settings', (logItem, idx) => `<code>Set settings</code> for index <code>${idx}</code>`),
 
     new Operation('POST', '/1/indexes/*/objects', () => 'Multiple Get objects'),
     new Operation('POST', '/1/indexes/:idx/clear', () => 'Clear objects'),

@@ -36,10 +36,10 @@
                 <div class="flex">
                     <div class="w-half pr-48">
                         <div v-if="logItem.params.bodies.length === 0">
-                            <h4  class="p-8">
-                                Body
-                            </h4>
-                            <div class="border-t border-proton-grey-opacity-50 p-8">
+                            <h4  class="p-8">Body</h4>
+                            <div
+                                v-if="!logItem.params.rawBody || logItem.params.rawBody.length === 0"
+                                class="border-t border-proton-grey-opacity-50 p-8">
                                 No body
                             </div>
                         </div>
@@ -62,7 +62,7 @@
                                 </tr>
                             </table>
                         </div>
-                        <div v-if="logItem.params.rawBody">
+                        <div v-if="logItem.params.rawBody" class="p-8">
                             <pre>{{logItem.params.rawBody}}</pre>
                         </div>
                     </div>
