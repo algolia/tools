@@ -8,7 +8,7 @@ module.exports = ({file, options, env}) => {
     ]
     const prodConfig = [
         require('@fullhuman/postcss-purgecss')({
-            content: ['./src/**/*.vue'],
+            content: ['./src/**/*.vue', '../common/**/*.vue'],
             extractors: [
                 {
                     extractor: class {
