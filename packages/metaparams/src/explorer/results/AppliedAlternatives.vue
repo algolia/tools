@@ -60,7 +60,7 @@
                     }
 
                     return this.originalTypes.indexOf(alternative.type) !== -1;
-                });
+                }).sort((a, b) => a.offset - b.offset);
             },
             getRows: function () {
                 const rows = [];
