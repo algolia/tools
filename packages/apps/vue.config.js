@@ -1,7 +1,7 @@
 const path = require('path');
 
 module.exports = {
-    publicPath: 'api-logs',
+    publicPath: 'apps',
     chainWebpack: config => {
         const svgRule = config.module.rule("svg");
         svgRule.uses.clear();

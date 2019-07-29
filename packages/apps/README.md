@@ -1,4 +1,4 @@
-# api-logs
+# Logs
 
 ## Project setup
 ```
