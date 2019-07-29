@@ -66,29 +66,27 @@ const operations = [
     new Operation('PUT', '/1/indexes/:idx/settings', (logItem, idx) => `<code>Set settings</code> for index <code>${idx}</code>`),
 
     new Operation('POST', '/1/indexes/*/objects', () => 'Multiple Get objects'),
-    new Operation('POST', '/1/indexes/:idx/clear', () => 'Clear objects'),
-    new Operation('POST', '/1/indexes/:idx/batch', (logItem, idx) => {
-        return `<code>Batch</code> ${logItem.nb_operations} objects in index <code>${idx}</code>`;
-    }),
-    new Operation('POST', '/1/indexes/:idx/deleteByQuery', () => 'Delete by query'),
-    new Operation('POST', '/1/indexes/:idx/:id/partial', () => 'Partial update object'),
+    new Operation('POST', '/1/indexes/:idx/clear', (logItem, idx) => `<code>Clear objects</code> for index <code>${idx}</code>`),
+    new Operation('POST', '/1/indexes/:idx/batch', (logItem, idx) => `<code>Batch</code> ${logItem.nb_operations} objects in index <code>${idx}</code>`),
+    new Operation('POST', '/1/indexes/:idx/deleteByQuery', (logItem, idx) => `<code>Delete by query</code> for index <code>${idx}</code>`),
+    new Operation('POST', '/1/indexes/:idx/:id/partial', (logItem, idx, id) => `<code>Partial update object</code> ${id} for index <code>${idx}</code>`),
 
-    new Operation('POST', '/1/indexes/:idx/operation', () => 'Copy/Move index'),
+    new Operation('POST', '/1/indexes/:idx/operation', (logItem, idx) => `<code>Copy/Move index</code> ${idx}`),
     new Operation('GET', '/1/indexes', () => 'List indices'),
 
-    new Operation('DELETE', '/1/indexes/:idx/synonyms/:id', () => 'Delete synonyms'),
-    new Operation('POST', '/1/indexes/:idx/synonyms/clear', () => 'Clear synonyms'),
-    new Operation('POST', '/1/indexes/:idx/synonyms/batch', () => 'Batch synonyms'),
-    new Operation('POST', '/1/indexes/:idx/synonyms/search', () => 'Search synonyms'),
-    new Operation('GET', '/1/indexes/:idx/synonyms/:id', () => 'Get synonym'),
-    new Operation('PUT', '/1/indexes/:idx/synonyms/:id', () => 'Add/Update synonym'),
+    new Operation('DELETE', '/1/indexes/:idx/synonyms/:id', (logItem, idx, id) => `<code>Delete synonym</code> ${id} for index <code>${idx}</code>`),
+    new Operation('POST', '/1/indexes/:idx/synonyms/clear', (logItem, idx) => `<code>Clear synonyms</code> for index <code>${idx}</code>`),
+    new Operation('POST', '/1/indexes/:idx/synonyms/batch', (logItem, idx) => `<code>Batch ${logItem.nb_operations} synonyms</code> for index <code>${idx}</code>`),
+    new Operation('POST', '/1/indexes/:idx/synonyms/search', (logItem, idx) => `Search synonyms in index <code>${idx}</code>`),
+    new Operation('GET', '/1/indexes/:idx/synonyms/:id', (logItem, idx, id) => `<code>Get synonym</code> ${id} for index <code>${idx}</code>`),
+    new Operation('PUT', '/1/indexes/:idx/synonyms/:id', (logItem, idx, id) => `<code>Add/Update synonym</code> ${id} for index <code>${idx}</code>`),
 
-    new Operation('DELETE', '/1/indexes/:idx/rules/:id', () => 'Delete Rule'),
-    new Operation('POST', '/1/indexes/:idx/rules/batch', () => 'Batch rules'),
-    new Operation('POST', '/1/indexes/:idx/rules/clear', () => 'Clear rules'),
-    new Operation('POST', '/1/indexes/:idx/rules/search', () => 'Search rules'),
-    new Operation('GET', '/1/indexes/:idx/rules/:id', () => 'Get rule'),
-    new Operation('PUT', '/1/indexes/:idx/rules/:id', () => 'Put rule'),
+    new Operation('DELETE', '/1/indexes/:idx/rules/:id', (logItem, idx, id) => `<code>Delete rule</code> ${id} for index <code>${idx}</code>`),
+    new Operation('POST', '/1/indexes/:idx/rules/batch', (logItem, idx) => `<code>Batch ${logItem.nb_operations} rules</code> for index <code>${idx}</code>`),
+    new Operation('POST', '/1/indexes/:idx/rules/clear', (logItem, idx) => `<code>Clear rules</code> for index <code>${idx}</code>`),
+    new Operation('POST', '/1/indexes/:idx/rules/search', (logItem, idx) => `Search rules in index <code>${idx}</code>`),
+    new Operation('GET', '/1/indexes/:idx/rules/:id', (logItem, idx, id) => `<code>Get rule</code> ${id} for index <code>${idx}</code>`),
+    new Operation('PUT', '/1/indexes/:idx/rules/:id', (logItem, idx, id) => `<code>Add/Update rule</code> ${id} for index <code>${idx}</code>`),
 
     new Operation('POST', '/1/indexes/:idx/query', (logItem, idx) => {
         const query = logItem.params.all.query && logItem.params.all.query.length > 0 ? logItem.params.all.query : '&lt;empty&gt;';
@@ -100,21 +98,21 @@ const operations = [
 
         return `<code>Search</code> in indices ${indices.map((index) => `<code>${index}</code>`).join(', ')} for objects containing ${queries.map((q) => `<code>${q}</code>`).join(', ')}`;
     }),
-    new Operation('POST', '/1/indexes/:idx/analyze', () => 'Analyse index'),
-    new Operation('POST', '/1/indexes/:idx/browse', () => 'Browse records'),
-    new Operation('GET', '/1/indexes/:idx/browse', () => 'Browse records'),
-    new Operation('POST', '/1/indexes/:idx/facets/:facet/query', () => 'Search for facet values'),
+    new Operation('POST', '/1/indexes/:idx/analyze', (logItem, idx) => `<code>Analyse index</code> <code>${idx}</code>`),
+    new Operation('POST', '/1/indexes/:idx/browse', (logItem, idx) => `Browse records for index <code>${idx}</code>`),
+    new Operation('GET', '/1/indexes/:idx/browse', (logItem, idx) => `Browse records for index <code>${idx}</code>`),
+    new Operation('POST', '/1/indexes/:idx/facets/:facet/query', (logItem, idx, facet) => `<code>Search for facet values</code> <code>${facet}</code> in index <code>${idx}</code>`),
     new Operation('GET', '/1/indexes/*', () => 'Multiple search queries'),
 
 
-    new Operation('DELETE', '/1/indexes/:idx/:id', () => 'Delete Object'),
-    new Operation('DELETE', '/1/indexes/:idx', () => 'Delete index'),
+    new Operation('DELETE', '/1/indexes/:idx/:id', (logItem, idx, id) => `<code>Delete object</code> ${id} in index <code>${idx}</code>`),
+    new Operation('DELETE', '/1/indexes/:idx', (logItem, idx) => `<code>Delete index</code> <code>${idx}</code>`),
 
-    new Operation('GET', '/1/indexes/:idx/:id', () => 'Get Object'),
-    new Operation('GET', '/1/indexes/:idx', () => 'Search objects in index'),
+    new Operation('GET', '/1/indexes/:idx/:id', (logItem, idx, id) => `<code>Get object</code> ${id} in index <code>${idx}</code>`),
+    new Operation('GET', '/1/indexes/:idx', (logItem, idx) => `Search objects in index <code>${idx}</code>`),
 
-    new Operation('PUT', '/1/indexes/:idx/:id', () => 'Update object'),
-    new Operation('POST', '/1/indexes/:idx', () => 'Add/update object'),
+    new Operation('PUT', '/1/indexes/:idx/:id', (logItem, idx, id) => `<code>Update object</code> ${id} in index <code>${idx}</code>`),
+    new Operation('POST', '/1/indexes/:idx', (logItem, idx) => `<code>Add/update object</code> in index <code>${idx}</code>`),
 ];
 
 export default function (logItem) {
