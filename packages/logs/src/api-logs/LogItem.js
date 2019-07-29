@@ -17,35 +17,37 @@ const extractQueryParams = function (rawLog) {
             params.rawBody = rawLog.query_body;
         }
 
-        let requests = [];
-        if (paramsJSON.requests) requests = paramsJSON.requests;
-        if (paramsJSON.params) requests = [paramsJSON];
+        if (paramsJSON) {
+            let requests = [];
+            if (paramsJSON.requests) requests = paramsJSON.requests;
+            if (paramsJSON.params) requests = [paramsJSON];
 
-        if (requests.length > 0) {
-            requests.forEach((r) => {
-                const body = {...r};
+            if (requests.length > 0) {
+                requests.forEach((r) => {
+                    const body = {...r};
 
-                if (body.params) {
-                    const params2 = {};
-                    body.params.split('&').forEach((e) => {
-                        const parts = e.split('=');
-                        params2[parts[0]] = parts[1];
-                        params.all[parts[0]] = parts[1];
+                    if (body.params) {
+                        const params2 = {};
+                        body.params.split('&').forEach((e) => {
+                            const parts = e.split('=');
+                            params2[parts[0]] = parts[1];
+                            params.all[parts[0]] = parts[1];
+                        });
+                        body.params = params2;
+                        params.bodies.push(body);
+                    } else {
+                        params.rawBody = JSON.stringify(paramsJSON, null, 2);
+                    }
+                });
+            } else {
+                if (paramsJSON && typeof paramsJSON === 'object' && paramsJSON.constructor === Object && paramsJSON.query) {
+                    Object.keys(paramsJSON).forEach((k) => {
+                        params.all[k] = paramsJSON[k];
                     });
-                    body.params = params2;
-                    params.bodies.push(body);
+                    params.bodies.push(paramsJSON);
                 } else {
                     params.rawBody = JSON.stringify(paramsJSON, null, 2);
                 }
-            });
-        } else {
-            if (paramsJSON && typeof paramsJSON === 'object' && paramsJSON.constructor === Object && paramsJSON.query) {
-                Object.keys(paramsJSON).forEach((k) => {
-                    params.all[k] = paramsJSON[k];
-                });
-                params.bodies.push(paramsJSON);
-            } else {
-                params.rawBody = JSON.stringify(paramsJSON, null, 2);
             }
         }
     }
