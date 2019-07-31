@@ -38,7 +38,7 @@
                 return this.topAttributes.length > 0;
             },
             uncollapsedAttributes: function () {
-                if (this.$store.state.panels.showOnlyMatchingAttributes) {
+                if (this.$store.state.panels.showSearchableAttributes && this.$store.state.panels.showOnlyMatchingAttributes) {
                     return this.keys.filter((key) => {
                         if (this.searchableAttributes.indexOf(key) !== -1) return this.item[key]._b_;
                         return true;
