@@ -47,14 +47,14 @@
                             {name: 'Logs', url: '/logs'},
                         ],
                     },
-                    {
+                    /*{
                         name: 'In development',
                         description: 'No guaranty. Make sure you are not using these with customer data',
                         apps: [
                             {name: 'Index Manager', url: '/index-manager'},
                             {name: 'Perso formula', url: '/perso-formula'},
                         ],
-                    }
+                    }*/
                 ]
             };
         },
