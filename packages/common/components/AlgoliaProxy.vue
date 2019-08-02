@@ -16,27 +16,36 @@
                 authorized: true,
             }
         },
-        created: async function () {
-            if (!this.enabled) return;
+        created:  function () {
+            this.connect();
 
-            const res = await fetch(`${process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT}/user/info?redirect_to=${window.location.href}`, {
-                credentials: 'include',
-                headers: {
-                    "Content-Type": "application/json",
-                },
+            window.addEventListener("focus", () => {
+                this.connect();
             });
-            const json = await res.json();
-
-            if (json.error && json.error === 'not_authorized') {
-                this.authorized = false;
-            }
-
-            if (json.redirect_url) {
-                window.location.href = json.redirect_url;
-                return;
-            }
-
-            this.currentUser = json;
         },
+        methods: {
+            connect: async function () {
+                if (!this.enabled) return;
+
+                const res = await fetch(`${process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT}/user/info?redirect_to=${window.location.href}`, {
+                    credentials: 'include',
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                });
+                const json = await res.json();
+
+                if (json.error && json.error === 'not_authorized') {
+                    this.authorized = false;
+                }
+
+                if (json.redirect_url) {
+                    window.location.href = json.redirect_url;
+                    return;
+                }
+
+                this.currentUser = json;
+            }
+        }
     }
 </script>
