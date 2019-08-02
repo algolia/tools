@@ -149,7 +149,7 @@
                                 />
                             </div>
                             <div class="mt-4">
-                                Manage Apps
+                                Manage AppIDs
                             </div>
                         </button>
                     </div>
