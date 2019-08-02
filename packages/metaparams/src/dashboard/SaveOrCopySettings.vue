@@ -21,7 +21,10 @@
             <h4 class="mb-8">
                 {{ isIndexSettingsDirty ? 'Copy and save in' : 'Copy to' }}
             </h4>
-            <index-selector :initial-app-id="appId" :initial-index-name="indexName" :set-index="setIndex" :free-index-name="true" />
+            <div class="flex text-solstice-blue">
+                <app-selector v-model="appId" class="mr-16" />
+                <input v-model="indexName" class="input-custom mr-8 w-124">
+            </div>
             <div v-if="indexName.length > 0" class="mt-16">
                 <div v-if="sameAppIdAsPanel">
                     <label>
@@ -73,7 +76,7 @@
     import LoaderIcon from "common/icons/loader.svg";
     import CheckIcon from "common/icons/check.svg";
 
-    import IndexSelector from "@/dashboard/IndexSelector";
+    import AppSelector from "common/components/selectors/AppSelector";
     import indexInfoMixin from "@/mixins/indexInfoMixin";
     import Tooltip from "@/common/Tooltip";
 
@@ -84,20 +87,20 @@
 
     export default {
         name: 'SaveOrCopySettings',
-        components: {Tooltip, IndexSelector, LoaderIcon, CheckIcon, TaskGroupView},
+        components: {Tooltip, AppSelector, LoaderIcon, CheckIcon, TaskGroupView},
         props: ['panelKey'],
         mixins: [indexInfoMixin],
         data: function () {
             return {
                 errorMessage: '',
                 appId: null,
+                indexName: '',
                 inReplicaCopy: false,
                 limitCopy: {
                     enabled: false,
                     nbHits: 1000,
                     currentQueryOnly: false,
                 },
-                indexName: '',
                 tasksGroup: null,
                 displayCopyOption: false,
             }

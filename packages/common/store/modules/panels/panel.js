@@ -16,9 +16,9 @@ export default function (appId, indexName) {
                 Vue.set(state, 'algoliaResponse', payload);
             },
             setPanelConfig(state, payload) {
-                state.appId = payload.appId;
-                state.indexName = payload.indexName;
-                state.server = 'dsn';
+                Vue.set(state, 'appId', payload.appId);
+                Vue.set(state, 'indexName', payload.indexName);
+                Vue.set(state, 'server', 'dsn');
 
                 if (state.indexName) {
                     Vue.set(this.state.apps[payload.appId], 'lastIndexName', state.indexName);

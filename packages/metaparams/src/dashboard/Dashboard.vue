@@ -7,13 +7,8 @@
         <div class="mt-16 rounded bg-white border border-solid border-proton-grey-opacity-60">
             <div class="px-8 py-8 pb-12 bg-proton-grey-opacity-80 border-b border-nova-grey-opacity-20">
                 <div class="flex flex-wrap justify-start items-center">
-                    <index-selector
-                        class="mb-12"
-                        :initial-app-id="appId"
-                        :initial-index-name="indexName"
-                        :set-index="setIndex(panelKey)"
-                        :free-index-name="false"
-                    />
+                    <app-selector v-model="appId" class="mb-12" />
+                    <index-selector v-model="indexName" :app-id="appId" class="ml-12 mb-12" />
                     <index-new class="mb-12" :panel-key="panelKey" />
                     <index-delete v-if="!isReadOnly" class="mb-12" :panel-key="panelKey" />
                     <button v-if="$store.state.panels.splitMode && !sameIndexOnEachPanel && panelKey === 'leftPanel'"
@@ -83,12 +78,12 @@
     import Explorer from "../explorer/Explorer";
     import DashboardConfig from "./DashboardConfig";
     import Queries from "@/queries/queries";
-    import IndexSelector from "@/dashboard/IndexSelector";
     import IndexInfo from "@/dashboard/IndexInfo";
     import CustomSelect from "@/html-elements/CustomSelect";
     import IndexNew from "@/dashboard/IndexNew";
+    import AppSelector from "common/components/selectors/AppSelector";
+    import IndexSelector from "common/components/selectors/IndexSelector";
 
-    import panelsMixin from "@/mixins/panelsMixin";
     import indexMixin from "@/mixins/indexMixin";
 
     import FlipLeftIcon from "common/icons/flip-left.svg";
@@ -110,6 +105,7 @@
             IndexNew,
             CustomSelect,
             IndexInfo,
+            AppSelector,
             IndexSelector,
             Queries,
             DashboardConfig,
@@ -134,11 +130,21 @@
             this.registerCurrentIndex();
         },
         computed: {
-            appId: function () {
-                return this.$store.state.panels[this.panelKey].appId;
+            appId: {
+                get () {
+                    return this.$store.state.panels[this.panelKey].appId;
+                },
+                set (appId) {
+                    this.$store.commit(`panels/${this.panelKey}/setPanelConfig`, {appId: appId, indexName: null});
+                }
             },
-            indexName: function () {
-                return this.$store.state.panels[this.panelKey].indexName;
+            indexName: {
+                get () {
+                    return this.$store.state.panels[this.panelKey].indexName;
+                },
+                set (indexName) {
+                    this.$store.commit(`panels/${this.panelKey}/setPanelConfig`, {appId: this.appId, indexName: indexName});
+                }
             },
         },
         methods: {
@@ -149,11 +155,6 @@
                     configKey: this.searchConfigKey,
                     inputKey: 'page'
                 });
-            },
-            setIndex: function (panelKey) {
-                return function (appId, indexName) {
-                    this.$store.commit(`panels/${panelKey}/setPanelConfig`, {appId, indexName});
-                };
             },
         }
     }

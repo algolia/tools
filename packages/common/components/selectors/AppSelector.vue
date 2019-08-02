@@ -1,9 +1,8 @@
 <template>
     <custom-select
-        v-model="appId"
-        :value="appId"
-        @input="$emit('input', appId)"
-        class="min-w-140 mr-16"
+        :value="value"
+        @input="$emit('input', $event)"
+        class="min-w-140"
         :options="Object.keys(apps)"
     >
         <template slot="icon"><box-icon class="block w-12 h-12 mr-8 fill-current"/></template>
@@ -31,10 +30,10 @@
     export default {
         name: 'AppSelector',
         components: {CustomSelect, BoxIcon},
-        props: ['value', 'apps'], // Object.keys($store.state.apps)
-        data: function () {
-            return {
-                appId: this.value,
+        props: ['value'],
+        computed: {
+            apps: function () {
+                return this.$store.state.apps;
             }
         }
     }

@@ -1,4 +1,5 @@
 import findOperation from "@/api-logs/findOperation";
+import decodeUriComponent from 'decode-uri-component';
 
 const extractQueryParams = function (rawLog) {
     const params = {
@@ -70,14 +71,10 @@ const extractQueryParams = function (rawLog) {
     return params;
 };
 
-const extractOperation = function (rawLogs) {
-
-};
-
-
 export default function (rawLog) {
     // timestamp, method, answer_code, query_body, answer, url, ip, query_headers, nb_api_calls, processing_time_ms, index, query_params, query_nb_hits
     this.rawLog = rawLog;
+    this.rawLogString = decodeUriComponent(`${rawLog.query_body} ${rawLog.answer} ${rawLog.url} ${rawLog.ip} ${rawLog.query_headers}`);
     this.id = rawLog.sha1;
     this.params = extractQueryParams(rawLog);
     this.verb = rawLog.method;

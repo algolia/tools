@@ -1,61 +1,50 @@
 <template>
-    <div class="flex text-solstice-blue">
-        <app-selector
-            :apps="$store.state.apps"
-            v-model="appId"
-        />
-        <custom-select
-            v-if="!freeIndexName"
-            v-model="indexInfo"
-            class="min-w-140"
-            string-value-attribute="name"
-            :options="indices"
-            :refine="refine"
-        >
-            <template slot="icon"><list-icon class="block w-12 h-12 mr-8 fill-current"/></template>
-            <template v-slot:default="{option, inDropDown, isSelected, highlightString}">
-                <div v-html="inDropDown ? highlightString(option.name) : option.name"></div>
-                <div v-if="inDropDown" class="ml-auto"></div>
-                <div
-                    v-if="inDropDown"
-                    class="ml-16"
-                    :class="isSelected ? 'text-white': 'text-solstice-blue-opacity-50'"
-                >
-                    {{option.entries}} records
-                </div>
-            </template>
-        </custom-select>
-        <input
-            ref="freeIndexName"
-            v-model="indexName"
-            v-if="freeIndexName"
-            class="input-custom mr-8 w-124"
-        >
-    </div>
+    <custom-select
+        v-model="indexInfo"
+        class="min-w-140"
+        string-value-attribute="name"
+        :options="indices"
+        :refine="refine"
+    >
+        <template slot="icon"><list-icon class="block w-12 h-12 mr-8 fill-current"/></template>
+        <template v-slot:default="{option, inDropDown, isSelected, highlightString}">
+            <div v-html="inDropDown ? highlightString(option.name) : option.name"></div>
+            <div v-if="inDropDown" class="ml-auto"></div>
+            <div
+                v-if="inDropDown"
+                class="ml-16"
+                :class="isSelected ? 'text-white': 'text-solstice-blue-opacity-50'"
+            >
+                {{option.entries}} records
+            </div>
+        </template>
+    </custom-select>
 </template>
 
 <script>
     import Vue from "vue"
-    import BoxIcon from "common/icons/box.svg";
-    import ListIcon from "common/icons/list.svg";
-    import CustomSelect from "@/html-elements/CustomSelect";
+    import BoxIcon from "../../icons/box.svg";
+    import ListIcon from "../../icons/list.svg";
+    import CustomSelect from "./CustomSelect";
     import AppSelector from "./AppSelector";
 
     export default {
         name: "IndexSelector",
         components: {AppSelector, CustomSelect, BoxIcon, ListIcon},
-        props: ["initialAppId", "initialIndexName", "setIndex", "freeIndexName"],
+        props: ["appId", "value"],
         data: function () {
             return {
                 allIndices: [],
                 indices: [],
-                appId: this.initialAppId,
                 indexInfo: {
-                    name: this.initialIndexName,
+                    name: this.value,
                 },
                 nbPages: 1,
                 maxNbPagesInMemory: 5,
             };
+        },
+        created: function () {
+            this.updateIndices(false);
         },
         computed: {
             indexName: {
@@ -73,22 +62,17 @@
                 return this.algoliasearch(this.appId, this.adminAPIKey);
             },
         },
-        created: function () {
-            this.updateIndices(false);
-        },
         watch: {
-            initialIndexName: function () {
-                this.indexInfo.name = this.initialIndexName;
-            },
-            initialAppId: function () {
-                this.appId = this.initialAppId;
+            value: function () {
+                this.indexInfo.name = this.value;
             },
             appId: function () {
-                this.setIndex(this.appId, this.freeIndexName ? this.indexInfo.name : null);
+                this.indexName = this.indexInfo.name;
+                this.$emit('input', this.indexName);
                 this.updateIndices(true);
             },
             indexName: function () {
-                this.setIndex(this.appId, this.indexInfo.name);
+                this.$emit('input', this.indexInfo.name);
                 this.updateIndices(false);
             }
         },
@@ -119,8 +103,7 @@
                     });
                 }
             },
-            updateIndices: async function (setIndex) {
-                if (this.freeIndexName) return;
+            updateIndices: async function (shouldSetIndex) {
                 if (this.appId === null) return; // onboarding
 
                 let data = await this.client.listIndexes(0);
@@ -139,9 +122,9 @@
 
                 if (this.indices.length <= 0) return;
 
-                if (setIndex || this.initialIndexName === null) {
+                if (shouldSetIndex || this.value === null) {
                     this.indexInfo.name = this.$store.state.apps[this.appId].lastIndexName || this.indices[0].name;
-                    this.setIndex(this.appId, this.indexInfo.name);
+                    this.$emit('input', this.indexInfo.name);
                 }
             },
         }
