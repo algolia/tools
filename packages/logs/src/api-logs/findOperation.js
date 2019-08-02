@@ -90,13 +90,13 @@ const operations = [
 
     new Operation('POST', '/1/indexes/:idx/query', (logItem, idx) => {
         const query = logItem.params.all.query && logItem.params.all.query.length > 0 ? logItem.params.all.query : '&lt;empty&gt;';
-        return `<code>Search</code> in index <code>${idx}</code> for objects containing <code>"${query}"</code>`;
+        return `<code>Search</code> in index <code>${idx}</code> for objects containing <code>"${decodeURIComponent(query)}"</code>`;
     }),
     new Operation('POST', '/1/indexes/*/queries', (logItem) => {
         const indices = logItem.params.bodies.map((r) => r.indexName);
         const queries = logItem.params.bodies.map((r) => r.params.query || '').filter((q) => q.length > 0);
 
-        return `<code>Search</code> in indices ${indices.map((index) => `<code>${index}</code>`).join(', ')} for objects containing ${queries.map((q) => `<code>${q}</code>`).join(', ')}`;
+        return `<code>Search</code> in indices ${indices.map((index) => `<code>${index}</code>`).join(', ')} for objects containing ${queries.map((q) => `<code>${decodeURIComponent(q)}</code>`).join(', ')}`;
     }),
     new Operation('POST', '/1/indexes/:idx/analyze', (logItem, idx) => `<code>Analyse index</code> <code>${idx}</code>`),
     new Operation('POST', '/1/indexes/:idx/browse', (logItem, idx) => `Browse records for index <code>${idx}</code>`),
