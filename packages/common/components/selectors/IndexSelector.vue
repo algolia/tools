@@ -3,7 +3,7 @@
         v-model="indexInfo"
         class="min-w-140"
         string-value-attribute="name"
-        :options="indices"
+        :options="indicesWithForced"
         :refine="refine"
     >
         <template slot="icon"><list-icon class="block w-12 h-12 mr-8 fill-current"/></template>
@@ -11,7 +11,7 @@
             <div v-html="inDropDown ? highlightString(option.name) : option.name"></div>
             <div v-if="inDropDown" class="ml-auto"></div>
             <div
-                v-if="inDropDown"
+                v-if="inDropDown && option.entries !== undefined"
                 class="ml-16"
                 :class="isSelected ? 'text-white': 'text-solstice-blue-opacity-50'"
             >
@@ -31,7 +31,7 @@
     export default {
         name: "IndexSelector",
         components: {AppSelector, CustomSelect, BoxIcon, ListIcon},
-        props: ["appId", "value"],
+        props: ["appId", "value", "forcedIndices"],
         data: function () {
             return {
                 allIndices: [],
@@ -47,6 +47,10 @@
             this.updateIndices(false);
         },
         computed: {
+            indicesWithForced: function () {
+                const forcedIndices = this.forcedIndices ? this.forcedIndices : [];
+                return [...forcedIndices, ...this.indices];
+            },
             indexName: {
                 get () {
                     return this.indexInfo.name;

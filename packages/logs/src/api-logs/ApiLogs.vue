@@ -13,16 +13,13 @@
                     v-model="query"
                 >
             </div>
-            <div class="mt-24">
-                <input type="checkbox" v-model="allIndices" /> All indices
-            </div>
             <div class="rounded border border-proton-grey-opacity-60 mt-24">
                 <div class="flex bg-white p-8 pb-12 bg-proton-grey-opacity-40 text-telluric-blue">
                     <app-selector v-model="appId" class="mr-16" />
                     <index-selector
-                        v-if="!allIndices"
                         v-model="indexName"
                         :app-id="appId"
+                        :forced-indices="[{name: 'All Indices'}]"
                         class="mr-16"
                     />
                     <custom-select
@@ -86,7 +83,6 @@
                     'build': 'Build logs',
                     'error': 'Error logs',
                 },
-                allIndices: true,
                 interval: null,
                 stopIfFound: false,
             };
@@ -112,12 +108,16 @@
             this.startInterval();
         },
         computed: {
+            allIndices: function () {
+                return !this.indexName || this.indexName === 'All Indices';
+            },
             appId: {
                 get () {
                     return this.$store.state.apilogs.appId;
                 },
                 set (val) {
                     this.$store.commit('apilogs/setAppId', val);
+                    this.$store.commit('apilogs/setIndexName', null);
                 }
             },
             indexName: {
@@ -163,7 +163,7 @@
                     type: this.logsType,
                 };
 
-                if (!this.allIndices && this.indexName) {
+                if (!this.allIndices) {
                     options.indexName = this.indexName;
                 }
 
