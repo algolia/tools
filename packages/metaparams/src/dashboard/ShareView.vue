@@ -61,10 +61,14 @@
                     panels: reducedState.panels
                 };
 
-                const share = {
-                    [reducedState.panels.leftPanel.appId]: reducedState.panels.leftPanel.indexName,
-                    [reducedState.panels.rightPanel.appId]: reducedState.panels.rightPanel.indexName,
-                };
+                const share = {};
+                share[reducedState.panels.leftPanel.appId] = reducedState.panels.leftPanel.indexName;
+                if (this.$store.state.panels.splitMode) {
+                    share[reducedState.panels.rightPanel.appId] = reducedState.panels.rightPanel.indexName;
+                } else {
+                    reducedState.panels.rightPanel.appId = reducedState.panels.leftPanel.appId;
+                    reducedState.panels.rightPanel.indexName = reducedState.panels.leftPanel.indexName;
+                }
 
                 Object.keys(share).forEach((appId) => {
                     const indexName = share[appId];
