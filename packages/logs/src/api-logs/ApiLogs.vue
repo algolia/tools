@@ -116,8 +116,8 @@
                     return this.$store.state.apilogs.appId;
                 },
                 set (val) {
+                    this.indexName = 'All Indices';
                     this.$store.commit('apilogs/setAppId', val);
-                    this.$store.commit('apilogs/setIndexName', null);
                 }
             },
             indexName: {
