@@ -6,7 +6,7 @@
         :options="indicesWithForced"
         :refine="refine"
     >
-        <template slot="icon"><list-icon class="block w-12 h-12 mr-8 fill-current"/></template>
+        <template slot="icon"><list-icon class="block w-12 h-12 mr-8 -mt-1 fill-current"/></template>
         <template v-slot:default="{option, inDropDown, isSelected, highlightString}">
             <div v-html="inDropDown ? highlightString(option.name) : option.name"></div>
             <div v-if="inDropDown" class="ml-auto"></div>

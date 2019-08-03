@@ -5,7 +5,7 @@
         class="min-w-140"
         :options="Object.keys(apps)"
     >
-        <template slot="icon"><box-icon class="block w-12 h-12 mr-8 fill-current"/></template>
+        <template slot="icon"><box-icon class="block w-12 h-12 -mt-1 mr-8 fill-current"/></template>
         <template v-slot:default="{option, inDropDown, isSelected}">
             <div>
                 <div>

@@ -31,7 +31,7 @@
                         class="mb-12 ml-auto text-solstice-blue text-sm border-b border-telluric-blue-opacity-60"
                     >
                         <template slot="icon">
-                            <server-icon class="block mr-8 w-12 h-12"/>
+                            <server-icon class="block -mt-1 mr-8 w-12 h-12"/>
                         </template>
                         <template v-slot:default="{option}">-{{option}}</template>
                     </custom-select>
