@@ -170,7 +170,7 @@
 
                 const points = new Array(this.hits.length);
                 for(let i = 0; i < this.hits.length; i++){
-                    points[i] = this.rankingInfoAnalyzer.getCriteriaValue(this.hits[i], criterion);
+                    points[i] = this.rankingInfoAnalyzer.getCriterionValue(this.hits[i], criterion);
 
                     if (criterion === 'attribute') {
                         points[i] = this.searchableAttributes.length - 1 - points[i];

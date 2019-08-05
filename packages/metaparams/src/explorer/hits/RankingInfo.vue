@@ -57,8 +57,8 @@
                 this.rankingInfoAnalyzer.getActualCriteria().forEach((criterionName) => {
                     const criterion = {
                         label: criterionName,
-                        val: this.rankingInfoAnalyzer.getCriteriaValue(this.item, criterionName),
-                        oldVal: this.rankingInfoAnalyzer.getCriteriaValue(this.previousItem, criterionName)
+                        val: this.rankingInfoAnalyzer.getCriterionValue(this.item, criterionName),
+                        oldVal: this.rankingInfoAnalyzer.getCriterionValue(this.previousItem, criterionName)
                     };
 
                     if (criterionName === 'geo') {
