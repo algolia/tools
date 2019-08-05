@@ -34,13 +34,24 @@
                 </div>
                 <div v-if="!inReplicaCopy">
                     <div>
-                        <label>
-                            <input v-model="limitCopy.enabled" type="checkbox" class="mr-2" />
-                            Limit number of hits
-                            <span v-if="limitCopy.enabled">
-                                : <input v-model="limitCopy.nbHits" class="inline input input-custom w-72" type="number" min="0" step="1000" />
-                            </span>
-                        </label>
+                        <div>
+                            <label>
+                                <input v-model="limitCopy.enabled" type="checkbox" class="mr-2" />
+                                Limit number of hits
+                                <span v-if="limitCopy.enabled">
+                                    : <input v-model="limitCopy.nbHits" class="input-custom inline w-72" type="number" min="0" step="1000" />
+                                </span>
+                            </label>
+                        </div>
+                        <div v-if="!sameAppCopyMethod">
+                            <label>
+                                <input v-model="configureBatchSize" type="checkbox" class="mr-2" />
+                                Configure Batch size
+                                <span v-if="configureBatchSize">
+                                    : <input v-model="batchSize" class="input-custom inline w-72" type="number" min="1" max="1000" step="100" />
+                                </span>
+                            </label>
+                        </div>
                         <div>
                             <label>
                                 <input v-model="limitCopy.currentQueryOnly" type="checkbox" class="mr-2" />
@@ -96,11 +107,13 @@
                 appId: null,
                 indexName: '',
                 inReplicaCopy: false,
+                configureBatchSize: false,
                 limitCopy: {
                     enabled: false,
                     nbHits: 1000,
                     currentQueryOnly: false,
                 },
+                batchSize: 1000,
                 tasksGroup: null,
                 displayCopyOption: false,
             }
@@ -113,6 +126,9 @@
             sameAppIdAsPanel: function () {
                 return this.appId === this.panelAppId;
             },
+            sameAppCopyMethod: function () {
+                return this.sameAppIdAsPanel && !this.limitCopy.enabled && !this.limitCopy.currentQueryOnly;
+            }
         },
         methods: {
             adminAPIKey: function (appId) {
@@ -123,6 +139,7 @@
                 this.indexName = indexName;
             },
             getConfig: async function () {
+                const batchSize = this.configureBatchSize ? this.batchSize : 1000;
                 const config = {
                     dstAppId: this.appId, // Copy in case it's change during processing
                     dstIndexName: this.indexName, // Copy in case it's change during processing
@@ -133,7 +150,7 @@
                     srcClient: this.algoliasearch(this.panelAppId, this.adminAPIKey(this.panelAppId)),
                     dstClient: this.algoliasearch(this.appId, this.adminAPIKey(this.appId)),
                     query: this.$store.state.panels.query,
-                    hitsPerPage: !this.limitCopy.enabled ? 1000 : Math.min(1000, this.limitCopy.nbHits),
+                    hitsPerPage: !this.limitCopy.enabled ? batchSize : Math.min(batchSize, this.limitCopy.nbHits),
                     inReplicaCopy: this.inReplicaCopy,
                     applyUnsavedSettings: this.isIndexSettingsDirty,
                 };
@@ -159,7 +176,7 @@
                     this.$store.commit(`${this.panelIndexCommitPrefix}/resetIndexSettings`);
                 }
 
-                if (this.sameAppIdAsPanel && !this.limitCopy.enabled && !this.limitCopy.currentQueryOnly) {
+                if (this.sameAppCopyMethod) {
                     this.tasksGroup = await this.sameAppCopy(config);
                 } else {
                     this.tasksGroup = await this.differentAppCopy(config);
@@ -249,7 +266,7 @@
                         let res = await config.srcIndex.browse('', {hitsPerPage: config.hitsPerPage, attributesToRetrieve: ['*']});
                         nbCopied += res.hits.length;
                         browseTask.setNth(0);
-                        browseTask.setOutOf(Math.floor(res.nbHits / 1000));
+                        browseTask.setOutOf(Math.floor(res.nbHits / config.hitsPerPage));
                         let resAdd = await config.dstIndex.addObjects(res.hits);
                         tasksGroup.addAlgoliaTaskId(resAdd.taskID);
                         browseTask.setNth(res.page + 1);
