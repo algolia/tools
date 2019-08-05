@@ -62,8 +62,8 @@
                     };
 
                     if (criterionName === 'geo') {
-                        if (criterion.val !== null) criterion.val = formatHumanDistance(criterion.val);
-                        if (criterion.oldVal !== null) criterion.oldVal = formatHumanDistance(criterion.oldVal);
+                        if (criterion.val !== null) criterion.val = `${criterion.val} meters`;
+                        if (criterion.oldVal !== null) criterion.oldVal = `${criterion.oldVal}`;
                     }
 
                     if (criterionName === 'attribute') {
