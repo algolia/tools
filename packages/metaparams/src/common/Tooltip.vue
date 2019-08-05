@@ -1,7 +1,7 @@
 <template>
     <div
         :class="[
-            !position || position === 'center' ? 'inset-x-auto-y-full' : '',
+            !position || position === 'center' ? 'inset-x-auto inset-y-full' : '',
             position === 'left' ? 'left-0 inset-y-full' : '',
             position === 'right' ? 'right-0 -mr-48 inset-y-full' : '',
         ]"

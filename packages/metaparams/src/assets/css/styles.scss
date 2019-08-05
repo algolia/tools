@@ -87,22 +87,22 @@ pre {
   word-wrap: break-word;
 }
 
-.pin-x-auto {
+.inset-x-auto {
   left: 50%;
   transform: translateX(-50%);
 }
 
-.pin-y-auto {
+.inset-y-auto {
   top: 50%;
   transform: translateY(-50%);
 }
 
-.pin-y-full {
+.inset-y-full {
   top: 0;
   transform: translateY(-100%);
 }
 
-.pin-x-auto-y-full {
+.inset-x-auto-y-full {
   top: 0;
   left: 50%;
   transform: translate(-50%, -100%);
