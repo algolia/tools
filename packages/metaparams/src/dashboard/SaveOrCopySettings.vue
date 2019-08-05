@@ -46,7 +46,7 @@
                         <div v-if="!sameAppCopyMethod">
                             <label>
                                 <input v-model="configureBatchSize" type="checkbox" class="mr-2" />
-                                Configure Batch size
+                                Configure batch size
                                 <span v-if="configureBatchSize">
                                     : <input v-model="batchSize" class="input-custom inline w-72" type="number" min="1" max="1000" step="100" />
                                 </span>
