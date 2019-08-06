@@ -17,7 +17,7 @@
 </template>
 
 <script>
-    import inputMixin from "@/params/scripts/inputMixin";
+    import inputMixin from "../scripts/inputMixin";
 
     export default {
         name: 'InputInteger',

@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import Autocomplete from "../autocomplete/Autocomplete";
+import Autocomplete from "./Autocomplete";
 
 export default {
     name: 'AlgoliaAutocomplete',

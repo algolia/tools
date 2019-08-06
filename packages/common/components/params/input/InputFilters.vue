@@ -20,7 +20,7 @@
 
 <script>
     import Parser from 'algolia-filters-js-syntax-validator';
-    import inputMixin from "@/params/scripts/inputMixin";
+    import inputMixin from "../scripts/inputMixin";
 
     export default {
         name: 'InputFilters',

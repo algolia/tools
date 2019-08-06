@@ -25,9 +25,9 @@
 </template>
 
 <script>
-    import AlgoliaAutocomplete from "@/autocomplete/AlgoliaAutocomplete";
-    import paramsSpecs from 'common/params-specs';
-    import inputMixin from "@/params/scripts/inputMixin";
+    import AlgoliaAutocomplete from "../../autocomplete/AlgoliaAutocomplete";
+    import paramsSpecs from '../../../params-specs';
+    import inputMixin from "../scripts/inputMixin";
 
     export default {
         name: 'InputParamName',

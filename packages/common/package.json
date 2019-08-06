@@ -1,5 +1,9 @@
 {
   "name": "common",
   "version": "0.0.0",
-  "main": "index.js"
+  "main": "index.js",
+  "dependencies": {
+    "algolia-filters-js-syntax-validator": "^1.0.1",
+    "vuedraggable": "^2.17.0"
+  }
 }

@@ -60,7 +60,7 @@
 
     import strategy1 from '@/strategies/strategy1';
 
-    import SearchEngine from 'common/local-search-engine';
+    import SearchEngine from 'common/local-search-engine/SearchTrie';
 
     export default {
         name: 'PersoPlayground',

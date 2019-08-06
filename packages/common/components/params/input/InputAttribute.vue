@@ -15,8 +15,8 @@
 </template>
 
 <script>
-    import Autocomplete from "@/autocomplete/Autocomplete";
-    import inputMixin from "@/params/scripts/inputMixin";
+    import Autocomplete from "../../autocomplete/Autocomplete";
+    import inputMixin from "../scripts/inputMixin";
 
     export default {
         name: 'InputAttribute',

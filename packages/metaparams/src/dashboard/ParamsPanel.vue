@@ -23,7 +23,7 @@
                 @onDeleteArrayElement="onDeleteArrayElement"
                 @onDeleteKey="onDeleteKey"
                 @onRestoreKey="onRestoreKey"
-                :open="open"
+                v-if="open"
             />
             <div v-if="configKey === 'indexSettings'">
                 <div class="mt-24 border-t border-proton-grey-opacity-20"></div>
@@ -36,7 +36,7 @@
 <script>
     import indexInfoMixin from "@/mixins/indexInfoMixin";
     import ParamsHeader from "@/dashboard/ParamsHeader";
-    import Params from "@/params/Params";
+    import Params from "common/components/params/Params";
     import SaveOrCopySettings from "@/dashboard/SaveOrCopySettings";
 
     export default {

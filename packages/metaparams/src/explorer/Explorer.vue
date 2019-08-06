@@ -52,7 +52,7 @@
 <script>
     import {formatHumanNumber, cleanAttributeName} from 'common/utils/formatters'
     import Vue from 'vue';
-    import searchIndexer from '../autocomplete/search-indexer';
+    import searchIndexer from 'common/local-search-engine/dumbIndexer';
     import analyseIndex from 'common/utils/indexAnalyzer';
     import paramsSpecs from 'common/params-specs';
 

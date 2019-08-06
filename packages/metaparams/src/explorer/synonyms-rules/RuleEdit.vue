@@ -257,7 +257,6 @@
                             @onAddArrayElement="onAddArrayElement"
                             @onDeleteArrayElement="onDeleteArrayElement"
                             @onDeleteKey="onDeleteKey"
-                            :open="true"
                         />
                     </div>
                 </div>
@@ -305,7 +304,7 @@
 
 <script>
     import AceEditor from "@/editor/AceEditor";
-    import Params from "@/params/Params";
+    import Params from "common/components/params/Params";
     import IntermediateRule from "@/explorer/synonyms-rules/intermediateRule";
     import PanelHitAutocomplete from "@/autocomplete/PanelHitsAutocomplete";
     import PromotedHit from "@/explorer/synonyms-rules/PromotedHit";

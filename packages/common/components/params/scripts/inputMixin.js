@@ -1,4 +1,4 @@
-import paramsInputState from "@/params/scripts/paramsInputState";
+import paramsInputState from "./paramsInputState";
 
 export default {
     props: [

@@ -17,8 +17,8 @@
 </template>
 
 <script>
-    import inputMixin from "@/params/scripts/inputMixin";
-    import AlgoliaAutocomplete from "@/autocomplete/AlgoliaAutocomplete";
+    import inputMixin from "../scripts/inputMixin";
+    import AlgoliaAutocomplete from "../../autocomplete/AlgoliaAutocomplete";
 
     export default {
         name: 'InputParamValue',

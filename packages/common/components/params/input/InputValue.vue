@@ -14,14 +14,14 @@
 </template>
 
 <script>
-    import InputParamName from '@/params/input/InputParamName';
-    import InputParamValue from '@/params/input/InputParamValue';
-    import InputInteger from '@/params/input/InputInteger';
-    import InputString from '@/params/input/InputString';
-    import InputFilters from '@/params/input/InputFilters';
-    import InputAttribute from "@/params/input/InputAttribute";
-    import paramsSpecs from 'common/params-specs';
-    import inputMixin from "@/params/scripts/inputMixin";
+    import InputParamName from './InputParamName';
+    import InputParamValue from './InputParamValue';
+    import InputInteger from './InputInteger';
+    import InputString from './InputString';
+    import InputFilters from './InputFilters';
+    import InputAttribute from "./InputAttribute";
+    import paramsSpecs from '../../../params-specs';
+    import inputMixin from "../scripts/inputMixin";
 
     export default {
         name: 'InputValue',

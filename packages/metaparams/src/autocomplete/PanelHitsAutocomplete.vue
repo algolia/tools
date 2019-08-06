@@ -17,7 +17,7 @@
 </template>
 
 <script>
-    import Autocomplete from "../autocomplete/Autocomplete";
+    import Autocomplete from "common/components/autocomplete/Autocomplete";
     import indexInfoMixin from "@/mixins/indexInfoMixin";
     import PromotedHit from "@/explorer/synonyms-rules/PromotedHit";
 
