@@ -264,9 +264,10 @@
                     browseTask.setCallback(async () => {
                         let nbCopied = 0;
                         let res = await config.srcIndex.browse('', {hitsPerPage: config.hitsPerPage, attributesToRetrieve: ['*']});
+                        let nbToCopy = this.limitCopy.enabled ? Math.min(res.nbHits, this.limitCopy.nbHits) : res.nbHits;
                         nbCopied += res.hits.length;
                         browseTask.setNth(0);
-                        browseTask.setOutOf(Math.floor(res.nbHits / config.hitsPerPage));
+                        browseTask.setOutOf(Math.ceil(nbToCopy / config.hitsPerPage));
                         let resAdd = await config.dstIndex.addObjects(res.hits);
                         tasksGroup.addAlgoliaTaskId(resAdd.taskID);
                         browseTask.setNth(res.page + 1);
