@@ -75,10 +75,12 @@ export default {
         },
         removeEmptyElementInArray: function () {
             if (Array.isArray(this.param.value)) {
-                let index = this.currentIndex;
-                if (!this.param.value[index] || this.param.value[index].length === 0) {
-                    this.deleteArrayElement(this.inputState.inputKey, index);
-                }
+                this.param.value.forEach((elt, i) => {
+                    if (!elt || elt.length === 0) {
+                        this.deleteArrayElement(this.inputState.inputKey, i);
+                    }
+                })
+
             }
         }
     }
