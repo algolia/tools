@@ -311,13 +311,14 @@
 
     import TrashIcon from 'common/icons/trash.svg';
     import LoaderIcon from 'common/icons/loader.svg'
-    import indexMixin from "../../../mixins/indexMixin";
+    import indexInfoMixin from "../../../mixins/indexInfoMixin";
+    import {getSearchIndex} from "../../../utils/algoliaHelpers";
 
     export default {
         name: 'RuleEdit',
         props: ['rule', 'panelKey', 'allowSaveWithoutEdit'],
         components: {PromotedHit, PanelHitAutocomplete, Params, AceEditor, TrashIcon, LoaderIcon},
-        mixins: [indexMixin],
+        mixins: [indexInfoMixin],
         data: function () {
             const data = {
                 oldRule: new IntermediateRule(this.rule),
@@ -517,7 +518,7 @@
                 }
             },
             save: async function () {
-                const index = await this.getSearchIndex();
+                const index = await getSearchIndex(this.panelAppId, this.panelAdminAPIKey, this.panelIndexName, this.panelServer);
                 try {
                     const task = await index.saveRule(this.newRule.getFinalRule(), { forwardToReplicas: this.forwardToReplicas });
                     this.saving = true;

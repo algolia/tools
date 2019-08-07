@@ -41,15 +41,16 @@
 <script>
     import TrashIcon from "common/icons/trash.svg";
     import LoaderIcon from 'common/icons/loader.svg'
+    import {getClient} from 'common/utils/algoliaHelpers';
 
-    import indexMixin from "common/mixins/indexMixin";
+    import indexInfoMixin from "common/mixins/indexInfoMixin";
     import Vue from 'vue';
     import Tooltip from "common/components/Tooltip";
 
     export default {
         name: 'IndexDelete',
         components: {Tooltip, TrashIcon, LoaderIcon},
-        mixins: [indexMixin],
+        mixins: [indexInfoMixin],
         props: ['panelKey'],
         data: function () {
             return {
@@ -62,7 +63,7 @@
             deleteIndex: async function () {
                 if (this.panelIndexName !== this.indexNameToDelete) return;
 
-                const client = this.panelClient;
+                const client = await getClient(this.panelAppId, this.panelAdminAPIKey);
                 const index = client.initIndex(this.indexNameToDelete);
                 const res = await client.deleteIndex(this.indexNameToDelete);
                 this.pendingDeletion = true;

@@ -73,14 +73,14 @@
     import RankingCharts from "../analysis/RankingCharts";
     import RawResponse from "../raw/RawResponse";
     import ExportParams from "../export-params/ExportParams";
-    import indexInfo from "../../../mixins/indexInfoMixin";
+    import indexInfoMixin from "../../../mixins/indexInfoMixin";
     import HitEdit from "../hits/HitEdit";
     import Tooltip from "../../Tooltip";
 
     export default {
         name: 'Results',
-        props: ['panelKey', 'algoliaResponse'],
-        mixins: [indexInfo],
+        props: ['panelKey', 'algoliaResponse', 'analyseAlgoliaResponse'],
+        mixins: [indexInfoMixin],
         components: {
             Tooltip,
             HitEdit, ExportParams, RawResponse, RankingCharts, ResultsList, ListIcon, BarChartIcon, CodeIcon, GridIcon, PlusCircleIcon},
@@ -106,7 +106,7 @@
                 }
             },
             analyseHits: function () {
-                if (this.panelAlgoliaResponse) return this.panelAlgoliaResponse.hits;
+                if (this.analyseAlgoliaResponse) return this.analyseAlgoliaResponse.hits;
                 return [];
             },
         }

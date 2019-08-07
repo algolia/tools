@@ -2,16 +2,6 @@ const oneWeekAgo = new Date();
 oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
 export default function (state) {
-    const leftRest = function () {
-        const { algoliaResponse, ...leftRest } = state.panels.leftPanel;
-        return leftRest;
-    }();
-
-    const rightRest = function () {
-        const { algoliaResponse, ...rightRest } = state.panels.rightPanel;
-        return rightRest;
-    }();
-
     const {
         leftPanel,
         rightPanel,
@@ -24,8 +14,8 @@ export default function (state) {
         ...acc,
         [key]: state[key],
         panels: {
-            leftPanel: leftRest,
-            rightPanel: rightRest,
+            leftPanel: state.panels.leftPanel,
+            rightPanel: state.panels.rightPanel,
             ...panelsRest
         },
         apps: Object.keys(state.apps).reduce((innerAcc, appId) => {

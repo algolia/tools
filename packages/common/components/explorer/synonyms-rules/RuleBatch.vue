@@ -31,13 +31,14 @@
 
 <script>
     import LoaderIcon from 'common/icons/loader.svg'
-    import indexMixin from "../../../mixins/indexMixin";
+    import indexInfoMixin from "../../../mixins/indexInfoMixin";
+    import {getSearchIndex} from "../../../utils/algoliaHelpers";
 
     export default {
         name: 'RuleBatch',
         props: ['action', 'batchable', 'panelKey'],
         components: {LoaderIcon},
-        mixins: [indexMixin],
+        mixins: [indexInfoMixin],
         data: function () {
             return {
                 saveError: null,
@@ -62,7 +63,7 @@
                 });
             },
             save: async function () {
-                const index = await this.getSearchIndex();
+                const index = await getSearchIndex(this.panelAppId, this.panelAdminAPIKey, this.panelIndexName, this.panelServer);
                 try {
                     let task;
                     if (this.action === 'enableAllRules') {

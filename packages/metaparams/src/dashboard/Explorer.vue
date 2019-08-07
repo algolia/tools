@@ -38,8 +38,21 @@
                 <div>API Key: <input v-model="panelAdminAPIKey" class="input-custom inline" placeholder="adminAPIKey" /></div>
             </div>
         </div>
+        <perform-search
+            :search-params="searchParams"
+            :search-params-raw="searchParamsRaw"
+            :app-id="panelAppId"
+            :api-key="panelAdminAPIKey"
+            :server="panelServer"
+            :index-name="panelIndexName"
+            :query="query"
+            @onFetchHits="onFetchHits"
+            @onUpdateAlgoliaResponse="algoliaResponse = $event"
+            @onUpdateError="errorMessage = $event"
+            @onUpdateAnalyseAlgoliaResponse="analyseAlgoliaResponse = $event"
+        />
         <div v-if="algoliaResponse" class="p-8">
-            <results v-show="panelCurrentTab === 'hits'" :algolia-response="algoliaResponse"
+            <results v-show="panelCurrentTab === 'hits'" :algolia-response="algoliaResponse" :analyse-algolia-response="analyseAlgoliaResponse"
                      :panel-key="panelKey"/>
             <fetcher v-show="panelCurrentTab === 'synonyms'" :panel-key="panelKey" method-name="searchSynonyms"
                      @onFetch="onFetchSynonyms"/>
@@ -50,68 +63,33 @@
     </div>
 </template>
 <script>
-    import {formatHumanNumber, cleanAttributeName} from 'common/utils/formatters'
-    import Vue from 'vue';
-    import searchIndexer from 'common/local-search-engine/dumbIndexer';
-    import analyseIndex from 'common/utils/indexAnalyzer';
-    import paramsSpecs from 'common/params-specs';
+    import {formatHumanNumber} from 'common/utils/formatters'
 
     import Results from "common/components/explorer/results/Results";
     import Fetcher from "common/components/explorer/synonyms-rules/Fetcher";
     import Checks from "common/components/explorer/checks/Checks";
-    import RankingInfoAnalyser from "common/components/explorer/hits/rankingInfoAnalyser"
-    import indexMixin from "common/mixins/indexMixin";
+    import indexInfoMixin from "common/mixins/indexInfoMixin";
     import panelsMixin from "common/mixins/panelsMixin";
-
-    import {goToAnchor} from "common/utils/domHelpers";
+    import PerformSearch from "@/dashboard/PerformSearch";
 
     export default {
         name: 'Explorer',
-        components: {Checks, Fetcher, Results},
+        components: {PerformSearch, Checks, Fetcher, Results},
         props: ['panelKey'],
-        mixins: [indexMixin, panelsMixin],
+        mixins: [indexInfoMixin, panelsMixin],
         data: function () {
             return {
-                requestNumber: 0,
-                requestNumberReceived: 0,
-                requestNumberAnalysis: 0,
-                requestNumberAnalysisReceived: 0,
                 nbHits: 0,
                 nbRules: 0,
                 nbSynonyms: 0,
                 nbChecks: 0,
                 algoliaResponse: null,
+                analyseAlgoliaResponse: null,
                 errorMessage: '',
                 anchor: null,
-                advancedIndexSettingsNames: ['indexingGeolocPrecision','maxNbHits','nbShards','nbShardsAuto','approxSubstIsBetter','maxApproxIVSizeForEachWord','maxApproxWords'],
             };
         },
-        created: async function () {
-            this.init();
-            this.$root.$on('shouldTriggerSearch', (indexName) => {
-                if (indexName === this.panelIndexName) {
-                    this.triggerSearch();
-                    this.triggerAnalyseSearch();
-                }
-            });
-
-            this.$root.$on('wantsToGoToAnchorAtNext', (anchor) => {
-                this.anchor = anchor;
-            });
-        },
         watch: {
-            panelServer: function (o, n) {
-                if (o !== n) this.triggerSearch();
-            },
-            searchParamsWithDefaults: function (o, n) {
-                if (JSON.stringify(o) !== JSON.stringify(n)) this.triggerSearch();
-            },
-            searchParamsForAnalysis: function (o, n) {
-                if (JSON.stringify(o) !== JSON.stringify(n)) this.triggerAnalyseSearch();
-            },
-            panelAppId: function (o, n) { if (o !== n) this.init() },
-            panelIndexName: function (o, n) { if (o !== n) this.init() },
-            panelAdminAPIKey: function (o, n) { if (o !== n) this.init() },
             query: function () {
                 this.$store.commit(`${this.panelIndexCommitPrefix}/deleteParam`, {
                     configKey: this.searchConfigKey,
@@ -123,72 +101,8 @@
             query: function () {
                 return this.$store.state.panels.query;
             },
-            searchParamsWithDefaults: function () {
-                const nonForcedparams = {
-                    hitsPerPage: 8,
-                    query: this.query,
-                    attributesToSnippet: ['*:10'],
-                    snippetEllipsisText: '…',
-                    attributesToRetrieve: ['*'],
-                };
-
-                if (this.$store.state.panels.displayRankingInfo) {
-                    nonForcedparams['explain'] = 'match.alternatives';
-                }
-
-                const forcedParams = {
-                    analytics: false,
-                    enableABTest: false,
-                    getRankingInfo: true,
-                    highlightPreTag: '<em>',
-                    highlightPostTag: '</em>',
-                };
-
-                const optionalWordsQuery = this.searchParamsRaw['optionalWords=query'];
-
-                if (optionalWordsQuery && optionalWordsQuery.enabled && optionalWordsQuery.value) {
-                    forcedParams['optionalWords'] = this.searchParams.query || this.query;
-                }
-
-                return Object.assign(nonForcedparams, this.searchParams, forcedParams);
-            },
-            rankingInfoAnalyzer: function () {
-                return new RankingInfoAnalyser(this.refIndexSettings);
-            },
-            criteria: function () {
-                return this.rankingInfoAnalyzer.getActualCriteria();
-            },
-            searchParamsForAnalysis: function () {
-                const attributesToRetrieve = this.criteria.map((criterion) => {
-                    return cleanAttributeName(criterion)
-                });
-                attributesToRetrieve.push('_geoloc');
-
-                return Object.assign(
-                    {
-                        query: this.$store.state.panels.query
-                    },
-                    this.searchParams,
-                    {
-                        page: 0,
-                        analytics: false,
-                        enableABTest: false,
-                        getRankingInfo: true,
-                        hitsPerPage: this.$store.state.panels.analyseMaxNbPoints,
-                        attributesToSnippet: [],
-                        attributesToHighlight: [],
-                        attributesToRetrieve: attributesToRetrieve,
-                    },
-                )
-            },
         },
         methods: {
-            init: function () {
-                this.triggerSearch();
-                this.triggerAnalyseSearch();
-                this.loadIndexSettings();
-                this.loadKeysIndexer();
-            },
             formatHumanNumber,
             onFetchSynonyms: function (synonyms, nbSynonyms) {
                 this.nbSynonyms = nbSynonyms;
@@ -196,93 +110,13 @@
             onFetchRules: function (rules, nbRules) {
                 this.nbRules = nbRules;
             },
-            onUpdateHitsCount: function (event) {
-                this.nbHits = event;
+            onFetchHits: function (algoliaResponse) {
+                this.algoliaResponse = algoliaResponse;
+                this.nbHits = algoliaResponse ? algoliaResponse.nbHits : 0;
             },
             onUpdateChecksCount: function (event) {
                 this.nbChecks = event;
             },
-            triggerSearch: async function () {
-                const index = await this.getSearchIndex();
-                const requestNumber = this.requestNumber++;
-
-                index.search(this.searchParamsWithDefaults).then((res) => {
-                    if (this.requestNumberReceived > requestNumber) return;
-                    this.requestNumberReceived = requestNumber;
-
-                    this.algoliaResponse = Object.freeze(res);
-                    this.errorMessage = '';
-                    this.onUpdateHitsCount(this.algoliaResponse.nbHits);
-
-                    if (this.anchor) {
-                        Vue.nextTick(() => {
-                            goToAnchor(this.anchor);
-                            this.anchor = null;
-                        });
-                    }
-                }).catch((e) => {
-                    this.algoliaResponse = null;
-                    this.errorMessage = e.message;
-                });
-            },
-            triggerAnalyseSearch: async function () {
-                const index = await this.getSearchIndex();
-                const requestNumberAnalysis = this.requestNumberAnalysis++;
-
-                index.search(this.searchParamsForAnalysis).then((res) => {
-                    if (this.requestNumberAnalysisReceived > requestNumberAnalysis) return;
-                    this.requestNumberAnalysisReceived = requestNumberAnalysis;
-
-                    this.panelAlgoliaResponse = Object.freeze(res);
-                }).catch(() => {
-                });
-            },
-            loadIndexSettings: async function () {
-                const client = await this.getClient();
-                client._jsonRequest({
-                    method: 'GET',
-                    url: '/1/indexes/' + encodeURIComponent(this.panelIndexName) + '/settings?getVersion=2&advanced=1',
-                    body: {},
-                    hostType: 'read',
-                    callback: (err, indexSettings) => {
-                        const settings = {};
-                        const advancedSettings = {};
-                        let key;
-                        for (key in indexSettings) {
-                            if (key === 'version') continue;
-                            if (key === 'userData') continue;
-                            if (this.advancedIndexSettingsNames.indexOf(key) !== -1) {
-                                advancedSettings[key] = indexSettings[key];
-                                continue;
-                            }
-
-                            if (paramsSpecs[key] === undefined
-                                || paramsSpecs[key].settings_default === undefined
-                                || JSON.stringify(indexSettings[key]) !== JSON.stringify(paramsSpecs[key].settings_default)
-                            ) {
-                                if (paramsSpecs[key] === undefined || paramsSpecs[key].ignore_value === undefined
-                                    || JSON.stringify(indexSettings[key]) !== JSON.stringify(paramsSpecs[key].ignore_value)
-                                ) {
-                                    settings[key] = indexSettings[key];
-                                }
-                            }
-                        }
-
-                        this.$store.commit(`${this.panelIndexCommitPrefix}/replaceIndexSettings`, settings);
-                        this.$store.commit(`${this.panelIndexCommitPrefix}/setAdvancedIndexSettings`, advancedSettings);
-                    }
-                });
-            },
-            loadKeysIndexer: async function () {
-                const analyze = await analyseIndex(this.panelAppId, this.panelAdminAPIKey, this.panelIndexName);
-                const keysIndexer = new searchIndexer();
-                analyze.keys.forEach(function (key) {
-                    keysIndexer.addString(key);
-                });
-
-                this.$store.commit(`${this.panelIndexCommitPrefix}/setIndexAnalyzer`, analyze);
-                this.$store.commit(`${this.panelIndexCommitPrefix}/setKeysIndexer`, keysIndexer);
-            }
         },
     }
 </script>

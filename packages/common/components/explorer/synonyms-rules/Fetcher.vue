@@ -73,7 +73,7 @@
 </template>
 
 <script>
-    import indexMixin from "../../../mixins/indexMixin";
+    import indexInfoMixin from "../../../mixins/indexInfoMixin";
     import Collection from "./Collection";
 
     import PlusCircleIcon from "../../../icons/plus-circle.svg";
@@ -81,12 +81,13 @@
     import SynonymEdit from "./SynonymEdit";
     import RuleEdit from "./RuleEdit";
     import Pagination from "../results/Pagination";
+    import {getSearchIndex} from "../../../utils/algoliaHelpers";
 
     export default {
         name: 'Fetcher',
         components: {Pagination, RuleEdit, SynonymEdit, Tooltip, Collection, PlusCircleIcon},
         props: ['panelKey', 'methodName'],
-        mixins: [indexMixin],
+        mixins: [indexInfoMixin],
         data: function () {
             return {
                 objs: [],
@@ -157,7 +158,7 @@
                     this.allObjs = [];
                 }
 
-                const index = await this.getSearchIndex();
+                const index = await getSearchIndex(this.panelAppId, this.panelAdminAPIKey, this.panelIndexName, this.panelServer);
                 const hitsPerPage = loadAll ? 1000 : 20;
                 const res = await index[this.methodName]({
                     query: this.query,

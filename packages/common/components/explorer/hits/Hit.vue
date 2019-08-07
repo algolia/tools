@@ -144,10 +144,10 @@
                 return flattenRecord(this.hit)
             },
             personalized: function () {
-                return this.hit._rankingInfo.personalization && this.hit._rankingInfo.personalization.filtersScore > 0;
+                return this.hit._rankingInfo && this.hit._rankingInfo.personalization && this.hit._rankingInfo.personalization.filtersScore > 0;
             },
             promoted: function () {
-                return this.hit._rankingInfo.promoted;
+                return this.hit._rankingInfo && this.hit._rankingInfo.promoted;
             },
             hitNumber: function () {
                 return this.algoliaResponse.hitsPerPage * this.algoliaResponse.page + this.hitPosition + 1;

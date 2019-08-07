@@ -45,6 +45,7 @@
         },
         created: function () {
             this.updateIndices(false);
+            this.registerIndex();
         },
         computed: {
             indicesWithForced: function () {
@@ -78,9 +79,21 @@
             indexName: function () {
                 this.$emit('input', this.indexInfo.name);
                 this.updateIndices(false);
+                this.registerIndex();
             }
         },
         methods: {
+            registerIndex: function () {
+                if (this.indexInfo.name) {
+                    this.$store.commit(`apps/${this.appId}/addIndex`, this.indexName);
+                    ['searchParams', 'searchParams2'].forEach((k) => {
+                        this.$store.commit(`apps/${this.appId}/${this.indexName}/deleteParam`, {
+                            configKey: k,
+                            inputKey: 'page'
+                        });
+                    });
+                }
+            },
             refine: async function (query) {
                 if (query.length <= 0) {
                     this.indices = this.allIndices;

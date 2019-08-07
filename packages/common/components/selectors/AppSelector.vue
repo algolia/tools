@@ -1,7 +1,7 @@
 <template>
     <custom-select
         :value="value"
-        @input="$emit('input', $event)"
+        @input="onInput"
         class="min-w-140"
         :options="Object.keys(apps)"
     >
@@ -35,6 +35,15 @@
             apps: function () {
                 return this.$store.state.apps;
             }
+        },
+        created: function () {
+            if (this.value) this.$store.commit("apps/addAppId", {appId: this.value});
+        },
+        methods: {
+            onInput: function (e) {
+                this.$emit('input', e);
+                this.$store.commit("apps/addAppId", {appId: e});
+            },
         }
     }
 </script>

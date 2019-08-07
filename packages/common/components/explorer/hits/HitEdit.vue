@@ -35,12 +35,13 @@
     import AceEditor from "../../editor/AceEditor";
 
     import LoaderIcon from 'common/icons/loader.svg'
-    import indexMixin from "../../../mixins/indexMixin";
+    import indexInfoMixin from "../../../mixins/indexInfoMixin";
+    import {getSearchIndex} from "../../../utils/algoliaHelpers";
 
     export default {
         name: 'HitEdit',
         components: {AceEditor, LoaderIcon},
-        mixins: [indexMixin],
+        mixins: [indexInfoMixin],
         props: ['hit', 'panelKey', 'allowSaveWithoutEdit'],
         data: function () {
             const editableHit = {};
@@ -79,7 +80,7 @@
                 this.nbErrors = annotations.length;
             },
             save: async function () {
-                const index = await this.getSearchIndex();
+                const index = await getSearchIndex(this.panelAppId, this.panelAdminAPIKey, this.panelIndexName, this.panelServer);
                 const hit = JSON.parse(this.newHit);
                 const hits = Array.isArray(hit) ? hit : [hit];
                 const task = await index.addObjects(hits);

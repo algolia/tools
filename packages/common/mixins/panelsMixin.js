@@ -16,14 +16,6 @@ export default {
                 this.$store.commit(`panels/${this.panelKey}/setServer`, value);
             }
         },
-        panelAlgoliaResponse: {
-            get () {
-                return this.$store.state.panels[this.panelKey].algoliaResponse;
-            },
-            set (value) {
-                this.$store.commit(`panels/${this.panelKey}/setAlgoliaResponse`, value);
-            }
-        },
         panelCurrentTab: {
             get () {
                 return this.$store.state.panels[this.panelKey].currentTab || 'hits';

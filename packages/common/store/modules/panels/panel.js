@@ -7,14 +7,10 @@ export default function (appId, indexName) {
             appId: appId,
             indexName: indexName,
             server: 'dsn',
-            algoliaResponse: null,
             displayMode: 'list',
             currentTab: 'hits'
         },
         mutations: {
-            setAlgoliaResponse(state, payload) {
-                Vue.set(state, 'algoliaResponse', payload);
-            },
             setPanelConfig(state, payload) {
                 Vue.set(state, 'appId', payload.appId);
                 Vue.set(state, 'indexName', payload.indexName);

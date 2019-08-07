@@ -43,12 +43,13 @@
 
 <script>
     import {formatHumanNumber, numberWithCommas} from "common/utils/formatters"
-    import indexMixin from "common/mixins/indexMixin";
+    import {getClient} from 'common/utils/algoliaHelpers';
+    import indexInfoMixin from "common/mixins/indexInfoMixin";
 
     export default {
         name: 'IndexInfo',
         props: ['panelKey'],
-        mixins: [indexMixin],
+        mixins: [indexInfoMixin],
         components: {},
         data: function () {
             return {
@@ -95,9 +96,10 @@
         },
         methods: {
             fetchIndexData: async function (indexName) {
-                if (!this.panelClient) return;
+                if (!this.panelIndexData) return;
 
-                const res = await this.panelClient.listIndexes('0&prefix=' + encodeURIComponent(indexName));
+                const client = await getClient(this.panelAppId, this.panelAdminAPIKey);
+                const res = await client.listIndexes('0&prefix=' + encodeURIComponent(indexName));
 
                 res.items.forEach((indexInfo) => {
                     if (indexInfo.name === indexName) {
@@ -107,20 +109,21 @@
 
 
             },
-            fetchBuildingIndices: function () {
-                if (this.panelIndexData) {
-                    this.panelClient._jsonRequest({
-                        method: 'GET',
-                        url: '/1/indexes/*/stats',
-                        body: {},
-                        hostType: 'write',
-                        callback: (err, data) => {
-                            if (!err) {
-                                this.buildingIndices = data.building;
-                            }
+            fetchBuildingIndices: async function () {
+                if (!this.panelIndexData) return;
+
+                const client = await getClient(this.panelAppId, this.panelAdminAPIKey)
+                client._jsonRequest({
+                    method: 'GET',
+                    url: '/1/indexes/*/stats',
+                    body: {},
+                    hostType: 'write',
+                    callback: (err, data) => {
+                        if (!err) {
+                            this.buildingIndices = data.building;
                         }
-                    });
-                }
+                    }
+                });
             }
         }
     }

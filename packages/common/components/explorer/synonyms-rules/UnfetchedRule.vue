@@ -4,13 +4,14 @@
 
 <script>
     import Rule from "./Rule";
-    import indexMixin from "../../../mixins/indexMixin";
+    import indexInfoMixin from "../../../mixins/indexInfoMixin";
+    import {getSearchIndex} from "../../../utils/algoliaHelpers";
 
     export default {
         name: 'UnfetchedRule',
         components: {Rule},
         props: ['panelKey', 'ruleId', 'canJump'],
-        mixins: [indexMixin],
+        mixins: [indexInfoMixin],
         data: function () {
             return {
                 rule: false,
@@ -26,7 +27,7 @@
         },
         methods: {
             getRule: async function () {
-                const index = await this.getSearchIndex();
+                const index = await getSearchIndex(this.panelAppId, this.panelAdminAPIKey, this.panelIndexName, this.panelServer);
                 this.rule = await index.getRule(this.ruleId);
             }
         }

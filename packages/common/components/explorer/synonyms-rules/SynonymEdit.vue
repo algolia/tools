@@ -71,13 +71,14 @@
 
 <script>
     import LoaderIcon from 'common/icons/loader.svg'
-    import indexMixin from "../../../mixins/indexMixin";
+    import indexInfoMixin from "../../../mixins/indexInfoMixin";
     import synonymMixin from "../../../mixins/synonymMixin";
+    import {getSearchIndex} from "../../../utils/algoliaHelpers";
 
     export default {
         name: 'SynonymEdit',
         components: {LoaderIcon},
-        mixins: [indexMixin, synonymMixin],
+        mixins: [indexInfoMixin, synonymMixin],
         props: ['synonym', 'panelKey', 'allowSaveWithoutEdit'],
         data: function () {
             return {
@@ -137,7 +138,7 @@
                 return synonym;
             },
             save: async function () {
-                const index = await this.getSearchIndex();
+                const index = await getSearchIndex(this.panelAppId, this.panelAdminAPIKey, this.panelIndexName, this.panelServer);
                 const task = await index.saveSynonym(this.getNewSynonym(), { forwardToReplicas: this.forwardToReplicas });
                 this.saving = true;
                 await index.waitTask(task['taskID']);

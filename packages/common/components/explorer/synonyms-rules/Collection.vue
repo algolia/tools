@@ -91,14 +91,14 @@
 <script>
     import Synonym from "./Synonym";
     import Rule from "./Rule";
-    import indexMixin from "../../../mixins/indexMixin";
+    import indexInfoMixin from "../../../mixins/indexInfoMixin";
     import RuleBatch from "./RuleBatch";
     import Tooltip from "../../Tooltip";
     export default {
         name: 'Collection',
         components: {Tooltip, RuleBatch, Rule, Synonym},
         props: ['panelKey', 'objs', 'type', 'needShowMoreButton'],
-        mixins: [indexMixin],
+        mixins: [indexInfoMixin],
         data: function () {
             return {
                 expanded: false,

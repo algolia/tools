@@ -23,13 +23,14 @@
 
 <script>
     import LoaderIcon from 'common/icons/loader.svg'
-    import indexMixin from "../../../mixins/indexMixin";
+    import indexInfoMixin from "../../../mixins/indexInfoMixin";
+    import {getSearchIndex} from "../../../utils/algoliaHelpers";
 
     export default {
         name: 'HitDelete',
         props: ['panelKey', 'hit'],
         components: {LoaderIcon},
-        mixins: [indexMixin],
+        mixins: [indexInfoMixin],
         data: function () {
             return {
                 saving: false,
@@ -37,7 +38,7 @@
         },
         methods: {
             deleteHit: async function () {
-                const index = await this.getSearchIndex();
+                const index = await getSearchIndex(this.panelAppId, this.panelAdminAPIKey, this.panelIndexName, this.panelServer);
                 const task = await index.deleteObject(this.hit.objectID);
                 this.saving = true;
                 await index.waitTask(task['taskID']);

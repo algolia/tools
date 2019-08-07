@@ -22,14 +22,15 @@
 <script>
     import flattenRecord from '../../../utils/flattenRecordForImagePreview';
     import HitImage from "../hits/HitImage";
-    import indexMixin from "../../../mixins/indexMixin";
+    import indexInfoMixin from "../../../mixins/indexInfoMixin";
     import {properHighlight} from "common/utils/formatters";
+    import {getSearchIndex} from "../../../utils/algoliaHelpers";
 
     export default {
         name: 'PromotedHit',
         components: {HitImage},
         props: ['panelKey', 'hit', 'id', 'position'],
-        mixins: [indexMixin],
+        mixins: [indexInfoMixin],
         data: function () {
             return {
                 fetched: null,
@@ -37,7 +38,7 @@
         },
         created: async function () {
             if (!this.hit) {
-                const index = await this.getSearchIndex();
+                const index = await getSearchIndex(this.panelAppId, this.panelAdminAPIKey, this.panelIndexName, this.panelServer);
                 try {
                     this.fetched = await index.getObject(this.id);
                 } catch (e) {}

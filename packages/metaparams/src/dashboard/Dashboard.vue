@@ -84,7 +84,7 @@
     import AppSelector from "common/components/selectors/AppSelector";
     import IndexSelector from "common/components/selectors/IndexSelector";
 
-    import indexMixin from "common/mixins/indexMixin";
+    import indexInfoMixin from "common/mixins/indexInfoMixin";
 
     import FlipLeftIcon from "common/icons/flip-left.svg";
     import FlipRightIcon from "common/icons/flip-right.svg";
@@ -117,18 +117,7 @@
             MinimizeIcon,
         },
         props: ['panelKey'],
-        mixins: [indexMixin],
-        watch: {
-            panelAppId: function () {
-                if (this.panelIndexName) this.registerCurrentIndex();
-            },
-            panelIndexName: function () {
-                if (this.panelIndexName) this.registerCurrentIndex();
-            }
-        },
-        created: function () {
-            this.registerCurrentIndex();
-        },
+        mixins: [indexInfoMixin],
         computed: {
             appId: {
                 get () {
@@ -147,15 +136,5 @@
                 }
             },
         },
-        methods: {
-            registerCurrentIndex: function () {
-                if (this.appId) this.$store.commit("apps/addAppId", {appId: this.appId});
-                if (this.indexName) this.$store.commit(`apps/${this.appId}/addIndex`, this.indexName);
-                this.$store.commit(`${this.panelIndexCommitPrefix}/deleteParam`, {
-                    configKey: this.searchConfigKey,
-                    inputKey: 'page'
-                });
-            },
-        }
     }
 </script>

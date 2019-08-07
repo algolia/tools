@@ -43,15 +43,16 @@
 <script>
     import PlusCircleIcon from "common/icons/plus-circle.svg";
     import LoaderIcon from 'common/icons/loader.svg'
+    import {getClient} from 'common/utils/algoliaHelpers';
 
-    import indexMixin from "common/mixins/indexMixin";
+    import indexInfoMixin from "common/mixins/indexInfoMixin";
     import Vue from 'vue';
     import Tooltip from "common/components/Tooltip";
 
     export default {
         name: 'NewIndex',
         components: {Tooltip, PlusCircleIcon, LoaderIcon},
-        mixins: [indexMixin],
+        mixins: [indexInfoMixin],
         props: ['panelKey'],
         data: function () {
             return {
@@ -62,7 +63,7 @@
         },
         methods: {
             createIndex: async function () {
-                const client = this.panelClient;
+                const client = await getClient(this.panelAppId, this.panelAdminAPIKey);
                 const index = client.initIndex(this.newIndexName);
                 const res = await index.setSettings({});
                 this.pendingCreation = true;

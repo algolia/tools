@@ -30,7 +30,7 @@
                     if (this.$store.state.panels.splitMode) {
                         if (!value) {
                             this.$store.commit(`apps/${this.$store.state.panels.rightPanel.appId}/${this.$store.state.panels.rightPanel.indexName}/deleteParam`, {
-                                configKey: 'searchParams2',
+                                configKey: this.sameIndexOnEachPanel ? 'searchParams2' : 'searchParams',
                                 inputKey: 'query',
                             });
                         } else {
