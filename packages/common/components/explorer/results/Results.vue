@@ -1,5 +1,12 @@
 <template>
     <div>
+        <div v-if="errorMessage.length > 0" class="border border-mars-1 m-16 p-8 rounded">
+            <div>{{errorMessage}}</div>
+            <div v-if="errorMessage.includes('Invalid Application-ID or API key')" class="mt-12">
+                <div>App Id: {{panelAppId}}</div>
+                <div>API Key: <input v-model="panelAdminAPIKey" class="input-custom inline" placeholder="adminAPIKey" /></div>
+            </div>
+        </div>
         <div class="flex mt-4">
             <div class="flex rounded overflow-hidden text-nova-grey">
                 <div
@@ -54,10 +61,24 @@
             @onStopEdit="isAddingRecord = false; jumpedHit = null"
         />
         <div>
-            <results-list v-if="displayMode === 'list' || displayMode === 'images'" v-bind="$props" :display-mode="displayMode" />
+            <perform-search
+                :search-params="searchParams"
+                :search-params-raw="searchParamsRaw"
+                :app-id="panelAppId"
+                :api-key="panelAdminAPIKey"
+                :server="panelServer"
+                :index-name="panelIndexName"
+                @onFetchHits="onFetchHits"
+                @onUpdateAlgoliaResponse="algoliaResponse = $event"
+                @onUpdateError="errorMessage = $event"
+                @onUpdateAnalyseAlgoliaResponse="analyseAlgoliaResponse = $event"
+            />
+            <results-list v-if="algoliaResponse && (displayMode === 'list' || displayMode === 'images')"
+                          :panel-key="panelKey" :algolia-response="algoliaResponse" :display-mode="displayMode" :read-only="readOnly" />
             <export-params v-if="displayMode === 'raw'" :panel-key="panelKey" />
             <raw-response v-if="displayMode === 'raw'" :algolia-response="algoliaResponse" />
-            <ranking-charts v-if="displayMode === 'charts'" :panelKey="panelKey" :hits="analyseHits" />
+            <ranking-charts v-if="analyseAlgoliaResponse && displayMode === 'charts'"
+                            :panelKey="panelKey" :hits="analyseAlgoliaResponse.hits" />
         </div>
     </div>
 </template>
@@ -76,12 +97,14 @@
     import indexInfoMixin from "../../../mixins/indexInfoMixin";
     import HitEdit from "../hits/HitEdit";
     import Tooltip from "../../Tooltip";
+    import PerformSearch from "./PerformSearch";
 
     export default {
         name: 'Results',
-        props: ['panelKey', 'algoliaResponse', 'analyseAlgoliaResponse'],
+        props: ['panelKey', 'readOnly'],
         mixins: [indexInfoMixin],
         components: {
+            PerformSearch,
             Tooltip,
             HitEdit, ExportParams, RawResponse, RankingCharts, ResultsList, ListIcon, BarChartIcon, CodeIcon, GridIcon, PlusCircleIcon},
         created: function () {
@@ -94,6 +117,9 @@
             return {
                 isAddingRecord: false,
                 jumpedHit: null,
+                algoliaResponse: null,
+                analyseAlgoliaResponse: null,
+                errorMessage: '',
             }
         },
         computed: {
@@ -105,10 +131,12 @@
                     this.$store.commit(`panels/${this.panelKey}/setDisplayMode`, value);
                 }
             },
-            analyseHits: function () {
-                if (this.analyseAlgoliaResponse) return this.analyseAlgoliaResponse.hits;
-                return [];
-            },
+        },
+        methods: {
+            onFetchHits: function (algoliaResponse) {
+                this.algoliaResponse = algoliaResponse;
+                this.$emit('onFetchHits', algoliaResponse);
+            }
         }
     }
 </script>

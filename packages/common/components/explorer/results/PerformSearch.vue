@@ -13,7 +13,7 @@
     import {goToAnchor} from "common/utils/domHelpers";
 
     export default {
-        props: ['appId', 'indexName', 'apiKey', 'server', 'query', 'searchParams', 'searchParamsRaw'],
+        props: ['appId', 'indexName', 'apiKey', 'server', 'searchParams', 'searchParamsRaw'],
         data: function () {
             return {
                 indexSettings: {},
@@ -38,6 +38,12 @@
             });
         },
         watch: {
+            query: function () {
+                this.$store.commit(`${this.panelIndexCommitPrefix}/deleteParam`, {
+                    configKey: this.searchConfigKey,
+                    inputKey: 'page'
+                });
+            },
             panelServer: function (o, n) {
                 if (o !== n) this.triggerSearch();
             },
@@ -50,8 +56,12 @@
             appId: function (o, n) { if (o !== n) this.init() },
             indexName: function (o, n) { if (o !== n) this.init() },
             apiKey: function (o, n) { if (o !== n) this.init() },
+
         },
         computed: {
+            query: function () {
+                return this.$store.state.panels.query;
+            },
             rankingInfoAnalyzer: function () {
                 return new RankingInfoAnalyser(this.indexSettings);
             },

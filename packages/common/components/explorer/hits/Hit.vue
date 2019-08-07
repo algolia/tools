@@ -76,7 +76,7 @@
                         />
                         <tooltip>Delete this record.<br>Will ask for confirmation</tooltip>
                     </button>
-                    <div v-if="isReadOnly" class="ml-12">
+                    <div v-if="isReplica" class="ml-12">
                         Read-only replica
                     </div>
                 </div>
@@ -124,7 +124,7 @@
             Tooltip,
             HitImage, HitDelete, HitEdit, RankingInfo, Attributes, EditIcon, TrashIcon, FlipLeftIcon, FlipRightIcon, MaximizeIcon, MinimizeIcon},
         mixins: [indexInfoMixin],
-        props: ['algoliaResponse', 'panelKey', 'topAttributes', 'searchableAttributes', 'hit', 'previousHit', 'hitPosition', 'displayMode', 'recordCanJump', 'titleAttribute'],
+        props: ['algoliaResponse', 'panelKey', 'topAttributes', 'searchableAttributes', 'hit', 'previousHit', 'hitPosition', 'displayMode', 'recordCanJump', 'titleAttribute', 'readOnly'],
         data: function () {
             return {
                 confirmDelete: false,

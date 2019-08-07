@@ -26,6 +26,7 @@
                      :display-mode="displayMode"
                      :record-can-jump="recordCanJump"
                      :title-attribute="titleAttribute"
+                     :read-only="readOnly"
                 />
                 <!--<facets :attributes-for-faceting="attributesForFaceting" :panel-key="panelKey" class="blo" />-->
             </div>
@@ -62,7 +63,7 @@
 
     export default {
         name: 'ResultsList',
-        props: ['panelKey', 'algoliaResponse', 'displayMode'],
+        props: ['panelKey', 'algoliaResponse', 'displayMode', 'readOnly'],
         mixins: [indexInfoMixin],
         components: {AppliedAlternatives, Hit, ResultsInfo, Pagination, AppliedRules},
         watch: {

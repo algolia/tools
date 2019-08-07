@@ -37,7 +37,12 @@
             </div>
             <div class="w-half p-16">
                 <div class="w-full bg-white p-8">
-                    <results v-if="panelIndexData && algoliaResponse" :algolia-response="algoliaResponse" :panel-key="panelKey"/>
+                    <results
+                        v-if="panelIndexData && algoliaResponse"
+                        :algolia-response="algoliaResponse"
+                        :panel-key="panelKey"
+                        :read-only="true"
+                    />
                 </div>
             </div>
         </div>
@@ -57,12 +62,12 @@
     import TestEdit from "@/relevance-testing/TestEdit"
     import data from "@/relevance-testing/data";
 
-    import indexMixin from "common/mixins/indexMixin";
+    import indexInfoMixin from "common/mixins/indexInfoMixin";
 
     export default {
         name: 'RelevanceTesting',
         components: {TestEdit, Badge, DisplayConfig, AppHeader, AppSelector, AppManagement, IndexSelector, CustomSelect, Results},
-        mixins: [indexMixin],
+        mixins: [indexInfoMixin],
         data: function () {
             return {
                 testSuite: new TestSuite(data),

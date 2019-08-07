@@ -31,33 +31,13 @@
                 Checks ({{formatHumanNumber(nbChecks)}})
             </div>
         </div>
-        <div v-if="errorMessage.length > 0" class="border border-mars-1 m-16 p-8 rounded">
-            <div>{{errorMessage}}</div>
-            <div v-if="errorMessage.includes('Invalid Application-ID or API key')" class="mt-12">
-                <div>App Id: {{panelAppId}}</div>
-                <div>API Key: <input v-model="panelAdminAPIKey" class="input-custom inline" placeholder="adminAPIKey" /></div>
-            </div>
-        </div>
-        <perform-search
-            :search-params="searchParams"
-            :search-params-raw="searchParamsRaw"
-            :app-id="panelAppId"
-            :api-key="panelAdminAPIKey"
-            :server="panelServer"
-            :index-name="panelIndexName"
-            :query="query"
-            @onFetchHits="onFetchHits"
-            @onUpdateAlgoliaResponse="algoliaResponse = $event"
-            @onUpdateError="errorMessage = $event"
-            @onUpdateAnalyseAlgoliaResponse="analyseAlgoliaResponse = $event"
-        />
-        <div v-if="algoliaResponse" class="p-8">
-            <results v-show="panelCurrentTab === 'hits'" :algolia-response="algoliaResponse" :analyse-algolia-response="analyseAlgoliaResponse"
-                     :panel-key="panelKey"/>
+        <div class="p-8">
+            <results v-show="panelCurrentTab === 'hits'" :panel-key="panelKey"
+                 @onFetchHits="onFetchHits"/>
             <fetcher v-show="panelCurrentTab === 'synonyms'" :panel-key="panelKey" method-name="searchSynonyms"
-                     @onFetch="onFetchSynonyms"/>
+                 @onFetch="onFetchSynonyms"/>
             <fetcher v-show="panelCurrentTab === 'rules'" :panel-key="panelKey" method-name="searchRules"
-                     @onFetch="onFetchRules"/>
+                 @onFetch="onFetchRules"/>
             <checks v-show="panelCurrentTab === 'checks'" :panel-key="panelKey" @onUpdateCount="onUpdateChecksCount"/>
         </div>
     </div>
@@ -70,11 +50,10 @@
     import Checks from "common/components/explorer/checks/Checks";
     import indexInfoMixin from "common/mixins/indexInfoMixin";
     import panelsMixin from "common/mixins/panelsMixin";
-    import PerformSearch from "@/dashboard/PerformSearch";
 
     export default {
         name: 'Explorer',
-        components: {PerformSearch, Checks, Fetcher, Results},
+        components: {Checks, Fetcher, Results},
         props: ['panelKey'],
         mixins: [indexInfoMixin, panelsMixin],
         data: function () {
@@ -85,22 +64,8 @@
                 nbChecks: 0,
                 algoliaResponse: null,
                 analyseAlgoliaResponse: null,
-                errorMessage: '',
                 anchor: null,
             };
-        },
-        watch: {
-            query: function () {
-                this.$store.commit(`${this.panelIndexCommitPrefix}/deleteParam`, {
-                    configKey: this.searchConfigKey,
-                    inputKey: 'page'
-                });
-            },
-        },
-        computed: {
-            query: function () {
-                return this.$store.state.panels.query;
-            },
         },
         methods: {
             formatHumanNumber,
@@ -111,7 +76,6 @@
                 this.nbRules = nbRules;
             },
             onFetchHits: function (algoliaResponse) {
-                this.algoliaResponse = algoliaResponse;
                 this.nbHits = algoliaResponse ? algoliaResponse.nbHits : 0;
             },
             onUpdateChecksCount: function (event) {
