@@ -42,9 +42,9 @@
     import TrashIcon from "common/icons/trash.svg";
     import LoaderIcon from 'common/icons/loader.svg'
 
-    import indexMixin from "@/mixins/indexMixin";
+    import indexMixin from "common/mixins/indexMixin";
     import Vue from 'vue';
-    import Tooltip from "@/common/Tooltip";
+    import Tooltip from "common/components/Tooltip";
 
     export default {
         name: 'IndexDelete',

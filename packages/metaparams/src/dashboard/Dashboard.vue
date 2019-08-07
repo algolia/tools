@@ -75,16 +75,16 @@
 </template>
 
 <script>
-    import Explorer from "../explorer/Explorer";
+    import Explorer from "./Explorer";
     import DashboardConfig from "./DashboardConfig";
     import Queries from "@/queries/queries";
     import IndexInfo from "@/dashboard/IndexInfo";
-    import CustomSelect from "@/html-elements/CustomSelect";
+    import CustomSelect from "common/components/selectors/CustomSelect";
     import IndexNew from "@/dashboard/IndexNew";
     import AppSelector from "common/components/selectors/AppSelector";
     import IndexSelector from "common/components/selectors/IndexSelector";
 
-    import indexMixin from "@/mixins/indexMixin";
+    import indexMixin from "common/mixins/indexMixin";
 
     import FlipLeftIcon from "common/icons/flip-left.svg";
     import FlipRightIcon from "common/icons/flip-right.svg";
@@ -92,7 +92,7 @@
     import MinimizeIcon from "common/icons/minimize.svg";
     import ServerIcon from "common/icons/server.svg";
     import IndexDelete from "@/dashboard/IndexDelete";
-    import Tooltip from "@/common/Tooltip";
+    import Tooltip from "common/components/Tooltip";
     import SearchBox from "@/dashboard/SearchBox";
 
 

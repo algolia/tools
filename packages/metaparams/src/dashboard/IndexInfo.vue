@@ -43,7 +43,7 @@
 
 <script>
     import {formatHumanNumber, numberWithCommas} from "common/utils/formatters"
-    import indexMixin from "@/mixins/indexMixin";
+    import indexMixin from "common/mixins/indexMixin";
 
     export default {
         name: 'IndexInfo',

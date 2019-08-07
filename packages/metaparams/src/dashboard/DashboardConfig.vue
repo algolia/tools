@@ -9,7 +9,7 @@
 
 <script>
     import ParamsPanel from "@/dashboard/ParamsPanel";
-    import panelsMixin from "@/mixins/panelsMixin";
+    import panelsMixin from "common/mixins/panelsMixin";
 
     export default {
         name: 'DashboardConfig',

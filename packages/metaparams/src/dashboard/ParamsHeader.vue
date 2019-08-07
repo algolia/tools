@@ -64,8 +64,8 @@
     import HistoryIcon from "common/icons/history.svg";
     import FlipLeftIcon from "common/icons/flip-left.svg";
     import FlipRightIcon from "common/icons/flip-right.svg";
-    import Tooltip from "@/common/Tooltip";
-    import indexInfoMixin from "@/mixins/indexInfoMixin";
+    import Tooltip from "common/components/Tooltip";
+    import indexInfoMixin from "common/mixins/indexInfoMixin";
 
     export default {
         name: 'ParamsHeader',

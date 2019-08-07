@@ -77,7 +77,7 @@
     import AppHeader from "common/components/header/AppHeader";
     import AppManagement from "common/components/configuration/AppManagement";
     import DisplayConfig from "@/dashboard/DisplayConfig";
-    import CompareHits from "@/explorer/compare/CompareHits";
+    import CompareHits from "@/dashboard/CompareHits";
 
     import SplitIcon from "common/icons/split.svg";
     import CompareIcon from "common/icons/compare.svg";

@@ -14,7 +14,7 @@
 
 <script>
     import SearchIcon from "common/icons/search.svg";
-    import indexInfoMixin from "@/mixins/indexInfoMixin";
+    import indexInfoMixin from "common/mixins/indexInfoMixin";
 
     export default {
         name: 'SearchBox',

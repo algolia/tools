@@ -30,15 +30,29 @@
             <div class="mt-16">
                 <h3>Then</h3>
             </div>
-            <div v-for="(thenTest, i) in testData.then">
+            <div v-for="(requirement, i) in testData.then">
                 <div v-if="i > 0" class="my-16">AND</div>
-                <div v-if="thenTest.nbHits !== undefined">
-                    nbHits should be {{thenTest.nbHits.operator}} {{thenTest.nbHits.value}}
+                <div>
+                    <select v-model="requirement.test">
+                        <option value="contains">page contains</option>
+                        <option value="nbHits">nbHits</option>
+                    </select>
+                    <span v-if="requirement.test === 'nbHits'">
+                    should be
+                    </span>
+                    <select v-model="requirement.operator">
+                        <option value="=">(=) exactly</option>
+                        <option value="!=">(!=) not be equal to </option>
+                        <option value=">">(&gt;) more than</option>
+                        <option value=">=">(&gt;=) at least</option>
+                        <option value="<">(&lt;) less than</option>
+                        <option value="<=">(&lt;=) maximum</option>
+                    </select>
+                    <input type="number" v-model="requirement.value" />
                 </div>
-                <div v-if="thenTest.contains !== undefined">
-                    <div>first page contains {{thenTest.contains.operator}} {{thenTest.contains.value}}</div>
+                <div v-if="requirement.test === 'contains' && requirement.recordsMatching !== undefined">
                     <div>That:</div>
-                    <test-condition v-for="condition in thenTest.recordsMatching" :condition="condition" />
+                    <test-condition v-for="condition in requirement.recordsMatching" :condition="condition" />
                 </div>
             </div>
         </div>

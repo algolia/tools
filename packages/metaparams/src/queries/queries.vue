@@ -40,7 +40,7 @@
 
 <script>
     import ChevronDownIcon from "common/icons/chevron-down.svg";
-    import indexInfoMixin from "@/mixins/indexInfoMixin";
+    import indexInfoMixin from "common/mixins/indexInfoMixin";
 
     export default {
         name: 'Queries',

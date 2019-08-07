@@ -122,16 +122,14 @@ export class Test {
             hit.__index__ = i;
         });
 
-        this.passing = this.testData.then.every((condition) => {
-            let passing = true;
-            if (condition.nbHits !== undefined) {
-                 passing = passing && Test.compare(res.nbHits, condition.nbHits.operator, condition.nbHits.value)
+        this.passing = this.testData.then.every((requirement) => {
+            if (requirement.test === 'nbHits') {
+                 return Test.compare(res.nbHits, requirement.operator, requirement.value)
             }
-            if (condition.contains !== undefined) {
-                const recordsMatching = Test.findMatchingRecords(res.hits, condition.recordsMatching);
-                passing = passing && Test.compare(recordsMatching.length, condition.contains.operator, condition.contains.value);
+            if (requirement.test === 'contains') {
+                const recordsMatching = Test.findMatchingRecords(res.hits, requirement.recordsMatching);
+                return Test.compare(recordsMatching.length, requirement.operator, requirement.value);
             }
-            return passing;
         });
     }
 }

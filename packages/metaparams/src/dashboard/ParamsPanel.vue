@@ -34,7 +34,7 @@
 </template>
 
 <script>
-    import indexInfoMixin from "@/mixins/indexInfoMixin";
+    import indexInfoMixin from "common/mixins/indexInfoMixin";
     import ParamsHeader from "@/dashboard/ParamsHeader";
     import Params from "common/components/params/Params";
     import SaveOrCopySettings from "@/dashboard/SaveOrCopySettings";

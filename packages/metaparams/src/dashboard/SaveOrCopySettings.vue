@@ -88,8 +88,8 @@
     import CheckIcon from "common/icons/check.svg";
 
     import AppSelector from "common/components/selectors/AppSelector";
-    import indexInfoMixin from "@/mixins/indexInfoMixin";
-    import Tooltip from "@/common/Tooltip";
+    import indexInfoMixin from "common/mixins/indexInfoMixin";
+    import Tooltip from "common/components/Tooltip";
 
     import TaskGroupView from "common/components/TasksGroup";
     import {Task, TasksGroup} from "common/utils/tasks";

@@ -11,10 +11,9 @@ export default {
                     },
                     then: [
                         {
-                            contains: {
-                                operator: '>=',
-                                value: 1,
-                            },
+                            test: 'contains',
+                            operator: '>=',
+                            value: 1,
                             recordsMatching: [
                                 {
                                     type: "attribute",
@@ -33,10 +32,9 @@ export default {
                     },
                     then: [
                         {
-                            contains: {
-                                operator: '=',
-                                value: 1,
-                            },
+                            test: 'contains',
+                            operator: '=',
+                            value: 1,
                             recordsMatching: [
                                 {
                                     type: "attribute",
@@ -60,10 +58,9 @@ export default {
                     },
                     then: [
                         {
-                            contains: {
-                                operator: '>=',
-                                value: 2,
-                            },
+                            test: 'contains',
+                            operator: '>=',
+                            value: 2,
                             recordsMatching: [
                                 {
                                     type: "attribute",
@@ -82,10 +79,9 @@ export default {
                     },
                     then: [
                         {
-                            nbHits: {
-                                operator: '>=',
-                                value: 2,
-                            },
+                            test: 'nbHits',
+                            operator: '>=',
+                            value: 2,
                         }
                     ],
                 },
@@ -101,10 +97,9 @@ export default {
                     },
                     then: [
                         {
-                            contains: {
-                                operator: '>=',
-                                value: 1,
-                            },
+                            test: 'contains',
+                            operator: '>=',
+                            value: 1,
                             recordsMatching: [
                                 {
                                     type: "attribute",
@@ -133,10 +128,9 @@ export default {
                     },
                     then: [
                         {
-                            contains: {
-                                operator: '>=',
-                                value: 1,
-                            },
+                            test: 'contains',
+                            operator: '>=',
+                            value: 1,
                             recordsMatching: [
                                 {
                                     type: "attribute",
@@ -152,10 +146,9 @@ export default {
                             ],
                         },
                         {
-                            contains: {
-                                operator: '>=',
-                                value: 1,
-                            },
+                            test: 'contains',
+                            operator: '>=',
+                            value: 1,
                             recordsMatching: [
                                 {
                                     type: "attribute",
