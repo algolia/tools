@@ -62,9 +62,6 @@
                 nbRules: 0,
                 nbSynonyms: 0,
                 nbChecks: 0,
-                algoliaResponse: null,
-                analyseAlgoliaResponse: null,
-                anchor: null,
             };
         },
         methods: {

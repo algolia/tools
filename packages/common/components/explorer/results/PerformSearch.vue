@@ -16,6 +16,7 @@
         props: ['appId', 'indexName', 'apiKey', 'server', 'searchParams', 'searchParamsRaw'],
         data: function () {
             return {
+                anchor: null,
                 indexSettings: {},
                 requestNumber: 0,
                 requestNumberReceived: 0,
@@ -39,9 +40,11 @@
         },
         watch: {
             query: function () {
-                this.$store.commit(`${this.panelIndexCommitPrefix}/deleteParam`, {
-                    configKey: this.searchConfigKey,
-                    inputKey: 'page'
+                ['searchParams', 'searchParams2'].forEach((key) => {
+                    this.$store.commit(`apps/${this.appId}/${this.indexName}/deleteParam`, {
+                        configKey: key,
+                        inputKey: 'page'
+                    });
                 });
             },
             panelServer: function (o, n) {
