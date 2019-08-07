@@ -1,4 +1,4 @@
-import {get} from 'common/utils/objectHelpers';
+import {getRaw} from 'common/utils/objectHelpers';
 import {getCriterionValue} from 'common/utils/rankingInfo';
 
 export class TestSuite {
@@ -62,8 +62,10 @@ export class Test {
 
     static compare(a, operator, b) {
         if (operator === '=') {
+            if (Array.isArray(a)) return a.indexOf(b) !== -1;
             return a === b;
         } else if (operator === '!=') {
+            if (Array.isArray(a)) return a.indexOf(b) === -1;
             return a !== b;
         } else if (operator === '>') {
             return a > b;
@@ -78,7 +80,7 @@ export class Test {
 
     static meetCondition(hit, condition, res) {
         if (condition.type === 'attribute') {
-            return Test.compare(get(hit, condition.key, null), condition.operator, condition.value);
+            return Test.compare(getRaw(hit, condition.key, null), condition.operator, condition.value);
         } else if (condition.type === 'position') {
             return Test.compare(hit.__index__, condition.operator, condition.value);
         } else if (condition.type === 'rankingInfo') {
@@ -112,7 +114,7 @@ export class Test {
         this.reset();
         const res = await algoliaIndex.search({
             ...this.testData.when,
-            hitsPerPage: 1000,
+            hitsPerPage: hitsPerPage,
             getRankingInfo: true,
         });
 
@@ -120,18 +122,16 @@ export class Test {
             hit.__index__ = i;
         });
 
-        if (this.testData.should !== undefined) {
-            const recordsMatching = Test.findMatchingRecords(res.hits, this.testData.recordsMatching);
-            this.passing = recordsMatching.length > 0 && recordsMatching.every((record) => {
-                return this.testData.should.every((condition) => {
-                    return Test.meetCondition(record, condition, res);
-                });
-            });
-        } else if (this.testData.firstPageContain !== undefined) {
-            const recordsMatching = Test.findMatchingRecords(res.hits.slice(0, hitsPerPage), this.testData.recordsMatching);
-            this.passing = Test.compare(recordsMatching.length, '>=', this.testData.firstPageContain);
-        } else if (this.testData.nbhit !== undefined) {
-            this.passing = Test.compare(res.nbHit, this.testData.nbhit.operator, this.testData.nbhit.value);
-        }
+        this.passing = this.testData.then.every((condition) => {
+            let passing = true;
+            if (condition.nbHits !== undefined) {
+                 passing = passing && Test.compare(res.nbHits, condition.nbHits.operator, condition.nbHits.value)
+            }
+            if (condition.contains !== undefined) {
+                const recordsMatching = Test.findMatchingRecords(res.hits, condition.recordsMatching);
+                passing = passing && Test.compare(recordsMatching.length, condition.contains.operator, condition.contains.value);
+            }
+            return passing;
+        });
     }
 }

@@ -29,3 +29,15 @@ export function get(obj, path, def) {
 
     return current;
 }
+
+export function getRaw(obj, path, value) {
+    path = stringToPath(path);
+    let current = obj;
+
+    for (let i = 0; i < path.length; i++) {
+        if (current[path[i]] === undefined) return undefined;
+        current = current[path[i]];
+    }
+
+    return current;
+}

@@ -42,85 +42,14 @@
     import Badge from "@/relevance-testing/Badge";
     import TestEdit from "@/relevance-testing/TestEdit";
 
-    const testSuite = {
-        name: 'MoviesSuite',
-        groups: [
-            {
-                name: "london queries",
-                tests: [
-                    {
-                        name: "should contain a title with London",
-                        when: {
-                            query: "london",
-                        },
-                        firstPageContain: 1,
-                        recordsMatching: [
-                            {
-                                type: "attribute",
-                                key: "title",
-                                operator: "=",
-                                value: "London"
-                            }
-                        ]
-                    },
-                    {
-                        name: "should contain a title with Interstellar",
-                        when: {
-                            query: "london",
-                        },
-                        recordsMatching: [
-                            {
-                                type: "attribute",
-                                key: "title",
-                                operator: "=",
-                                value: "Interstellar"
-                            }
-                        ],
-                        should: [
-                            {
-                                type: "position",
-                                operator: "=",
-                                value: 0
-                            }
-                        ]
-                    },
-                ]
-            },
-            {
-                name: 'failing queries',
-                tests: [
-                    {
-                        name: "should contain a title with lolilol",
-                        when: {
-                            query: "london",
-                        },
-                        recordsMatching: [
-                            {
-                                type: "attribute",
-                                key: "title",
-                                operator: "=",
-                                value: "lolilol"
-                            }
-                        ],
-                        should: [
-                            {
-                                type: "position",
-                                operator: "=",
-                                value: 0
-                            }
-                        ]
-                    }
-                ]
-            }
-        ]
-    };
+    import data from "@/relevance-testing/data";
 
     export default {
         name: 'RelevanceTesting',
         components: {TestEdit, Badge, DisplayConfig, AppHeader, AppSelector, AppManagement, IndexSelector, CustomSelect},
         data: function () {
             return {
-                testSuite: new TestSuite(testSuite),
+                testSuite: new TestSuite(data),
                 hitsPerPage: 8,
                 currentTest: null,
             };

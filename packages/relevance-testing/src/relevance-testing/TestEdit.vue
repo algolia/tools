@@ -30,25 +30,15 @@
             <div class="mt-16">
                 <h3>Then</h3>
             </div>
-            <div v-if="testData.firstPageContain" class="mt-16">
-                <div>
-                    First Page should contains {{testData.firstPageContain}} hits that:
+            <div v-for="(thenTest, i) in testData.then">
+                <div v-if="i > 0" class="my-16">AND</div>
+                <div v-if="thenTest.nbHits !== undefined">
+                    nbHits should be {{thenTest.nbHits.operator}} {{thenTest.nbHits.value}}
                 </div>
-                <div>
-                    <test-condition v-for="condition in testData.recordsMatching" :condition="condition" />
-                </div>
-            </div>
-            <div v-if="testData.nbHits">
-                There should be at least {{testData.nbHits}} hits
-            </div>
-            <div v-if="testData.should !== undefined">
-                <div class="mt-16">All records that have:</div>
-                <div>
-                    <test-condition v-for="condition in testData.recordsMatching" :condition="condition" />
-                </div>
-                <div class="mt-16">Should</div>
-                <div>
-                    <test-condition v-for="condition in testData.should" :condition="condition" />
+                <div v-if="thenTest.contains !== undefined">
+                    <div>first page contains {{thenTest.contains.operator}} {{thenTest.contains.value}}</div>
+                    <div>That:</div>
+                    <test-condition v-for="condition in thenTest.recordsMatching" :condition="condition" />
                 </div>
             </div>
         </div>
