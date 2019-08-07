@@ -100,6 +100,7 @@
             jumpSynonym: function () {
                 const otherPanelKey = this.panelKey === 'leftPanel' ? 'rightPanel': 'leftPanel';
                 this.$root.$emit(`${otherPanelKey}SynonymJumping`, this.synonym);
+                window.scrollTo(0, 0);
             },
         },
     }

@@ -167,6 +167,7 @@
             jumpRecord: function () {
                 const otherPanelKey = this.panelKey === 'leftPanel' ? 'rightPanel': 'leftPanel';
                 this.$root.$emit(`${otherPanelKey}HitJumping`, this.hit);
+                window.scrollTo(0, 0);
             },
         }
     }

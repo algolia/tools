@@ -139,14 +139,14 @@
                             class="ml-8 text-nova-grey-opacity-60 hover:text-telluric-blue w-16 h-16 cursor-pointer"
                             @click="editMode = true"
                         />
-                        <tooltip>Edit synonym. Will ask for confirmation</tooltip>
+                        <tooltip>Edit rule. Will ask for confirmation</tooltip>
                     </button>
                     <button class="relative group">
                         <trash-icon
                             class="ml-8 text-nova-grey-opacity-60 hover:text-telluric-blue w-16 h-16 cursor-pointer"
                             @click="confirmDelete = true"
                         />
-                        <tooltip>Delete synonym. Will ask for confirmation</tooltip>
+                        <tooltip>Delete rule. Will ask for confirmation</tooltip>
                     </button>
                 </div>
             </div>
@@ -203,6 +203,7 @@
             jumpRule: function () {
                 const otherPanelKey = this.panelKey === 'leftPanel' ? 'rightPanel': 'leftPanel';
                 this.$root.$emit(`${otherPanelKey}RuleJumping`, this.rule);
+                window.scrollTo(0, 0);
             },
             properHighlight: properHighlight
         }
