@@ -33,7 +33,9 @@
         </div>
         <div class="p-8">
             <results v-show="panelCurrentTab === 'hits'" :panel-key="panelKey"
-                 @onFetchHits="onFetchHits"/>
+                 @onFetchHits="onFetchHits"
+                 @onFetchAnalyseHits="onFetchAnalyseHits"
+            />
             <fetcher v-show="panelCurrentTab === 'synonyms'" :panel-key="panelKey" method-name="searchSynonyms"
                  @onFetch="onFetchSynonyms"/>
             <fetcher v-show="panelCurrentTab === 'rules'" :panel-key="panelKey" method-name="searchRules"
@@ -74,6 +76,9 @@
             },
             onFetchHits: function (algoliaResponse) {
                 this.nbHits = algoliaResponse ? algoliaResponse.nbHits : 0;
+            },
+            onFetchAnalyseHits: function (algoliaResponse) {
+                this.$root.$emit(`${this.panelKey}UpdateAnalyseResponse`, algoliaResponse);
             },
             onUpdateChecksCount: function (event) {
                 this.nbChecks = event;

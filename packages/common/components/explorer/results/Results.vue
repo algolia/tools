@@ -71,7 +71,7 @@
                 @onFetchHits="onFetchHits"
                 @onUpdateAlgoliaResponse="algoliaResponse = $event"
                 @onUpdateError="errorMessage = $event"
-                @onUpdateAnalyseAlgoliaResponse="analyseAlgoliaResponse = $event"
+                @onUpdateAnalyseAlgoliaResponse="onUpdateAnalyseAlgoliaResponse"
             />
             <results-list v-if="algoliaResponse && (displayMode === 'list' || displayMode === 'images')"
                           :panel-key="panelKey" :algolia-response="algoliaResponse" :display-mode="displayMode" :read-only="readOnly" />
@@ -136,6 +136,10 @@
             onFetchHits: function (algoliaResponse) {
                 this.algoliaResponse = algoliaResponse;
                 this.$emit('onFetchHits', algoliaResponse);
+            },
+            onUpdateAnalyseAlgoliaResponse: function (algoliaResponse) {
+                this.analyseAlgoliaResponse = algoliaResponse;
+                this.$emit('onFetchAnalyseHits', algoliaResponse);
             }
         }
     }

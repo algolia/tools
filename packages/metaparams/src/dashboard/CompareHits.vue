@@ -150,15 +150,19 @@
                 circleStrokeColorPerso: '#e34340',
                 circleFilledColorTransparent: 'rgba(166, 176, 249, 0.8)',
                 trackedObjectIDs: [''],
+                leftResponse: null,
+                rightResponse: null,
             }
         },
+        created: function () {
+            this.$root.$on('leftPanelUpdateAnalyseResponse', (response) => {
+                this.leftResponse = response;
+            });
+            this.$root.$on('rightPanelUpdateAnalyseResponse', (response) => {
+                this.rightResponse = response;
+            });
+        },
         computed: {
-            leftResponse: function () {
-                return this.$store.state.panels['leftPanel'].algoliaResponse;
-            },
-            rightResponse: function () {
-                return this.$store.state.panels['rightPanel'].algoliaResponse;
-            },
             leftHits: function () {
                 if (this.leftResponse && this.leftResponse.hits) {
                     return this.leftResponse.hits;
