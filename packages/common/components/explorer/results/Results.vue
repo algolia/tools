@@ -1,16 +1,9 @@
 <template>
     <div>
-        <div v-if="errorMessage.length > 0" class="border border-mars-1 m-16 p-8 rounded">
-            <div>{{errorMessage}}</div>
-            <div v-if="errorMessage.includes('Invalid Application-ID or API key')" class="mt-12">
-                <div>App Id: {{panelAppId}}</div>
-                <div>API Key: <input v-model="panelAdminAPIKey" class="input-custom inline" placeholder="adminAPIKey" /></div>
-            </div>
-        </div>
-        <div v-if="algoliaResponse" class="flex mt-4">
+        <div v-if="searchResponse" class="flex mt-4">
             <div class="flex rounded overflow-hidden text-nova-grey">
                 <div
-                    @click="displayMode = 'list'"
+                    @click="$emit('onUpdateDisplayMode', 'list')"
                     :class="displayMode === 'list' ? 'text-nebula-blue border-b-2 border-nebula-blue-opacity-80' : ''"
                     class="bg-moon-grey p-4 h-28 px-12 flex items-center self-start cursor-pointer border-b-2 border-transparent"
                 >
@@ -18,7 +11,7 @@
                     <div class="text-sm">List</div>
                 </div>
                 <div
-                    @click="displayMode = 'images'"
+                    @click="$emit('onUpdateDisplayMode', 'images')"
                     :class="displayMode === 'images' ? 'text-nebula-blue border-b-2 border-nebula-blue-opacity-80' : ''"
                     class="bg-moon-grey p-4 h-28 px-12 flex items-center self-start cursor-pointer border-b-2 border-transparent"
                 >
@@ -26,7 +19,7 @@
                     <div class="text-sm">Images</div>
                 </div>
                 <div
-                    @click="displayMode = 'raw'"
+                    @click="$emit('onUpdateDisplayMode', 'raw')"
                     :class="displayMode === 'raw' ? 'text-nebula-blue border-b-2 border-nebula-blue-opacity-80' : ''"
                     class="bg-moon-grey p-4 h-28 px-12 flex items-center self-start cursor-pointer border-b-2 border-transparent"
                 >
@@ -34,7 +27,7 @@
                     <div class="text-sm">Raw</div>
                 </div>
                 <div
-                    @click="displayMode = 'charts'"
+                    @click="$emit('onUpdateDisplayMode', 'charts')"
                     :class="displayMode === 'charts' ? 'text-nebula-blue border-b-2 border-nebula-blue-opacity-80' : ''"
                     class="bg-moon-grey p-4 h-28 px-12 flex items-center self-start cursor-pointer border-b-2 border-transparent"
                 >
@@ -42,7 +35,7 @@
                     <div class="text-sm">Charts</div>
                 </div>
             </div>
-            <div v-if="!isReadOnly && displayMode === 'list'" class="ml-auto flex items-center">
+            <div v-if="!readOnly && displayMode === 'list'" class="ml-auto flex items-center">
                 <button class="relative group">
                     <plus-circle-icon
                         @click="isAddingRecord = true"
@@ -61,24 +54,21 @@
             @onStopEdit="isAddingRecord = false; jumpedHit = null"
         />
         <div>
-            <perform-search
-                :search-params="searchParams"
-                :search-params-raw="searchParamsRaw"
-                :app-id="panelAppId"
-                :api-key="panelAdminAPIKey"
-                :server="panelServer"
-                :index-name="panelIndexName"
-                @onFetchHits="onFetchHits"
-                @onUpdateAlgoliaResponse="algoliaResponse = $event"
-                @onUpdateError="errorMessage = $event"
-                @onUpdateAnalyseAlgoliaResponse="onUpdateAnalyseAlgoliaResponse"
+            <results-list v-if="searchResponse && (displayMode === 'list' || displayMode === 'images')"
+                          :panel-key="panelKey" :algolia-response="searchResponse" :display-mode="displayMode" :read-only="readOnly" />
+            <export-params
+                v-if="displayMode === 'raw'"
+                v-bind="$props"
             />
-            <results-list v-if="algoliaResponse && (displayMode === 'list' || displayMode === 'images')"
-                          :panel-key="panelKey" :algolia-response="algoliaResponse" :display-mode="displayMode" :read-only="readOnly" />
-            <export-params v-if="displayMode === 'raw'" :panel-key="panelKey" />
-            <raw-response v-if="displayMode === 'raw'" :algolia-response="algoliaResponse" />
-            <ranking-charts v-if="analyseAlgoliaResponse && displayMode === 'charts'"
-                            :panelKey="panelKey" :hits="analyseAlgoliaResponse.hits" />
+            <raw-response
+                v-if="searchResponse && displayMode === 'raw'"
+                v-bind="$props"
+            />
+            <ranking-charts
+                v-if="analyseResponse && displayMode === 'charts'"
+                v-on="$listeners"
+                v-bind="$props"
+            />
         </div>
     </div>
 </template>
@@ -94,15 +84,17 @@
     import RankingCharts from "../analysis/RankingCharts";
     import RawResponse from "../raw/RawResponse";
     import ExportParams from "../export-params/ExportParams";
-    import indexInfoMixin from "../../../mixins/indexInfoMixin";
     import HitEdit from "../hits/HitEdit";
     import Tooltip from "../../Tooltip";
     import PerformSearch from "./PerformSearch";
 
     export default {
         name: 'Results',
-        props: ['panelKey', 'readOnly'],
-        mixins: [indexInfoMixin],
+        props: [
+            'panelKey', 'readOnly', 'searchResponse', 'analyseResponse', 'indexSettings', 'analyseMaxNbPoints',
+            'appId', 'apiKey', 'indexName', 'query', 'searchParams', 'indexSettings', // Export Params
+            'errorMessage', 'displayMode',
+        ],
         components: {
             PerformSearch,
             Tooltip,
@@ -117,30 +109,7 @@
             return {
                 isAddingRecord: false,
                 jumpedHit: null,
-                algoliaResponse: null,
-                analyseAlgoliaResponse: null,
-                errorMessage: '',
             }
         },
-        computed: {
-            displayMode: {
-                get () {
-                    return this.$store.state.panels[this.panelKey].displayMode || 'list';
-                },
-                set (value) {
-                    this.$store.commit(`panels/${this.panelKey}/setDisplayMode`, value);
-                }
-            },
-        },
-        methods: {
-            onFetchHits: function (algoliaResponse) {
-                this.algoliaResponse = algoliaResponse;
-                this.$emit('onFetchHits', algoliaResponse);
-            },
-            onUpdateAnalyseAlgoliaResponse: function (algoliaResponse) {
-                this.analyseAlgoliaResponse = algoliaResponse;
-                this.$emit('onFetchAnalyseHits', algoliaResponse);
-            }
-        }
     }
 </script>

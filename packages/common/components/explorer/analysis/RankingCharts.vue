@@ -2,7 +2,7 @@
     <div class="w-full">
         <div class="text-nova-grey bg-moon-grey-opacity-50 border border-proton-grey-opacity-20 mt-16 p-8">
             <div>
-                Nb of points : <input type="number" v-model="analyseMaxNbPoints" min="1" style="width: 50px;"/>
+                Nb of points : <input type="number" v-model="nbPoints" min="1" style="width: 50px;"/>
             </div>
 
             <div class="flex">
@@ -34,18 +34,13 @@
 </template>
 
 <script>
-    import Vue from 'vue';
     import LineChart from "./LineChart";
     import RankingInfoAnalyser from "../hits/rankingInfoAnalyser"
-
-    import paramsSpecs from 'common/params-specs';
-    import indexInfoMixin from "../../../mixins/indexInfoMixin";
 
     export default {
         name: 'RankingCharts',
         components: {LineChart},
-        props: ['panelKey', 'hits'],
-        mixins: [indexInfoMixin],
+        props: ['analyseResponse', 'indexSettings', 'analyseMaxNbPoints'],
         data: function () {
             return {
                 criteriaStatus: {},
@@ -64,14 +59,25 @@
             },
         },
         computed: {
+            hits: function () {
+                return this.analyseResponse ? this.analyseResponse.hits : [];
+            },
+            nbPoints: {
+                get () {
+                    return this.analyseMaxNbPoints;
+                },
+                set (val) {
+                    this.$emit('onUpdateAnalyseMaxNbPoint', val)
+                }
+            },
             rankingInfoAnalyzer: function () {
-                return new RankingInfoAnalyser(this.refIndexSettings);
+                return new RankingInfoAnalyser(this.indexSettings);
             },
             criteria: function () {
                 return this.rankingInfoAnalyzer.getActualCriteria();
             },
             searchableAttributes: function () {
-                return this.refIndexSettings.searchableAttributes || this.refIndexSettings.attributesToIndex || paramsSpecs.searchableAttributes.default;
+                return this.indexSettings.searchableAttributes || this.indexSettings.attributesToIndex || [];
             },
             enabledCharts: function () {
                 return this.charts.filter((chart) => {
@@ -112,16 +118,16 @@
         methods: {
             setAllCriteria: function (val) {
                 this.criteria.forEach((criterion) => {
-                    Vue.set(this.criteriaStatus, criterion, val);
+                    this.$set(this.criteriaStatus, criterion, val);
                 });
             },
             setCriterionStatus: function (criterion, val) {
-                Vue.set(this.criteriaStatus, criterion, val);
+                this.$set(this.criteriaStatus, criterion, val);
             },
             updateCriteriaStatus: function () {
                 this.criteriaStatus = {};
                 this.criteria.forEach((criterion) => {
-                    Vue.set(this.criteriaStatus, criterion, true);
+                    this.$set(this.criteriaStatus, criterion, true);
                 });
             },
             chartOption: function (criterion) {

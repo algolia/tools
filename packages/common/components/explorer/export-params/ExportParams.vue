@@ -25,12 +25,11 @@
 
 <script>
     import SnippetGenerator from './snippet-generator';
-    import indexInfoMixin from "../../../mixins/indexInfoMixin";
+    import {getClient} from "../../../utils/algoliaHelpers";
 
     export default {
         name: 'ExportParams',
-        props: ['panelKey'],
-        mixins: [indexInfoMixin],
+        props: ['appId', 'apiKey', 'indexName', 'query', 'searchParams', 'indexSettings'],
         data: function () {
             return {
                 searchApiKey: '',
@@ -41,7 +40,7 @@
             }
         },
         created: async function () {
-            const client = this.algoliasearch(this.panelAppId, this.panelAdminAPIKey);
+            const client = await getClient(this.appId, this.apiKey);
             const keys = await client.listApiKeys();
 
             let foundKey = false;
@@ -52,15 +51,15 @@
                 }
             });
 
-            if (!foundKey) this.searchApiKey = this.panelAdminAPIKey;
+            if (!foundKey) this.searchApiKey = this.apiKey;
         },
         computed: {
             snippet: function () {
                 return this.snippetGenerator.snippet({
-                    appId: this.panelAppId,
-                    apiKey: this.snippetMethod === 'search' ? this.searchApiKey : this.panelAdminAPIKey,
-                    indexName: this.panelIndexName,
-                    query: this.$store.state.panels.query,
+                    appId: this.appId,
+                    apiKey: this.snippetMethod === 'search' ? this.searchApiKey : this.apiKey,
+                    indexName: this.indexName,
+                    query: this.query,
                     params: this.snippetMethod === 'search' ? this.searchParams : this.indexSettings,
                     language: this.currentLanguage,
                     method: this.snippetMethod,

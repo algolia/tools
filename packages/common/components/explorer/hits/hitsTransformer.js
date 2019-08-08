@@ -78,7 +78,6 @@ export default function (excluded) {
         return this.getNewItemObject(item, item._highlightResult, item._snippetResult);
     };
 
-
     this.getNewItemArraySimple = function (array, highlightItem) {
         return array.map((item, index) => {
             return this.getNewItemSimple(

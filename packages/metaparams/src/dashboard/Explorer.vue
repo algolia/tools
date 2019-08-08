@@ -32,9 +32,35 @@
             </div>
         </div>
         <div class="p-8">
+            <perform-search
+                :search-params="searchParams"
+                :search-params-raw="searchParamsRaw"
+                :app-id="panelAppId"
+                :api-key="panelAdminAPIKey"
+                :server="panelServer"
+                :index-name="panelIndexName"
+                @onFetchHits="onFetchHits"
+                @onUpdateAlgoliaResponse="algoliaResponse = $event"
+                @onUpdateError="errorMessage = $event"
+                @onUpdateAnalyseAlgoliaResponse="onUpdateAnalyseAlgoliaResponse"
+            />
+            <error-message v-if="errorMessage" :error-message="errorMessage" />
             <results v-show="panelCurrentTab === 'hits'" :panel-key="panelKey"
+                 :search-response="algoliaResponse"
+                 :analyse-response="analyseAlgoliaResponse"
+                 :search-params="searchParams"
+                 :index-settings="refIndexSettings"
+                 :analyse-max-nb-points="analyseMaxNbPoints"
+                 :read-only="isReadOnly"
+                 :app-id="panelAppId"
+                 :api-key="panelAdminAPIKey"
+                 :index-name="panelIndexName"
+                 :query="searchParams.query !== undefined ? searchParams.query : $store.state.panels.query"
+                 :display-mode="displayMode"
                  @onFetchHits="onFetchHits"
                  @onFetchAnalyseHits="onFetchAnalyseHits"
+                 @onUpdateAnalyseMaxNbPoint="analyseMaxNbPoints = $event"
+                 @onUpdateDisplayMode="displayMode = $event"
             />
             <fetcher v-show="panelCurrentTab === 'synonyms'" :panel-key="panelKey" method-name="searchSynonyms"
                  @onFetch="onFetchSynonyms"/>
@@ -47,7 +73,9 @@
 <script>
     import {formatHumanNumber} from 'common/utils/formatters'
 
+    import PerformSearch from "common/components/explorer/results/PerformSearch";
     import Results from "common/components/explorer/results/Results";
+    import ErrorMessage from "common/components/explorer/results/ErrorMessage";
     import Fetcher from "common/components/explorer/synonyms-rules/Fetcher";
     import Checks from "common/components/explorer/checks/Checks";
     import indexInfoMixin from "common/mixins/indexInfoMixin";
@@ -55,7 +83,7 @@
 
     export default {
         name: 'Explorer',
-        components: {Checks, Fetcher, Results},
+        components: {Checks, Fetcher, Results, PerformSearch, ErrorMessage},
         props: ['panelKey'],
         mixins: [indexInfoMixin, panelsMixin],
         data: function () {
@@ -64,7 +92,20 @@
                 nbRules: 0,
                 nbSynonyms: 0,
                 nbChecks: 0,
+                errorMessage: null,
+                algoliaResponse: null,
+                analyseAlgoliaResponse: null,
             };
+        },
+        computed: {
+            displayMode: {
+                get () {
+                    return this.$store.state.panels[this.panelKey].displayMode || 'list';
+                },
+                set (value) {
+                    this.$store.commit(`panels/${this.panelKey}/setDisplayMode`, value);
+                }
+            },
         },
         methods: {
             formatHumanNumber,
@@ -75,7 +116,13 @@
                 this.nbRules = nbRules;
             },
             onFetchHits: function (algoliaResponse) {
+                this.algoliaResponse = algoliaResponse;
                 this.nbHits = algoliaResponse ? algoliaResponse.nbHits : 0;
+                this.$emit('onFetchHits', algoliaResponse);
+            },
+            onUpdateAnalyseAlgoliaResponse: function (algoliaResponse) {
+                this.analyseAlgoliaResponse = algoliaResponse;
+                this.$emit('onFetchAnalyseHits', algoliaResponse);
             },
             onFetchAnalyseHits: function (algoliaResponse) {
                 this.$root.$emit(`${this.panelKey}UpdateAnalyseResponse`, algoliaResponse);

@@ -1,6 +1,6 @@
 <template>
     <div class="text-nova-grey bg-moon-grey-opacity-50 border border-proton-grey-opacity-20 mt-16 p-8">
-        <attributes :top-attributes="[]" :item="hitsTransformer.transformObj(algoliaResponse)._v_" />
+        <attributes :top-attributes="[]" :item="hitsTransformer.transformObj(searchResponse)._v_" />
     </div>
 </template>
 
@@ -11,7 +11,7 @@
     export default {
         name: 'RawResponse',
         components: {Attributes},
-        props: ['algoliaResponse'],
+        props: ['searchResponse'],
         data: function () {
             return {
                 hitsTransformer: new HitsTransformer(),

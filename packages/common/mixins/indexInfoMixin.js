@@ -111,7 +111,7 @@ export default {
             return this.refIndexSetting && this.refIndexSettings.primary && this.refIndexSettings.primary.length > 0;
         },
         isReadOnly: function () {
-            return this.readOnly || this.isReplica;
+            return this.isReplica;
         },
     },
     methods: {
