@@ -5,43 +5,52 @@
         </app-header>
         <app-management />
         <div class="flex">
-            <div class="w-half flex">
-                <div class="w-half p-16">
-                    <div class="border-proton-grey-opacity-60">
-                        <div>
-                            <app-selector v-model="appId" />
-                            <index-selector v-model="indexName" :app-id="appId" />
-                        </div>
-                        <div class="rounded text-telluric-blue text-xs uppercase tracking-wide flex items-center border-b border-t-0 border-proton-grey bg-white p-8 bg-proton-grey-opacity-80">
+            <div class="w-25p">
+                <div class="border-proton-grey-opacity-60 p-16">
+                    <div class="rounded border-b border-t-0 border-proton-grey bg-white p-8 bg-proton-grey-opacity-80">
+                        <div class="text-telluric-blue text-xs uppercase tracking-wide flex items-center">
                             <div>{{testSuite.name}}</div>
                             <badge class="ml-auto mr-16" :passing="testSuite.passing" />
                             <div @click="testSuite.run(algoliaIndex, hitsPerPage)">Run</div>
                         </div>
-                        <div v-for="group in testSuite.groups" :key="group.name" class="bg-white rounded mt-16 border border-proton-grey-opacity-60">
-                            <div class="flex p-8 bg-proton-grey-opacity-40 text-telluric-blue text-xs uppercase tracking-wide">
-                                {{group.name}}
-                                <badge class="ml-auto mr-16" :passing="group.passing" />
-                                <div @click="group.run(algoliaIndex, hitsPerPage)">Run</div>
-                            </div>
-                            <div v-for="test in group.tests" :key="test.name">
-                                <div class="flex p-8" @click="currentTest = test">
-                                    <div class="mr-16">{{test.name}}</div>
-                                    <badge class="ml-auto mr-16" :passing="test.passing" />
-                                    <div @click.prevent="test.run(algoliaIndex, hitsPerPage)">Run</div>
-                                </div>
+                        <div class="flex">
+                            <app-selector v-model="appId" />
+                            <index-selector v-model="indexName" :app-id="appId" class="ml-16" />
+                        </div>
+                    </div>
+                    <div v-for="group in testSuite.groups" :key="group.name" class="bg-white rounded mt-16 border border-proton-grey-opacity-60">
+                        <div class="flex p-8 bg-proton-grey-opacity-40 text-telluric-blue text-xs uppercase tracking-wide">
+                            {{group.name}}
+                            <badge class="ml-auto mr-16" :passing="group.passing" />
+                            <div @click="group.run(algoliaIndex, hitsPerPage)">Run</div>
+                        </div>
+                        <div v-for="test in group.tests" :key="test.name">
+                            <div class="flex p-8" @click="currentTest = test">
+                                <div class="mr-16">{{test.name}}</div>
+                                <badge class="ml-auto mr-16" :passing="test.passing" />
+                                <div @click.prevent="test.run(algoliaIndex, hitsPerPage)">Run</div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <test-edit v-if="currentTest" :test="currentTest" class="flex-grow" />
             </div>
-            <div class="w-half p-16">
-                <div class="w-full bg-white p-8">
-                    <results
-                        v-if="panelIndexData"
-                        :panel-key="panelKey"
-                        :read-only="true"
-                    />
+            <div class="w-75p" v-if="currentTest">
+                <div class="rounded bg-white m-16 border border-solid border-proton-grey-opacity-60">
+                    <div class="text-telluric-blue text-xs uppercase tracking-wide flex items-center border-b border-t-0 border-proton-grey bg-white p-8 bg-proton-grey-opacity-80">
+                        Edit test
+                    </div>
+                    <div class="flex">
+                        <div class="flex-grow min-w-third border-r border-proton-grey ">
+                            <test-edit :test="currentTest" />
+                        </div>
+                        <div class="flex-grow bg-white p-8">
+                            <results
+                                v-if="panelIndexData"
+                                :panel-key="panelKey"
+                                :read-only="true"
+                            />
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -68,10 +77,11 @@
         components: {TestEdit, Badge, DisplayConfig, AppHeader, AppSelector, AppManagement, IndexSelector, CustomSelect, Results},
         mixins: [indexInfoMixin],
         data: function () {
+            const testSuite = new TestSuite(data);
             return {
-                testSuite: new TestSuite(data),
+                testSuite: testSuite,
                 hitsPerPage: 8,
-                currentTest: null,
+                currentTest: testSuite.groups[0].tests[0],
                 requestNumber: 0,
                 requestNumberReceived: 0,
                 panelKey: 'leftPanel',

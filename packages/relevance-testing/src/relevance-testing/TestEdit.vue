@@ -1,19 +1,19 @@
 <template>
-    <div class="rounded bg-white m-16 border border-solid border-proton-grey-opacity-60 w-25p">
-        <div class="text-telluric-blue text-xs uppercase tracking-wide flex items-center border-b border-t-0 border-proton-grey bg-white p-8 bg-proton-grey-opacity-80">
-            Edit
-        </div>
-        <div class="p-8">
-            <div>
-                <h3>Name of the test</h3>
-                <div class="mt-16">
-                    {{test.name}}
-                </div>
+    <div>
+        <div>
+            <div class="text-telluric-blue text-xs uppercase tracking-wide flex items-center border-b border-proton-grey bg-white p-8 bg-proton-grey-opacity-40">
+                Description
             </div>
-            <div class="mt-16">
-                <h3>When</h3>
+            <div class="px-8 py-12">
+                {{test.name}}
+            </div>
+        </div>
+        <div>
+            <div class="text-telluric-blue text-xs uppercase tracking-wide flex items-center border-t border-b border-proton-grey bg-white p-8 bg-proton-grey-opacity-40">
+                When
+            </div>
+            <div class="px-8 py-12">
                 <params
-                    class="mt-16"
                     id="when"
                     config-key="searchParams"
                     :params="when"
@@ -27,32 +27,36 @@
                     @onDeleteKey="onDeleteKey"
                 />
             </div>
-            <div class="mt-16">
-                <h3>Then</h3>
+        </div>
+        <div>
+            <div class="text-telluric-blue text-xs uppercase tracking-wide flex items-center border-t border-b border-proton-grey bg-white p-8 bg-proton-grey-opacity-40">
+                Then
             </div>
-            <div v-for="(requirement, i) in testData.then">
-                <div v-if="i > 0" class="my-16">AND</div>
-                <div>
-                    <select v-model="requirement.test">
-                        <option value="contains">page contains</option>
-                        <option value="nbHits">nbHits</option>
-                    </select>
-                    <span v-if="requirement.test === 'nbHits'">
-                    should be
-                    </span>
-                    <select v-model="requirement.operator">
-                        <option value="=">(=) exactly</option>
-                        <option value="!=">(!=) not be equal to </option>
-                        <option value=">">(&gt;) more than</option>
-                        <option value=">=">(&gt;=) at least</option>
-                        <option value="<">(&lt;) less than</option>
-                        <option value="<=">(&lt;=) maximum</option>
-                    </select>
-                    <input type="number" v-model="requirement.value" />
-                </div>
-                <div v-if="requirement.test === 'contains' && requirement.recordsMatching !== undefined">
-                    <div>That:</div>
-                    <test-condition v-for="condition in requirement.recordsMatching" :condition="condition" />
+            <div class="px-8 py-12">
+                <div v-for="(requirement, i) in testData.then">
+                    <div v-if="i > 0" class="my-16">AND</div>
+                    <div class="flex flex-wrap">
+                        <select v-model="requirement.test" class="mr-8">
+                            <option value="contains">page contains</option>
+                            <option value="nbHits">nbHits</option>
+                        </select>
+                        <div v-if="requirement.test === 'nbHits'" class="mr-8 p-4">
+                            should be
+                        </div>
+                        <select v-model="requirement.operator" class="mr-8">
+                            <option value="=">(=) exactly</option>
+                            <option value="!=">(!=) not be equal to </option>
+                            <option value=">">(&gt;) more than</option>
+                            <option value=">=">(&gt;=) at least</option>
+                            <option value="<">(&lt;) less than</option>
+                            <option value="<=">(&lt;=) maximum</option>
+                        </select>
+                        <input type="number" class="input-custom p-4" v-model="requirement.value" />
+                    </div>
+                    <div v-if="requirement.test === 'contains' && requirement.recordsMatching !== undefined">
+                        <div>That:</div>
+                        <test-condition v-for="condition in requirement.recordsMatching" :condition="condition" />
+                    </div>
                 </div>
             </div>
         </div>
