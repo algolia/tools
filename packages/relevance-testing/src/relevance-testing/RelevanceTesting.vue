@@ -38,8 +38,7 @@
             <div class="w-half p-16">
                 <div class="w-full bg-white p-8">
                     <results
-                        v-if="panelIndexData && algoliaResponse"
-                        :algolia-response="algoliaResponse"
+                        v-if="panelIndexData"
                         :panel-key="panelKey"
                         :read-only="true"
                     />
@@ -73,15 +72,10 @@
                 testSuite: new TestSuite(data),
                 hitsPerPage: 8,
                 currentTest: null,
-                algoliaResponse: null,
-                errorMessage: '',
                 requestNumber: 0,
                 requestNumberReceived: 0,
                 panelKey: 'leftPanel',
             };
-        },
-        created: function () {
-            this.triggerSearch();
         },
         computed: {
             algoliaIndex: function () {
@@ -104,22 +98,6 @@
                     this.$store.commit(`panels/leftPanel/setPanelConfig`, {appId: this.appId, indexName: indexName});
                 }
             },
-        },
-        methods: {
-            triggerSearch: async function () {
-                const requestNumber = this.requestNumber++;
-
-                this.algoliaIndex.search({query: 'london'}).then((res) => {
-                    if (this.requestNumberReceived > requestNumber) return;
-                    this.requestNumberReceived = requestNumber;
-
-                    this.algoliaResponse = Object.freeze(res);
-                    this.errorMessage = '';
-                }).catch((e) => {
-                    this.algoliaResponse = null;
-                    this.errorMessage = e.message;
-                });
-            }
         }
     }
 </script>

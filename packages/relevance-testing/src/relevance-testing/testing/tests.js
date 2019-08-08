@@ -116,6 +116,7 @@ export class Test {
             ...this.testData.when,
             hitsPerPage: hitsPerPage,
             getRankingInfo: true,
+            analytics: false,
         });
 
         res.hits.forEach((hit, i) => {
