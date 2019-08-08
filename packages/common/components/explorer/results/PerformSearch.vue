@@ -205,6 +205,8 @@
                 });
             },
             loadKeysIndexer: async function () {
+                if (!this.appId || !this.apiKey);
+
                 const analyze = await analyseIndex(this.appId, this.apiKey, this.indexName);
                 const keysIndexer = new searchIndexer();
                 analyze.keys.forEach(function (key) {

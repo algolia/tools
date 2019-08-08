@@ -154,6 +154,8 @@
         },
         methods: {
             search: async function (page, loadAll) {
+                if (!this.panelAppId || this.panelAdminAPIKey) return;
+
                 if (page === 0 && loadAll) {
                     this.allObjs = [];
                 }

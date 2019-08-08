@@ -27,6 +27,7 @@
     import ListIcon from "../../icons/list.svg";
     import CustomSelect from "./CustomSelect";
     import AppSelector from "./AppSelector";
+    import {getClient} from "../../utils/algoliaHelpers";
 
     export default {
         name: "IndexSelector",
@@ -44,8 +45,8 @@
             };
         },
         created: function () {
-            this.updateIndices(false);
             this.registerIndex();
+            this.updateIndices(false);
         },
         computed: {
             indicesWithForced: function () {
@@ -63,9 +64,6 @@
             adminAPIKey: function () {
                 return this.$store.state.apps[this.appId].key;
             },
-            client: function () {
-                return this.algoliasearch(this.appId, this.adminAPIKey);
-            },
         },
         watch: {
             value: function () {
@@ -73,13 +71,16 @@
             },
             appId: function () {
                 this.indexName = this.value;
-                this.$emit('input', this.indexName);
+                this.$emit('input', null);
                 this.updateIndices(true);
             },
             indexName: function () {
                 this.$emit('input', this.indexInfo.name);
-                this.updateIndices(false);
                 this.registerIndex();
+                this.updateIndices(false);
+            },
+            adminAPIKey: function () {
+                return this.$store.state.apps[this.appId].key;
             }
         },
         methods: {
@@ -100,7 +101,8 @@
                     return;
                 }
                 if (this.nbPages > this.maxNbPagesInMemory) {
-                    const data = await this.client.listIndexes('0&prefix=' + encodeURIComponent(query));
+                    const client = await getClient(this.appId, this.adminAPIKey);
+                    const data = await client.listIndexes('0&prefix=' + encodeURIComponent(query));
                     this.indices = data.items.sort((a, b) => {
                         if (a.updatedAt < b.updatedAt) return 1;
                         if (a.updatedAt > b.updatedAt) return -1;
@@ -123,11 +125,13 @@
             updateIndices: async function (shouldSetIndex) {
                 if (this.appId === null) return; // onboarding
 
-                let data = await this.client.listIndexes(0);
+                const client = await getClient(this.appId, this.adminAPIKey);
+
+                let data = await client.listIndexes(0);
                 this.nbPages = data.nbPages;
 
                 if (this.nbPages > 1 && this.nbPages <= this.maxNbPagesInMemory) {
-                    data = await this.client.listIndexes();
+                    data = await client.listIndexes();
                 }
 
                 this.allIndices = data.items.sort((a, b) => {

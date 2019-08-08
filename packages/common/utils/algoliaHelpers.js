@@ -9,6 +9,7 @@ function searchClient(appId, apiKey, server) {
     if (server === undefined || server === 'dsn') {
         return algoliasearch(appId, apiKey || ' ', {
             _useCache: false,
+            hosts: [appId + '-1.algolianet.com', appId + '-2.algolianet.com', appId + '-3.algolianet.com']
         });
     }
 
@@ -24,27 +25,37 @@ function searchClient(appId, apiKey, server) {
 }
 
 export async function getClient(appId, apiKey) {
-    if (clientCache[`${appId}-${apiKey}`]) return clientCache[`${appId}-${apiKey}`];
-    const client = algoliasearch(appId, apiKey || ' ');
-    const signature = await getSignature(appId);
-    client.setExtraHeader('X-Algolia-Signature', signature);
-    clientCache[`${appId}-${apiKey}`] = client;
+    const cacheKey = `${appId}-${apiKey}`;
+    if (clientCache[cacheKey]) return clientCache[cacheKey];
+    const client = algoliasearch(appId, apiKey || ' ', {
+        _useCache: false,
+        hosts: [appId + '-1.algolianet.com', appId + '-2.algolianet.com', appId + '-3.algolianet.com']
+    });
+    if (apiKey) {
+        const signature = await getSignature(appId);
+        client.setExtraHeader('X-Algolia-Signature', signature);
+    }
+    clientCache[cacheKey] = client;
     return client;
 }
 
 export async function getSearchClient(appId, apiKey, server) {
-    if (searchClientCache[`${appId}-${apiKey}-${server}`]) return searchClientCache[`${appId}-${apiKey}-${server}`];
+    const cacheKey = `${appId}-${apiKey}-${server}`;
+    if (searchClientCache[cacheKey]) return searchClientCache[cacheKey];
     const client = searchClient(appId, apiKey, server);
-    const signature = await getSignature(appId);
-    client.setExtraHeader('X-Algolia-Signature', signature);
-    clientCache[`${appId}-${apiKey}`] = client;
+    if (apiKey) {
+        const signature = await getSignature(appId);
+        client.setExtraHeader('X-Algolia-Signature', signature);
+    }
+    clientCache[cacheKey] = client;
     return client;
 }
 
 export async function getSearchIndex(appId, apiKey, indexName, server) {
-    if (indexCache[`${appId}-${indexName}-${server}`]) return indexCache[`${appId}-${indexName}-${server}`];
+    const cacheKey = `${appId}-${apiKey}-${indexName}-${server}`;
+    if (indexCache[cacheKey]) return indexCache[cacheKey];
     const client = await getSearchClient(appId, apiKey, server);
     const index = client.initIndex(indexName);
-    indexCache[`${appId}-${indexName}`] = index;
+    indexCache[cacheKey] = index;
     return index;
 }

@@ -7,7 +7,7 @@
                 <div>API Key: <input v-model="panelAdminAPIKey" class="input-custom inline" placeholder="adminAPIKey" /></div>
             </div>
         </div>
-        <div class="flex mt-4">
+        <div v-if="algoliaResponse" class="flex mt-4">
             <div class="flex rounded overflow-hidden text-nova-grey">
                 <div
                     @click="displayMode = 'list'"
