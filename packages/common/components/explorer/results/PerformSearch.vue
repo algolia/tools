@@ -47,7 +47,7 @@
                     });
                 });
             },
-            panelServer: function (o, n) {
+            server: function (o, n) {
                 if (o !== n) this.triggerSearch();
             },
             searchParamsWithDefaults: function (o, n) {
