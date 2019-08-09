@@ -46,7 +46,7 @@
                                 @onUpdatedTestData="currentTest.run(appId, apiKey, indexName, hitsPerPage)"
                             />
                         </div>
-                        <div class="flex-grow bg-white p-8">
+                        <div class="min-w-two-third max-w-two-third bg-white p-8">
                             <error-message
                                 v-if="errorMessage"
                                 :error-message="errorMessage"

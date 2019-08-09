@@ -28,6 +28,7 @@ module.exports = {
             '-4': '-4px',
             half: '50%',
             third: '33.3333%',
+            'two-third': '66.6666%',
             full: '100%'
         },
         generatedSizes,
