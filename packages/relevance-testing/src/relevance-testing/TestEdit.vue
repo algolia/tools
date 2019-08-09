@@ -5,7 +5,7 @@
                 Description
             </div>
             <div class="px-8 py-12">
-                {{test.name}}
+                {{testData.name}}
             </div>
         </div>
         <div>
@@ -16,10 +16,10 @@
                 <params
                     id="when"
                     config-key="searchParams"
-                    :params="when"
-                    :ref-params="when"
-                    :raw-params="when"
-                    :keys="Object.keys(when)"
+                    :params="testData.when"
+                    :ref-params="testData.when"
+                    :raw-params="testData.when"
+                    :keys="Object.keys(testData.when)"
                     :panelKeysIndexer="null"
                     @onSetParamValue="onSetParamValue"
                     @onAddArrayElement="onAddArrayElement"
@@ -66,25 +66,36 @@
 <script>
     import Params from 'common/components/params/Params';
     import TestCondition from "@/relevance-testing/TestCondition";
+    import {algoliaParams} from "common/utils/algoliaHelpers";
 
     export default {
         name: 'TestEdit',
         props: ['test'],
         components: {TestCondition, Params},
         data: function () {
+            const copy = JSON.parse(JSON.stringify(this.test.testData));
+            copy.when = this.editableObject(copy.when);
             return {
-                when: this.editableObject(this.test.testData.when),
+                testData: copy,
             }
         },
         watch: {
             test: function () {
-                this.when = this.editableObject(this.test.testData.when);
-            }
-        },
-        computed: {
-            testData: function () {
-                return this.test.testData;
+                const copy = JSON.parse(JSON.stringify(this.testData));
+                copy.when = this.editableObject(copy.when);
+                this.when = this.editableObject(this.testData.when);
             },
+            testData: {
+                immediate: true,
+                deep: true,
+                handler: function () {
+                    this.test.updateTestData({
+                        ...this.testData,
+                        when: algoliaParams(this.testData.when)
+                    });
+                    this.$emit('onUpdatedTestData');
+                }
+            }
         },
         methods: {
             editableObject: function (obj) {
@@ -95,18 +106,18 @@
                 return editableObject;
             },
             onSetParamValue: function (key, value) {
-                this.$set(this.when, key, {value: JSON.parse(JSON.stringify(value)), enabled: true});
+                this.$set(this.testData.when, key, {value: JSON.parse(JSON.stringify(value)), enabled: true});
             },
             onAddArrayElement: function (inputKey) {
-                const newVal = JSON.parse(JSON.stringify(this.when[inputKey].value));
+                const newVal = JSON.parse(JSON.stringify(this.testData.when[inputKey].value));
                 newVal.push('');
                 this.onSetParamValue(inputKey, newVal);
             },
             onDeleteArrayElement: function (inputKey, positionKey) {
-                this.$delete(this.when[inputKey].value, positionKey);
+                this.$delete(this.testData.when[inputKey].value, positionKey);
             },
             onDeleteKey: function (inputKey) {
-                this.$delete(this.when, inputKey);
+                this.$delete(this.testData.when, inputKey);
             },
         }
     }

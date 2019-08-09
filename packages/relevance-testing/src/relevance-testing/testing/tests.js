@@ -1,5 +1,6 @@
 import {getRaw} from 'common/utils/objectHelpers';
 import {getCriterionValue} from 'common/utils/rankingInfo';
+import {getSearchIndex} from 'common/utils/algoliaHelpers';
 
 export class TestSuite {
     constructor(testSuiteData) {
@@ -8,11 +9,11 @@ export class TestSuite {
         this.groups = testSuiteData.groups.map((g) => new GroupTest(g));
     }
 
-    async run(algoliaIndex, hitsPerPage) {
+    async run(appId, apiKey, indexName, hitsPerPage) {
         this.reset();
         const promises = [];
         this.groups.forEach((group) => {
-            const promise = group.run(algoliaIndex, hitsPerPage);
+            const promise = group.run(appId, apiKey, indexName, hitsPerPage);
             promises.push(promise);
         });
         await Promise.all(promises);
@@ -32,11 +33,11 @@ export class GroupTest {
         this.tests = groupData.tests.map((t) => new Test(t));
     }
 
-    async run(algoliaIndex, hitsPerPage) {
+    async run(appId, apiKey, indexName, hitsPerPage) {
         this.reset();
         const promises = [];
         this.tests.forEach((test) => {
-            const promise = test.run(algoliaIndex, hitsPerPage);
+            const promise = test.run(appId, apiKey, indexName, hitsPerPage);
             promises.push(promise);
         });
         await Promise.all(promises);
@@ -52,7 +53,10 @@ export class GroupTest {
 export class Test {
     constructor(testData) {
         this.passing = null;
-        this.name = testData.name;
+        this.testData = testData;
+    }
+
+    updateTestData(testData) {
         this.testData = testData;
     }
 
@@ -110,8 +114,9 @@ export class Test {
         });
     }
 
-    async run(algoliaIndex, hitsPerPage) {
+    async run(appId, apiKey, indexName, hitsPerPage) {
         this.reset();
+        const algoliaIndex = await getSearchIndex(appId, apiKey, indexName);
         const res = await algoliaIndex.search({
             ...this.testData.when,
             hitsPerPage: hitsPerPage,
