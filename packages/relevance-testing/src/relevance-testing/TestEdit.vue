@@ -43,20 +43,54 @@
                         <div v-if="requirement.test === 'nbHits'" class="mr-8 p-4">
                             should be
                         </div>
-                        <select v-model="requirement.operator" class="mr-8">
-                            <option value="=">(=) exactly</option>
-                            <option value="!=">(!=) not be equal to </option>
-                            <option value=">">(&gt;) more than</option>
-                            <option value=">=">(&gt;=) at least</option>
-                            <option value="<">(&lt;) less than</option>
-                            <option value="<=">(&lt;=) maximum</option>
-                        </select>
-                        <input type="number" class="input-custom p-4" v-model="requirement.value" />
+                        <sign-select v-model="requirement.operator" class="mr-8" />
+                        <input type="number" class="input-custom p-4" v-model.number="requirement.value" />
                     </div>
                     <div v-if="requirement.test === 'contains' && requirement.recordsMatching !== undefined">
-                        <div>That:</div>
-                        <test-condition v-for="condition in requirement.recordsMatching" :condition="condition" />
+                        <div>That have:</div>
+                        <div v-for="condition in requirement.recordsMatching" class="flex flex-wrap items-center">
+                            <div class="mr-8">-</div>
+                            <select class="mr-8" v-model="condition.type">
+                                <option>attribute</option>
+                                <option>position</option>
+                                <option>rankingInfo</option>
+                                <option>is before</option>
+                                <option>is after</option>
+                            </select>
+                            <input
+                                v-if="condition.type === 'attribute'"
+                                v-model="condition.key"
+                                class="input-custom mr-8 p-4"
+                            />
+                            <sign-select v-model="condition.operator" class="mr-8" />
+                            <input
+                                v-if="condition.type === 'attribute'"
+                                v-model="condition.value"
+                                class="input-custom p-4"
+                            />
+                            <input
+                                v-if="condition.type === 'position'"
+                                type="number"
+                                min="0"
+                                v-model.number="condition.value"
+                                class="input-custom p-4"
+                            />
+                        </div>
+                        <button
+                            class="mt-12 bg-white border border-b-0 border-proton-grey-opacity-40 rounded shadow-sm hover:shadow transition-fast-out px-16 p-8 text-sm"
+                            @click="addRequirement(requirement.recordsMatching)"
+                        >
+                            Add requirement
+                        </button>
                     </div>
+                </div>
+                <div class="mt-48">
+                    <button
+                        class="bg-white border border-b-0 border-proton-grey-opacity-40 rounded shadow-sm hover:shadow transition-fast-out px-16 p-8 text-sm"
+                        @click="addTest()"
+                    >
+                        Add Test
+                    </button>
                 </div>
             </div>
         </div>
@@ -65,13 +99,13 @@
 
 <script>
     import Params from 'common/components/params/Params';
-    import TestCondition from "@/relevance-testing/TestCondition";
     import {algoliaParams} from "common/utils/algoliaHelpers";
+    import SignSelect from "./SignSelect";
 
     export default {
         name: 'TestEdit',
         props: ['test'],
-        components: {TestCondition, Params},
+        components: {SignSelect, Params},
         data: function () {
             const copy = JSON.parse(JSON.stringify(this.test.testData));
             copy.when = this.editableObject(copy.when);
@@ -81,9 +115,9 @@
         },
         watch: {
             test: function () {
-                const copy = JSON.parse(JSON.stringify(this.testData));
+                const copy = JSON.parse(JSON.stringify(this.test.testData));
                 copy.when = this.editableObject(copy.when);
-                this.when = this.editableObject(this.testData.when);
+                this.testData = copy;
             },
             testData: {
                 immediate: true,
@@ -119,6 +153,29 @@
             onDeleteKey: function (inputKey) {
                 this.$delete(this.testData.when, inputKey);
             },
+            addRequirement: function (requirements) {
+                requirements.push({
+                    type: "attribute",
+                    key: "objectID",
+                    operator: "=",
+                    value: ""
+                });
+            },
+            addTest: function () {
+                this.testData.then.push({
+                    test: 'contains',
+                    operator: '=',
+                    value: 1,
+                    recordsMatching: [
+                        {
+                            type: "attribute",
+                            key: "objectID",
+                            operator: "=",
+                            value: ""
+                        },
+                    ]
+                })
+            }
         }
     }
 </script>

@@ -130,7 +130,7 @@ export class Test {
 
         this.passing = this.testData.then.every((requirement) => {
             if (requirement.test === 'nbHits') {
-                 return Test.compare(res.nbHits, requirement.operator, requirement.value)
+                return Test.compare(res.nbHits, requirement.operator, requirement.value)
             }
             if (requirement.test === 'contains') {
                 const recordsMatching = Test.findMatchingRecords(res.hits, requirement.recordsMatching);

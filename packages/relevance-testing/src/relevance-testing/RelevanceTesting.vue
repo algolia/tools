@@ -72,7 +72,7 @@
                                 :search-params="currentTest.testData.when"
                                 :index-settings="refIndexSettings"
                                 :analyse-max-nb-points="maxNbPoints"
-                                :read-only="isReadOnly"
+                                :read-only="true"
                                 :app-id="appId"
                                 :api-key="apiKey"
                                 :index-name="indexName"
