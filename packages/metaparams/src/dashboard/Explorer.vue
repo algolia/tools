@@ -46,7 +46,6 @@
                 @onFetchAnalyseHits="onFetchAnalyseHits"
                 @onUpdateAlgoliaResponse="algoliaResponse = $event"
                 @onUpdateError="errorMessage = $event"
-                @onUpdateAnalyseAlgoliaResponse="onUpdateAnalyseAlgoliaResponse"
             />
             <error-message
                 v-if="errorMessage"
@@ -227,12 +226,10 @@
                 this.nbHits = algoliaResponse ? algoliaResponse.nbHits : 0;
                 this.$emit('onFetchHits', algoliaResponse);
             },
-            onUpdateAnalyseAlgoliaResponse: function (algoliaResponse) {
-                this.analyseAlgoliaResponse = algoliaResponse;
-                this.$emit('onFetchAnalyseHits', algoliaResponse);
-            },
             onFetchAnalyseHits: function (algoliaResponse) {
                 this.$root.$emit(`${this.panelKey}UpdateAnalyseResponse`, algoliaResponse);
+                this.analyseAlgoliaResponse = algoliaResponse;
+                this.$emit('onFetchAnalyseHits', algoliaResponse);
             },
             onUpdateChecksCount: function (event) {
                 this.nbChecks = event;

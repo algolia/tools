@@ -70,7 +70,7 @@
                     </button>
                     <button class="relative group">
                         <edit-icon
-                            v-if="!readOnly"
+                            v-if="!readOnly && !isReplica"
                             class="ml-12 text-nova-grey-opacity-80 hover:text-telluric-blue w-16 h-16 cursor-pointer"
                             @click="editMode = true"
                         />
@@ -78,13 +78,13 @@
                     </button>
                     <button class="relative group">
                         <trash-icon
-                            v-if="!readOnly"
+                            v-if="!readOnly && !isReplica"
                             class="ml-12 text-nova-grey-opacity-80 hover:text-telluric-blue w-16 h-16 cursor-pointer"
                             @click="confirmDelete = true"
                         />
                         <tooltip>Delete this record.<br>Will ask for confirmation</tooltip>
                     </button>
-                    <div v-if="indexSettings && indexSettings.primary && indexSettings.primary.length > 0" class="ml-12">
+                    <div v-if="isReplica" class="ml-12">
                         Read-only replica
                     </div>
                 </div>
@@ -179,6 +179,9 @@
             },
             transformedItem: function () {
                 return Object.freeze(hitsTransformer.transformObj(this.hit)._v_);
+            },
+            isReplica: function () {
+                return this.indexSettings && this.indexSettings.primary && this.indexSettings.primary.length > 0;
             }
         },
         methods: {
