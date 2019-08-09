@@ -1,4 +1,5 @@
 import panelsMixin from "./panelsMixin";
+import {algoliaParams} from '../utils/algoliaHelpers';
 
 export default {
     mixins: [panelsMixin],
@@ -81,13 +82,13 @@ export default {
             }
         },
         searchParams: function () {
-            return this.algoliaParams(this.panelIndexData[this.searchConfigKey]);
+            return algoliaParams(this.panelIndexData[this.searchConfigKey]);
         },
         indexSettings: function () {
-            return this.algoliaParams(this.panelIndexData.indexSettings || {});
+            return algoliaParams(this.panelIndexData.indexSettings || {});
         },
         refIndexSettings: function () {
-            return this.algoliaParams(this.panelIndexData.refIndexSettings || {});
+            return algoliaParams(this.panelIndexData.refIndexSettings || {});
         },
         advancedIndexSettings: function () {
             if (this.panelIndexData && this.panelIndexData.advancedIndexSettings) {
@@ -111,17 +112,4 @@ export default {
             return this.refIndexSetting && this.refIndexSettings.primary && this.refIndexSettings.primary.length > 0;
         },
     },
-    methods: {
-        algoliaParams: function (params) {
-            const algoliaParams = {};
-
-            Object.keys(params).forEach(function (key) {
-                if (params[key].enabled && key !== 'optionalWords=query') {
-                    algoliaParams[key] = params[key].value;
-                }
-            });
-
-            return JSON.parse(JSON.stringify(algoliaParams));
-        }
-    }
 }

@@ -95,6 +95,7 @@
     import {Task, TasksGroup} from "common/utils/tasks";
     import paramsSpecs from 'common/params-specs';
     import getSignature from "common/utils/signature";
+    import {getSearchClient} from 'common/utils/algoliaHelpers';
 
     export default {
         name: 'SaveOrCopySettings',
@@ -147,18 +148,13 @@
                     srcIndexName: this.panelIndexName,
                     panelKey: this.panelKey,
                     otherPanelKey: this.panelKey === 'leftPanel' ? 'rightPanel': 'leftPanel',
-                    srcClient: this.algoliasearch(this.panelAppId, this.adminAPIKey(this.panelAppId)),
-                    dstClient: this.algoliasearch(this.appId, this.adminAPIKey(this.appId)),
+                    srcClient: await getSearchClient(this.panelAppId, this.adminAPIKey(this.panelAppId), this.panelServer),
+                    dstClient: await getSearchClient(this.appId, this.adminAPIKey(this.appId), this.panelServer),
                     query: this.$store.state.panels.query,
                     hitsPerPage: !this.limitCopy.enabled ? batchSize : Math.min(batchSize, this.limitCopy.nbHits),
                     inReplicaCopy: this.inReplicaCopy,
                     applyUnsavedSettings: this.isIndexSettingsDirty,
                 };
-
-                const signature1 = await getSignature(this.panelAppId);
-                config.srcClient.setExtraHeader('X-Algolia-Signature', signature1);
-                const signature2 = await getSignature(this.appId);
-                config.dstClient.setExtraHeader('X-Algolia-Signature', signature2);
 
                 config.panelIndex = config.srcClient.initIndex(config.srcIndexName);
 
@@ -263,7 +259,7 @@
 
                     browseTask.setCallback(async () => {
                         let nbCopied = 0;
-                        let res = await config.srcIndex.browse('', {hitsPerPage: config.hitsPerPage, attributesToRetrieve: ['*']});
+                        let res = await config.srcIndex.customBrowse('', {hitsPerPage: config.hitsPerPage, attributesToRetrieve: ['*']});
                         let nbToCopy = this.limitCopy.enabled ? Math.min(res.nbHits, this.limitCopy.nbHits) : res.nbHits;
                         nbCopied += res.hits.length;
                         browseTask.setNth(0);
@@ -289,7 +285,7 @@
                             enableABTest: false,
                             page: 0,
                         });
-                        let res = await config.srcIndex.search(params);
+                        let res = await config.srcIndex.customSearch(params);
 
                         let resAdd = await config.dstIndex.addObjects(res.hits.map((hit) => {
                             delete(hit._highlightResult);

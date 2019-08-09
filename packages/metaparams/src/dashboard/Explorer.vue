@@ -34,7 +34,6 @@
         <div class="p-8">
             <perform-search
                 :search-params="searchParams"
-                :search-params-raw="searchParamsRaw"
                 :app-id="panelAppId"
                 :api-key="panelAdminAPIKey"
                 :server="panelServer"
@@ -44,7 +43,6 @@
                 :analyse-hits-per-page="$store.state.panels.analyseMaxNbPoints"
                 @onFetchHits="onFetchHits"
                 @onFetchAnalyseHits="onFetchAnalyseHits"
-                @onUpdateAlgoliaResponse="algoliaResponse = $event"
                 @onUpdateError="errorMessage = $event"
             />
             <error-message

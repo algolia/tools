@@ -15,7 +15,7 @@
     export default {
         props: [
             'appId', 'indexName', 'apiKey', 'query',
-            'searchParams', 'searchParamsRaw',
+            'searchParams',
             'fetchExplain', 'analyseHitsPerPage',
         ],
         data: function () {
@@ -93,12 +93,6 @@
                     highlightPostTag: '</em>',
                 };
 
-                const optionalWordsQuery = this.searchParamsRaw['optionalWords=query'];
-
-                if (optionalWordsQuery && optionalWordsQuery.enabled && optionalWordsQuery.value) {
-                    forcedParams['optionalWords'] = this.searchParams.query || this.query;
-                }
-
                 return Object.assign(nonForcedparams, this.searchParams, forcedParams);
             },
             searchParamsForAnalysis: function () {
@@ -136,7 +130,7 @@
                 const index = await getSearchIndex(this.appId, this.apiKey, this.indexName, this.server);
                 const requestNumber = this.requestNumber++;
 
-                index.search(this.searchParamsWithDefaults).then((res) => {
+                index.customSearch(this.searchParamsWithDefaults).then((res) => {
                     if (this.requestNumberReceived > requestNumber) return;
                     this.requestNumberReceived = requestNumber;
 
@@ -160,7 +154,7 @@
                 const index = await getSearchIndex(this.appId, this.apiKey, this.indexName, this.server);
                 const requestNumberAnalysis = this.requestNumberAnalysis++;
 
-                index.search(this.searchParamsForAnalysis).then((res) => {
+                index.customSearch(this.searchParamsForAnalysis).then((res) => {
                     if (this.requestNumberAnalysisReceived > requestNumberAnalysis) return;
                     this.requestNumberAnalysisReceived = requestNumberAnalysis;
 
