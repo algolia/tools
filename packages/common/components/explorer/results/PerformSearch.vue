@@ -13,7 +13,11 @@
     import {goToAnchor} from "common/utils/domHelpers";
 
     export default {
-        props: ['appId', 'indexName', 'apiKey', 'server', 'searchParams', 'searchParamsRaw'],
+        props: [
+            'appId', 'indexName', 'apiKey', 'query',
+            'searchParams', 'searchParamsRaw',
+            'fetchExplain', 'analyseHitsPerPage',
+        ],
         data: function () {
             return {
                 anchor: null,
@@ -62,9 +66,6 @@
 
         },
         computed: {
-            query: function () {
-                return this.$store.state.panels.query;
-            },
             rankingInfoAnalyzer: function () {
                 return new RankingInfoAnalyser(this.indexSettings);
             },
@@ -80,7 +81,7 @@
                     attributesToRetrieve: ['*'],
                 };
 
-                if (this.$store.state.panels.displayRankingInfo) {
+                if (this.fetchExplain) {
                     nonForcedparams['explain'] = 'match.alternatives';
                 }
 
@@ -108,7 +109,7 @@
 
                 return Object.assign(
                     {
-                        query: this.$store.state.panels.query
+                        query: this.query,
                     },
                     this.searchParams,
                     {
@@ -116,7 +117,7 @@
                         analytics: false,
                         enableABTest: false,
                         getRankingInfo: true,
-                        hitsPerPage: this.$store.state.panels.analyseMaxNbPoints,
+                        hitsPerPage: this.analyseHitsPerPage,
                         attributesToSnippet: [],
                         attributesToHighlight: [],
                         attributesToRetrieve: attributesToRetrieve,
@@ -163,7 +164,7 @@
                     if (this.requestNumberAnalysisReceived > requestNumberAnalysis) return;
                     this.requestNumberAnalysisReceived = requestNumberAnalysis;
 
-                    this.$emit('onUpdateAnalyseAlgoliaResponse', Object.freeze(res));
+                    this.$emit('onFetchAnalyseHits', Object.freeze(res));
                 }).catch(() => {
                 });
             },

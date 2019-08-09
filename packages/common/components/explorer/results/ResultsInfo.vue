@@ -2,14 +2,14 @@
     <div class="text-nova-grey bg-moon-grey-opacity-50 border border-proton-grey-opacity-20 mt-16 p-8">
         <div class="flex justify-between">
             <div>
-                <div>{{humanNumber(algoliaResponse.nbHits)}} hits in {{algoliaResponse.processingTimeMS}}ms.</div>
-                <div>Exhaustive Nb Hits: {{algoliaResponse.exhaustiveNbHits}}</div>
-                <div>Exhaustive Facets: {{algoliaResponse.exhaustiveFacetsCount === undefined ? true : algoliaResponse.exhaustiveFacetsCount }}</div>
+                <div>{{humanNumber(searchResponse.nbHits)}} hits in {{searchResponse.processingTimeMS}}ms.</div>
+                <div>Exhaustive Nb Hits: {{searchResponse.exhaustiveNbHits}}</div>
+                <div>Exhaustive Facets: {{searchResponse.exhaustiveFacetsCount === undefined ? true : searchResponse.exhaustiveFacetsCount }}</div>
             </div>
             <div>
-                <div>Index Used: {{algoliaResponse.indexUsed}}</div>
-                <div>Parsed query: "{{algoliaResponse.parsedQuery}}"</div>
-                <div>Server Used: {{algoliaResponse.serverUsed}}</div>
+                <div>Index Used: {{searchResponse.indexUsed}}</div>
+                <div>Parsed query: "{{searchResponse.parsedQuery}}"</div>
+                <div>Server Used: {{searchResponse.serverUsed}}</div>
             </div>
         </div>
         <div v-if="persoProfile" class="mt-16">
@@ -25,12 +25,10 @@
 
 <script>
     import {humanNumber} from '../../../../common/utils/formatters';
-    import indexInfoMixin from "../../../mixins/indexInfoMixin";
 
     export default {
         name: 'ResultsInfo',
-        props: ['panelKey', 'algoliaResponse'],
-        mixins: [indexInfoMixin],
+        props: ['searchResponse', 'searchParams', 'appId', 'apiKey'],
         data: function () {
             return {
                 region: 'us',
@@ -62,8 +60,8 @@
 
                 const persoProfileQuery = await fetch(`https://recommendation.${this.region}.algolia.com/1/profiles/personalization/${this.userToken}`, {
                     headers: {
-                        'X-Algolia-Application-Id': this.panelAppId,
-                        'X-Algolia-API-Key': this.panelAdminAPIKey,
+                        'X-Algolia-Application-Id': this.appId,
+                        'X-Algolia-API-Key': this.apiKey,
                     }
                 });
 

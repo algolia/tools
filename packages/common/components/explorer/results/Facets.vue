@@ -1,5 +1,5 @@
 <template>
-    <div class="ml-24" v-if="!$store.state.panels.splitMode">
+    <div class="ml-24" v-if="splitMode">
         <div v-for="attribute in attributesForFaceting" class="bg-white">
             <div class="text-center">{{cleanAttributeName(attribute)}}</div>
             <ais-refinement-list
@@ -13,12 +13,10 @@
 
 <script>
     import {cleanAttributeName} from 'common/utils/formatters'
-    import indexInfoMixin from "../../../mixins/indexInfoMixin";
 
     export default {
         name: 'Facets',
-        props: ['attributesForFaceting', 'panelKey'],
-        mixins: [indexInfoMixin],
+        props: ['attributesForFaceting'],
         methods: {
             cleanAttributeName,
         }

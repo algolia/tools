@@ -34,7 +34,8 @@
             </div>
             <synonym-edit
                 @onStopEdit="isAdding = false"
-                :panel-key="panelKey"
+                v-bind="$props"
+                v-on="$listeners"
                 :synonym="jumpedElt || { objectID: `syn-${Math.random().toString(36).substr(2, 9)}`, type: 'synonym', synonyms: ['', '']}"
                 :allow-save-without-edit="jumpedElt"
                 class="mx-8 border-t border-proton-grey-opacity-30"
@@ -46,7 +47,8 @@
         >
             <rule-edit
                 @onStopEdit="isAdding = false"
-                :panel-key="panelKey"
+                v-bind="$props"
+                v-on="$listeners"
                 :rule="
                     jumpedElt || {
                         objectID: `rule-${Math.random().toString(36).substr(2, 9)}`,
@@ -59,8 +61,9 @@
         <collection
             :type="isRule ? 'rules': 'synonyms'"
             :objs="objs"
-            :panel-key="panelKey"
             class="mt-12"
+            v-bind="$props"
+            v-on="$listeners"
         />
         <div class="flex justify-center">
             <pagination
@@ -73,7 +76,6 @@
 </template>
 
 <script>
-    import indexInfoMixin from "../../../mixins/indexInfoMixin";
     import Collection from "./Collection";
 
     import PlusCircleIcon from "../../../icons/plus-circle.svg";
@@ -83,11 +85,19 @@
     import Pagination from "../results/Pagination";
     import {getSearchIndex} from "../../../utils/algoliaHelpers";
 
+    import props from "../props";
+
     export default {
         name: 'Fetcher',
         components: {Pagination, RuleEdit, SynonymEdit, Tooltip, Collection, PlusCircleIcon},
-        props: ['panelKey', 'methodName'],
-        mixins: [indexInfoMixin],
+        props: [
+            'methodName',
+            'panelKey',
+            ...props.credentials,
+            ...props.actions,
+            ...props.images,
+            ...props.attributes,
+        ],
         data: function () {
             return {
                 objs: [],
@@ -123,7 +133,7 @@
 
             const eventName = this.isRule ? 'shouldTriggerRulesSearch': 'shouldTriggerSynonymsSearch';
             this.$root.$on(eventName, (indexName) => {
-                if (indexName === this.panelIndexName) {
+                if (indexName === this.indexName) {
                     if (shouldFetchAll) {
                         this.search(this.page, true);
                     }
@@ -149,18 +159,18 @@
             query: function () { this.search(this.page, false);},
             page: function () { this.search(this.page, false);},
             rulesStatus: function () { this.search(this.page, false);},
-            panelAppId: function (o, n) { if (o !== n) this.search(0, true); this.search(0, false); },
-            panelIndexName: function (o, n) { if (o !== n) this.search(0, true); this.search(0, false); },
+            appId: function (o, n) { if (o !== n) this.search(0, true); this.search(0, false); },
+            indexName: function (o, n) { if (o !== n) this.search(0, true); this.search(0, false); },
         },
         methods: {
             search: async function (page, loadAll) {
-                if (!this.panelAppId || this.panelAdminAPIKey) return;
+                if (!this.appId || !this.apiKey) return;
 
                 if (page === 0 && loadAll) {
                     this.allObjs = [];
                 }
 
-                const index = await getSearchIndex(this.panelAppId, this.panelAdminAPIKey, this.panelIndexName, this.panelServer);
+                const index = await getSearchIndex(this.appId, this.apiKey, this.indexName);
                 const hitsPerPage = loadAll ? 1000 : 20;
                 const res = await index[this.methodName]({
                     query: this.query,

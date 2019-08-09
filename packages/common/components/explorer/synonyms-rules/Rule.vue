@@ -93,7 +93,12 @@
                     <div class="w-188">promote</div>
                     <div class="ml-4">
                         <div v-for="promoted in intermediateRule.promote" class="flex mb-8">
-                            <promoted-hit :panel-key="panelKey" :hit="promoted.hit" :id="promoted.objectID" :position="promoted.position" />
+                            <promoted-hit
+                                v-bind="$props"
+                                v-on="$listeners"
+                                :id="promoted.objectID"
+                                :position="promoted.position"
+                            />
                         </div>
                     </div>
                 </div>
@@ -102,6 +107,11 @@
                     <div class="ml-4">
                         <div v-for="hide in intermediateRule.hide" class="text-cosmos-black-opacity-70">
                             <span>{{hide.objectID}}</span>
+                            <promoted-hit
+                                v-bind="$props"
+                                v-on="$listeners"
+                                :id="hide.objectID"
+                            />
                         </div>
                     </div>
                 </div>
@@ -120,14 +130,14 @@
             </div>
             <div class="flex">
                 <div class="items-center ml-auto mr-8 justify-end">
-                    <button class="relative group" v-if="canJump && panelKey === 'rightPanel'">
+                    <button class="relative group" v-if="canJumpRules && jumpTo === 'leftPanel'">
                         <flip-left-icon
                             class="ml-8 text-nova-grey-opacity-60 hover:text-telluric-blue w-16 h-16 cursor-pointer"
                             @click="jumpRule"
                         />
                         <tooltip>Copy this synonym in the left panel index.<br>Will ask for confirmation</tooltip>
                     </button>
-                    <button class="relative group" v-if="canJump && panelKey === 'leftPanel'">
+                    <button class="relative group" v-if="canJumpRules && jumpTo === 'rightPanel'">
                         <flip-right-icon
                             class="ml-8 text-nova-grey-opacity-60 hover:text-telluric-blue w-16 h-16 cursor-pointer"
                             @click="jumpRule"
@@ -153,15 +163,17 @@
         </div>
         <rule-edit
             v-if="editMode"
-            @onStopEdit="editMode = false"
-            :panel-key="panelKey"
             :rule="rule"
+            v-bind="$props"
+            v-on="$listeners"
+            @onStopEdit="editMode = false"
         />
         <rule-delete
             v-if="confirmDelete"
             @onStopDelete="confirmDelete = false"
-            :panel-key="panelKey"
             :rule="rule"
+            v-bind="$props"
+            v-on="$listeners"
             class="my-12 mx-8"
         />
     </div>
@@ -180,12 +192,21 @@
     import RuleEdit from "./RuleEdit";
     import IntermediateRule from "./intermediateRule";
     import PromotedHit from "./PromotedHit";
+    import props from "../props";
 
     const hitsTransformer = new HitsTransformer(['_highlightResult']);
 
     export default {
         name: 'Rule',
-        props: ['rule', 'panelKey', 'canJump', 'checked'],
+        props: [
+            'rule',
+            'checked',
+            ...props.credentials,
+            ...props.actions,
+            ...props.images,
+            ...props.attributes,
+            ...props.paramsAndSettings,
+        ],
         components: {PromotedHit, RuleEdit, RuleDelete, Tooltip, EditIcon, TrashIcon, FlipLeftIcon, FlipRightIcon},
         data: function () {
             return {
@@ -201,8 +222,7 @@
         methods: {
             highlightJsonObject,
             jumpRule: function () {
-                const otherPanelKey = this.panelKey === 'leftPanel' ? 'rightPanel': 'leftPanel';
-                this.$root.$emit(`${otherPanelKey}RuleJumping`, this.rule);
+                this.$root.$emit(`${this.jumpTo}RuleJumping`, this.rule);
                 window.scrollTo(0, 0);
             },
             properHighlight: properHighlight

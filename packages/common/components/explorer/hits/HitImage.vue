@@ -2,17 +2,17 @@
     <div
         :class="[
             displayMode === 'autocomplete' ? '' : 'mb-24',
-            !hasImage || (editImageAttributes && !forcedSize) ? 'rounded border border-proton-grey-opacity-60': '',
-            (editImageAttributes && !forcedSize) ? 'p-8' : '',
-            listMode && panelImageSize <= 160 ? 'float-right ml-16': ''
+            !hasImage || (editImageAttributes && !forcedImageSize) ? 'rounded border border-proton-grey-opacity-60': '',
+            (editImageAttributes && !forcedImageSize) ? 'p-8' : '',
+            listMode && imageSize <= 160 ? 'float-right ml-16': ''
         ]"
     >
         <div
             @click="editImageAttributes = true"
             class="flex justify-center items-center mx-auto"
             :class="[
-                editImageAttributes && !forcedSize ? 'mt-12' : 'cursor-pointer',
-                `w-${forcedSize || panelImageSize} h-${forcedSize || panelImageSize}`
+                editImageAttributes && !forcedImageSize ? 'mt-12' : 'cursor-pointer',
+                `w-${forcedImageSize || imageSize} h-${forcedImageSize || imageSize}`
             ]"
         >
             <camera-icon v-if="!hasImage" class="w-16 h-16 text-proton-grey-opacity-60"></camera-icon>
@@ -20,21 +20,31 @@
                 v-if="hasImage"
                 class="rounded w-full h-full"
                 style="object-fit: cover;"
-                :src="`https://rocky-thicket-17824.herokuapp.com/${forcedSize || panelImageSize}/${panelImageBaseUrl}${image}${panelImageSuffixUrl}`"
+                :src="`https://rocky-thicket-17824.herokuapp.com/${forcedImageSize || imageSize}/${imageBaseUrl}${image}${imageSuffixUrl}`"
             />
         </div>
-        <div v-if="editImageAttributes && !forcedSize" class="p-12 text-center">
+        <div v-if="editImageAttributes && !forcedImageSize" class="p-12 text-center">
             <div>
-                <input class="w-128 bg-proton-grey-opacity-20 text-xs p-4" v-model="panelImageAttributeName" placeholder="image_attribute_name"/>
+                <input class="w-128 bg-proton-grey-opacity-20 text-xs p-4"
+                       :value="imageAttribute"
+                       @input="$emit('onUpdateImageAttribute', $event.target.value)"
+                       placeholder="image_attribute_name"
+                />
             </div>
             <div class="mt-2">
-                <input class="w-128 bg-proton-grey-opacity-20 text-xs p-4" v-model="panelImageBaseUrl" placeholder="base_image_url" />
+                <input class="w-128 bg-proton-grey-opacity-20 text-xs p-4"
+                       :value="imageBaseUrl"
+                       @input="$emit('onUpdateImageBaseUrl', $event.target.value)"
+                       placeholder="base_image_url" />
             </div>
             <div class="mt-2">
-                <input class="w-128 bg-proton-grey-opacity-20 text-xs p-4" v-model="panelImageSuffixUrl" placeholder="suffix_image_url" />
+                <input class="w-128 bg-proton-grey-opacity-20 text-xs p-4"
+                       :value="imageSuffixUrl"
+                       @input="$emit('onUpdateImageSuffixUrl', $event.target.value)"
+                       placeholder="suffix_image_url" />
             </div>
             <div class="mt-2">
-                <select v-model.number="panelImageSize">
+                <select v-model.number="size">
                     <option value="40">40px</option>
                     <option value="80">80px</option>
                     <option value="120">120px</option>
@@ -52,15 +62,18 @@
 
 <script>
     import CameraIcon from 'common/icons/camera.svg';
-    import indexInfoMixin from "../../../mixins/indexInfoMixin";
+    import props from "../props";
 
     const imageRegex = /(?:https?:)?\/\/.+\.(?:jpe?g|png|svg|webp)(?:\?.*)?$/i;
 
     export default {
         name: 'HitImage',
-        props: ['panelKey', 'flattenHit', 'displayMode', 'listMode', 'forcedSize'],
+        props: [
+            'flattenHit', 'displayMode', 'listMode', 'forcedImageSize',
+            ...props.images,
+            ...props.display,
+        ],
         components: {CameraIcon},
-        mixins: [indexInfoMixin],
         data: function () {
             return {
                 editImageAttributes: false,
@@ -68,11 +81,19 @@
             }
         },
         computed: {
+            size: {
+                get () {
+                    return this.imageSize;
+                },
+                set (val) {
+                    this.$emit('onUpdateImageSize', val);
+                }
+            },
             imageAttributeName: function () {
-                if (!this.panelImageAttributeName) {
+                if (!this.imageAttribute) {
                     this.autoFindImageAttributeName();
                 }
-                return this.panelImageAttributeName;
+                return this.imageAttribute;
             },
             hasImage: function () {
                 return this.imageAttributeName && this.image;
@@ -87,11 +108,11 @@
                 let key;
                 for (key in this.flattenHit) {
                     if (this.flattenHit[key].length <= 1000 && this.flattenHit[key].match(imageRegex)) {
-                        this.panelImageAttributeName = key;
+                        this.$emit('onUpdateImageAttribute', key);
                     }
                 }
 
-                return this.panelImageAttributeName;
+                return this.imageAttribute;
             },
         },
     }

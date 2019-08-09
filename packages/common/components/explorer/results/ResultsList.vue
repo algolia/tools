@@ -1,40 +1,40 @@
 <template>
     <div>
-        <results-info :panel-key="panelKey" :algolia-response="algoliaResponse" />
+        <results-info v-bind="$props" />
         <div class="w-full" v-if="displayMode === 'list'">
-            <applied-alternatives :algolia-response="algoliaResponse" />
-            <applied-rules :panel-key="panelKey" :algolia-response="algoliaResponse" />
+            <applied-alternatives :algolia-response="searchResponse" />
+            <applied-rules v-bind="$props" v-on="$listeners" />
         </div>
-        <div v-if="algoliaResponse.hits.length > 0">
+        <div v-if="searchResponse.hits.length > 0">
             <div v-if="(displayMode === 'list' && needTitleAttribute) || displayMode === 'images'" class="mt-24 text-solstice-blue-opacity-70">
                 <div>
                     Extra attribute to display:
-                    <input class="w-128 bg-proton-grey-opacity-20 text-xs p-4" v-model="panelTitleAttribute" placeholder="attribute_name"/>
+                    <input
+                        class="w-128 bg-proton-grey-opacity-20 text-xs p-4"
+                        :value="titleAttributeName"
+                        @input="$emit('onUpdateTitleAttributeName', $event.target.value)"
+                        placeholder="attribute_name"/>
                 </div>
                 <div>(default to first string attribute in searchableAttribute)</div>
             </div>
             <div class="w-full" :class="displayMode === 'list' ? '' : 'flex flex-wrap'">
-                <hit v-for="(hit, i) in algoliaResponse.hits"
+                <hit v-for="(hit, i) in searchResponse.hits"
+                     :key="hit.objectID"
                      :hit="hit"
                      :hit-position="i"
-                     :previous-hit="i > 0 ? algoliaResponse.hits[i - 1] : hit"
-                     :key="hit.objectID"
-                     :algolia-response="algoliaResponse"
-                     :panel-key="panelKey"
+                     :previous-hit="i > 0 ? searchResponse.hits[i - 1] : hit"
                      :top-attributes="topAttributes"
                      :searchable-attributes="searchableAttributes"
-                     :display-mode="displayMode"
-                     :record-can-jump="recordCanJump"
                      :title-attribute="titleAttribute"
-                     :read-only="readOnly"
+                     v-bind="$props"
+                     v-on="$listeners"
                 />
-                <!--<facets :attributes-for-faceting="attributesForFaceting" :panel-key="panelKey" class="blo" />-->
             </div>
             <div class="flex justify-center">
                 <pagination
                     v-model="page"
                     :page="page"
-                    :nb-pages="algoliaResponse.nbPages"
+                    :nb-pages="searchResponse.nbPages"
                 />
             </div>
         </div>
@@ -52,10 +52,10 @@
     import AppliedRules from "./AppliedRules";
     import Pagination from "./Pagination";
     import ResultsInfo from "./ResultsInfo";
-    import indexInfoMixin from "../../../mixins/indexInfoMixin";
     import Hit from "../hits/Hit";
     import {cleanAttributeName, cleanDeepAttributeName} from '../../../utils/formatters'
     import AppliedAlternatives from "./AppliedAlternatives";
+    import props from "../props";
 
     const isString = function (s) {
         return typeof s === 'string' || s instanceof String;
@@ -63,14 +63,22 @@
 
     export default {
         name: 'ResultsList',
-        props: ['panelKey', 'algoliaResponse', 'displayMode', 'readOnly'],
-        mixins: [indexInfoMixin],
+        props: [
+            'panelKey',
+            ...props.credentials,
+            ...props.images,
+            ...props.attributes,
+            ...props.paramsAndSettings,
+            ...props.response,
+            ...props.display,
+            ...props.actions,
+        ],
         components: {AppliedAlternatives, Hit, ResultsInfo, Pagination, AppliedRules},
         watch: {
             titleAttribute: {
                 immediate: true,
                 handler: function () {
-                    this.panelAutoTitleAttributeName = this.titleAttribute;
+                    this.$emit('onUpdateAutoTitleAttributeName', this.titleAttribute);
                 }
             }
         },
@@ -80,57 +88,32 @@
                     return this.searchParams.page || 0;
                 },
                 set(value) {
-                    this.$store.commit(`${this.panelIndexCommitPrefix}/setParamValue`, {
-                        configKey: this.searchConfigKey,
-                        key: 'page',
-                        value: value
-                    });
+                    this.$emit('onUpdatePage', value);
                 }
             },
             attributesForFaceting: function () {
-                return this.refIndexSettings.attributesForFaceting || [];
-            },
-            recordCanJump: function () {
-                if (!this.$store.state.panels.splitMode) return false;
-                if (this.sameIndexOnEachPanel) return false;
-
-                const otherPanelKey = this.panelKey === 'leftPanel' ? 'rightPanel': 'leftPanel';
-                const otherPanelCurrentTabIsHits = this.$store.state.panels[otherPanelKey].currentTab === 'hits';
-                const otherPanelInListMode = this.$store.state.panels[otherPanelKey].displayMode === 'list';
-
-                if (!otherPanelCurrentTabIsHits || !otherPanelInListMode) return false;
-
-                const appId = this.$store.state.panels[otherPanelKey].appId;
-                const indexName = this.$store.state.panels[otherPanelKey].indexName;
-                const panelIndexData = this.$store.state.apps[appId][indexName];
-
-                if (!panelIndexData || !panelIndexData.refIndexSettings) return false;
-
-                return !panelIndexData.refIndexSettings.primary;
+                return this.indexSettings.attributesForFaceting || [];
             },
             searchableAttributes: function () {
-                const searchableAttributes = this.refIndexSettings.searchableAttributes || this.refIndexSettings.attributesToIndex || [];
-
-                if (searchableAttributes.length === 0) return [];
-
+                const searchableAttributes = this.indexSettings.searchableAttributes || this.indexSettings.attributesToIndex || [];
                 return this.getAllSearchableAttributes(searchableAttributes).map(cleanAttributeName).map(cleanDeepAttributeName);
             },
             topAttributes: function () {
                 const topAttributes = ['objectID', this.titleAttribute];
 
-
-                if (this.$store.state.panels.showSearchableAttributes) topAttributes.push(...this.searchableAttributes);
-                if (this.$store.state.panels.showCustomRanking) topAttributes.push(...(this.refIndexSettings.customRanking || []))
-                if (this.$store.state.panels.showAttributesForFaceting) topAttributes.push(...this.attributesForFaceting);
+                if (this.showSearchableAttributes) topAttributes.push(...this.searchableAttributes);
+                if (this.showCustomRanking) topAttributes.push(...(this.indexSettings.customRanking || []));
+                if (this.showAttributesForFaceting) topAttributes.push(...this.attributesForFaceting);
 
                 return [...new Set(topAttributes)].map(cleanAttributeName).map(cleanDeepAttributeName);
             },
             titleAttribute: function () {
-                let titleAttribute = this.panelTitleAttribute;
-                const searchableAttributes = this.refIndexSettings.searchableAttributes || this.refIndexSettings.attributesToIndex || [];
-                const hit = this.algoliaResponse.hits.length > 0 ? this.algoliaResponse.hits[0] : {};
+                let titleAttribute = this.titleAttributeName;
 
-                if (titleAttribute.length <= 0) {
+                if (!titleAttribute) {
+                    const searchableAttributes = this.indexSettings.searchableAttributes || this.indexSettings.attributesToIndex || [];
+                    const hit = this.searchResponse.hits.length > 0 ? this.searchResponse.hits[0] : {};
+
                     for (let i in searchableAttributes) {
                         const newTitleAttribute = cleanAttributeName(cleanDeepAttributeName(
                             searchableAttributes[i].split(',')[0]
@@ -145,9 +128,9 @@
                 return titleAttribute || 'objectID';
             },
             needTitleAttribute: function () {
-                return !this.$store.state.panels.showSearchableAttributes
-                    && !this.$store.state.panels.showCustomRanking
-                    && !this.$store.state.panels.showAttributesForFaceting;
+                return !this.showSearchableAttributes
+                    && !this.showCustomRanking
+                    && !this.showAttributesForFaceting;
             },
         },
         methods: {

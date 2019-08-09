@@ -23,14 +23,16 @@
 
 <script>
     import LoaderIcon from 'common/icons/loader.svg'
-    import indexInfoMixin from "../../../mixins/indexInfoMixin";
     import {getSearchIndex} from "../../../utils/algoliaHelpers";
+    import props from "../props";
 
     export default {
         name: 'SynonymDelete',
-        props: ['panelKey', 'synonym'],
+        props: [
+            'synonym',
+            ...props.credentials,
+        ],
         components: {LoaderIcon},
-        mixins: [indexInfoMixin],
         data: function () {
             return {
                 saving: false,
@@ -38,14 +40,14 @@
         },
         methods: {
             deleteSynonym: async function () {
-                const index = await getSearchIndex(this.panelAppId, this.panelAdminAPIKey, this.panelIndexName, this.panelServer);
+                const index = await getSearchIndex(this.appId, this.apiKey, this.indexName, this.server);
                 const task = await index.deleteSynonym(this.synonym.objectID);
                 this.saving = true;
                 await index.waitTask(task['taskID']);
                 this.saving = false;
                 this.$emit('onStopDelete');
-                this.$root.$emit('shouldTriggerSearch', this.panelIndexName);
-                this.$root.$emit('shouldTriggerSynonymsSearch', this.panelIndexName);
+                this.$root.$emit('shouldTriggerSearch', this.indexName);
+                this.$root.$emit('shouldTriggerSynonymsSearch', this.indexName);
             }
         },
     }

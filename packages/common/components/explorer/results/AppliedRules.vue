@@ -1,8 +1,11 @@
 <template>
-    <div v-if="algoliaResponse.appliedRules" class="mt-32 break-words">
+    <div v-if="searchResponse.appliedRules" class="mt-32 break-words">
         <div>
-            <div v-for="(o, i) in algoliaResponse.appliedRules" :key="`${key}-${o.objectID}`">
-                <unfetched-rule :panel-key="panelKey" :rule-id="o.objectID" :canJump="canJump"/>
+            <div v-for="(o, i) in searchResponse.appliedRules" :key="`${key}-${o.objectID}`">
+                <unfetched-rule :rule-id="o.objectID"
+                                v-bind="$props"
+                                v-on="$listeners"
+                />
             </div>
         </div>
     </div>
@@ -10,12 +13,19 @@
 
 <script>
     import UnfetchedRule from "../synonyms-rules/UnfetchedRule";
-    import panelsMixin from "../../../mixins/panelsMixin";
+    import props from "../props";
+
     export default {
         name: 'AppliedRules',
         components: {UnfetchedRule},
-        mixins: [panelsMixin],
-        props: ['panelKey', 'algoliaResponse'],
+        props: [
+            ...props.response,
+            ...props.credentials,
+            ...props.images,
+            ...props.actions,
+            ...props.attributes,
+            'keysIndexer',
+        ],
         data: function () {
             return {
                 key: 0,
@@ -25,16 +35,6 @@
             this.$root.$on('shouldTriggerRulesSearch', () => {
                 this.key = this.key + 1;
             });
-        },
-        computed: {
-            canJump: function () {
-                if (!this.$store.state.panels.splitMode) return false;
-                if (this.sameIndexOnEachPanel) return false;
-
-                const otherPanelKey = this.panelKey === 'leftPanel' ? 'rightPanel': 'leftPanel';
-
-                return this.$store.state.panels[otherPanelKey].currentTab === 'rules';
-            },
         },
     }
 </script>

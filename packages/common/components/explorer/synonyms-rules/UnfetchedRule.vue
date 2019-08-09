@@ -1,17 +1,27 @@
 <template>
-    <rule v-if="rule" :rule="rule" :can-jump="canJump" :panel-key="panelKey" />
+    <rule v-if="rule"
+          :rule="rule"
+          v-bind="$props"
+          v-on="$listeners"
+    />
 </template>
 
 <script>
     import Rule from "./Rule";
-    import indexInfoMixin from "../../../mixins/indexInfoMixin";
     import {getSearchIndex} from "../../../utils/algoliaHelpers";
+    import props from "../props";
 
     export default {
         name: 'UnfetchedRule',
         components: {Rule},
-        props: ['panelKey', 'ruleId', 'canJump'],
-        mixins: [indexInfoMixin],
+        props: [
+            'ruleId',
+            ...props.credentials,
+            ...props.actions,
+            ...props.images,
+            ...props.attributes,
+            'keysIndexer',
+        ],
         data: function () {
             return {
                 rule: false,
@@ -27,7 +37,7 @@
         },
         methods: {
             getRule: async function () {
-                const index = await getSearchIndex(this.panelAppId, this.panelAdminAPIKey, this.panelIndexName, this.panelServer);
+                const index = await getSearchIndex(this.appId, this.apiKey, this.indexName, this.server);
                 this.rule = await index.getRule(this.ruleId);
             }
         }

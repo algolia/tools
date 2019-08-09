@@ -23,14 +23,12 @@
 
 <script>
     import LoaderIcon from 'common/icons/loader.svg'
-    import indexInfoMixin from "../../../mixins/indexInfoMixin";
     import {getSearchIndex} from "../../../utils/algoliaHelpers";
 
     export default {
         name: 'RuleDelete',
-        props: ['panelKey', 'rule'],
+        props: ['appId', 'apiKey', 'indexName', 'server', 'rule'],
         components: {LoaderIcon},
-        mixins: [indexInfoMixin],
         data: function () {
             return {
                 saving: false,
@@ -38,14 +36,14 @@
         },
         methods: {
             deleteRule: async function () {
-                const index = await getSearchIndex(this.panelAppId, this.panelAdminAPIKey, this.panelIndexName, this.panelServer);
+                const index = await getSearchIndex(this.appId, this.apiKey, this.indexName, this.server);
                 const task = await index.deleteRule(this.rule.objectID);
                 this.saving = true;
                 await index.waitTask(task['taskID']);
                 this.saving = false;
                 this.$emit('onStopDelete');
-                this.$root.$emit('shouldTriggerSearch', this.panelIndexName);
-                this.$root.$emit('shouldTriggerRulesSearch', this.panelIndexName);
+                this.$root.$emit('shouldTriggerSearch', this.indexName);
+                this.$root.$emit('shouldTriggerRulesSearch', this.indexName);
             }
         },
     }

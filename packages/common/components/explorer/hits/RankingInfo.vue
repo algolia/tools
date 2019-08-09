@@ -36,20 +36,17 @@
 
 <script>
     import RankingInfoAnalyser from "./rankingInfoAnalyser"
-    import {formatHumanDistance} from "../../../../common/utils/formatters"
     import paramsSpecs from '../../../params-specs';
-    import indexInfoMixin from "../../../mixins/indexInfoMixin";
 
     export default {
         name: 'RankingInfo',
-        props: ['panelKey', 'item', 'previousItem', 'i'],
-        mixins: [indexInfoMixin],
+        props: ['item', 'previousItem', 'i', 'indexSettings'],
         computed: {
             rankingInfoAnalyzer: function () {
-                return new RankingInfoAnalyser(this.refIndexSettings);
+                return new RankingInfoAnalyser(this.indexSettings);
             },
             searchableAttributes: function () {
-                return this.refIndexSettings.searchableAttributes || this.refIndexSettings.attributesToIndex || paramsSpecs.searchableAttributes.default;
+                return this.indexSettings.searchableAttributes || this.indexSettings.attributesToIndex || paramsSpecs.searchableAttributes.default;
             },
             criteria: function () {
                 const criterias = [];

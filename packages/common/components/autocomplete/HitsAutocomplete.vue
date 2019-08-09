@@ -10,7 +10,12 @@
             v-on="$listeners"
         >
             <template slot="item" slot-scope="{ index, item }">
-                <promoted-hit :panel-key="panelKey" :hit="item" class="w-240"/>
+                <promoted-hit
+                    :hit="item"
+                    class="w-240"
+                    v-bind="$props"
+                    v-on="$listeners"
+                />
             </template>
         </autocomplete>
     </div>
@@ -18,28 +23,29 @@
 
 <script>
     import Autocomplete from "./Autocomplete";
-    import indexInfoMixin from "../../mixins/indexInfoMixin";
     import PromotedHit from "../explorer/synonyms-rules/PromotedHit";
+    import {getSearchIndex} from "../../utils/algoliaHelpers";
+    import props from "../explorer/props";
 
     export default {
-        name: 'PanelHitAutocomplete',
+        name: 'HitsAutocomplete',
         components: {PromotedHit, Autocomplete},
-        props: ['panelKey', 'params', 'value', 'displayEmptyQuery', 'placeholder'],
-        mixins: [indexInfoMixin],
+        props: [
+            'params', 'value', 'displayEmptyQuery', 'placeholder',
+            ...props.credentials,
+            ...props.images,
+            ...props.attributes,
+        ],
         data: function () {
             return {
                 algoliaResponse: null,
                 items: []
             }
         },
-        computed: {
-            algoliaIndex: function () {
-                return this.algoliasearch(this.panelAppId, this.panelAdminAPIKey).initIndex(this.panelIndexName);
-            }
-        },
         methods: {
             refine: async function (query) {
-                this.algoliaResponse = await this.algoliaIndex.search(query, this.params || {});
+                const index = await getSearchIndex(this.appId, this.apiKey, this.indexName, this.server);
+                this.algoliaResponse = await index.search(query, this.params || {});
                 this.items = this.algoliaResponse.hits;
             },
         },

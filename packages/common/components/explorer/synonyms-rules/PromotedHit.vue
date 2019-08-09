@@ -1,7 +1,14 @@
 <template>
     <div>
         <div class="flex">
-            <hit-image v-if="hitOrFetched" :forcedSize="40" :panel-key="panelKey" :flatten-hit="flattenHit" display-mode="autocomplete" />
+            <hit-image
+                v-if="hitOrFetched"
+                :forced-image-size="40"
+                :flatten-hit="flattenHit"
+                display-mode="autocomplete"
+                v-bind="$props"
+                v-on="$listeners"
+            />
             <div class="flex-grow ml-12">
                 <div>
                     <span v-if="hitOrFetched">{{objectID}}</span>
@@ -22,15 +29,19 @@
 <script>
     import flattenRecord from '../../../utils/flattenRecordForImagePreview';
     import HitImage from "../hits/HitImage";
-    import indexInfoMixin from "../../../mixins/indexInfoMixin";
     import {properHighlight} from "common/utils/formatters";
     import {getSearchIndex} from "../../../utils/algoliaHelpers";
+    import props from "../props";
 
     export default {
         name: 'PromotedHit',
         components: {HitImage},
-        props: ['panelKey', 'hit', 'id', 'position'],
-        mixins: [indexInfoMixin],
+        props: [
+            'hit', 'id', 'position',
+            ...props.credentials,
+            ...props.images,
+            ...props.attributes,
+        ],
         data: function () {
             return {
                 fetched: null,
@@ -38,7 +49,7 @@
         },
         created: async function () {
             if (!this.hit) {
-                const index = await getSearchIndex(this.panelAppId, this.panelAdminAPIKey, this.panelIndexName, this.panelServer);
+                const index = await getSearchIndex(this.appId, this.apiKey, this.indexName);
                 try {
                     this.fetched = await index.getObject(this.id);
                 } catch (e) {}
@@ -58,13 +69,13 @@
                 if (!this.hitOrFetched) return this.id;
 
                 if (this.hitOrFetched._highlightResult &&
-                    this.hitOrFetched._highlightResult[this.panelAutoTitleAttributeName] &&
-                    this.hitOrFetched._highlightResult[this.panelAutoTitleAttributeName].value
+                    this.hitOrFetched._highlightResult[this.autoTitleAttributeName] &&
+                    this.hitOrFetched._highlightResult[this.autoTitleAttributeName].value
                 ) {
-                    return this.hitOrFetched._highlightResult[this.panelAutoTitleAttributeName].value;
+                    return this.hitOrFetched._highlightResult[this.autoTitleAttributeName].value;
                 }
 
-                return this.hitOrFetched[this.panelAutoTitleAttributeName];
+                return this.hitOrFetched[this.autoTitleAttributeName];
             }
         },
         methods: {

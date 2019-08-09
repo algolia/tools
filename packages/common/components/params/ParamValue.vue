@@ -44,7 +44,7 @@
                 <div class="cursor-pointer" v-if="collapseBigArrays && param.value.length > 10" @click="collapseBigArrays = false">
                     ... <span class="text-proton-grey">({{param.value.length}} values)</span>
                 </div>
-                <draggable v-model="param.value" v-else class="flex" :options="{disabled: status === 'deleted'}">
+                <draggable v-model="param.value" v-else class="flex" :disabled="status === 'deleted'">
                     <transition-group class="w-full">
                         <div
                             v-for="(v, index) in param.value" :key="index - 1"

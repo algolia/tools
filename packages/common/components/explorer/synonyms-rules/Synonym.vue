@@ -27,14 +27,14 @@
                 </div>
             </div>
             <div class="flex items-center ml-auto mr-8">
-                <button class="relative group" v-if="canJump && panelKey === 'rightPanel'">
+                <button class="relative group" v-if="canJumpSynonyms && jumpTo === 'leftPanel'">
                     <flip-left-icon
                         class="ml-8 text-nova-grey-opacity-60 hover:text-telluric-blue w-16 h-16 cursor-pointer"
                         @click="jumpSynonym"
                     />
                     <tooltip>Copy this synonym in the left panel index.<br>Will ask for confirmation</tooltip>
                 </button>
-                <button class="relative group" v-if="canJump && panelKey === 'leftPanel'">
+                <button class="relative group" v-if="canJumpSynonyms && jumpTo === 'rightPanel'">
                     <flip-right-icon
                         class="ml-8 text-nova-grey-opacity-60 hover:text-telluric-blue w-16 h-16 cursor-pointer"
                         @click="jumpSynonym"
@@ -59,17 +59,19 @@
         </div>
         <synonym-edit
             v-if="editMode"
-            @onStopEdit="editMode = false"
-            :panel-key="panelKey"
             :synonym="synonym"
             class="my-12 mx-8"
+            v-bind="$props"
+            v-on="$listeners"
+            @onStopEdit="editMode = false"
         />
         <synonym-delete
             v-if="confirmDelete"
-            @onStopDelete="confirmDelete = false"
-            :panel-key="panelKey"
             :synonym="synonym"
             class="my-12 mx-8"
+            v-bind="$props"
+            v-on="$listeners"
+            @onStopDelete="confirmDelete = false"
         />
     </div>
 </template>
@@ -83,11 +85,16 @@
     import SynonymDelete from "./SynonymDelete";
     import Tooltip from "../../Tooltip";
     import SynonymEdit from "./SynonymEdit";
-    import synonymMixin from "../../../mixins/synonymMixin";
+    import synonymMixin from "./synonymMixin";
+    import props from "../props";
 
     export default {
         name: 'Synonym',
-        props: ['synonym', 'panelKey', 'canJump', 'checked'],
+        props: [
+            'synonym', 'checked',
+            ...props.actions,
+            ...props.credentials,
+        ],
         components: {SynonymEdit, Tooltip, SynonymDelete, EditIcon, TrashIcon, FlipLeftIcon, FlipRightIcon},
         mixins: [synonymMixin],
         data: function () {
@@ -98,8 +105,7 @@
         },
         methods: {
             jumpSynonym: function () {
-                const otherPanelKey = this.panelKey === 'leftPanel' ? 'rightPanel': 'leftPanel';
-                this.$root.$emit(`${otherPanelKey}SynonymJumping`, this.synonym);
+                this.$root.$emit(`${this.jumpTo}SynonymJumping`, this.synonym);
                 window.scrollTo(0, 0);
             },
         },

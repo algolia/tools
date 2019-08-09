@@ -15,8 +15,14 @@
                 </div>
             </div>
             <div v-if="!editMode">
-                <hit-image :flatten-hit="flattenHit" :panel-key="panelKey" :display-mode="displayMode" :list-mode="listMode" />
-                <div v-if="imageMode && panelImageSize >= 120" class="mb-8" :class="`w-${panelImageSize}`">
+                <hit-image
+                    :flatten-hit="flattenHit"
+                    :display-mode="displayMode"
+                    :list-mode="listMode"
+                    v-bind="$props"
+                    v-on="$listeners"
+                />
+                <div v-if="imageMode && imageSize >= 120" class="mb-8" :class="`w-${imageSize}`">
                     <div class="truncate">{{hit.objectID}}</div>
                     <div class="truncate" v-if="title" v-html="title" />
                 </div>
@@ -33,20 +39,22 @@
                     :top-attributes="topAttributes"
                     :searchable-attributes="searchableAttributes"
                     :item="transformedItem"
+                    v-bind="$props"
+                    v-on="$listeners"
                 />
                 <ranking-info
                     class="mt-48"
-                    v-if="$store.state.panels.displayRankingInfo && listMode"
-                    :panel-key="panelKey"
+                    v-if="displayRankingInfo && listMode"
                     :item="hit"
                     :previous-item="previousHit"
                     :i="hitPosition"
+                    :index-settings="indexSettings"
                 />
                 <div class="clearfix"></div>
                 <div v-if="listMode" class="flex justify-end items-center text-nova-grey-opacity-80">
                     <button class="relative group">
                         <flip-left-icon
-                            v-if="recordCanJump && panelKey === 'rightPanel'"
+                            v-if="canJumpRecords && jumpTo === 'leftPanel'"
                             class="text-nova-grey-opacity-80 hover:text-telluric-blue w-16 h-16 cursor-pointer"
                             @click="jumpRecord"
                         />
@@ -54,7 +62,7 @@
                     </button>
                     <button class="relative group">
                         <flip-right-icon
-                            v-if="recordCanJump && panelKey === 'leftPanel'"
+                            v-if="canJumpRecords && jumpTo === 'rightPanel'"
                             class="text-nova-grey-opacity-80 hover:text-telluric-blue w-16 h-16 cursor-pointer"
                             @click="jumpRecord"
                         />
@@ -62,7 +70,7 @@
                     </button>
                     <button class="relative group">
                         <edit-icon
-                            v-if="!isReadOnly"
+                            v-if="!readOnly"
                             class="ml-12 text-nova-grey-opacity-80 hover:text-telluric-blue w-16 h-16 cursor-pointer"
                             @click="editMode = true"
                         />
@@ -70,13 +78,13 @@
                     </button>
                     <button class="relative group">
                         <trash-icon
-                            v-if="!isReadOnly"
+                            v-if="!readOnly"
                             class="ml-12 text-nova-grey-opacity-80 hover:text-telluric-blue w-16 h-16 cursor-pointer"
                             @click="confirmDelete = true"
                         />
                         <tooltip>Delete this record.<br>Will ask for confirmation</tooltip>
                     </button>
-                    <div v-if="isReplica" class="ml-12">
+                    <div v-if="indexSettings && indexSettings.primary && indexSettings.primary.length > 0" class="ml-12">
                         Read-only replica
                     </div>
                 </div>
@@ -85,13 +93,15 @@
                 v-if="confirmDelete"
                 @onStopDelete="confirmDelete = false"
                 :hit="hit"
-                :panel-key="panelKey"
+                v-bind="$props"
+                v-on="$listeners"
             />
             <hit-edit
                 v-if="editMode"
                 :hit="hit"
                 @onStopEdit="editMode = false"
-                :panel-key="panelKey"
+                v-bind="$props"
+                v-on="$listeners"
             />
         </div>
         <div v-if="listMode" class="mt-24 mx-32 border-t border-proton-grey-opacity-40"></div>
@@ -106,7 +116,6 @@
     import HitEdit from './HitEdit';
     import HitDelete from './HitDelete';
     import HitImage from "./HitImage";
-    import indexInfoMixin from "../../../mixins/indexInfoMixin";
 
     import EditIcon from 'common/icons/edit.svg';
     import TrashIcon from 'common/icons/trash.svg';
@@ -115,6 +124,7 @@
     import MaximizeIcon from "common/icons/maximize.svg";
     import MinimizeIcon from "common/icons/minimize.svg";
     import Tooltip from "../../Tooltip";
+    import props from "../props";
 
     const hitsTransformer = new HitsTransformer(['_highlightResult', '_snippetResult', '_rankingInfo', '_distinctSeqID']);
 
@@ -123,8 +133,16 @@
         components: {
             Tooltip,
             HitImage, HitDelete, HitEdit, RankingInfo, Attributes, EditIcon, TrashIcon, FlipLeftIcon, FlipRightIcon, MaximizeIcon, MinimizeIcon},
-        mixins: [indexInfoMixin],
-        props: ['algoliaResponse', 'panelKey', 'topAttributes', 'searchableAttributes', 'hit', 'previousHit', 'hitPosition', 'displayMode', 'recordCanJump', 'titleAttribute', 'readOnly'],
+        props: [
+            'panelKey', 'hit', 'previousHit', 'topAttributes', 'searchableAttributes', 'hitPosition', 'titleAttribute',
+            ...props.credentials,
+            ...props.attributes,
+            ...props.actions,
+            ...props.display,
+            ...props.images,
+            ...props.response,
+            ...props.paramsAndSettings,
+        ],
         data: function () {
             return {
                 confirmDelete: false,
@@ -150,7 +168,7 @@
                 return this.hit._rankingInfo && this.hit._rankingInfo.promoted;
             },
             hitNumber: function () {
-                return this.algoliaResponse.hitsPerPage * this.algoliaResponse.page + this.hitPosition + 1;
+                return this.searchResponse.hitsPerPage * this.searchResponse.page + this.hitPosition + 1;
             },
             title: function () {
                 if (this.hit._highlightResult[this.titleAttribute] && this.hit._highlightResult[this.titleAttribute].value) {
@@ -165,8 +183,7 @@
         },
         methods: {
             jumpRecord: function () {
-                const otherPanelKey = this.panelKey === 'leftPanel' ? 'rightPanel': 'leftPanel';
-                this.$root.$emit(`${otherPanelKey}HitJumping`, this.hit);
+                this.$root.$emit(`${this.jumpTo}HitJumping`, this.hit);
                 window.scrollTo(0, 0);
             },
         }

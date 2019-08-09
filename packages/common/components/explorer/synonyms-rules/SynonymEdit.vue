@@ -71,15 +71,18 @@
 
 <script>
     import LoaderIcon from 'common/icons/loader.svg'
-    import indexInfoMixin from "../../../mixins/indexInfoMixin";
-    import synonymMixin from "../../../mixins/synonymMixin";
+    import synonymMixin from "./synonymMixin";
     import {getSearchIndex} from "../../../utils/algoliaHelpers";
+    import props from "../props";
 
     export default {
         name: 'SynonymEdit',
         components: {LoaderIcon},
-        mixins: [indexInfoMixin, synonymMixin],
-        props: ['synonym', 'panelKey', 'allowSaveWithoutEdit'],
+        mixins: [synonymMixin],
+        props: [
+            'synonym', 'allowSaveWithoutEdit',
+            ...props.credentials,
+        ],
         data: function () {
             return {
                 saving: false,
@@ -138,14 +141,14 @@
                 return synonym;
             },
             save: async function () {
-                const index = await getSearchIndex(this.panelAppId, this.panelAdminAPIKey, this.panelIndexName, this.panelServer);
+                const index = await getSearchIndex(this.appId, this.apiKey, this.indexName);
                 const task = await index.saveSynonym(this.getNewSynonym(), { forwardToReplicas: this.forwardToReplicas });
                 this.saving = true;
                 await index.waitTask(task['taskID']);
                 this.saving = false;
                 this.$emit('onStopEdit');
-                this.$root.$emit('shouldTriggerSearch', this.panelIndexName);
-                this.$root.$emit('shouldTriggerSynonymsSearch', this.panelIndexName);
+                this.$root.$emit('shouldTriggerSearch', this.indexName);
+                this.$root.$emit('shouldTriggerSynonymsSearch', this.indexName);
             },
             onKeyDown: function (e, i) {
                 if (e.which === 13 || (e.which === 9 && !e.shiftKey)) { // enter or tab

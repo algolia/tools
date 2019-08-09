@@ -43,10 +43,11 @@
             <rule-batch
                 v-if="batchAction !== null"
                 @onStopEdit="batchAction = null"
-                :panel-key="panelKey"
                 :batchable="batchable"
                 :action="batchAction"
                 class="mb-24"
+                v-bind="$props"
+                v-on="$listeners"
             />
             <div v-if="type === 'synonyms'" class="flex text-xs uppercase tracking-wide">
                 <div class="w-20p p-8">Synonym ID</div>
@@ -56,10 +57,10 @@
                 <div v-for="synonym in objsToDisplay" :key="synonym.objectID" class="border-t border-proton-grey-opacity-30">
                     <synonym
                         :synonym="synonym"
-                        :panel-key="panelKey"
                         @updateChecked="checkedList[synonym.objectID] = $event"
                         :checked="checkedList[synonym.objectID]"
-                        :can-jump="canJump"
+                        v-bind="$props"
+                        v-on="$listeners"
                     />
                 </div>
             </div>
@@ -67,11 +68,11 @@
                 <div v-for="rule in objsToDisplay" :key="rule.objectID">
                     <rule
                         :rule="rule"
-                        :panel-key="panelKey"
                         @updateChecked="checkedList[rule.objectID] = $event"
                         :checked="checkedList[rule.objectID]"
-                        :can-jump="canJump"
                         :class="{'bg-moon-grey': checkedList[rule.objectID]}"
+                        v-bind="$props"
+                        v-on="$listeners"
                     />
                 </div>
             </div>
@@ -91,14 +92,20 @@
 <script>
     import Synonym from "./Synonym";
     import Rule from "./Rule";
-    import indexInfoMixin from "../../../mixins/indexInfoMixin";
     import RuleBatch from "./RuleBatch";
     import Tooltip from "../../Tooltip";
+    import props from "../props";
+
     export default {
         name: 'Collection',
         components: {Tooltip, RuleBatch, Rule, Synonym},
-        props: ['panelKey', 'objs', 'type', 'needShowMoreButton'],
-        mixins: [indexInfoMixin],
+        props: [
+            'objs', 'type', 'needShowMoreButton',
+            ...props.credentials,
+            ...props.actions,
+            ...props.images,
+            ...props.attributes,
+        ],
         data: function () {
             return {
                 expanded: false,
@@ -112,14 +119,6 @@
             objsToDisplay: function () { this.checkedList = {}; },
         },
         computed: {
-            canJump: function () {
-                if (!this.$store.state.panels.splitMode) return false;
-                if (this.sameIndexOnEachPanel) return false;
-
-                const otherPanelKey = this.panelKey === 'leftPanel' ? 'rightPanel': 'leftPanel';
-
-                return this.$store.state.panels[otherPanelKey].currentTab === this.type;
-            },
             needsCollapse: function () {
                 return this.needShowMoreButton && this.objs.length > this.maxCollapseSize;
             },

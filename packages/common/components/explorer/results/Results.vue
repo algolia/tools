@@ -47,15 +47,19 @@
         </div>
         <hit-edit
             v-if="isAddingRecord"
-            :panel-key="panelKey"
             :allow-save-without-edit="jumpedHit !== null"
             :hit="jumpedHit"
             class="mt-16"
             @onStopEdit="isAddingRecord = false; jumpedHit = null"
+            v-bind="$props"
+            v-on="$listeners"
         />
         <div>
-            <results-list v-if="searchResponse && (displayMode === 'list' || displayMode === 'images')"
-                          :panel-key="panelKey" :algolia-response="searchResponse" :display-mode="displayMode" :read-only="readOnly" />
+            <results-list
+                v-if="searchResponse && (displayMode === 'list' || displayMode === 'images')"
+                v-on="$listeners"
+                v-bind="$props"
+            />
             <export-params
                 v-if="displayMode === 'raw'"
                 v-bind="$props"
@@ -87,13 +91,19 @@
     import HitEdit from "../hits/HitEdit";
     import Tooltip from "../../Tooltip";
     import PerformSearch from "./PerformSearch";
+    import props from '../props';
 
     export default {
         name: 'Results',
         props: [
-            'panelKey', 'readOnly', 'searchResponse', 'analyseResponse', 'indexSettings', 'analyseMaxNbPoints',
-            'appId', 'apiKey', 'indexName', 'query', 'searchParams', 'indexSettings', // Export Params
-            'errorMessage', 'displayMode',
+            'panelKey',
+            ...props.credentials,
+            ...props.images,
+            ...props.attributes,
+            ...props.paramsAndSettings,
+            ...props.response,
+            ...props.display,
+            ...props.actions,
         ],
         components: {
             PerformSearch,

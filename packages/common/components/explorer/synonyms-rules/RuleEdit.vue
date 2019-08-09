@@ -182,7 +182,12 @@
                     </div>
                     <div v-if="newRule.hasPromote" class="flex-grow">
                         <div v-for="(promoted, i) in newRule.promote" :key="promoted.objectID" class="flex w-full mb-12">
-                            <promoted-hit :panel-key="panelKey" :id="newRule.promote[i].objectID" class="w-200"/>
+                            <promoted-hit
+                                :id="newRule.promote[i].objectID"
+                                class="w-200"
+                                v-bind="$props"
+                                v-on="$listeners"
+                            />
                             <div class="ml-12">
                                 position
                                 <input
@@ -201,12 +206,13 @@
                             </div>
                         </div>
                         <div class="mt-24 mb-12">
-                            <panel-hit-autocomplete
-                                :panel-key="panelKey"
+                            <hit-autocomplete
                                 :params="{hitsPerPage: 4, enableRules: false}"
                                 value=""
                                 placeholder="Search for a new hit to promote"
                                 :display-empty-query="true"
+                                v-bind="$props"
+                                v-on="$listeners"
                                 @onSelected="addPromote"
                             />
                         </div>
@@ -219,7 +225,12 @@
                     </div>
                     <div v-if="newRule.hasHide">
                         <div v-for="(hide, i) in newRule.hide" class="flex w-full mb-12">
-                            <promoted-hit :panel-key="panelKey" :id="newRule.hide[i]" class="w-200"/>
+                            <promoted-hit
+                                :id="newRule.hide[i].objectID"
+                                class="w-200"
+                                v-bind="$props"
+                                v-on="$listeners"
+                            />
                             <div class="ml-4 w-12 h-12">
                                 <trash-icon
                                     class="w-full h-full ml-4 cursor-pointer text-cosmos-black-opacity-70"
@@ -228,12 +239,13 @@
                             </div>
                         </div>
                         <div class="mt-24 mb-12">
-                            <panel-hit-autocomplete
-                                :panel-key="panelKey"
+                            <hit-autocomplete
                                 :params="{hitsPerPage: 4, enableRules: false}"
                                 value=""
                                 placeholder="Search for a new hit to hide"
                                 :display-empty-query="true"
+                                v-bind="$props"
+                                v-on="$listeners"
                                 @onSelected="addHide"
                             />
                         </div>
@@ -246,13 +258,13 @@
                     </div>
                     <div v-if="newRule.hasParams" class="flex-grow">
                         <params
-                            :id="`${panelKey}-qr-${rule.objectID}`"
+                            :id="`${appId}-${indexName}-qr-${rule.objectID}`"
                             config-key="searchParams"
                             :params="newRule.editableParams"
                             :ref-params="newRule.editableParams"
                             :raw-params="newRule.editableParams"
                             :keys="Object.keys(newRule.editableParams)"
-                            :panelKeysIndexer="panelKeysIndexer"
+                            :keysIndexer="keysIndexer"
                             @onSetParamValue="onSetParamValue"
                             @onAddArrayElement="onAddArrayElement"
                             @onDeleteArrayElement="onDeleteArrayElement"
@@ -267,7 +279,7 @@
                     </div>
                     <div v-if="newRule.hasUserData" class=" flex-grow">
                         <ace-editor
-                            :id="`${panelKey}-${rule.objectID}`"
+                            :id="`${appId}-${indexName}-userdata-${rule.objectID}`"
                             :styles="{ height: '60px' }"
                             :default-value="JSON.stringify(newRule.userData || {}, 0, 2)"
                             :on-change="onChangeUserData"
@@ -306,19 +318,23 @@
     import AceEditor from "../../editor/AceEditor";
     import Params from "../../params/Params";
     import IntermediateRule from "./intermediateRule";
-    import PanelHitAutocomplete from "../../autocomplete/PanelHitsAutocomplete";
+    import HitAutocomplete from "../../autocomplete/HitsAutocomplete";
     import PromotedHit from "./PromotedHit";
 
     import TrashIcon from 'common/icons/trash.svg';
     import LoaderIcon from 'common/icons/loader.svg'
-    import indexInfoMixin from "../../../mixins/indexInfoMixin";
     import {getSearchIndex} from "../../../utils/algoliaHelpers";
+    import props from "../props";
 
     export default {
         name: 'RuleEdit',
-        props: ['rule', 'panelKey', 'allowSaveWithoutEdit'],
-        components: {PromotedHit, PanelHitAutocomplete, Params, AceEditor, TrashIcon, LoaderIcon},
-        mixins: [indexInfoMixin],
+        props: [
+            'rule', 'allowSaveWithoutEdit',
+            ...props.credentials,
+            ...props.images,
+            ...props.attributes,
+        ],
+        components: {PromotedHit, HitAutocomplete, Params, AceEditor, TrashIcon, LoaderIcon},
         data: function () {
             const data = {
                 oldRule: new IntermediateRule(this.rule),
@@ -518,15 +534,15 @@
                 }
             },
             save: async function () {
-                const index = await getSearchIndex(this.panelAppId, this.panelAdminAPIKey, this.panelIndexName, this.panelServer);
+                const index = await getSearchIndex(this.appId, this.apiKey, this.indexName, this.server);
                 try {
                     const task = await index.saveRule(this.newRule.getFinalRule(), { forwardToReplicas: this.forwardToReplicas });
                     this.saving = true;
                     await index.waitTask(task['taskID']);
                     this.saving = false;
                     this.$emit('onStopEdit');
-                    this.$root.$emit('shouldTriggerSearch', this.panelIndexName);
-                    this.$root.$emit('shouldTriggerRulesSearch', this.panelIndexName);
+                    this.$root.$emit('shouldTriggerSearch', this.indexName);
+                    this.$root.$emit('shouldTriggerRulesSearch', this.indexName);
                 } catch (e) {
                     this.saveError = e.message;
                 }

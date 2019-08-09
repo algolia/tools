@@ -2,7 +2,7 @@
     <div>
         <div v-if="!saving">
             <ace-editor
-                :id="`${panelKey}-${objectID}`"
+                :id="`${uniqID}-${objectID}`"
                 :styles="{ height: '250px' }"
                 :default-value="newHit"
                 :on-change="onChange"
@@ -35,14 +35,16 @@
     import AceEditor from "../../editor/AceEditor";
 
     import LoaderIcon from 'common/icons/loader.svg'
-    import indexInfoMixin from "../../../mixins/indexInfoMixin";
     import {getSearchIndex} from "../../../utils/algoliaHelpers";
+    import props from "../props";
 
     export default {
         name: 'HitEdit',
         components: {AceEditor, LoaderIcon},
-        mixins: [indexInfoMixin],
-        props: ['hit', 'panelKey', 'allowSaveWithoutEdit'],
+        props: [
+            'hit', 'allowSaveWithoutEdit',
+            ...props.credentials,
+        ],
         data: function () {
             const editableHit = {};
             let editableHitString = '';
@@ -58,6 +60,7 @@
             }
 
             return {
+                uniqID: '_' + Math.random().toString(36).substr(2, 9),
                 saving: false,
                 nbErrors: 0,
                 oldHit: this.allowSaveWithoutEdit ? '' : editableHitString,
@@ -80,7 +83,7 @@
                 this.nbErrors = annotations.length;
             },
             save: async function () {
-                const index = await getSearchIndex(this.panelAppId, this.panelAdminAPIKey, this.panelIndexName, this.panelServer);
+                const index = await getSearchIndex(this.appId, this.apiKey, this.indexName, this.server);
                 const hit = JSON.parse(this.newHit);
                 const hits = Array.isArray(hit) ? hit : [hit];
                 const task = await index.addObjects(hits);
@@ -88,7 +91,7 @@
                 await index.waitTask(task['taskID']);
                 this.saving = false;
                 this.$emit('onStopEdit');
-                this.$root.$emit('shouldTriggerSearch', this.panelIndexName);
+                this.$root.$emit('shouldTriggerSearch', this.indexName);
             },
         }
     }

@@ -1,4 +1,4 @@
-import {properHighlight} from "../utils/formatters";
+import {properHighlight} from "../../../utils/formatters";
 
 export default {
     computed: {
