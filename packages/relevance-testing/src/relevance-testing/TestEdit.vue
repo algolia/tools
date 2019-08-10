@@ -43,7 +43,7 @@
                             should be
                         </div>
                         <sign-select v-model="requirement.operator" class="mr-8" />
-                        <input type="number" class="input-custom p-4 w-108" v-model.number="requirement.value" />
+                        <input type="number" class="input-custom p-4 w-44" min="0" v-model.number="requirement.value" />
                     </div>
                     <div class="ml-8 my-16 text-xs uppercase tracking-wide text-telluric-blue">which:</div>
                     <div
@@ -64,8 +64,6 @@
                                     v-model="condition.key"
                                     class="input-custom mr-8 p-4 w-108"
                                 />
-                            </div>
-                            <div class="flex flex-wrap items-center">
                                 <sign-select v-model="condition.operator" class="mr-8 my-8" />
                                 <input
                                     v-if="condition.type === 'attribute'"
