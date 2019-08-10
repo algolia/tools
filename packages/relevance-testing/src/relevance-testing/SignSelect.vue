@@ -1,17 +1,32 @@
 <template>
-    <select :value="value" @input="$emit('input', $event.target.value)" class="mr-8">
-        <option value="=">=</option>
-        <option value="!=">!=</option>
-        <option value=">">&gt;</option>
-        <option value=">=">&gt;=</option>
-        <option value="<">&lt;</option>
-        <option value="<=">&lt;=</option>
-    </select>
+    <custom-select
+        :value="value"
+        @input="$emit('input', $event)"
+        :options="Object.keys(options)"
+        class="text-solstice-blue text-sm border-b border-telluric-blue-opacity-60"
+    >
+        <template v-slot:default="{option}">{{options[option]}}</template>
+    </custom-select>
 </template>
 
 <script>
+    import CustomSelect from "common/components/selectors/CustomSelect";
+
     export default {
         name: 'SignSelect',
         props: ['value'],
+        data: function () {
+            return {
+                options: {
+                    '=': '(=) equals',
+                    '!=': '!=',
+                    '>': '(>) more than',
+                    '>=': '(>=) at least',
+                    '<': '(<) less than',
+                    '<=': '(<=) at most',
+                }
+            }
+        },
+        components: {CustomSelect},
     }
 </script>
