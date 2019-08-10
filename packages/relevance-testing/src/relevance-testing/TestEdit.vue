@@ -33,10 +33,9 @@
                 Then
             </div>
             <div class="px-8 py-12">
-                <div v-for="(requirement, i) in testData.then">
-                    <div v-if="i > 0" class="my-16">AND</div>
+                <div v-for="(requirement, i) in testData.then" class="mb-64">
                     <div class="flex flex-wrap">
-                        <select v-model="requirement.test" class="mr-8">
+                        <select v-model="requirement.test" class="mr-8 w-108">
                             <option value="contains">page contains</option>
                             <option value="nbHits">nbHits</option>
                         </select>
@@ -44,40 +43,46 @@
                             should be
                         </div>
                         <sign-select v-model="requirement.operator" class="mr-8" />
-                        <input type="number" class="input-custom p-4" v-model.number="requirement.value" />
+                        <input type="number" class="input-custom p-4 w-108" v-model.number="requirement.value" />
                     </div>
-                    <div v-if="requirement.test === 'contains' && requirement.recordsMatching !== undefined">
-                        <div>That have:</div>
-                        <div v-for="condition in requirement.recordsMatching" class="flex flex-wrap items-center">
-                            <div class="mr-8">-</div>
-                            <select class="mr-8" v-model="condition.type">
-                                <option>attribute</option>
-                                <option>position</option>
-                                <option>rankingInfo</option>
-                                <option>is before</option>
-                                <option>is after</option>
-                            </select>
-                            <input
-                                v-if="condition.type === 'attribute'"
-                                v-model="condition.key"
-                                class="input-custom mr-8 p-4"
-                            />
-                            <sign-select v-model="condition.operator" class="mr-8" />
-                            <input
-                                v-if="condition.type === 'attribute'"
-                                v-model="condition.value"
-                                class="input-custom p-4"
-                            />
-                            <input
-                                v-if="condition.type === 'position'"
-                                type="number"
-                                min="0"
-                                v-model.number="condition.value"
-                                class="input-custom p-4"
-                            />
+                    <div class="ml-8 my-16 text-xs uppercase tracking-wide text-telluric-blue">which:</div>
+                    <div
+                        v-if="requirement.test === 'contains' && requirement.recordsMatching !== undefined"
+                        class="ml-32 mr-8"
+                    >
+                        <div v-for="condition in requirement.recordsMatching" class="mb-16">
+                            <div class="flex flex-wrap items-center">
+                                <select class="mr-8 w-108" v-model="condition.type">
+                                    <option>attribute</option>
+                                    <option>position</option>
+                                    <option>rankingInfo</option>
+                                    <option>is before</option>
+                                    <option>is after</option>
+                                </select>
+                                <input
+                                    v-if="condition.type === 'attribute'"
+                                    v-model="condition.key"
+                                    class="input-custom mr-8 p-4 w-108"
+                                />
+                            </div>
+                            <div class="flex flex-wrap items-center">
+                                <sign-select v-model="condition.operator" class="mr-8 my-8" />
+                                <input
+                                    v-if="condition.type === 'attribute'"
+                                    v-model="condition.value"
+                                    class="input-custom p-4 w-108"
+                                />
+                                <input
+                                    v-if="condition.type === 'position'"
+                                    type="number"
+                                    min="0"
+                                    v-model.number="condition.value"
+                                    class="input-custom p-4 w-108"
+                                />
+                            </div>
                         </div>
                         <button
-                            class="mt-12 bg-white border border-b-0 border-proton-grey-opacity-40 rounded shadow-sm hover:shadow transition-fast-out px-16 p-8 text-sm"
+                            class="bg-white border border-b-0 border-proton-grey-opacity-40 rounded shadow-sm hover:shadow transition-fast-out px-16 p-8 text-sm"
                             @click="addRequirement(requirement.recordsMatching)"
                         >
                             Add requirement
