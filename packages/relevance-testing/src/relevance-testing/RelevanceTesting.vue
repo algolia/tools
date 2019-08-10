@@ -52,6 +52,7 @@
                                 :error-message="errorMessage"
                                 :app-id="appId"
                                 :api-key="apiKey"
+                                @onUpdateApiKey="panelAdminAPIKey = $event"
                             />
                             <perform-search
                                 :search-params="currentTest.testData.when"
@@ -122,7 +123,7 @@
     import DisplayConfig from "@/relevance-testing/DisplayConfig";
     import {TestSuite} from "@/relevance-testing/testing/tests";
     import Badge from "@/relevance-testing/Badge";
-    import TestEdit from "@/relevance-testing/TestEdit"
+    import TestEdit from "@/relevance-testing/test-edit/TestEdit"
     import data from "@/relevance-testing/data";
 
     import indexInfoMixin from "common/mixins/indexInfoMixin";

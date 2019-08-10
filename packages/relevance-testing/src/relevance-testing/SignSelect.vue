@@ -19,7 +19,7 @@
             return {
                 options: {
                     '=': '(=) equals',
-                    '!=': '!=',
+                    '!=': '!= not equals',
                     '>': '(>) more than',
                     '>=': '(>=) at least',
                     '<': '(<) less than',
