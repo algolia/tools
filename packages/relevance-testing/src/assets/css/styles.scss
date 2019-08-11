@@ -107,3 +107,9 @@ pre {
   left: 50%;
   transform: translate(-50%, -100%);
 }
+
+.inset-x-full-y-auto {
+  top: 50%;
+  right: 0;
+  transform: translate(100%, -50%);
+}
