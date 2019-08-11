@@ -62,7 +62,7 @@
             },
             appId: function (o, n) { if (o !== n) this.init() },
             indexName: function (o, n) { if (o !== n) this.init() },
-            apiKey: function (o, n) { if (o !== n) this.init() },
+            apiKey: function (o, n) { if (o !== n)  this.init() },
 
         },
         computed: {
@@ -121,14 +121,18 @@
         },
         methods: {
             init: function () {
+                if (!this.appId || !this.indexName) {
+                    this.$emit('onFetchHits', null);
+                    return;
+                }
                 this.triggerSearch();
                 this.triggerAnalyseSearch();
                 this.loadIndexSettings();
                 this.loadKeysIndexer();
             },
             triggerSearch: async function () {
-                const index = await getSearchIndex(this.appId, this.apiKey, this.indexName, this.server);
                 const requestNumber = this.requestNumber++;
+                const index = await getSearchIndex(this.appId, this.apiKey, this.indexName, this.server);
 
                 index.customSearch(this.searchParamsWithDefaults).then((res) => {
                     if (this.requestNumberReceived > requestNumber) return;
@@ -144,6 +148,9 @@
                         });
                     }
                 }).catch((e) => {
+                    if (this.requestNumberReceived > requestNumber) return;
+                    this.requestNumberReceived = requestNumber;
+
                     this.$emit('onFetchHits', null);
                     this.$emit('onUpdateError', e.message);
                 });

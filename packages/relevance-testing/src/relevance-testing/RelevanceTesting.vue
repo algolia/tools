@@ -34,10 +34,10 @@
                     </div>
                 </div>
             </div>
-            <div class="w-75p" v-if="currentTest">
+            <div class="w-75p" v-if="appId && indexName && currentTest">
                 <div class="rounded bg-white m-16 border border-solid border-proton-grey-opacity-60">
                     <div class="text-telluric-blue text-xs uppercase tracking-wide flex items-center border-b border-t-0 border-proton-grey bg-white p-8 bg-proton-grey-opacity-80">
-                        Edit test
+                        {{currentTest.testData.name}}
                     </div>
                     <div class="flex">
                         <div class="min-w-third max-w-third border-r border-proton-grey ">
@@ -135,7 +135,10 @@
         mixins: [indexInfoMixin],
         data: function () {
             const testSuite = new TestSuite(data);
+            const apps = Object.keys(this.$store.state.apps);
             return {
+                appId: apps[0],
+                indexName: null,
                 testSuite: testSuite,
                 searchResponse: null,
                 analyseResponse: null,
@@ -150,28 +153,12 @@
             };
         },
         computed: {
-            appId: {
-                get () {
-                    return this.$store.state.panels.leftPanel.appId;
-                },
-                set (appId) {
-                    this.$store.commit(`panels/leftPanel/setPanelConfig`, {appId: appId, indexName: null});
-                }
-            },
             apiKey: {
                 get () {
                     return this.$store.state.apps[this.panelAppId].key;
                 },
                 set (value) {
                     this.$store.commit("apps/addAppId", { appId: this.panelAppId, apiKey: value });
-                }
-            },
-            indexName: {
-                get () {
-                    return this.$store.state.panels.leftPanel.indexName;
-                },
-                set (indexName) {
-                    this.$store.commit(`panels/leftPanel/setPanelConfig`, {appId: this.appId, indexName: indexName});
                 }
             },
         },

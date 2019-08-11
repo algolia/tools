@@ -2,17 +2,23 @@
     <div>
         <div>
             <div class="text-telluric-blue text-xs uppercase tracking-wide flex items-center border-b border-proton-grey bg-white p-8 bg-proton-grey-opacity-40">
-                Description
-            </div>
-            <div class="px-8 py-12">
-                {{testData.name}}
-            </div>
-        </div>
-        <div>
-            <div class="text-telluric-blue text-xs uppercase tracking-wide flex items-center border-t border-b border-proton-grey bg-white p-8 bg-proton-grey-opacity-40">
                 When
             </div>
-            <div class="px-8 py-12">
+            <div class="px-8 pb-16 py-12">
+                <div class="mt-8 mb-16 pb-4 text-xs text-cosmos-black-opacity-70 uppercase tracking-wide border-b border-proton-grey-opacity-20">
+                    Query
+                </div>
+                <div class="flex items-center px-12 bg-white rounded border border-proton-grey-opacity-60">
+                    <search-icon class="block w-12 h-12 mr-12 text-telluric-blue-opacity-60 fill-current"/>
+                    <input
+                        class="flex-1 block h-full py-8 bg-transparent text-black leading-normal"
+                        placeholder="Search for anything"
+                        v-model="query"
+                    >
+                </div>
+                <div class="mt-32 mb-16 pb-4 text-xs text-cosmos-black-opacity-70 uppercase tracking-wide border-b border-proton-grey-opacity-20">
+                    Extra search params
+                </div>
                 <params
                     id="when"
                     config-key="searchParams"
@@ -34,8 +40,8 @@
             </div>
             <div class="px-8 py-12">
                 <div v-for="(testCase, i) in testData.then" class="mb-32">
-                    <div class="flex my-8 text-xs text-cosmos-black-opacity-70 uppercase tracking-wide pb-4 border-b border-proton-grey-opacity-20">
-                        <div>
+                    <div class="flex my-8 pb-4 border-b border-proton-grey-opacity-20">
+                        <div class="text-xs text-cosmos-black-opacity-70 uppercase tracking-wide">
                             Test {{i + 1}}
                         </div>
                         <trash-icon
@@ -110,6 +116,7 @@
 </template>
 
 <script>
+    import SearchIcon from "common/icons/search.svg";
     import Params from 'common/components/params/Params';
     import CustomSelect from "common/components/selectors/CustomSelect";
     import {algoliaParams} from "common/utils/algoliaHelpers";
@@ -121,43 +128,59 @@
     export default {
         name: 'TestEdit',
         props: ['test'],
-        components: {Requirement, NumberSelect, SignSelect, Params, CustomSelect, TrashIcon},
+        components: {Requirement, NumberSelect, SignSelect, Params, CustomSelect, TrashIcon, SearchIcon},
         data: function () {
-            const copy = JSON.parse(JSON.stringify(this.test.testData));
-            copy.when = this.editableObject(copy.when);
             return {
+                query: '',
                 testOptions: {
                     'contains': 'page contains',
                     'nbHits': 'nbHits',
                 },
-                testData: copy,
+                testData: null,
             }
+        },
+        created: function () {
+            this.loadTest();
         },
         watch: {
             test: function () {
-                const copy = JSON.parse(JSON.stringify(this.test.testData));
-                copy.when = this.editableObject(copy.when);
-                this.testData = copy;
+                this.loadTest();
             },
             testData: {
-                immediate: true,
                 deep: true,
                 handler: function () {
-                    this.test.updateTestData({
-                        ...this.testData,
-                        when: algoliaParams(this.testData.when)
-                    });
-                    this.$emit('onUpdatedTestData');
+                    this.saveTest();
                 }
+            },
+            query: function () {
+                this.saveTest();
             }
         },
         methods: {
-            editableObject: function (obj) {
-                const editableObject = {};
-                Object.keys(obj).forEach((key) => {
-                    editableObject[key] = {value: obj[key], enabled: true};
+            loadTest: function () {
+                const copy = JSON.parse(JSON.stringify(this.test.testData));
+
+                const searchParams = {};
+                Object.keys(copy.when).forEach((key) => {
+                    if (key === 'query') {
+                        this.query = copy.when[key];
+                    } else {
+                        searchParams[key] = {value: copy.when[key], enabled: true};
+                    }
                 });
-                return editableObject;
+
+                copy.when = searchParams;
+                this.testData = copy;
+            },
+            saveTest: function () {
+                const params = algoliaParams(this.testData.when);
+                params.query = this.query;
+
+                this.test.updateTestData({
+                    ...this.testData,
+                    when: params,
+                });
+                this.$emit('onUpdatedTestData');
             },
             onSetParamValue: function (key, value) {
                 this.$set(this.testData.when, key, {value: JSON.parse(JSON.stringify(value)), enabled: true});
