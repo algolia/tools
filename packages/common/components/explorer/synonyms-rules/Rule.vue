@@ -106,7 +106,6 @@
                     <div class="w-188">hide</div>
                     <div class="ml-4">
                         <div v-for="hide in intermediateRule.hide" class="text-cosmos-black-opacity-70">
-                            <span>{{hide.objectID}}</span>
                             <promoted-hit
                                 v-bind="$props"
                                 v-on="$listeners"
