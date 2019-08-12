@@ -30,7 +30,7 @@
                      v-on="$listeners"
                 />
             </div>
-            <div class="flex justify-center">
+            <div class="flex justify-center" v-if="!disablePagination">
                 <pagination
                     v-model="page"
                     :page="page"
@@ -65,6 +65,7 @@
         name: 'ResultsList',
         props: [
             'panelKey',
+            'disablePagination',
             ...props.credentials,
             ...props.images,
             ...props.attributes,

@@ -1,10 +1,12 @@
 import {getRaw} from 'common/utils/objectHelpers';
 import {getCriterionValue} from 'common/utils/rankingInfo';
 import {getSearchIndex} from 'common/utils/algoliaHelpers';
+import Vue from 'vue';
 
 export class TestSuite {
     constructor(testSuiteData) {
         this.passing = null;
+
         this.name = testSuiteData.name;
         this.groups = testSuiteData.groups.map((g) => new GroupTest(g));
     }
@@ -41,7 +43,7 @@ export class GroupTest {
             promises.push(promise);
         });
         await Promise.all(promises);
-        this.passing = this.tests.every((test) => test.passing === true);
+        this.passing = this.tests.every((test) => test.report.passing === true);
     }
 
     reset() {
@@ -52,7 +54,7 @@ export class GroupTest {
 
 export class Test {
     constructor(testData) {
-        this.passing = null;
+        this.report = { passing: null };
         this.testData = testData;
     }
 
@@ -61,7 +63,7 @@ export class Test {
     }
 
     reset() {
-        this.passing = null;
+        this.report = { passing: null };
     }
 
     static compare(a, operator, b) {
@@ -128,14 +130,28 @@ export class Test {
             hit.__index__ = i;
         });
 
-        this.passing = this.testData.then.every((requirement) => {
-            if (requirement.test === 'nbHits') {
-                return Test.compare(res.nbHits, requirement.operator, requirement.value)
+        let passing = true;
+
+        Vue.set(this.report, 'then', []);
+        this.testData.then.forEach((testCase) => {
+            let thenPassing = true;
+
+            if (testCase.test === 'nbHits') {
+                thenPassing = thenPassing && Test.compare(res.nbHits, testCase.operator, testCase.value);
             }
-            if (requirement.test === 'contains') {
-                const recordsMatching = Test.findMatchingRecords(res.hits, requirement.recordsMatching);
-                return Test.compare(recordsMatching.length, requirement.operator, requirement.value);
+
+            if (testCase.test === 'contains') {
+                const recordsMatching = Test.findMatchingRecords(res.hits, testCase.recordsMatching);
+                thenPassing = Test.compare(recordsMatching.length, testCase.operator, testCase.value);
             }
+            this.report.then.push({
+                passing: thenPassing,
+                recordsMatching: [],
+            });
+
+            passing = passing && thenPassing;
         });
+
+        Vue.set(this.report, 'passing', passing);
     }
 }

@@ -27,7 +27,7 @@
                         <div v-for="test in group.tests" :key="test.name">
                             <div class="flex p-8" @click="currentTest = test">
                                 <div class="mr-16">{{test.testData.name}}</div>
-                                <badge class="ml-auto mr-16" :passing="test.passing" />
+                                <badge class="ml-auto mr-16" :passing="test.report.passing" />
                                 <div @click.prevent="test.run(appId, apiKey, indexName, hitsPerPage)">Run</div>
                             </div>
                         </div>
@@ -93,9 +93,9 @@
                                 :auto-title-attribute-name="panelAutoTitleAttributeName"
                                 :keys-indexer="panelKeysIndexer"
                                 :display-ranking-info="$store.state.panels.displayRankingInfo"
+                                :disable-pagination="true"
                                 @onUpdateAnalyseMaxNbPoint="maxNbPoints = $event"
                                 @onUpdateDisplayMode="displayMode = $event"
-                                @onUpdatePage="onUpdatePage"
                                 @onUpdateImageAttribute="panelImageAttributeName = $event"
                                 @onUpdateImageBaseUrl="panelImageBaseUrl = $event"
                                 @onUpdateImageSuffixUrl="panelImageSuffixUrl = $event"
@@ -162,10 +162,5 @@
                 }
             },
         },
-        methods: {
-            onUpdatePage: function (val) {
-                this.$set(this.currentTest.when, 'page', val);
-            }
-        }
     }
 </script>

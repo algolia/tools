@@ -22,10 +22,10 @@
                 <params
                     id="when"
                     config-key="searchParams"
-                    :params="testData.when"
-                    :ref-params="testData.when"
-                    :raw-params="testData.when"
-                    :keys="Object.keys(testData.when)"
+                    :params="when"
+                    :ref-params="when"
+                    :raw-params="when"
+                    :keys="Object.keys(when)"
                     :panelKeysIndexer="null"
                     @onSetParamValue="onSetParamValue"
                     @onAddArrayElement="onAddArrayElement"
@@ -42,8 +42,9 @@
                 <div v-for="(testCase, i) in testData.then" class="mb-32">
                     <div class="flex my-8 pb-4 border-b border-proton-grey-opacity-20">
                         <div class="text-xs text-cosmos-black-opacity-70 uppercase tracking-wide">
-                            Test {{i + 1}}
+                            Test {{i + 1}}/{{testData.then.length}}
                         </div>
+                        <badge v-if="test.report.then" :passing="test.report.then[i].passing" class="ml-8 -mt-2" />
                         <trash-icon
                             class="ml-auto text-nova-grey-opacity-60 hover:text-telluric-blue w-12 h-12 cursor-pointer"
                             @click="deleteTest(testData.then, i)"
@@ -124,19 +125,21 @@
     import NumberSelect from "@/relevance-testing/NumberSelect";
     import Requirement from "@/relevance-testing/test-edit/Requirement";
     import TrashIcon from "common/icons/trash.svg";
+    import Badge from "@/relevance-testing/Badge";
 
     export default {
         name: 'TestEdit',
-        props: ['test'],
-        components: {Requirement, NumberSelect, SignSelect, Params, CustomSelect, TrashIcon, SearchIcon},
+        props: ['test', 'appId', 'apiKey', 'indexName', 'hitsPerPage'],
+        components: {Badge, Requirement, NumberSelect, SignSelect, Params, CustomSelect, TrashIcon, SearchIcon},
         data: function () {
             return {
-                query: '',
                 testOptions: {
                     'contains': 'page contains',
                     'nbHits': 'nbHits',
                 },
                 testData: null,
+                query: null,
+                when: null,
             }
         },
         created: function () {
@@ -154,7 +157,7 @@
             },
             query: function () {
                 this.saveTest();
-            }
+            },
         },
         methods: {
             loadTest: function () {
@@ -168,33 +171,33 @@
                         searchParams[key] = {value: copy.when[key], enabled: true};
                     }
                 });
-
-                copy.when = searchParams;
+                this.when = searchParams;
                 this.testData = copy;
             },
             saveTest: function () {
-                const params = algoliaParams(this.testData.when);
+                const params = algoliaParams(this.when);
                 params.query = this.query;
 
                 this.test.updateTestData({
                     ...this.testData,
                     when: params,
                 });
+
                 this.$emit('onUpdatedTestData');
             },
             onSetParamValue: function (key, value) {
-                this.$set(this.testData.when, key, {value: JSON.parse(JSON.stringify(value)), enabled: true});
+                this.$set(this.when, key, {value: JSON.parse(JSON.stringify(value)), enabled: true});
             },
             onAddArrayElement: function (inputKey) {
-                const newVal = JSON.parse(JSON.stringify(this.testData.when[inputKey].value));
+                const newVal = JSON.parse(JSON.stringify(this.when[inputKey].value));
                 newVal.push('');
                 this.onSetParamValue(inputKey, newVal);
             },
             onDeleteArrayElement: function (inputKey, positionKey) {
-                this.$delete(this.testData.when[inputKey].value, positionKey);
+                this.$delete(this.when[inputKey].value, positionKey);
             },
             onDeleteKey: function (inputKey) {
-                this.$delete(this.testData.when, inputKey);
+                this.$delete(this.when, inputKey);
             },
             addRequirement: function (requirements) {
                 requirements.push({

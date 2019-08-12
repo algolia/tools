@@ -97,6 +97,7 @@
         name: 'Results',
         props: [
             'panelKey',
+            'disablePagination',
             ...props.credentials,
             ...props.images,
             ...props.attributes,

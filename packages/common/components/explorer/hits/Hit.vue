@@ -2,12 +2,12 @@
     <div class="hit mt-24 relative max-w-full" :class="expandImage ? 'w-full' : ''" @mousemove="expandable = true" @mouseleave="expandable = false">
         <div class="px-32 min-h-56">
             <div :id="`${panelKey}-${hitNumber}`" class="absolute top-0 left-0">
-                <div class="h-24 w-24 bg-proton-grey-opacity-40 rounded text-center leading-normal">
+                <div class="border border-nova-grey-opacity-80 text-center w-24 px-8 py-4 rounded text-xs uppercase text-solstice-blue">
                     {{hitNumber}}
                 </div>
                 <div
                     v-if="displayMode === 'images' && expandable"
-                    class="flex items-center justify-center mt-12 border border-proton-grey hover:border-nova-grey-opacity-80 w-24 h-24 rounded cursor-pointer"
+                    class="flex items-center justify-center mt-12 border border-proton-grey hover:border-nova-grey-opacity-80 p-4 w-24 rounded cursor-pointer"
                     @click="expandImage = !expandImage"
                 >
                     <maximize-icon v-if="!expandImage" class="w-12 h-12 text-nova-grey" />
@@ -27,10 +27,10 @@
                     <div class="truncate" v-if="title" v-html="title" />
                 </div>
                 <div v-if="personalized || promoted" class="flex mb-12">
-                    <div v-if="personalized" class="border border-nova-grey-opacity-80 px-8 py-4 rounded">
+                    <div v-if="personalized" class="border border-nova-grey-opacity-80 px-8 py-4 rounded text-center text-xs uppercase tracking-wide text-solstice-blue">
                         Personalized
                     </div>
-                    <div v-if="promoted" class="border border-nova-grey-opacity-80 px-8 py-4 rounded">
+                    <div v-if="promoted" class="border border-nova-grey-opacity-80 px-8 py-4 rounded text-center text-xs uppercase tracking-wide text-solstice-blue">
                         Promoted
                     </div>
                 </div>
