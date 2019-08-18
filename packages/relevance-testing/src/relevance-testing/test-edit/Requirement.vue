@@ -14,6 +14,12 @@
             </div>
         </div>
         <div class="relative bg-moon-grey-opacity-50 border border-proton-grey-opacity-20 border-l border-proton-grey p-8 rounded">
+            <badge
+                v-if="passing !== undefined"
+                :passing="passing"
+                class="absolute"
+                style="top: -8px; left: 0; transform: translate(0%, -100%);"
+            />
             <div>
                 <div class="flex flex-wrap items-center">
                     <custom-select
@@ -58,10 +64,11 @@
     import SignSelect from "@/relevance-testing/SignSelect";
     import CustomSelect from "common/components/selectors/CustomSelect";
     import TrashIcon from "common/icons/trash.svg";
+    import Badge from "@/relevance-testing/Badge";
 
     export default {
         name: 'Requirement',
-        components: {SignSelect, CustomSelect, TrashIcon},
-        props: ['condition', 'i'],
+        components: {Badge, SignSelect, CustomSelect, TrashIcon},
+        props: ['condition', 'i', 'passing'],
     }
 </script>

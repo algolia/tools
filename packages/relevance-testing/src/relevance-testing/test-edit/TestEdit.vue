@@ -83,7 +83,9 @@
                         <div>
                             <div class="flex" v-for="(condition, j) in testCase.recordsMatching">
                                 <requirement
-                                    :condition="condition" :i="j" class="mx-auto"
+                                    :condition="condition" :i="j"
+                                    :passing="test.report.then ? test.report.then[i].recordsMatching[j].passing : undefined"
+                                    class="mx-auto"
                                     @onDelete="deleteRequirement(testCase.recordsMatching, j)"
                                 />
                             </div>

@@ -135,19 +135,38 @@ export class Test {
         Vue.set(this.report, 'then', []);
         this.testData.then.forEach((testCase) => {
             let thenPassing = true;
+            const thenReport = {
+                passing: null,
+                recordsMatching: [],
+            };
 
             if (testCase.test === 'nbHits') {
-                thenPassing = thenPassing && Test.compare(res.nbHits, testCase.operator, testCase.value);
+                thenReport.passing = Test.compare(res.nbHits, testCase.operator, testCase.value);
             }
 
             if (testCase.test === 'contains') {
-                const recordsMatching = Test.findMatchingRecords(res.hits, testCase.recordsMatching);
-                thenPassing = Test.compare(recordsMatching.length, testCase.operator, testCase.value);
+                let recordsMatching = res.hits;
+                let previousMatch = true;
+
+                for (let i = 0; i < testCase.recordsMatching.length; i++) {
+                    if (!previousMatch) {
+                        thenReport.recordsMatching.push({passing: null});
+                        continue;
+                    }
+
+                    recordsMatching = recordsMatching.filter((hit) => {
+                        return Test.meetCondition(hit, testCase.recordsMatching[i]);
+                    });
+
+                    const conditionPassing = Test.compare(recordsMatching.length, testCase.operator, testCase.value);
+                    thenReport.recordsMatching.push({passing: conditionPassing});
+
+                    previousMatch = conditionPassing;
+                }
+
+                thenReport.passing = Test.compare(recordsMatching.length, testCase.operator, testCase.value);
             }
-            this.report.then.push({
-                passing: thenPassing,
-                recordsMatching: [],
-            });
+            this.report.then.push(thenReport);
 
             passing = passing && thenPassing;
         });
