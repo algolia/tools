@@ -1,8 +1,11 @@
-import Vue from 'vue'
-import store from 'common/store/store'
-import App from '@/App.vue'
+import Vue from 'vue';
+import store from 'common/store/store';
+import VueRouter from 'vue-router';
 import algoliasearch from 'algoliasearch';
-import VueInputAutowidth from 'vue-input-autowidth'
+import VueInputAutowidth from 'vue-input-autowidth';
+import App from "@/App";
+import Suite from "@/relevance-testing/Suite";
+import Suites from "@/relevance-testing/Suites";
 
 Vue.config.productionTip = false;
 Vue.config.performance = true;
@@ -19,7 +22,20 @@ Vue.mixin({
     },
 });
 
+Vue.use(VueRouter);
+const router = new VueRouter({
+    mode: 'history',
+    base: '/relevance-testing/',
+    routes: [
+        { path: '/', redirect: '/suites' },
+        { path: '/suites', component: Suites },
+        { path: '/suites/:id', component: Suite },
+    ],
+});
+
+
 new Vue({
     render: h => h(App),
+    router: router,
     store: store,
 }).$mount('#app');

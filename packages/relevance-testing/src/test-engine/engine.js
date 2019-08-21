@@ -5,65 +5,101 @@ import Vue from 'vue';
 
 export class TestSuite {
     constructor(testSuiteData) {
-        this.passing = null;
-
+        this.runs = testSuiteData.runs;
         this.name = testSuiteData.name;
-        this.groups = testSuiteData.groups.map((g) => new GroupTest(g));
+        this.groups = testSuiteData.groups.map((g) => new GroupTest(g, this.runs, this));
+        this.reports = {};
     }
 
-    async run(appId, apiKey, indexName, hitsPerPage) {
-        this.reset();
-        const promises = [];
+    updateReport(i) {
+        let nbTests = 0;
+        let nbPassing = 0;
         this.groups.forEach((group) => {
-            const promise = group.run(appId, apiKey, indexName, hitsPerPage);
-            promises.push(promise);
+            nbTests += group.reports[i].nbTests;
+            nbPassing += group.reports[i].nbPassing;
+        });
+        const passing = nbPassing === nbTests;
+        Vue.set(this.reports, i, {passing, nbPassing, nbTests});
+    }
+
+    async run() {
+        this.reports = {};
+
+        const promises = this.groups.map((group) => {
+            return group.run();
+        });
+
+        await Promise.all(promises);
+        this.runs.forEach((run, i) => this.updateReport(i));
+    }
+
+    async runRun(runData, i) {
+        Vue.set(this.reports, i, undefined);
+
+        const promises = this.groups.map((group) => {
+            return group.runRun(runData, i);
         });
         await Promise.all(promises);
-        this.passing = this.groups.every((group) => group.passing === true);
-    }
 
-    reset() {
-        this.passing = null;
-        this.groups.forEach((group) => { group.reset(); });
+        this.updateReport(i);
     }
 }
 
 export class GroupTest {
-    constructor(groupData) {
-        this.passing = null;
+    constructor(groupData, runs, suite) {
         this.name = groupData.name;
-        this.tests = groupData.tests.map((t) => new Test(t));
+        this.runs = runs;
+        this.suite = suite;
+        this.tests = groupData.tests.map((t) => new Test(t, runs, this));
+        this.reports = {};
     }
 
-    async run(appId, apiKey, indexName, hitsPerPage) {
-        this.reset();
-        const promises = [];
-        this.tests.forEach((test) => {
-            const promise = test.run(appId, apiKey, indexName, hitsPerPage);
-            promises.push(promise);
+    updateReport(i, updateSuite) {
+        const nbPassing = this.tests.filter((test) => {
+            return test.reports[i].passing;
+        }).length;
+        const nbTests = this.tests.length;
+        const passing = nbPassing === nbTests;
+        Vue.set(this.reports, i, {passing, nbPassing, nbTests});
+
+        if (updateSuite) {
+            this.suite.updateReport(i);
+        }
+    }
+
+    async run() {
+        this.reports = {};
+
+        const promises = this.tests.map((test) => {
+            return test.run();
         });
         await Promise.all(promises);
-        this.passing = this.tests.every((test) => test.report.passing === true);
+
+        this.runs.forEach((run, i) => this.updateReport(i));
     }
 
-    reset() {
-        this.tests.forEach((test) => { test.reset() });
-        this.passing = null;
+    async runRun(runData, i) {
+        Vue.set(this.reports, i, undefined);
+
+        const promises = this.tests.map((test) => {
+            return test.runRun(runData, i);
+        });
+
+        await Promise.all(promises);
+        this.updateReport(i);
     }
 }
 
 export class Test {
-    constructor(testData) {
-        this.report = { passing: null };
+    constructor(testData, runs, group) {
+        this.runs = runs;
+        this.group = group;
         this.testData = testData;
+        this.reports = {};
     }
 
     updateTestData(testData) {
         this.testData = testData;
-    }
-
-    reset() {
-        this.report = { passing: null };
     }
 
     static compare(a, operator, b) {
@@ -116,12 +152,24 @@ export class Test {
         });
     }
 
-    async run(appId, apiKey, indexName, hitsPerPage) {
-        this.reset();
-        const algoliaIndex = await getSearchIndex(appId, apiKey, indexName);
+    async run(updateGroup) {
+        const promises = this.runs.map((run, i) => {
+            return this.runRun(run, i);
+        });
+        await Promise.all(promises);
+
+        if (updateGroup) {
+            this.runs.forEach((run, runIndex) => this.group.updateReport(runIndex, true));
+        }
+    }
+
+    async runRun(runData, runIndex) {
+        Vue.set(this.reports, runIndex, null);
+
+        const algoliaIndex = await getSearchIndex(runData.appId, runData.apiKey, runData.indexName);
         const res = await algoliaIndex.search({
             ...this.testData.when,
-            hitsPerPage: hitsPerPage,
+            hitsPerPage: runData.hitsPerPage,
             getRankingInfo: true,
             analytics: false,
         });
@@ -130,11 +178,12 @@ export class Test {
             hit.__index__ = i;
         });
 
-        let passing = true;
+        const report = {
+            passing: true,
+            then: [],
+        };
 
-        Vue.set(this.report, 'then', []);
         this.testData.then.forEach((testCase) => {
-            let thenPassing = true;
             const thenReport = {
                 passing: null,
                 recordsMatching: [],
@@ -166,11 +215,11 @@ export class Test {
 
                 thenReport.passing = Test.compare(recordsMatching.length, testCase.operator, testCase.value);
             }
-            this.report.then.push(thenReport);
 
-            passing = passing && thenPassing;
+            report.then.push(thenReport);
+            report.passing = report.passing && thenReport.passing;
         });
 
-        Vue.set(this.report, 'passing', passing);
+        Vue.set(this.reports, runIndex, report);
     }
 }

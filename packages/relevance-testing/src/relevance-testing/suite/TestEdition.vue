@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-if="testData">
         <div>
             <div class="text-telluric-blue text-xs uppercase tracking-wide flex items-center border-b border-proton-grey bg-white p-8 bg-proton-grey-opacity-40">
                 When
@@ -44,7 +44,7 @@
                         <div class="text-xs text-cosmos-black-opacity-70 uppercase tracking-wide">
                             Test {{i + 1}}/{{testData.then.length}}
                         </div>
-                        <badge v-if="test.report.then" :passing="test.report.then[i].passing" class="ml-8 -mt-2" />
+                        <badge v-if="test.reports[currentRunIndex]" :passing="test.reports[currentRunIndex].then[i].passing" class="ml-8 -mt-2" />
                         <trash-icon
                             class="ml-auto text-nova-grey-opacity-60 hover:text-telluric-blue w-12 h-12 cursor-pointer"
                             @click="deleteTest(testData.then, i)"
@@ -83,8 +83,9 @@
                         <div>
                             <div class="flex" v-for="(condition, j) in testCase.recordsMatching">
                                 <requirement
+                                    v-if="test.reports[currentRunIndex]"
                                     :condition="condition" :i="j"
-                                    :passing="test.report.then ? test.report.then[i].recordsMatching[j].passing : undefined"
+                                    :passing="test.reports[currentRunIndex].then[i].recordsMatching[j].passing"
                                     class="mx-auto"
                                     @onDelete="deleteRequirement(testCase.recordsMatching, j)"
                                 />
@@ -123,15 +124,15 @@
     import Params from 'common/components/params/Params';
     import CustomSelect from "common/components/selectors/CustomSelect";
     import {algoliaParams} from "common/utils/algoliaHelpers";
-    import SignSelect from "@/relevance-testing/SignSelect";
-    import NumberSelect from "@/relevance-testing/NumberSelect";
-    import Requirement from "@/relevance-testing/test-edit/Requirement";
+    import SignSelect from "@/relevance-testing/common/SignSelect";
+    import NumberSelect from "@/relevance-testing/common/NumberSelect";
+    import Requirement from "@/relevance-testing/suite/Requirement";
     import TrashIcon from "common/icons/trash.svg";
-    import Badge from "@/relevance-testing/Badge";
+    import Badge from "@/relevance-testing/common/Badge";
 
     export default {
         name: 'TestEdit',
-        props: ['test', 'appId', 'apiKey', 'indexName', 'hitsPerPage'],
+        props: ['test', 'currentRun', 'currentRunIndex'],
         components: {Badge, Requirement, NumberSelect, SignSelect, Params, CustomSelect, TrashIcon, SearchIcon},
         data: function () {
             return {

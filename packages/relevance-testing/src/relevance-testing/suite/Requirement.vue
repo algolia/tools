@@ -61,10 +61,10 @@
 </template>
 
 <script>
-    import SignSelect from "@/relevance-testing/SignSelect";
+    import SignSelect from "@/relevance-testing/common/SignSelect";
     import CustomSelect from "common/components/selectors/CustomSelect";
     import TrashIcon from "common/icons/trash.svg";
-    import Badge from "@/relevance-testing/Badge";
+    import Badge from "@/relevance-testing/common/Badge";
 
     export default {
         name: 'Requirement',

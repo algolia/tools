@@ -1,5 +1,22 @@
 export default {
+    id: 1,
     name: 'MoviesSuite',
+    runs: [
+        {
+            appId: 'AJ0P3S7DWQ',
+            indexName: 'movies',
+            apiKey: 'ce1181300d403d21311d5bca9ef1e6fb',
+            hitsPerPage: 8,
+            params: {},
+        },
+        {
+            appId: 'AJ0P3S7DWQ',
+            indexName: 'movies_test_regression',
+            apiKey: 'ce1181300d403d21311d5bca9ef1e6fb',
+            hitsPerPage: 8,
+            params: {},
+        }
+    ],
     groups: [
         {
             name: "london queries",
@@ -82,6 +99,7 @@ export default {
                             test: 'nbHits',
                             operator: '>=',
                             value: 2,
+                            recordsMatching: [],
                         }
                     ],
                 },

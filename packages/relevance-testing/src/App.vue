@@ -15,7 +15,6 @@
             </div>
         </algolia-proxy>
     </div>
-
 </template>
 
 <script>
