@@ -1,27 +1,57 @@
 <template>
-    <div>
-        <div v-for="suite in suites" :key="suite.id">
-            {{suite.id}} -
-            <router-link :to="`/suites/${suite.id}`">{{suite.name}}</router-link>
+    <div class="flex justify-center">
+        <div class="w-full p-16 max-w-800">
+            <h2>Test Suites</h2>
+            <div class="flex mt-24 px-8">
+                <div class="w-third">Name</div>
+                <div class="w-third">Collaborators</div>
+                <div class="w-third text-right">Actions</div>
+            </div>
+            <small-suite v-for="suite in persoSuites" :key="suite.id" :suite="suite" @shouldUpdate="fetchSuites"/>
+            <div v-if="persoSuites.length === 0" class="mt-8"> No test suites</div>
+            <button
+                @click="createSuite"
+                class="mt-12 block bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out mr-8 px-16 p-8 text-sm relative group">
+                Create Suite
+            </button>
+            <h2 class="mt-32">Test Suites shared with you</h2>
+            <small-suite v-for="suite in sharedSuites" :key="`shared-${suite.id}`" :suite="suite" :read-only="true" @shouldUpdate="fetchSuites"/>
+            <div v-if="sharedSuites.length === 0" class="mt-8"> No test suites</div>
         </div>
     </div>
 </template>
 
 <script>
+    import SmallSuite from "@/relevance-testing/suites/SmallSuite";
     export default {
         name: 'Suites',
+        components: {SmallSuite},
         data: function () {
             return {
-                suites: [
-                    {
-                        id: 1,
-                        name: 'Suite 1',
+                persoSuites: [],
+                sharedSuites: [],
+            }
+        },
+        created: async function () {
+            this.fetchSuites();
+        },
+        methods: {
+            fetchSuites: async function () {
+                const res = await fetch('https://metaparams-backend.build/relevance-testing/suites', {
+                    credentials: 'include',
+                    headers: {
+                        "Content-Type": "application/json",
                     },
-                    {
-                        id: 2,
-                        name: 'Suite 2',
-                    },
-                ],
+                });
+                const json = await res.json();
+
+                this.persoSuites = json.persoSuites;
+                this.sharedSuites = json.sharedSuites;
+            },
+            createSuite: function () {
+                this.persoSuites.push({
+                    id: (new Date().getTime())
+                });
             }
         }
     }
