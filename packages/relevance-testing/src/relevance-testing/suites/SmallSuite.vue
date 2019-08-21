@@ -17,14 +17,40 @@
                 </div>
             </div>
             <div class="w-third text-right" v-if="!readOnly">
-                <edit-icon
-                    @click="editMode = true"
-                    class="ml-4 w-12 h-12"
-                />
-                <trash-icon
-                    @click="deleteTestSuite"
-                    class="ml-4 w-12 h-12"
-                />
+                <div v-if="!confirmDelete">
+                    <edit-icon
+                        @click="editMode = true"
+                        class="ml-4 w-12 h-12 text-nova-grey-opacity-80 hover:text-telluric-blue cursor-pointer"
+                    />
+                    <trash-icon
+                        @click="confirmDelete = true"
+                        class="ml-4 w-12 h-12 text-nova-grey-opacity-80 hover:text-telluric-blue cursor-pointer"
+                    />
+                </div>
+                <div v-if="confirmDelete">
+                    <div class="flex items-start">
+                        <input
+                            v-model="confirmDeleteText"
+                            placeholder="To delete type the test suite name"
+                            class="ml-auto block input-custom p-4 w-full"
+                        >
+                    </div>
+                    <div class="flex items-start mt-16">
+                        <div class="ml-auto"></div>
+                        <button
+                            v-if="confirmDeleteText.toLowerCase() === testSuite.name.toLowerCase()"
+                            @click="deleteTestSuite"
+                            class="rounded bg-mars-1 shadow-sm hover:shadow transition-fast-out text-white p-8"
+                        >
+                            Delete test Suite
+                        </button>
+                        <button
+                            @click="confirmDelete = false"
+                            class="ml-8 block bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out px-16 p-8 text-sm relative group">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="flex" v-if="editMode">
@@ -41,6 +67,7 @@
                 <div v-for="(permission, i) in testSuite.permissions" class="mb-8 flex items-center">
                     <input
                         v-model="permission.email"
+                        @keyup.enter="testSuite.permissions.push({email: ''})"
                         placeholder="Email to invite"
                         class="flex-grow bg-proton-grey-opacity-20 p-4"
                     >
@@ -54,18 +81,26 @@
                 <div>
                     <button
                         @click="testSuite.permissions.push({email: ''})"
-                        class="bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out px-8 p-4 text-sm mt-4"
+                        class="bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out px-8 p-4 text-sm"
+                        :class="{'mt-4': testSuite.permissions.length > 0}"
                     >
                         +
                     </button>
                 </div>
             </div>
             <div class="w-third flex">
-                <div v-if="isValid" class="ml-auto">
+                <div v-if="isValid" class="ml-auto flex items-start">
                     <button
                         @click="createOrUpdate"
-                        class="block bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out px-16 p-8 text-sm relative group">
+                        class="block bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out px-16 p-8 text-sm relative group"
+                        :class="{'border-saturn-2 text-saturn-1': !testSuite.newSuite}"
+                    >
                         {{ 'Save' }}
+                    </button>
+                    <button
+                        @click="editMode = false"
+                        class="ml-8 block bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out px-16 p-8 text-sm relative group">
+                        Cancel
                     </button>
                 </div>
             </div>
@@ -94,6 +129,8 @@
             return {
                 testSuite,
                 editMode,
+                confirmDelete: false,
+                confirmDeleteText: '',
             }
         },
         computed: {

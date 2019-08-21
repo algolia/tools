@@ -2,7 +2,7 @@
     <div class="flex justify-center">
         <div class="w-full p-16 max-w-800">
             <h2>Test Suites</h2>
-            <div class="flex mt-24 px-8">
+            <div class="flex mt-24 px-8" v-if="persoSuites.length > 0">
                 <div class="w-third">Name</div>
                 <div class="w-third">Collaborators</div>
                 <div class="w-third text-right">Actions</div>
@@ -14,9 +14,10 @@
                 class="mt-12 block bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out mr-8 px-16 p-8 text-sm relative group">
                 Create Suite
             </button>
-            <h2 class="mt-32">Test Suites shared with you</h2>
-            <small-suite v-for="suite in sharedSuites" :key="`shared-${suite.id}`" :suite="suite" :read-only="true" @shouldUpdate="fetchSuites"/>
-            <div v-if="sharedSuites.length === 0" class="mt-8"> No test suites</div>
+            <div v-if="sharedSuites.length > 0">
+                <h2 class="mt-48 mb-24">Test Suites shared with you</h2>
+                <small-suite v-for="suite in sharedSuites" :key="`shared-${suite.id}`" :suite="suite" :read-only="true" @shouldUpdate="fetchSuites"/>
+            </div>
         </div>
     </div>
 </template>
