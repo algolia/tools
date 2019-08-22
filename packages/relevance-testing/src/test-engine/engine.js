@@ -171,7 +171,7 @@ export class Test {
     }
 
     async runRun(runData, runIndex) {
-        Vue.set(this.reports, runIndex, null);
+        Vue.set(this.reports, runIndex, undefined);
 
         const algoliaIndex = await getSearchIndex(runData.app_id, runData.api_key, runData.index_name);
         const res = await algoliaIndex.search({

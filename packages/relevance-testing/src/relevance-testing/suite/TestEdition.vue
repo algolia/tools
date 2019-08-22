@@ -1,12 +1,9 @@
 <template>
     <div v-if="testData">
         <div>
-            <div class="text-telluric-blue text-xs uppercase tracking-wide flex items-center border-b border-proton-grey bg-white p-8 bg-proton-grey-opacity-40">
-                When
-            </div>
             <div class="px-8 pb-16 py-12">
                 <div class="mt-8 mb-16 pb-4 text-xs text-cosmos-black-opacity-70 uppercase tracking-wide border-b border-proton-grey-opacity-20">
-                    Query
+                    When query is
                 </div>
                 <div class="flex items-center px-12 bg-white rounded border border-proton-grey-opacity-60">
                     <search-icon class="block w-12 h-12 mr-12 text-telluric-blue-opacity-60 fill-current"/>
@@ -17,7 +14,7 @@
                     >
                 </div>
                 <div class="mt-32 mb-16 pb-4 text-xs text-cosmos-black-opacity-70 uppercase tracking-wide border-b border-proton-grey-opacity-20">
-                    Extra search params
+                    and search params
                 </div>
                 <params
                     id="when"
@@ -39,6 +36,13 @@
                 Then
             </div>
             <div class="px-8 py-12">
+                <div class="mb-24 flex items-center px-12 bg-white rounded border border-proton-grey-opacity-60">
+                    <input
+                        class="flex-1 block h-full py-8 bg-transparent text-black leading-normal"
+                        placeholder="Describe what needs to be tested"
+                        v-model="testData.description"
+                    >
+                </div>
                 <div v-for="(testCase, i) in testData.then" class="mb-32">
                     <div class="flex my-8 pb-4 border-b border-proton-grey-opacity-20">
                         <div class="text-xs text-cosmos-black-opacity-70 uppercase tracking-wide">
@@ -83,9 +87,9 @@
                         <div>
                             <div class="flex" v-for="(condition, j) in testCase.recordsMatching">
                                 <requirement
-                                    v-if="test.reports[currentRunIndex]"
-                                    :condition="condition" :i="j"
-                                    :passing="test.reports[currentRunIndex].then[i].recordsMatching[j].passing"
+                                    :condition="condition"
+                                    :i="j"
+                                    :passing="test.reports[currentRunIndex] ? test.reports[currentRunIndex].then[i].recordsMatching[j].passing : null"
                                     class="mx-auto"
                                     @onDelete="deleteRequirement(testCase.recordsMatching, j)"
                                 />
@@ -131,7 +135,7 @@
     import Badge from "@/relevance-testing/common/Badge";
 
     export default {
-        name: 'TestEdit',
+        name: 'TestEdition',
         props: ['test', 'currentRun', 'currentRunIndex'],
         components: {Badge, Requirement, NumberSelect, SignSelect, Params, CustomSelect, TrashIcon, SearchIcon},
         data: function () {
@@ -158,9 +162,8 @@
                     this.saveTest();
                 }
             },
-            query: function () {
-                this.saveTest();
-            },
+            query: function () { this.saveTest(); },
+            when: function () { this.saveTest(); },
         },
         methods: {
             loadTest: function () {
