@@ -4,8 +4,8 @@ import VueRouter from 'vue-router';
 import algoliasearch from 'algoliasearch';
 import VueInputAutowidth from 'vue-input-autowidth';
 import App from "@/App";
-import Suite from "@/relevance-testing/Suite";
-import Suites from "@/relevance-testing/Suites";
+import Suite from "@/relevance-testing/suite/Suite";
+import Suites from "@/relevance-testing/suites/Suites";
 
 Vue.config.productionTip = false;
 Vue.config.performance = true;
@@ -29,7 +29,7 @@ const router = new VueRouter({
     routes: [
         { path: '/', redirect: '/suites' },
         { path: '/suites', component: Suites },
-        { path: '/suites/:id', component: Suite },
+        { path: '/suites/:suiteId', component: Suite, props: true },
     ],
 });
 

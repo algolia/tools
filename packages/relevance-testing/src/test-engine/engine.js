@@ -5,6 +5,7 @@ import Vue from 'vue';
 
 export class TestSuite {
     constructor(testSuiteData) {
+        this.id = testSuiteData.id;
         this.runs = testSuiteData.runs;
         this.name = testSuiteData.name;
         this.groups = testSuiteData.groups.map((g) => new GroupTest(g, this.runs, this));
@@ -47,10 +48,15 @@ export class TestSuite {
 
 export class GroupTest {
     constructor(groupData, runs, suite) {
+        this.id = groupData.id;
         this.name = groupData.name;
         this.runs = runs;
         this.suite = suite;
-        this.tests = groupData.tests.map((t) => new Test(t, runs, this));
+
+        if (groupData.tests) {
+            this.tests = groupData.tests.map((t) => new Test(t, runs, this));
+        }
+
         this.reports = {};
     }
 
@@ -92,9 +98,10 @@ export class GroupTest {
 
 export class Test {
     constructor(testData, runs, group) {
+        this.id = testData.id;
         this.runs = runs;
         this.group = group;
-        this.testData = testData;
+        this.testData = JSON.parse(testData.test_data);
         this.reports = {};
     }
 
@@ -166,7 +173,7 @@ export class Test {
     async runRun(runData, runIndex) {
         Vue.set(this.reports, runIndex, null);
 
-        const algoliaIndex = await getSearchIndex(runData.appId, runData.apiKey, runData.indexName);
+        const algoliaIndex = await getSearchIndex(runData.app_id, runData.api_key, runData.index_name);
         const res = await algoliaIndex.search({
             ...this.testData.when,
             hitsPerPage: runData.hitsPerPage,
