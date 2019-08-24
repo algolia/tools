@@ -4,7 +4,11 @@
             <div>
                 <app-selector v-model="run.app_id" />
                 <index-selector v-model="run.index_name" :app-id="run.app_id" />
-                <div v-if="suite.reports[runPosition]" class="flex">
+                <div class="flex">
+                    <div>Page size:</div>
+                    <input v-model="run.hits_per_page" type="number" min="1" max="1000" class="input-custom ml-8" />
+                </div>
+                <div v-if="suite.reports[runPosition]" class="flex mt-24">
                     <!--<badge class="mr-16" :passing="suite.reports[i].passing" />-->
                     <div>{{suite.reports[runPosition].nbPassing}} / {{suite.reports[runPosition].nbTests}}</div>
                 </div>
