@@ -139,18 +139,19 @@ export class Test {
             return Test.compare(hit.__index__, condition.operator, condition.value);
         } else if (condition.type === 'rankingInfo') {
             return Test.compare(getCriterionValue(hit, condition.key), condition.operator, condition.value);
-        } else if (condition.type === 'beforeFirstRecordMatching') {
-            const matchingRecords = Test.findMatchingRecords(condition.value);
+        } else if (condition.type === 'is before') {
+            const matchingRecords = Test.findMatchingRecords(res.hits, condition.value);
+            console.log(matchingRecords);
             if (matchingRecords.length > 0) {
-                const pos = res.hits.findIndex((hit) => matchingRecords[0].objectID === hit.objectID);
-                return hit.__index__ < pos;
+                return hit.__index__ < matchingRecords[0].__index__;
             }
-        } else if (condition.type === 'afterFirstRecordMatching') {
-            const matchingRecords = Test.findMatchingRecords(condition.value);
+            return true;
+        } else if (condition.type === 'is after') {
+            const matchingRecords = Test.findMatchingRecords(res.hits, condition.value);
             if (matchingRecords.length > 0) {
-                const pos = res.hits.findIndex((hit) => matchingRecords[0].objectID === hit.objectID);
-                return hit.__index__ > pos;
+                return hit.__index__ > matchingRecords[0].__index__;
             }
+            return true;
         }
 
         throw new Error(`invalid condition type: ${condition.type}`);
@@ -219,7 +220,7 @@ export class Test {
                     }
 
                     recordsMatching = recordsMatching.filter((hit) => {
-                        return Test.meetCondition(hit, testCase.recordsMatching[i]);
+                        return Test.meetCondition(hit, testCase.recordsMatching[i], res);
                     });
 
                     const conditionPassing = Test.compare(recordsMatching.length, testCase.operator, testCase.value);
