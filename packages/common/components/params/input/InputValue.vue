@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div v-if="!isEditable" @click="makeEditable()">
+        <div v-if="!isEditable" @click="makeEditable()" class="break-all">
             {{ displayValue || JSON.stringify(value)}}
         </div>
         <component
