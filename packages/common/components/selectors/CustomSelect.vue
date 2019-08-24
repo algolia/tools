@@ -86,7 +86,7 @@
         },
         computed: {
             stringValue: function () {
-                return this.stringValueAttribute ? this.value[this.stringValueAttribute] : this.value;
+                return this.stringValueAttribute ? this.value[this.stringValueAttribute] : (this.value || '');
             }
         },
         methods: {

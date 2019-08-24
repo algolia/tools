@@ -62,6 +62,7 @@
                 }
             },
             adminAPIKey: function () {
+                if (!this.$store.state.apps[this.appId]) return null;
                 return this.$store.state.apps[this.appId].key;
             },
         },
@@ -85,6 +86,8 @@
         },
         methods: {
             registerIndex: function () {
+                if (this.appId === null) return; // onboarding
+
                 if (this.indexInfo.name) {
                     this.$store.commit(`apps/${this.appId}/addIndex`, this.indexName);
                     ['searchParams', 'searchParams2'].forEach((k) => {
@@ -96,6 +99,8 @@
                 }
             },
             refine: async function (query) {
+                if (this.appId === null) return; // onboarding
+
                 if (query.length <= 0) {
                     this.indices = this.allIndices;
                     return;
