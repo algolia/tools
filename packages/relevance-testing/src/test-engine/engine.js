@@ -141,7 +141,7 @@ export class Test {
             return Test.compare(getCriterionValue(hit, condition.key), condition.operator, condition.value);
         } else if (condition.type === 'is before') {
             const matchingRecords = Test.findMatchingRecords(res.hits, condition.value);
-            console.log(matchingRecords);
+
             if (matchingRecords.length > 0) {
                 return hit.__index__ < matchingRecords[0].__index__;
             }
@@ -182,13 +182,17 @@ export class Test {
         if (!runData.api_key || !runData.index_name) return;
 
         const algoliaIndex = await getSearchIndex(runData.app_id, runData.api_key, runData.index_name);
-        const params = Object.assign({}, this.testData.when, algoliaParams(runData.params));
-        const res = await algoliaIndex.search({
-            ...params,
-            hitsPerPage: runData.hits_per_page,
-            getRankingInfo: true,
-            analytics: false,
-        });
+        const params = Object.assign(
+            {},
+            this.testData.when,
+            algoliaParams(runData.params),
+            {
+                hitsPerPage: runData.hits_per_page,
+                getRankingInfo: true,
+                analytics: false,
+            }
+        );
+        const res = await algoliaIndex.search(params);
 
         res.hits.forEach((hit, i) => {
             hit.__index__ = i;
