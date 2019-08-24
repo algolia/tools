@@ -34,6 +34,14 @@
                         v-model="condition.key"
                         class="input-custom w-104 shadow-sm mr-8 p-4 w-108"
                     />
+                    <custom-select
+                        v-if="condition.type === 'rankingInfo'"
+                        v-model="condition.key"
+                        :options="getCriteria()"
+                        class="mr-8 w-104 text-solstice-blue text-sm border-b border-telluric-blue-opacity-60 pb-4"
+                    >
+                        <template v-slot:default="{option}">{{option}}</template>
+                    </custom-select>
                 </div>
                 <div class="flex flex-wrap items-center">
                     <sign-select v-model="condition.operator" class="mr-8 my-8 w-104" />
@@ -43,7 +51,7 @@
                         class="input-custom w-104 shadow-sm p-4 w-108"
                     />
                     <input
-                        v-if="condition.type === 'position'"
+                        v-if="condition.type === 'position' || condition.type === 'rankingInfo'"
                         type="number"
                         min="0"
                         v-model.number="condition.value"
@@ -62,13 +70,19 @@
 
 <script>
     import SignSelect from "@/relevance-testing/common/SignSelect";
+    import Badge from "@/relevance-testing/common/Badge";
     import CustomSelect from "common/components/selectors/CustomSelect";
     import TrashIcon from "common/icons/trash.svg";
-    import Badge from "@/relevance-testing/common/Badge";
+    import {getCriteria} from 'common/utils/rankingInfo';
 
     export default {
         name: 'Requirement',
         components: {Badge, SignSelect, CustomSelect, TrashIcon},
         props: ['condition', 'i', 'passing'],
+        data: function () {
+            return {
+                getCriteria,
+            }
+        }
     }
 </script>

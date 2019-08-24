@@ -1,5 +1,19 @@
 import {get} from "./objectHelpers";
 
+export function getCriteria() {
+    return [
+        'typo',
+        'geo',
+        'words',
+        'filters',
+        'proximity',
+        'attribute',
+        'position',
+        'exact',
+        'perso',
+    ];
+}
+
 export function getCriterionValue(item, criterion) {
     if (criterion === 'typo') {
         return item._rankingInfo.nbTypos;
