@@ -3,10 +3,10 @@
         <div class="px-32 min-h-56">
             <div :id="`${panelKey}-${hitNumber}`" class="absolute top-0 left-0">
                 <div
-                    v-if="searchResponse.page"
+                    v-if="searchResponse.page !== undefined"
                     class="border border-nova-grey-opacity-80 text-center w-24 px-8 py-4 rounded text-xs uppercase text-solstice-blue"
                 >
-                    {{hitNumber}}s
+                    {{hitNumber}}
                 </div>
                 <div
                     v-if="displayMode === 'images' && expandable"
