@@ -8,10 +8,11 @@
             @onUpdateApiKey="panelAdminAPIKey = $event"
         />
         <perform-search
-            :search-params="currentTest.testData.when"
             :app-id="currentRun.app_id"
             :api-key="currentRun.api_key"
             :index-name="currentRun.index_name"
+            :method="search"
+            :search-params="currentTest.testData.when"
             query=""
             :fetch-explain="$store.state.panels.displayRankingInfo"
             :analyse-hits-per-page="maxNbPoints"

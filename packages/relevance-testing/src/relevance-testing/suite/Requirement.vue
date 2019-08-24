@@ -25,7 +25,7 @@
                     <custom-select
                         v-model="condition.type"
                         :options="['attribute', 'position', 'rankingInfo', 'is before', 'is after']"
-                        class="mr-8 w-104 text-solstice-blue text-sm border-b border-telluric-blue-opacity-60"
+                        class="mr-8 w-104 text-solstice-blue text-sm border-b border-telluric-blue-opacity-60 pb-4"
                     >
                         <template v-slot:default="{option}">{{option}}</template>
                     </custom-select>

@@ -3,7 +3,7 @@
         :value="value"
         @input="$emit('input', $event)"
         :options="Object.keys(options)"
-        class="text-solstice-blue text-sm border-b border-telluric-blue-opacity-60"
+        class="text-solstice-blue text-sm border-b border-telluric-blue-opacity-60 pb-4"
     >
         <template v-slot:default="{option}">{{options[option]}}</template>
     </custom-select>

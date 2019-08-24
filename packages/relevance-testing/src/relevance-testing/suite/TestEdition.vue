@@ -59,7 +59,7 @@
                             <custom-select
                                 v-model="testCase.test"
                                 :options="Object.keys(testOptions)"
-                                class="mr-16 w-104 text-solstice-blue text-sm border-b border-telluric-blue-opacity-60"
+                                class="mr-16 w-104 text-solstice-blue text-sm border-b border-telluric-blue-opacity-60 pb-4"
                             >
                                 <template v-slot:default="{option}">{{testOptions[option]}}</template>
                             </custom-select>
