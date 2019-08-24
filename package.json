@@ -18,8 +18,5 @@
   "scripts": {
     "build": "yarn lerna run build",
     "start": "node server.js"
-  },
-  "dependencies": {
-    "connect-history-api-fallback": "^1.6.0"
   }
 }
