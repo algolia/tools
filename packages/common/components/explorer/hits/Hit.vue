@@ -2,8 +2,11 @@
     <div class="hit mt-24 relative max-w-full" :class="expandImage ? 'w-full' : ''" @mousemove="expandable = true" @mouseleave="expandable = false">
         <div class="px-32 min-h-56">
             <div :id="`${panelKey}-${hitNumber}`" class="absolute top-0 left-0">
-                <div class="border border-nova-grey-opacity-80 text-center w-24 px-8 py-4 rounded text-xs uppercase text-solstice-blue">
-                    {{hitNumber}}
+                <div
+                    v-if="searchResponse.page"
+                    class="border border-nova-grey-opacity-80 text-center w-24 px-8 py-4 rounded text-xs uppercase text-solstice-blue"
+                >
+                    {{hitNumber}}s
                 </div>
                 <div
                     v-if="displayMode === 'images' && expandable"
@@ -44,7 +47,7 @@
                 />
                 <ranking-info
                     class="mt-48"
-                    v-if="displayRankingInfo && listMode"
+                    v-if="hit._rankingInfo && displayRankingInfo && listMode"
                     :item="hit"
                     :previous-item="previousHit"
                     :i="hitPosition"

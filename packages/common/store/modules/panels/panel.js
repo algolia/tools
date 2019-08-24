@@ -8,7 +8,8 @@ export default function (appId, indexName) {
             indexName: indexName,
             server: 'dsn',
             displayMode: 'list',
-            currentTab: 'hits'
+            currentTab: 'hits',
+            method: 'search',
         },
         mutations: {
             setPanelConfig(state, payload) {
@@ -19,6 +20,9 @@ export default function (appId, indexName) {
                 if (state.indexName) {
                     Vue.set(this.state.apps[payload.appId], 'lastIndexName', state.indexName);
                 }
+            },
+            setMethod(state, payload) {
+                state.method = payload;
             },
             setServer(state, payload) {
                 state.server = payload;

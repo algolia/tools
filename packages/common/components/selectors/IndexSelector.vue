@@ -1,7 +1,7 @@
 <template>
     <custom-select
         v-model="indexInfo"
-        class="min-w-140"
+        class="min-w-140 border-b border-telluric-blue-opacity-60 text-solstice-blue pb-4"
         string-value-attribute="name"
         :options="indicesWithForced"
         :refine="refine"

@@ -9,7 +9,7 @@
                 <div class="ml-1">:</div>
                 <div class="ml-4" v-if="Array.isArray(param.value)">[</div>
                 <input-value
-                    class="ml-4 max-w-full cursor-pointer"
+                    class="ml-4 max-w-full cursor-pointer break-all"
                     :class="statusClasses.length === 0 ? (['number', 'boolean'].indexOf(typeof param.value) === -1 ? 'text-cosmos-black-opacity-70' : 'text-neptune-1') : statusClasses"
                     v-bind="$props"
                     :value="param.value"

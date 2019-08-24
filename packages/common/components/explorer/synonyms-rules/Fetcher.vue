@@ -67,7 +67,7 @@
         />
         <div class="flex justify-center">
             <pagination
-                v-model="page"
+                @onUpdatePage="page = $event"
                 :page="page"
                 :nb-pages="nbPages"
             />

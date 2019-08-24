@@ -1,6 +1,6 @@
 <template>
     <div>
-        <results-info v-bind="$props" />
+        <results-info v-bind="$props" v-if="!searchResponse.cursor"/>
         <div class="w-full" v-if="displayMode === 'list'">
             <applied-alternatives :algolia-response="searchResponse" />
             <applied-rules v-bind="$props" v-on="$listeners" />
@@ -32,8 +32,10 @@
             </div>
             <div class="flex justify-center" v-if="!disablePagination">
                 <pagination
-                    v-model="page"
+                    v-on="$listeners"
+                    @onUpdatePage="page = $event"
                     :page="page"
+                    :cursor="searchResponse.cursor"
                     :nb-pages="searchResponse.nbPages"
                 />
             </div>

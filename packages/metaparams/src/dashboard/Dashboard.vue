@@ -9,8 +9,8 @@
                 <div class="flex flex-wrap justify-start items-center">
                     <app-selector v-model="appId" class="mb-12" />
                     <index-selector v-model="indexName" :app-id="appId" class="ml-12 mb-12" />
-                    <index-new class="mb-12" :panel-key="panelKey" />
-                    <index-delete v-if="!isReadOnly" class="mb-12" :panel-key="panelKey" />
+                    <index-new class="mb-12 pb-4" :panel-key="panelKey" />
+                    <index-delete v-if="!isReadOnly" class="mb-12 pb-4" :panel-key="panelKey" />
                     <button v-if="$store.state.panels.splitMode && !sameIndexOnEachPanel && panelKey === 'leftPanel'"
                             @click="$store.commit('panels/rightFromLeft')"
                             class="block ml-8 mb-12 relative group"
@@ -28,7 +28,7 @@
                     <custom-select
                         v-model="panelServer"
                         :options="['dsn', '1', '2', '3']"
-                        class="mb-12 ml-auto text-solstice-blue text-sm border-b border-telluric-blue-opacity-60"
+                        class="mb-12 ml-auto text-solstice-blue text-sm border-b border-telluric-blue-opacity-60 pb-4"
                     >
                         <template slot="icon">
                             <server-icon class="block -mt-1 mr-8 w-12 h-12"/>

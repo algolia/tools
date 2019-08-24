@@ -16,6 +16,20 @@ export default {
                 this.$store.commit(`panels/${this.panelKey}/setServer`, value);
             }
         },
+        panelMethod: {
+            get () {
+                if (!this.panelKey) return this.$store.state.panels.leftPanel.method || 'search';
+                return this.$store.state.panels[this.panelKey].method || 'search';
+            },
+            set (value) {
+                if (!this.panelKey || this.panelKey === 'leftPanel') {
+                    this.$store.commit(`panels/leftPanel/setMethod`, value);
+                }
+                if (!this.panelKey || this.panelKey === 'rightPanel') {
+                    this.$store.commit(`panels/rightPanel/setMethod`, value);
+                }
+            }
+        },
         panelCurrentTab: {
             get () {
                 return this.$store.state.panels[this.panelKey].currentTab || 'hits';

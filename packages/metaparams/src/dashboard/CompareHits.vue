@@ -178,7 +178,7 @@
         },
         methods: {
             personalized(hit) {
-                return hit._rankingInfo.personalization && hit._rankingInfo.personalization.filtersScore > 0;
+                return hit._rankingInfo && hit._rankingInfo.personalization && hit._rankingInfo.personalization.filtersScore > 0;
             },
             hitColor: function (isLeft, hit) {
                 if (isLeft) {

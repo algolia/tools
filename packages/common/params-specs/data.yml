@@ -243,6 +243,12 @@ page:
   min: 0
   default: 0
 
+cursor:
+  scope:
+    - search
+  value_type: string
+  default: ''
+
 hitsPerPage:
   scope:
     - settings

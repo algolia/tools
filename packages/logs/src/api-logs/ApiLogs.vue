@@ -25,7 +25,7 @@
                     <custom-select
                         v-model="logsType"
                         :options="Object.keys(logsTypes)"
-                        class="text-solstice-blue text-sm border-b border-telluric-blue-opacity-60 min-w-140"
+                        class="text-solstice-blue text-sm border-b border-telluric-blue-opacity-60 pb-4 min-w-140"
                     >
                         <template v-slot:default="{option}">{{logsTypes[option]}}</template>
                     </custom-select>

@@ -38,6 +38,7 @@
                 :api-key="panelAdminAPIKey"
                 :server="panelServer"
                 :index-name="panelIndexName"
+                :method="panelMethod"
                 :query="$store.state.panels.query"
                 :fetch-explain="$store.state.panels.displayRankingInfo"
                 :analyse-hits-per-page="$store.state.panels.analyseMaxNbPoints"
@@ -89,6 +90,9 @@
                 @onUpdateImageSize="panelImageSize = $event"
                 @onUpdateTitleAttributeName="panelTitleAttribute = $event"
                 @onUpdateAutoTitleAttributeName="panelAutoTitleAttributeName = $event"
+                @onUpdateCursor="onUpdateCursor"
+                @onDeleteCursor="onDeleteCursor"
+
             />
             <fetcher
                 v-show="panelCurrentTab === 'synonyms'"
@@ -239,6 +243,19 @@
                     value: page
                 });
             },
+            onUpdateCursor: function (cursor) {
+                this.$store.commit(`${this.panelIndexCommitPrefix}/setParamValue`, {
+                    configKey: this.searchConfigKey,
+                    key: 'cursor',
+                    value: cursor
+                });
+            },
+            onDeleteCursor: function () {
+                this.$store.commit(`${this.panelIndexCommitPrefix}/deleteParam`, {
+                    configKey: this.searchConfigKey,
+                    inputKey: 'cursor',
+                });
+            }
         },
     }
 </script>

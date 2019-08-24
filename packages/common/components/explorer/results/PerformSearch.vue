@@ -14,7 +14,7 @@
 
     export default {
         props: [
-            'appId', 'indexName', 'apiKey', 'query',
+            'appId', 'indexName', 'apiKey', 'query', 'method',
             'searchParams',
             'fetchExplain', 'analyseHitsPerPage',
         ],
@@ -51,9 +51,8 @@
                     });
                 });
             },
-            server: function (o, n) {
-                if (o !== n) this.triggerSearch();
-            },
+            server: function (o, n) { if (o !== n) this.triggerSearch(); this.triggerAnalyseSearch(); },
+            method: function (o, n) { if (o !== n) this.triggerSearch(); this.triggerAnalyseSearch(); },
             searchParamsWithDefaults: function (o, n) {
                 if (JSON.stringify(o) !== JSON.stringify(n)) this.triggerSearch();
             },
@@ -63,7 +62,6 @@
             appId: function (o, n) { if (o !== n) this.init() },
             indexName: function (o, n) { if (o !== n) this.init() },
             apiKey: function (o, n) { if (o !== n)  this.init() },
-
         },
         computed: {
             rankingInfoAnalyzer: function () {
@@ -134,7 +132,9 @@
                 const requestNumber = this.requestNumber++;
                 const index = await getSearchIndex(this.appId, this.apiKey, this.indexName, this.server);
 
-                index.customSearch(this.searchParamsWithDefaults).then((res) => {
+                const method = this.method === 'search' ? 'customSearch' : 'customBrowse';
+
+                index[method](this.searchParamsWithDefaults).then((res) => {
                     if (this.requestNumberReceived > requestNumber) return;
                     this.requestNumberReceived = requestNumber;
 
@@ -161,7 +161,9 @@
                 const index = await getSearchIndex(this.appId, this.apiKey, this.indexName, this.server);
                 const requestNumberAnalysis = this.requestNumberAnalysis++;
 
-                index.customSearch(this.searchParamsForAnalysis).then((res) => {
+                const method = this.method === 'search' ? 'customSearch' : 'customBrowse';
+
+                index[method](this.searchParamsForAnalysis).then((res) => {
                     if (this.requestNumberAnalysisReceived > requestNumberAnalysis) return;
                     this.requestNumberAnalysisReceived = requestNumberAnalysis;
 

@@ -2,7 +2,7 @@
     <custom-select
         :value="value"
         @input="onInput"
-        class="min-w-140"
+        class="min-w-140 border-b border-telluric-blue-opacity-60 text-solstice-blue pb-4"
         :options="Object.keys(apps)"
     >
         <template slot="icon"><box-icon class="block w-12 h-12 -mt-1 mr-8 fill-current"/></template>

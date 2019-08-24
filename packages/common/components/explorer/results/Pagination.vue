@@ -1,35 +1,51 @@
 <template>
-    <ul class="flex mt-24 mb-12 pl-0">
-        <li
-            v-if="page > 0"
-            class="flex items-center mx-4 px-8 py-4 text-nova-grey rounded cursor-pointer bg-moon-grey"
-            @click="setPage(page - 1)"
-        >
-            <chevron-left-icon class="w-12 h-12" />
-        </li>
-        <template v-if="pages[0] > 0">
-            <li class="flex items-center mx-4 px-8 py-4 text-nova-grey rounded cursor-pointer bg-moon-grey" @click="setPage(0)">1</li>
-            <li class="flex items-center mx-4 px-8 py-4 text-nova-grey rounded cursor-pointer">...</li>
-        </template>
-        <li
-            v-for="p in pages"
-            :class="p === page ? 'border border-telluric-blue-opacity-80' : ''"
-            class="flex items-center mx-4 px-8 py-4 text-nova-grey rounded cursor-pointer bg-moon-grey"
-            @click="setPage(p)"
-        >
-            <span>{{p + 1}}</span>
-        </li>
-        <template v-if="pages[pages.length - 1] < nbPages - 1">
-            <li class="flex items-center mx-4 px-8 py-4 text-nova-grey rounded cursor-pointer">...</li>
-            <li class="flex items-center mx-4 px-8 py-4 text-nova-grey rounded cursor-pointer bg-moon-grey" @click="setPage(nbPages - 1)">{{nbPages}}</li>
-        </template>
-        <li
-            v-if="page < nbPages - 1"
-            class="flex items-center mx-4 px-8 py-4 text-nova-grey rounded cursor-pointer bg-moon-grey"
-            @click="setPage(page + 1)">
-            <chevron-left-icon class="w-12 h-12 rotate-180" />
-        </li>
-    </ul>
+    <div>
+        <ul class="flex mt-24 mb-12 pl-0" v-if="!cursor">
+            <li
+                v-if="page > 0"
+                class="flex items-center mx-4 px-8 py-4 text-nova-grey rounded cursor-pointer bg-moon-grey"
+                @click="setPage(page - 1)"
+            >
+                <chevron-left-icon class="w-12 h-12" />
+            </li>
+            <template v-if="pages[0] > 0">
+                <li class="flex items-center mx-4 px-8 py-4 text-nova-grey rounded cursor-pointer bg-moon-grey" @click="setPage(0)">1</li>
+                <li class="flex items-center mx-4 px-8 py-4 text-nova-grey rounded cursor-pointer">...</li>
+            </template>
+            <li
+                v-for="p in pages"
+                :class="p === page ? 'border border-telluric-blue-opacity-80' : ''"
+                class="flex items-center mx-4 px-8 py-4 text-nova-grey rounded cursor-pointer bg-moon-grey"
+                @click="setPage(p)"
+            >
+                <span>{{p + 1}}</span>
+            </li>
+            <template v-if="pages[pages.length - 1] < nbPages - 1">
+                <li class="flex items-center mx-4 px-8 py-4 text-nova-grey rounded cursor-pointer">...</li>
+                <li class="flex items-center mx-4 px-8 py-4 text-nova-grey rounded cursor-pointer bg-moon-grey" @click="setPage(nbPages - 1)">{{nbPages}}</li>
+            </template>
+            <li
+                v-if="page < nbPages - 1"
+                class="flex items-center mx-4 px-8 py-4 text-nova-grey rounded cursor-pointer bg-moon-grey"
+                @click="setPage(page + 1)">
+                <chevron-left-icon class="w-12 h-12 rotate-180" />
+            </li>
+        </ul>
+        <ul class="flex mt-24 mb-12 pl-0" v-if="cursor">
+            <li
+                class="flex items-center mx-4 px-8 py-4 text-nova-grey rounded cursor-pointer bg-moon-grey"
+                @click="$emit('onDeleteCursor')"
+            >
+                First page
+            </li>
+            <li
+                class="flex items-center mx-4 px-8 py-4 text-nova-grey rounded cursor-pointer bg-moon-grey"
+                @click="$emit('onUpdateCursor', cursor)"
+            >
+                Next page
+            </li>
+        </ul>
+    </div>
 </template>
 
 <script>
@@ -38,7 +54,7 @@
 
     export default {
         name: 'Pagination',
-        props: ['page', 'nbPages'],
+        props: ['page', 'nbPages', 'cursor'],
         components: {ChevronLeftIcon},
         computed: {
             pages: function () {
@@ -51,7 +67,7 @@
         methods: {
             setPage: function (page) {
                 if (this.page >= 0 && this.page < this.nbPages) {
-                    this.$emit('input', page);
+                    this.$emit('onUpdatePage', page);
                 }
             },
         },

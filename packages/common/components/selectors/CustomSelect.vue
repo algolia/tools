@@ -1,10 +1,7 @@
 <template>
-    <div
-        class="text-solstice-blue"
-        :class="dropdownOpened && refine ? '' : 'border-b border-telluric-blue-opacity-60'"
-    >
+    <div>
         <div
-            class="relative focus:outline-none h-full"
+            class="relative focus:outline-none"
             tabindex="-1"
             @keyup="onKeyUp"
             @keydown="onKeyDown"
@@ -13,7 +10,7 @@
             <div
                 v-if="!dropdownOpened || !refine"
                 @click="openDropDown"
-                class="flex items-center pb-8 py-4 cursor-pointer text-sm"
+                class="flex items-center py-4 cursor-pointer text-sm leading-none"
             >
                 <slot name="icon" />
                 <slot v-bind:option="value" v-bind:inDropDown="false" />
