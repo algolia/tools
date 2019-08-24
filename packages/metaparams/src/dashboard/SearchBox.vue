@@ -12,7 +12,7 @@
         <custom-select
             v-model="panelMethod"
             :options="Object.keys(methodOptions)"
-            class="ml-16 bg-moon-grey h-full pl-16 px-8 flex items-center text-telluric-blue"
+            class="ml-16 bg-moon-grey h-full pl-16 px-8 flex items-center text-telluric-blue rounded-r"
         >
             <template v-slot:default="{option}">{{methodOptions[option]}}</template>
         </custom-select>
