@@ -7,7 +7,7 @@
                 :class="`${panelCurrentTab === 'hits' ? '-mb-2 border-b-2 border-nebula-blue-opacity-80' : 'cursor-pointer'}`"
                 @click="panelCurrentTab = 'hits'"
             >
-                Hits ({{formatHumanNumber(nbHits)}})
+                Hits <span v-if="!isNaN(nbHits)">({{formatHumanNumber(nbHits)}})</span>
             </div>
             <div
                 class="mx-8 p-8"
