@@ -30,7 +30,7 @@
         },
         methods: {
             updateGroup: async function () {
-                await fetch(`https://metaparams-backend.build/relevance-testing/suites/${this.group.suite.id}/groups/${this.group.id}`, {
+                await fetch(`${process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT}/relevance-testing/suites/${this.group.suite.id}/groups/${this.group.id}`, {
                     method: 'PUT',
                     credentials: 'include',
                     headers: {

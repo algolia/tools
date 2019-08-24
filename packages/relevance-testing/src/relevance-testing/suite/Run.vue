@@ -5,22 +5,13 @@
                 <tr>
                     <td></td>
                     <td v-for="(run, i) in runs" class="bg-proton-grey-opacity-80">
-                        <div class="p-8 h-120">
-                            <div class="text-telluric-blue text-xs flex items-center">
-                                <div>
-                                    <app-selector v-model="run.app_id" />
-                                    <index-selector v-model="run.index_name" :app-id="run.app_id" />
-                                    <div v-if="suite.reports[i]" class="flex">
-                                        <!--<badge class="mr-16" :passing="suite.reports[i].passing" />-->
-                                        <div>{{suite.reports[i].nbPassing}} / {{suite.reports[i].nbTests}}</div>
-                                    </div>
-                                    <div @click="suite.runRun(run, i)">Run</div>
-                                </div>
-                            </div>
-                        </div>
+                        <edit-run :suite="suite" :run="run" :run-position="i" />
                     </td>
                     <td class="h-1" v-if="currentTestEdit === null">
-                        <div class="ml-16 px-40 border border-dashed border-proton-grey flex items-center justify-center h-full">
+                        <div
+                            class="ml-16 px-40 border border-dashed border-proton-grey flex items-center justify-center h-full cursor-pointer"
+                            @click="addRun"
+                        >
                             <div>
                                 Add a run
                             </div>
@@ -149,8 +140,7 @@
 </style>
 
 <script>
-    import AppSelector from 'common/components/selectors/AppSelector';
-    import IndexSelector from 'common/components/selectors/IndexSelector';
+
     import Badge from '@/relevance-testing/common/Badge';
     import {GroupTest, Test} from '@/test-engine/engine';
 
@@ -159,11 +149,14 @@
     import EditGroup from "@/relevance-testing/suite/EditGroup";
     import TestEdition from "@/relevance-testing/suite/TestEdition";
     import TestPreview from "@/relevance-testing/suite/TestPreview";
+    import EditRun from "@/relevance-testing/suite/EditRun";
 
     export default {
         name: 'Run',
         props: ['suite'],
-        components: {TestPreview, TestEdition, EditGroup, Badge, AppSelector, IndexSelector, TrashIcon, EditIcon},
+        components: {
+            EditRun,
+            TestPreview, TestEdition, EditGroup, Badge, TrashIcon, EditIcon},
         data: function () {
             return {
                 hitsPerPage: 8,
@@ -186,11 +179,8 @@
             }
         },
         methods: {
-            getAPIKey: function (appId) {
-                return this.$store.state.apps[appId].key;
-            },
             addGroup: async function () {
-                const res = await fetch(`https://metaparams-backend.build/relevance-testing/suites/${this.suite.id}/groups`, {
+                const res = await fetch(`${process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT}/relevance-testing/suites/${this.suite.id}/groups`, {
                     method: 'POST',
                     credentials: 'include',
                     headers: {
@@ -205,7 +195,7 @@
                 this.suite.groups.push(new GroupTest(group, this.suite.runs, this.suite));
             },
             deleteGroup: async function (group, i) {
-                await fetch(`https://metaparams-backend.build/relevance-testing/suites/${this.suite.id}/groups/${group.id}`, {
+                await fetch(`${process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT}/relevance-testing/suites/${this.suite.id}/groups/${group.id}`, {
                     method: 'DELETE',
                     credentials: 'include',
                     headers: {
@@ -216,7 +206,7 @@
                 this.$delete(this.suite.groups, i);
             },
             deleteTest: async function (test, testPos) {
-                await fetch(`https://metaparams-backend.build/relevance-testing/suites/${this.suite.id}/groups/${test.group.id}/tests/${test.id}`, {
+                await fetch(`${process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT}/relevance-testing/suites/${this.suite.id}/groups/${test.group.id}/tests/${test.id}`, {
                     method: 'DELETE',
                     credentials: 'include',
                     headers: {
@@ -227,7 +217,7 @@
                 this.$delete(test.group.tests, testPos);
             },
             addTest: async function (group) {
-                const res = await fetch(`https://metaparams-backend.build/relevance-testing/suites/${this.suite.id}/groups/${group.id}/tests`, {
+                const res = await fetch(`${process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT}/relevance-testing/suites/${this.suite.id}/groups/${group.id}/tests`, {
                     method: 'POST',
                     credentials: 'include',
                     headers: {
@@ -262,7 +252,7 @@
                 test.run();
             },
             updateTest: async function () {
-                await fetch(`https://metaparams-backend.build/relevance-testing/suites/${this.suite.id}/groups/${this.currentTestEdit.group.id}/tests/${this.currentTestEdit.id}`, {
+                await fetch(`${process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT}/relevance-testing/suites/${this.suite.id}/groups/${this.currentTestEdit.group.id}/tests/${this.currentTestEdit.id}`, {
                     method: 'PUT',
                     credentials: 'include',
                     headers: {
@@ -274,6 +264,26 @@
                 });
 
                 this.currentTestEdit.run(true)
+            },
+            addRun: async function () {
+                const res = await fetch(`${process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT}/relevance-testing/suites/${this.suite.id}/runs`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        app_id: null,
+                        index_name: null,
+                        hits_per_page: null,
+                        params: '{}',
+                    }),
+                });
+
+                const run = await res.json();
+                run.params = JSON.parse(run.params);
+
+                this.suite.runs.push(run);
             }
         }
     }

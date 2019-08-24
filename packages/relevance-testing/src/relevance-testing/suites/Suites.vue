@@ -38,7 +38,7 @@
         },
         methods: {
             fetchSuites: async function () {
-                const res = await fetch('https://metaparams-backend.build/relevance-testing/suites', {
+                const res = await fetch(`${process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT}/relevance-testing/suites`, {
                     credentials: 'include',
                     headers: {
                         "Content-Type": "application/json",

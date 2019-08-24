@@ -62,7 +62,7 @@ export class GroupTest {
 
     updateReport(i, updateSuite) {
         const nbPassing = this.tests.filter((test) => {
-            return test.reports[i].passing;
+            return test.reports[i] && test.reports[i].passing;
         }).length;
         const nbTests = this.tests.length;
         const passing = nbPassing === nbTests;
@@ -172,6 +172,8 @@ export class Test {
 
     async runRun(runData, runIndex) {
         Vue.set(this.reports, runIndex, undefined);
+
+        if (!runData.api_key || !runData.index_name) return;
 
         const algoliaIndex = await getSearchIndex(runData.app_id, runData.api_key, runData.index_name);
         const res = await algoliaIndex.search({

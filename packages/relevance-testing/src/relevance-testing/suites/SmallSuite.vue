@@ -145,7 +145,7 @@
                 });
 
                 const method = this.testSuite.newSuite ? 'POST' : 'PUT';
-                const url = this.testSuite.newSuite ? 'https://metaparams-backend.build/relevance-testing/suites' : `https://metaparams-backend.build/relevance-testing/suites/${this.testSuite.id}`;
+                const url = this.testSuite.newSuite ? `${process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT}/relevance-testing/suites` : `${process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT}/relevance-testing/suites/${this.testSuite.id}`;
                 await fetch(url, {
                     method,
                     credentials: 'include',
@@ -160,7 +160,7 @@
             },
             deleteTestSuite: async function () {
                 if (this.testSuite.id) {
-                    await fetch(`https://metaparams-backend.build/relevance-testing/suites/${this.testSuite.id}`, {
+                    await fetch(`${process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT}/relevance-testing/suites/${this.testSuite.id}`, {
                         method: 'DELETE',
                         credentials: 'include',
                         headers: {

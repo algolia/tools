@@ -36,7 +36,7 @@
         },
         methods: {
             fetchSuite: async function () {
-                const res = await fetch(`https://metaparams-backend.build/relevance-testing/suites/${this.suiteId}`, {
+                const res = await fetch(`${process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT}/relevance-testing/suites/${this.suiteId}`, {
                     credentials: 'include',
                     headers: {
                         "Content-Type": "application/json",
@@ -51,7 +51,9 @@
                 }
 
                 suiteData.runs.forEach((r) => {
-                    r.api_key = this.$store.state.apps[r.app_id].key;
+                    if (this.$store.state.apps[r.app_id]) {
+                        r.api_key = this.$store.state.apps[r.app_id].key;
+                    }
                 });
                 this.suite = new TestSuite(suiteData);
             }
