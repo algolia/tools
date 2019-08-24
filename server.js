@@ -19,6 +19,7 @@ app.use('/logs', serveStatic(__dirname + "/packages/logs/dist"));
 app.use('/metaparams', serveStatic(__dirname + "/packages/metaparams/dist"));
 app.use('/index-manager', serveStatic(__dirname + "/packages/index-manager/dist"));
 app.use('/perso-formula', serveStatic(__dirname + "/packages/perso-formula/dist"));
+app.use('/relevance-testing', serveStatic(__dirname + "/packages/relevance-testing/dist"));
 app.use(redirectUnmatched);
 
 var port = process.env.PORT || 80;
