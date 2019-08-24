@@ -178,7 +178,7 @@ export class Test {
         const algoliaIndex = await getSearchIndex(runData.app_id, runData.api_key, runData.index_name);
         const res = await algoliaIndex.search({
             ...this.testData.when,
-            hitsPerPage: runData.hitsPerPage,
+            hitsPerPage: runData.hits_per_page,
             getRankingInfo: true,
             analytics: false,
         });
