@@ -144,10 +144,7 @@ export default function (rule) {
         rule.consequence = {};
 
         if (this.hasPromote && this.promote.length > 0) rule.consequence.promote = JSON.parse(JSON.stringify(this.promote));
-        if (this.hasHide && this.hide.length > 0) {
-            const hide = this.hide.map((o) => { return {objectID: o}});
-            rule.consequence.hide = JSON.parse(JSON.stringify(hide));
-        }
+        if (this.hasHide && this.hide.length > 0) rule.consequence.hide = JSON.parse(JSON.stringify(this.hide));
 
         if (this.hasParams && Object.keys(this.editableParams).length > 0) {
             const params = {};
