@@ -12,7 +12,7 @@
             :api-key="currentRun.api_key"
             :index-name="currentRun.index_name"
             method="search"
-            :search-params="currentTest.testData.when"
+            :search-params="params"
             query=""
             :fetch-explain="$store.state.panels.displayRankingInfo"
             :analyse-hits-per-page="maxNbPoints"
@@ -65,6 +65,7 @@
     import PerformSearch from "common/components/explorer/results/PerformSearch";
     import ErrorMessage from "common/components/explorer/results/ErrorMessage";
     import indexInfoMixin from "common/mixins/indexInfoMixin";
+    import {algoliaParams} from "common/utils/algoliaHelpers";
 
     export default {
         name: 'TestPreview',
@@ -81,6 +82,11 @@
                 requestNumberReceived: 0,
                 displayMode: 'list',
                 panelKey: 'leftPanel',
+            }
+        },
+        computed: {
+            params: function () {
+                return Object.assign({}, this.currentTest.testData.when, algoliaParams(this.currentRun.params));
             }
         }
     }

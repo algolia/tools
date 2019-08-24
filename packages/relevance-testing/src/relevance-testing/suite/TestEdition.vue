@@ -200,7 +200,7 @@
                     }),
                 });
 
-                this.currentTestEdit.run(true)
+                this.test.run(true)
             },
             addRequirement: function (requirements) {
                 requirements.push({

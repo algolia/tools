@@ -1,5 +1,5 @@
 <template>
-    <div class="p-8 h-120">
+    <div class="p-8">
         <div class="text-telluric-blue text-xs flex items-center">
             <div>
                 <app-selector v-model="run.app_id" />
@@ -8,6 +8,17 @@
                     <div>Page size:</div>
                     <input v-model="run.hits_per_page" type="number" min="1" max="1000" class="input-custom ml-8" />
                 </div>
+                <params
+                    class="mt-24"
+                    :id="`run-${run.id}`"
+                    config-key="searchParams"
+                    :params="run.params"
+                    :ref-params="run.params"
+                    :raw-params="run.params"
+                    :keys="Object.keys(run.params)"
+                    :keys-indexer="null"
+                    :mutate="true"
+                />
                 <div v-if="suite.reports[runPosition]" class="flex mt-24">
                     <!--<badge class="mr-16" :passing="suite.reports[i].passing" />-->
                     <div>{{suite.reports[runPosition].nbPassing}} / {{suite.reports[runPosition].nbTests}}</div>
@@ -41,13 +52,14 @@
 <script>
     import AppSelector from 'common/components/selectors/AppSelector';
     import IndexSelector from 'common/components/selectors/IndexSelector';
+    import Params from 'common/components/params/Params';
 
     import TrashIcon from 'common/icons/trash.svg';
 
     export default {
         name: 'EditRun',
         props: ['suite', 'run', 'runPosition'],
-        components: {AppSelector, IndexSelector, TrashIcon},
+        components: {AppSelector, IndexSelector, TrashIcon, Params},
         data: function () {
             return {
                 confirmDelete: false,
@@ -77,7 +89,7 @@
                         app_id: this.run.app_id,
                         index_name: this.run.index_name,
                         hits_per_page: this.run.hits_per_page,
-                        params: '{}',
+                        params: JSON.stringify(this.run.params),
                     }),
                 });
             },

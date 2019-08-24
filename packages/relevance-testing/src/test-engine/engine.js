@@ -2,6 +2,7 @@ import {getRaw} from 'common/utils/objectHelpers';
 import {getCriterionValue} from 'common/utils/rankingInfo';
 import {getSearchIndex} from 'common/utils/algoliaHelpers';
 import Vue from 'vue';
+import {algoliaParams} from "common/utils/algoliaHelpers";
 
 export class TestSuite {
     constructor(testSuiteData) {
@@ -10,6 +11,10 @@ export class TestSuite {
         this.name = testSuiteData.name;
         this.groups = testSuiteData.groups.map((g) => new GroupTest(g, this.runs, this));
         this.reports = {};
+
+        this.runs.forEach((run) => {
+            run.params = JSON.parse(run.params);
+        });
     }
 
     updateReport(i) {
@@ -176,8 +181,9 @@ export class Test {
         if (!runData.api_key || !runData.index_name) return;
 
         const algoliaIndex = await getSearchIndex(runData.app_id, runData.api_key, runData.index_name);
+        const params = Object.assign({}, this.testData.when, algoliaParams(runData.params));
         const res = await algoliaIndex.search({
-            ...this.testData.when,
+            ...params,
             hitsPerPage: runData.hits_per_page,
             getRankingInfo: true,
             analytics: false,
