@@ -11,9 +11,23 @@
                 <div @click="suite.runRun(run, runPosition)">Run</div>
                 <div class="mt-8">
                     <trash-icon
-                        @click="deleteRun"
+                        v-if="!confirmDelete"
+                        @click="confirmDelete = true"
                         class="w-12 h-12 block cursor-pointer text-solstice-blue"
                     />
+                    <div v-if="confirmDelete" class="flex">
+                        <button
+                            @click="deleteRun"
+                            class="rounded bg-mars-1 shadow-sm hover:shadow transition-fast-out text-white p-8"
+                        >
+                            Delete
+                        </button>
+                        <button
+                            @click="confirmDelete = false"
+                            class="ml-8 block bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out px-16 p-8 text-sm relative group">
+                            Cancel
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -30,6 +44,11 @@
         name: 'EditRun',
         props: ['suite', 'run', 'runPosition'],
         components: {AppSelector, IndexSelector, TrashIcon},
+        data: function () {
+            return {
+                confirmDelete: false,
+            }
+        },
         watch: {
             run: {
                 deep: true,

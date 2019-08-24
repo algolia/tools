@@ -21,32 +21,7 @@
                 <template v-for="(group, groupPos) in suite.groups">
                     <tr class="bg-proton-grey-opacity-40">
                         <td>
-                            <div class="p-8 text-telluric-blue text-xs uppercase tracking-wide">
-                                <div>
-                                    <edit-group
-                                        v-if="currentGroupEdit === groupPos"
-                                        :group="group"
-                                        @stopEdit="currentGroupEdit = null"
-                                    />
-                                </div>
-                                <div class="flex" v-if="currentGroupEdit !== groupPos">
-                                    <div class="mr-16">
-                                        {{group.name}}
-                                    </div>
-                                    <div
-                                        @click="group.run()"
-                                        class="ml-auto"
-                                    >
-                                        Run
-                                    </div>
-                                    <div @click="currentGroupEdit = groupPos">
-                                        <edit-icon class="w-12 h-12 block ml-8 cursor-pointer text-solstice-blue" />
-                                    </div>
-                                    <div @click="deleteGroup(group, groupPos)">
-                                        <trash-icon class="w-12 h-12 block ml-8 cursor-pointer text-solstice-blue" />
-                                    </div>
-                                </div>
-                            </div>
+                            <edit-group :group="group" :group-pos="groupPos" :suite="suite" />
                         </td>
                         <td v-for="(run, i) in runs">
                             <div v-if="group.reports[i]" class="p-8 text-telluric-blue text-xs text-center">
@@ -57,32 +32,12 @@
                     </tr>
                     <tr v-for="(test, testPos) in group.tests" class="bg-white" :class="{'bg-nebula-blue-opacity-20': currentTestEdit === test}">
                         <td>
-                            <div class="flex p-8">
-                                <div
-                                    class="mr-16 hover:text-nebula-blue hover:underline cursor-pointer"
-                                    @click="currentTestEdit = test"
-                                >
-                                    <div class="flex items-center">
-                                        <div>query</div>
-                                        <div class="ml-4 px-4 py-2 text-sm rounded leading-none bg-proton-grey-opacity-40">
-                                            {{ test.testData.when.query ? test.testData.when.query : '&lt;empty&gt;'}}
-                                        </div>
-                                        <div v-if="Object.keys(test.testData.when).length > 1" class="ml-4">
-                                            +{{Object.keys(test.testData.when).length - 1}} params
-                                        </div>
-                                    </div>
-                                    <div v-if="test.testData.description" class="text-nova-grey">{{test.testData.description}}</div>
-                                </div>
-                                <div
-                                    class="ml-auto"
-                                    @click="test.run()"
-                                >
-                                    Run
-                                </div>
-                                <div @click="deleteTest(test, testPos)">
-                                    <trash-icon class="w-12 h-12 block ml-8 cursor-pointer text-solstice-blue" />
-                                </div>
-                            </div>
+                            <edit-test
+                                :test="test"
+                                :test-pos="testPos"
+                                :suite="suite"
+                                @onSelected="currentTestEdit = test"
+                            />
                         </td>
                         <td v-for="(run, i) in runs">
                             <div class="flex items-center justify-center p-8" @click="currentTest = test">
@@ -144,23 +99,22 @@
     import Badge from '@/relevance-testing/common/Badge';
     import {GroupTest, Test} from '@/test-engine/engine';
 
-    import TrashIcon from 'common/icons/trash.svg';
-    import EditIcon from 'common/icons/edit.svg';
     import EditGroup from "@/relevance-testing/suite/EditGroup";
     import TestEdition from "@/relevance-testing/suite/TestEdition";
     import TestPreview from "@/relevance-testing/suite/TestPreview";
     import EditRun from "@/relevance-testing/suite/EditRun";
+    import EditTest from "@/relevance-testing/suite/EditTest";
 
     export default {
         name: 'Run',
         props: ['suite'],
         components: {
+            EditTest,
             EditRun,
-            TestPreview, TestEdition, EditGroup, Badge, TrashIcon, EditIcon},
+            TestPreview, TestEdition, EditGroup, Badge},
         data: function () {
             return {
                 hitsPerPage: 8,
-                currentGroupEdit: null,
                 currentTestEdit: null,
             }
         },
@@ -193,28 +147,6 @@
 
                 const group = await res.json();
                 this.suite.groups.push(new GroupTest(group, this.suite.runs, this.suite));
-            },
-            deleteGroup: async function (group, i) {
-                await fetch(`${process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT}/relevance-testing/suites/${this.suite.id}/groups/${group.id}`, {
-                    method: 'DELETE',
-                    credentials: 'include',
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                });
-
-                this.$delete(this.suite.groups, i);
-            },
-            deleteTest: async function (test, testPos) {
-                await fetch(`${process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT}/relevance-testing/suites/${this.suite.id}/groups/${test.group.id}/tests/${test.id}`, {
-                    method: 'DELETE',
-                    credentials: 'include',
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                });
-
-                this.$delete(test.group.tests, testPos);
             },
             addTest: async function (group) {
                 const res = await fetch(`${process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT}/relevance-testing/suites/${this.suite.id}/groups/${group.id}/tests`, {
@@ -266,6 +198,9 @@
                 this.currentTestEdit.run(true)
             },
             addRun: async function () {
+                const apps = Object.keys(this.$store.state.apps);
+                const appId = apps.length > 0 ? apps[0] : null;
+
                 const res = await fetch(`${process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT}/relevance-testing/suites/${this.suite.id}/runs`, {
                     method: 'POST',
                     credentials: 'include',
@@ -273,7 +208,7 @@
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
-                        app_id: null,
+                        app_id: appId,
                         index_name: null,
                         hits_per_page: null,
                         params: '{}',
