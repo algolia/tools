@@ -95,7 +95,7 @@
         props: [
             'id', 'inputKey', 'param', 'isLastElement', 'configKey',
             'setParamValue', 'addArrayElement', 'deleteArrayElement', 'deleteKey', 'restoreKey',
-            'refParam', 'rawParam', 'panelKeysIndexer',
+            'refParam', 'rawParam', 'keysIndexer',
             'panelKey', 'setParamEnabled'
         ],
         data: function () {

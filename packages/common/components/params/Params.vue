@@ -8,7 +8,7 @@
                     :ref="key"
                     :input-key="key"
                     :config-key="configKey"
-                    :panel-keys-indexer="panelKeysIndexer"
+                    :keys-indexer="keysIndexer"
                     :set-param-value="setParamValue"
                     :add-array-element="addArrayElement"
                     :delete-array-element="deleteArrayElement"
@@ -40,7 +40,7 @@
 
     export default {
         name: 'Params',
-        props: ['id', 'panelKey', 'configKey', 'keys', 'params', 'refParams', 'rawParams', 'panelKeysIndexer'],
+        props: ['id', 'panelKey', 'configKey', 'keys', 'params', 'refParams', 'rawParams', 'keysIndexer'],
         components: {InputParamName, ParamValue},
         methods: {
             setParamValue: function (key, value) {

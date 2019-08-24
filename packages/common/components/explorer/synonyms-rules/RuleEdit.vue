@@ -264,7 +264,7 @@
                             :ref-params="newRule.editableParams"
                             :raw-params="newRule.editableParams"
                             :keys="Object.keys(newRule.editableParams)"
-                            :keysIndexer="keysIndexer"
+                            :keys-indexer="keysIndexer"
                             @onSetParamValue="onSetParamValue"
                             @onAddArrayElement="onAddArrayElement"
                             @onDeleteArrayElement="onDeleteArrayElement"

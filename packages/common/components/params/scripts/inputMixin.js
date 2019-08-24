@@ -4,7 +4,7 @@ export default {
     props: [
         'id', 'param', 'configKey', 'inputKey', 'currentIndex', 'displayValue',
         'setInput', 'setParamValue', 'addArrayElement', 'deleteArrayElement', 'deleteKey', 'restoreKey',
-        'panelKeysIndexer',
+        'keysIndexer',
     ],
     data: function () {
         return {

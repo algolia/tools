@@ -16,7 +16,7 @@
                 :ref-params="refParams"
                 :raw-params="rawParams"
                 :keys="sortedKeys"
-                :panelKeysIndexer="panelKeysIndexer"
+                :keys-indexer="panelKeysIndexer"
                 @onSetParamValue="onSetParamValue"
                 @onSetParamEnabled="onSetParamEnabled"
                 @onAddArrayElement="onAddArrayElement"

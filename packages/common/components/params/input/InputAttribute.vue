@@ -30,7 +30,7 @@
             }
         },
         watch: {
-            panelKeysIndexer: function () {
+            keysIndexer: function () {
                 this.refine(this.value);
             }
         },
@@ -40,8 +40,8 @@
                 this.nextInput(e);
             },
             refine: function (query) {
-                if (this.panelKeysIndexer) {
-                    let items = this.panelKeysIndexer.search(query, 4, this.extraAttrs);
+                if (this.keysIndexer) {
+                    let items = this.keysIndexer.search(query, 4, this.extraAttrs);
 
                     if (this.paramSpec.modifiers) {
                        const newItems = [];
