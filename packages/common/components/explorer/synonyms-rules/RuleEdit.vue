@@ -265,10 +265,7 @@
                             :raw-params="newRule.editableParams"
                             :keys="Object.keys(newRule.editableParams)"
                             :keys-indexer="keysIndexer"
-                            @onSetParamValue="onSetParamValue"
-                            @onAddArrayElement="onAddArrayElement"
-                            @onDeleteArrayElement="onDeleteArrayElement"
-                            @onDeleteKey="onDeleteKey"
+                            :mutate="true"
                         />
                     </div>
                 </div>
@@ -419,20 +416,6 @@
             },
             onValidateUserData: function (annotations) {
                 this.nbErrorsUserData = annotations.length;
-            },
-            onSetParamValue: function (key, value) {
-                this.$set(this.newRule.editableParams, key, {value: JSON.parse(JSON.stringify(value)), enabled: true});
-            },
-            onAddArrayElement: function (inputKey) {
-                const newVal = JSON.parse(JSON.stringify(this.newRule.editableParams[inputKey].value));
-                newVal.push('');
-                this.onSetParamValue(inputKey, newVal);
-            },
-            onDeleteArrayElement: function (inputKey, positionKey) {
-                this.$delete(this.newRule.editableParams[inputKey].value, positionKey);
-            },
-            onDeleteKey: function (inputKey) {
-                this.$delete(this.newRule.editableParams, inputKey);
             },
             addPromote: function (hit) {
                 const sameExistingHit = this.newRule.promote.find((p) => {

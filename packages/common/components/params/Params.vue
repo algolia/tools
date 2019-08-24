@@ -40,28 +40,55 @@
 
     export default {
         name: 'Params',
-        props: ['id', 'panelKey', 'configKey', 'keys', 'params', 'refParams', 'rawParams', 'keysIndexer'],
+        props: ['id', 'panelKey', 'configKey', 'keys', 'params', 'refParams', 'rawParams', 'keysIndexer', 'mutate'],
         components: {InputParamName, ParamValue},
         methods: {
             setParamValue: function (key, value) {
-                this.$emit('onSetParamValue', key, value);
+                if (this.mutate) {
+                    this.$set(this.params, key, {value: JSON.parse(JSON.stringify(value)), enabled: true});
+                } else {
+                    this.$emit('onSetParamValue', key, value);
+                }
             },
             setParamEnabled: function (key, value) {
-                this.$emit('onSetParamEnabled', key, value);
+                if (this.mutate) {
+                    this.$set(this.params[key], 'enabled', value);
+                } else {
+                    this.$emit('onSetParamEnabled', key, value);
+                }
             },
             addArrayElement: function (inputKey) {
-                this.$emit('onAddArrayElement', inputKey);
+                if (this.mutate) {
+                    const newVal = JSON.parse(JSON.stringify(this.params[inputKey].value));
+                    newVal.push('');
+                    this.setParamValue(inputKey, newVal);
+                } else {
+                    this.$emit('onAddArrayElement', inputKey);
+                }
+
                 paramsInputState(this.id).setInput(inputKey, this.params[inputKey].value.length - 1);
             },
             deleteArrayElement: function (inputKey, positionKey) {
-                this.$emit('onDeleteArrayElement', inputKey, positionKey);
+                if (this.mutate) {
+                    this.$delete(this.params[inputKey].value, positionKey);
+                } else {
+                    this.$emit('onDeleteArrayElement', inputKey, positionKey);
+                }
             },
             deleteKey: function (inputKey) {
-                this.$emit('onDeleteKey', inputKey);
+                if (this.mutate) {
+                    this.$delete(this.params, inputKey);
+                } else {
+                    this.$emit('onDeleteKey', inputKey);
+                }
             },
             restoreKey: function (inputKey) {
-                this.$emit('onRestoreKey', inputKey);
-            }
+                if (this.mutate) {
+                    this.$set(this.params, inputKey, {value: JSON.parse(JSON.stringify(this.refParams[inputKey])), enabled: true});
+                } else {
+                    this.$emit('onRestoreKey', inputKey);
+                }
+            },
         }
     }
 </script>

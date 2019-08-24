@@ -23,11 +23,8 @@
                     :ref-params="when"
                     :raw-params="when"
                     :keys="Object.keys(when)"
-                    :panelKeysIndexer="null"
-                    @onSetParamValue="onSetParamValue"
-                    @onAddArrayElement="onAddArrayElement"
-                    @onDeleteArrayElement="onDeleteArrayElement"
-                    @onDeleteKey="onDeleteKey"
+                    :keys-indexer="null"
+                    :mutate="true"
                 />
             </div>
         </div>
@@ -136,7 +133,7 @@
 
     export default {
         name: 'TestEdition',
-        props: ['test', 'currentRun', 'currentRunIndex'],
+        props: ['suite', 'test', 'currentRun', 'currentRunIndex'],
         components: {Badge, Requirement, NumberSelect, SignSelect, Params, CustomSelect, TrashIcon, SearchIcon},
         data: function () {
             return {
@@ -163,7 +160,10 @@
                 }
             },
             query: function () { this.saveTest(); },
-            when: function () { this.saveTest(); },
+            when: {
+                deep: true,
+                handler: function () { this.saveTest(); }
+            },
         },
         methods: {
             loadTest: function () {
@@ -180,7 +180,7 @@
                 this.when = searchParams;
                 this.testData = copy;
             },
-            saveTest: function () {
+            saveTest: async function () {
                 const params = algoliaParams(this.when);
                 params.query = this.query;
 
@@ -189,21 +189,18 @@
                     when: params,
                 });
 
-                this.$emit('onUpdatedTestData');
-            },
-            onSetParamValue: function (key, value) {
-                this.$set(this.when, key, {value: JSON.parse(JSON.stringify(value)), enabled: true});
-            },
-            onAddArrayElement: function (inputKey) {
-                const newVal = JSON.parse(JSON.stringify(this.when[inputKey].value));
-                newVal.push('');
-                this.onSetParamValue(inputKey, newVal);
-            },
-            onDeleteArrayElement: function (inputKey, positionKey) {
-                this.$delete(this.when[inputKey].value, positionKey);
-            },
-            onDeleteKey: function (inputKey) {
-                this.$delete(this.when, inputKey);
+                await fetch(`${process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT}/relevance-testing/suites/${this.suite.id}/groups/${this.test.group.id}/tests/${this.test.id}`, {
+                    method: 'PUT',
+                    credentials: 'include',
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        test_data: JSON.stringify(this.test.testData),
+                    }),
+                });
+
+                this.currentTestEdit.run(true)
             },
             addRequirement: function (requirements) {
                 requirements.push({
@@ -233,7 +230,7 @@
                         },
                     ]
                 })
-            }
+            },
         }
     }
 </script>

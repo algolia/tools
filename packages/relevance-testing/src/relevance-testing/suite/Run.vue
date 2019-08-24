@@ -74,7 +74,7 @@
                             :test="currentTestEdit"
                             :current-run="suite.runs[0]"
                             :current-run-index="0"
-                            @onUpdatedTestData="updateTest"
+                            :suite="suite"
                         />
                     </div>
                     <test-preview
@@ -182,20 +182,6 @@
                 const test = new Test(testData, this.suite.runs, group);
                 group.tests.push(test);
                 test.run();
-            },
-            updateTest: async function () {
-                await fetch(`${process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT}/relevance-testing/suites/${this.suite.id}/groups/${this.currentTestEdit.group.id}/tests/${this.currentTestEdit.id}`, {
-                    method: 'PUT',
-                    credentials: 'include',
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        test_data: JSON.stringify(this.currentTestEdit.testData),
-                    }),
-                });
-
-                this.currentTestEdit.run(true)
             },
             addRun: async function () {
                 const apps = Object.keys(this.$store.state.apps);
