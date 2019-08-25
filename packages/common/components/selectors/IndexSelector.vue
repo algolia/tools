@@ -105,6 +105,7 @@
                     this.indices = this.allIndices;
                     return;
                 }
+
                 if (this.nbPages > this.maxNbPagesInMemory) {
                     const client = await getClient(this.appId, this.adminAPIKey);
                     const data = await client.listIndexes('0&prefix=' + encodeURIComponent(query));
@@ -118,7 +119,7 @@
 
                     this.indices = this.allIndices.filter(function (indexInfo) {
                         return words.every(function (word) {
-                            return indexInfo.name.indexOf(word) !== -1;
+                            return indexInfo.name.toLowerCase().indexOf(word.toLowerCase()) !== -1;
                         });
                     }).sort((a, b) => {
                         if (a.name === query) return -1;

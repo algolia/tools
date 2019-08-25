@@ -99,8 +99,8 @@
                 for (let i = 0; i < s.length; i++) {
                     let foundMatch = false;
                     for (let j = 0; j < words.length; j++) {
-                        if (s.startsWith(words[j], i)) {
-                            highlightedString += `<em>${words[j]}</em>`;
+                        if (s.toLowerCase().startsWith(words[j].toLowerCase(), i)) {
+                            highlightedString += `<em>${s.slice(i, i + words[j].length)}</em>`;
                             i += words[j].length - 1;
                             foundMatch = true;
                             break;
