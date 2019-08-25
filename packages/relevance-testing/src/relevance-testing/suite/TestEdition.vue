@@ -1,10 +1,10 @@
 <template>
     <div v-if="testData">
         <div>
+            <div class="text-telluric-blue text-xs uppercase tracking-wide flex items-center border-b border-proton-grey bg-white p-8 bg-proton-grey-opacity-40">
+                When query is
+            </div>
             <div class="px-8 pb-16 py-12">
-                <div class="mt-8 mb-16 pb-4 text-xs text-cosmos-black-opacity-70 uppercase tracking-wide border-b border-proton-grey-opacity-20">
-                    When query is
-                </div>
                 <div class="flex items-center px-12 bg-white rounded border border-proton-grey-opacity-60">
                     <search-icon class="block w-12 h-12 mr-12 text-telluric-blue-opacity-60 fill-current"/>
                     <input
@@ -14,7 +14,7 @@
                     >
                 </div>
                 <div class="mt-32 mb-16 pb-4 text-xs text-cosmos-black-opacity-70 uppercase tracking-wide border-b border-proton-grey-opacity-20">
-                    and search params
+                    with params
                 </div>
                 <params
                     id="when"
