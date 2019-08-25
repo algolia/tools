@@ -46,9 +46,9 @@
                         <tooltip>{{$store.state.panels.expandLeftPanel ? 'Shrink the panel' : 'Expand the panel'}}</tooltip>
                     </button>
                 </div>
-                <index-info v-if="panelIndexData" :panel-key="panelKey"/>
+                <index-info v-if="indexData" :panel-key="panelKey"/>
             </div>
-            <div v-if="panelIndexData">
+            <div v-if="indexData">
                 <div class="flex">
                     <div v-if="panelKey === 'leftPanel'" class="w-300 max-w-300 min-w-300">
                         <queries :panel-key="panelKey"/>
@@ -84,8 +84,6 @@
     import AppSelector from "common/components/selectors/AppSelector";
     import IndexSelector from "common/components/selectors/IndexSelector";
 
-    import indexInfoMixin from "common/mixins/indexInfoMixin";
-
     import FlipLeftIcon from "common/icons/flip-left.svg";
     import FlipRightIcon from "common/icons/flip-right.svg";
     import MaximizeIcon from "common/icons/maximize.svg";
@@ -94,10 +92,14 @@
     import IndexDelete from "@/dashboard/IndexDelete";
     import Tooltip from "common/components/Tooltip";
     import SearchBox from "@/dashboard/SearchBox";
+    import indexInfoMixin from "common/mixins/indexInfoMixin";
+    import panelsMixin from "common/mixins/panelsMixin";
 
 
     export default {
         name: 'Dashboard',
+        props: ['panelKey'],
+        mixins: [indexInfoMixin, panelsMixin],
         components: {
             SearchBox,
             Tooltip,
@@ -116,10 +118,8 @@
             MaximizeIcon,
             MinimizeIcon,
         },
-        props: ['panelKey'],
-        mixins: [indexInfoMixin],
         computed: {
-            appId: {
+            appId: { // Needed for indexInfoMixin
                 get () {
                     return this.$store.state.panels[this.panelKey].appId;
                 },
@@ -127,7 +127,7 @@
                     this.$store.commit(`panels/${this.panelKey}/setPanelConfig`, {appId: appId, indexName: null});
                 }
             },
-            indexName: {
+            indexName: { // Needed for indexInfoMixin
                 get () {
                     return this.$store.state.panels[this.panelKey].indexName;
                 },

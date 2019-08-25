@@ -45,11 +45,12 @@
     import {formatHumanNumber, numberWithCommas} from "common/utils/formatters"
     import {getClient} from 'common/utils/algoliaHelpers';
     import indexInfoMixin from "common/mixins/indexInfoMixin";
+    import panelsMixin from "common/mixins/panelsMixin";
 
     export default {
         name: 'IndexInfo',
         props: ['panelKey'],
-        mixins: [indexInfoMixin],
+        mixins: [indexInfoMixin, panelsMixin],
         components: {},
         data: function () {
             return {
@@ -73,6 +74,12 @@
             }, 15000);
         },
         computed: {
+            appId: function () { // Needed for indexInfoMixin
+                return this.panelAppId;
+            },
+            indexName: function () { // Needed for indexInfoMixin
+                return this.panelIndexName;
+            },
             avgRecordSize: function () {
                 return this.indexInfo.entries ? this.indexInfo.dataSize / this.indexInfo.entries : 0;
             },
@@ -96,7 +103,7 @@
         },
         methods: {
             fetchIndexData: async function (indexName) {
-                if (!this.panelIndexData) return;
+                if (!this.indexData) return;
 
                 const client = await getClient(this.panelAppId, this.panelAdminAPIKey);
                 const res = await client.listIndexes('0&prefix=' + encodeURIComponent(indexName));
@@ -110,9 +117,9 @@
 
             },
             fetchBuildingIndices: async function () {
-                if (!this.panelIndexData) return;
+                if (!this.indexData) return;
 
-                const client = await getClient(this.panelAppId, this.panelAdminAPIKey)
+                const client = await getClient(this.panelAppId, this.panelAdminAPIKey);
                 client._jsonRequest({
                     method: 'GET',
                     url: '/1/indexes/*/stats',

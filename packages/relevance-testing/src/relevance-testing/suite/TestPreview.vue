@@ -5,7 +5,7 @@
             :error-message="errorMessage"
             :app-id="currentRun.app_id"
             :api-key="currentRun.api_key"
-            @onUpdateApiKey="panelAdminAPIKey = $event"
+            @onUpdateApiKey="$store.commit('apps/addAppId', { appId: currentRun.appId, apiKey: $event })"
         />
         <perform-search
             :app-id="currentRun.app_id"
@@ -21,7 +21,7 @@
             @onUpdateError="errorMessage = $event"
         />
         <results
-            v-if="panelIndexData"
+            v-if="indexData"
             :search-response="searchResponse"
             :analyse-response="analyseResponse"
             :search-params="currentTest.testData.when"
@@ -39,23 +39,23 @@
             :showOnlyMatchingAttributes="$store.state.panels.showOnlyMatchingAttributes"
             :can-jump-rules="false"
             :can-jump-records="false"
-            :image-size="panelImageSize"
-            :image-attribute="panelImageAttributeName"
-            :image-base-url="panelImageBaseUrl"
-            :image-suffix-url="panelImageSuffixUrl"
-            :title-attribute-name="panelTitleAttribute"
-            :auto-title-attribute-name="panelAutoTitleAttributeName"
-            :keys-indexer="panelKeysIndexer"
+            :image-size="indexImageSize"
+            :image-attribute="indexImageAttributeName"
+            :image-base-url="indexImageBaseUrl"
+            :image-suffix-url="indexImageSuffixUrl"
+            :title-attribute-name="indexTitleAttribute"
+            :auto-title-attribute-name="indexAutoTitleAttributeName"
+            :keys-indexer="indexKeysIndexer"
             :display-ranking-info="$store.state.panels.displayRankingInfo"
             :disable-pagination="true"
             @onUpdateAnalyseMaxNbPoint="maxNbPoints = $event"
             @onUpdateDisplayMode="displayMode = $event"
-            @onUpdateImageAttribute="panelImageAttributeName = $event"
-            @onUpdateImageBaseUrl="panelImageBaseUrl = $event"
-            @onUpdateImageSuffixUrl="panelImageSuffixUrl = $event"
-            @onUpdateImageSize="panelImageSize = $event"
-            @onUpdateTitleAttributeName="panelTitleAttribute = $event"
-            @onUpdateAutoTitleAttributeName="panelAutoTitleAttributeName = $event"
+            @onUpdateImageAttribute="indexImageAttributeName = $event"
+            @onUpdateImageBaseUrl="indexImageBaseUrl = $event"
+            @onUpdateImageSuffixUrl="indexImageSuffixUrl = $event"
+            @onUpdateImageSize="indexImageSize = $event"
+            @onUpdateTitleAttributeName="indexTitleAttribute = $event"
+            @onUpdateAutoTitleAttributeName="indexAutoTitleAttributeName = $event"
         />
     </div>
 </template>
@@ -85,6 +85,12 @@
             }
         },
         computed: {
+            appId: function () {
+                return this.currentRun.app_id;
+            },
+            indexName: function () {
+                return this.currentRun.index_name;
+            },
             params: function () {
                 return Object.assign(
                     {},

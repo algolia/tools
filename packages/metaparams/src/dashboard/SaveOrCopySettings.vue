@@ -22,8 +22,8 @@
                 {{ isIndexSettingsDirty ? 'Copy and save in' : 'Copy to' }}
             </h4>
             <div class="flex text-solstice-blue">
-                <app-selector v-model="appId" class="mr-16" />
-                <input v-model="indexName" class="input-custom mr-8 w-124">
+                <app-selector v-model="dstAppId" class="mr-16" />
+                <input v-model="dstIndexName" class="input-custom mr-8 w-124">
             </div>
             <div v-if="indexName.length > 0" class="mt-16">
                 <div v-if="sameAppIdAsPanel">
@@ -94,19 +94,19 @@
     import TaskGroupView from "common/components/TasksGroup";
     import {Task, TasksGroup} from "common/utils/tasks";
     import paramsSpecs from 'common/params-specs';
-    import getSignature from "common/utils/signature";
     import {getSearchClient} from 'common/utils/algoliaHelpers';
+    import panelsMixin from "common/mixins/panelsMixin";
 
     export default {
         name: 'SaveOrCopySettings',
         components: {Tooltip, AppSelector, LoaderIcon, CheckIcon, TaskGroupView},
         props: ['panelKey'],
-        mixins: [indexInfoMixin],
+        mixins: [indexInfoMixin, panelsMixin],
         data: function () {
             return {
                 errorMessage: '',
-                appId: null,
-                indexName: '',
+                dstAppId: null,
+                dstIndexName: '',
                 inReplicaCopy: false,
                 configureBatchSize: false,
                 limitCopy: {
@@ -120,12 +120,18 @@
             }
         },
         created: function () {
-            this.appId = this.panelAppId;
-            this.indexName = `${this.panelIndexName}_test`;
+            this.dstAppId = this.panelAppId;
+            this.dstIndexName = `${this.panelIndexName}_test`;
         },
         computed: {
+            appId: function () { // Needed for indexInfoMixin
+                return this.panelAppId;
+            },
+            indexName: function () { // Needed for indexInfoMixin
+                return this.panelIndexName;
+            },
             sameAppIdAsPanel: function () {
-                return this.appId === this.panelAppId;
+                return this.dstAppId === this.panelAppId;
             },
             sameAppCopyMethod: function () {
                 return this.sameAppIdAsPanel && !this.limitCopy.enabled && !this.limitCopy.currentQueryOnly;
@@ -135,21 +141,17 @@
             adminAPIKey: function (appId) {
                 return this.$store.state.apps[appId].key;
             },
-            setIndex: function (appId, indexName) {
-                this.appId = appId;
-                this.indexName = indexName;
-            },
             getConfig: async function () {
                 const batchSize = this.configureBatchSize ? this.batchSize : 1000;
                 const config = {
-                    dstAppId: this.appId, // Copy in case it's change during processing
-                    dstIndexName: this.indexName, // Copy in case it's change during processing
+                    dstAppId: this.dstAppId, // Copy in case it's change during processing
+                    dstIndexName: this.dstIndexName, // Copy in case it's change during processing
                     srcAppId: this.panelAppId,
                     srcIndexName: this.panelIndexName,
                     panelKey: this.panelKey,
                     otherPanelKey: this.panelKey === 'leftPanel' ? 'rightPanel': 'leftPanel',
                     srcClient: await getSearchClient(this.panelAppId, this.adminAPIKey(this.panelAppId), this.panelServer),
-                    dstClient: await getSearchClient(this.appId, this.adminAPIKey(this.appId), this.panelServer),
+                    dstClient: await getSearchClient(this.dstAppId, this.adminAPIKey(this.dstAppId), this.panelServer),
                     query: this.$store.state.panels.query,
                     hitsPerPage: !this.limitCopy.enabled ? batchSize : Math.min(batchSize, this.limitCopy.nbHits),
                     inReplicaCopy: this.inReplicaCopy,
@@ -161,7 +163,7 @@
                 config['searchParams'] = Object.assign(this.searchParams, {hitsPerPage: config.hitsPerPage, query: config.query});
                 config['indexSettings'] = Object.assign({}, this.indexSettings);
                 config['srcIndex'] = config.srcClient.initIndex(this.panelIndexName);
-                config['dstIndex'] = config.dstClient.initIndex(this.indexName);
+                config['dstIndex'] = config.dstClient.initIndex(this.dstIndexName);
 
                 return config;
             },
@@ -169,7 +171,7 @@
                 const config = await this.getConfig();
 
                 if (config.applyUnsavedSettings) {
-                    this.$store.commit(`${this.panelIndexCommitPrefix}/resetIndexSettings`);
+                    this.$store.commit(`${this.indexCommitPrefix}/resetIndexSettings`);
                 }
 
                 if (this.sameAppCopyMethod) {

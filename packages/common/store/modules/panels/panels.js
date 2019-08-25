@@ -102,8 +102,8 @@ export default {
             let configKey = payload.configKey;
             const srcAppId = state[payload.panelKey].appId;
             const srcIndexName = state[payload.panelKey].indexName;
-            const panelIndexData = this.state.apps[srcAppId][srcIndexName]; // Keep before change of key
-            Vue.set(panelIndexData, configKey, {});
+            const indexData = this.state.apps[srcAppId][srcIndexName]; // Keep before change of key
+            Vue.set(indexData, configKey, {});
         },
         jumpParamValue(state, payload) {
             let configKey = payload.configKey;

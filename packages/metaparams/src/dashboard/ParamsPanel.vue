@@ -1,5 +1,5 @@
 <template>
-    <div v-if="panelIndexData">
+    <div v-if="indexData">
         <params-header
             :panel-key="panelKey"
             :config-key="configKey"
@@ -16,7 +16,7 @@
                 :ref-params="refParams"
                 :raw-params="rawParams"
                 :keys="sortedKeys"
-                :keys-indexer="panelKeysIndexer"
+                :keys-indexer="indexKeysIndexer"
                 @onSetParamValue="onSetParamValue"
                 @onSetParamEnabled="onSetParamEnabled"
                 @onAddArrayElement="onAddArrayElement"
@@ -38,18 +38,25 @@
     import ParamsHeader from "@/dashboard/ParamsHeader";
     import Params from "common/components/params/Params";
     import SaveOrCopySettings from "@/dashboard/SaveOrCopySettings";
+    import panelsMixin from "common/mixins/panelsMixin";
 
     export default {
         name: 'ParamsPanel',
         components: {SaveOrCopySettings, Params, ParamsHeader},
         props: ['panelKey', 'configKey'],
-        mixins: [indexInfoMixin],
+        mixins: [indexInfoMixin, panelsMixin],
         data: function () {
             return {
                 open: true,
             }
         },
         computed: {
+            appId: function () { // Needed for indexInfoMixin
+                return this.panelAppId;
+            },
+            indexName: function () { // Needed for indexInfoMixin
+                return this.panelIndexName;
+            },
             sortedKeys: function () {
                 return Object.keys(this.params).sort(function (a, b) {
                     if (a === 'searchableAttributes') return -1;
@@ -66,7 +73,7 @@
                 });
             },
             params: function () {
-                if (this.configKey !== 'indexSettings') return this.panelIndexData[this.configKey] || {};
+                if (this.configKey !== 'indexSettings') return this.indexData[this.configKey] || {};
                 return Object.assign({}, this.refIndexSettingsRaw, this.indexSettingsRaw);
             },
             rawParams: function () {
@@ -84,10 +91,10 @@
         },
         methods: {
             onSetParamValue: function (key, value) {
-                this.$store.commit(`${this.panelIndexCommitPrefix}/setParamValue`, {configKey: this.configKey, key, value});
+                this.$store.commit(`${this.indexCommitPrefix}/setParamValue`, {configKey: this.configKey, key, value});
             },
             onSetParamEnabled: function (key, value) {
-                this.$store.commit(`${this.panelIndexCommitPrefix}/setParamEnabled`, {configKey: this.configKey, inputKey: key, value});
+                this.$store.commit(`${this.indexCommitPrefix}/setParamEnabled`, {configKey: this.configKey, inputKey: key, value});
             },
             onAddArrayElement: function (inputKey) {
                 const newVal = this.params[inputKey].value;
@@ -95,13 +102,13 @@
                 this.onSetParamValue(inputKey, newVal);
             },
             onDeleteArrayElement: function (inputKey, positionKey) {
-                this.$store.commit(`${this.panelIndexCommitPrefix}/deleteArrayElement`, {configKey: this.configKey, inputKey: inputKey, positionKey: positionKey})
+                this.$store.commit(`${this.indexCommitPrefix}/deleteArrayElement`, {configKey: this.configKey, inputKey: inputKey, positionKey: positionKey})
             },
             onDeleteKey: function (inputKey) {
-                this.$store.commit(`${this.panelIndexCommitPrefix}/deleteParam`, {configKey: this.configKey, inputKey: inputKey});
+                this.$store.commit(`${this.indexCommitPrefix}/deleteParam`, {configKey: this.configKey, inputKey: inputKey});
             },
             onRestoreKey: function (inputKey) {
-                this.$store.commit(`${this.panelIndexCommitPrefix}/restoreIndexSetting`, {panelKey: this.panelKey, inputKey: inputKey})
+                this.$store.commit(`${this.indexCommitPrefix}/restoreIndexSetting`, {panelKey: this.panelKey, inputKey: inputKey})
             },
         }
     }

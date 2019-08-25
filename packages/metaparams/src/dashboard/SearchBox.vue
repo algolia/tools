@@ -21,13 +21,13 @@
 
 <script>
     import SearchIcon from "common/icons/search.svg";
-    import indexInfoMixin from "common/mixins/indexInfoMixin";
     import CustomSelect from "common/components/selectors/CustomSelect";
+    import panelsMixin from "common/mixins/panelsMixin";
 
     export default {
         name: 'SearchBox',
         props: ['panelKey'],
-        mixins: [indexInfoMixin],
+        mixins: [panelsMixin],
         components: {SearchIcon, CustomSelect},
         data: function () {
             return {
@@ -61,7 +61,7 @@
             },
             query: {
                 get() {
-                    if (this.panelKey === 'rightPanel' && this.panelIndexData) {
+                    if (this.panelKey === 'rightPanel' && this.indexData) {
                         return this.searchParams.query || '';
                     }
                     return this.$store.state.panels.query;

@@ -43,14 +43,14 @@
     import LoaderIcon from 'common/icons/loader.svg'
     import {getClient} from 'common/utils/algoliaHelpers';
 
-    import indexInfoMixin from "common/mixins/indexInfoMixin";
+    import panelsMixin from "common/mixins/panelsMixin";
     import Vue from 'vue';
     import Tooltip from "common/components/Tooltip";
 
     export default {
         name: 'IndexDelete',
         components: {Tooltip, TrashIcon, LoaderIcon},
-        mixins: [indexInfoMixin],
+        mixins: [panelsMixin],
         props: ['panelKey'],
         data: function () {
             return {

@@ -1,5 +1,22 @@
 export default {
     computed: {
+        panelAppId: function () {
+            return this.$store.state.panels[this.panelKey].appId;
+        },
+        panelIndexName: function () {
+            return this.$store.state.panels[this.panelKey].indexName;
+        },
+        panelAdminAPIKey: {
+            get () {
+                return this.$store.state.apps[this.panelAppId].key;
+            },
+            set(value) {
+                this.$store.commit("apps/addAppId", {
+                    appId: this.panelAppId,
+                    apiKey: value,
+                });
+            }
+        },
         analyseMaxNbPoints: {
             get () {
                 return this.$store.state.panels.analyseMaxNbPoints;

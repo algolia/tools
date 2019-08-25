@@ -1,115 +1,98 @@
-import panelsMixin from "./panelsMixin";
+//import panelsMixin from "./panelsMixin";
 import {algoliaParams} from '../utils/algoliaHelpers';
 
 export default {
-    mixins: [panelsMixin],
     computed: {
-        panelAppId: function () {
-            return this.$store.state.panels[this.panelKey].appId;
+        indexCommitPrefix: function () {
+            return `apps/${this.appId}/${this.indexName}`;
         },
-        panelIndexName: function () {
-            return this.$store.state.panels[this.panelKey].indexName;
+        indexData: function () {
+            if (!this.$store.state.apps[this.appId]) return null;
+            return this.$store.state.apps[this.appId][this.indexName];
         },
-        panelAdminAPIKey: {
-            get () {
-                return this.$store.state.apps[this.panelAppId].key;
-            },
-            set(value) {
-                this.$store.commit("apps/addAppId", {
-                    appId: this.panelAppId,
-                    apiKey: value,
-                });
-            }
-        },
-        panelIndexCommitPrefix: function () {
-            return `apps/${this.panelAppId}/${this.panelIndexName}`;
-        },
-        panelIndexData: function () {
-            return this.$store.state.apps[this.panelAppId][this.panelIndexName];
-        },
-        panelKeysIndexer: function () {
-            if (this.panelIndexData.keysIndexer) {
-                return this.panelIndexData.keysIndexer;
+        indexKeysIndexer: function () {
+            if (this.indexData.keysIndexer) {
+                return this.indexData.keysIndexer;
             }
             return null;
         },
-        panelAutoTitleAttributeName: {
+        indexAutoTitleAttributeName: {
             get () {
-                return this.panelIndexData.autoTitleAttributeName;
+                return this.indexData.autoTitleAttributeName;
             },
             set (value) {
-                this.$store.commit(`${this.panelIndexCommitPrefix}/setAutoTitleAttributeName`, value);
+                this.$store.commit(`${this.indexCommitPrefix}/setAutoTitleAttributeName`, value);
             }
         },
-        panelTitleAttribute: {
+        indexTitleAttribute: {
             get () {
-                return this.panelIndexData.titleAttribute || '';
+                return this.indexData.titleAttribute || '';
             },
             set (value) {
-                this.$store.commit(`${this.panelIndexCommitPrefix}/setTitleAttribute`, value);
+                this.$store.commit(`${this.indexCommitPrefix}/setTitleAttribute`, value);
             }
         },
-        panelImageSize: {
+        indexImageSize: {
             get () {
-                return this.panelIndexData.imageSize || 40;
+                return this.indexData.imageSize || 40;
             },
             set (value) {
-                this.$store.commit(`${this.panelIndexCommitPrefix}/setImageSize`, value);
+                this.$store.commit(`${this.indexCommitPrefix}/setImageSize`, value);
             }
         },
-        panelImageAttributeName: {
+        indexImageAttributeName: {
             get () {
-                return this.panelIndexData.imageAttributeName;
+                return this.indexData.imageAttributeName;
             },
             set (value) {
-                this.$store.commit(`${this.panelIndexCommitPrefix}/setImageAttributeName`, value);
+                this.$store.commit(`${this.indexCommitPrefix}/setImageAttributeName`, value);
             }
         },
-        panelImageBaseUrl: {
+        indexImageBaseUrl: {
             get () {
-                return this.panelIndexData.imageBaseUrl || '';
+                return this.indexData.imageBaseUrl || '';
             },
             set (value) {
-                this.$store.commit(`${this.panelIndexCommitPrefix}/setImageBaseUrl`, value);
+                this.$store.commit(`${this.indexCommitPrefix}/setImageBaseUrl`, value);
             }
         },
-        panelImageSuffixUrl: {
+        indexImageSuffixUrl: {
             get () {
-                return this.panelIndexData.imageSuffixUrl || '';
+                return this.indexData.imageSuffixUrl || '';
             },
             set (value) {
-                this.$store.commit(`${this.panelIndexCommitPrefix}/setImageSuffixUrl`, value);
+                this.$store.commit(`${this.indexCommitPrefix}/setImageSuffixUrl`, value);
             }
         },
         searchParams: function () {
-            return algoliaParams(this.panelIndexData[this.searchConfigKey]);
+            return algoliaParams(this.indexData[this.searchConfigKey]);
         },
         indexSettings: function () {
-            return algoliaParams(this.panelIndexData.indexSettings || {});
+            return algoliaParams(this.indexData.indexSettings || {});
         },
         refIndexSettings: function () {
-            return algoliaParams(this.panelIndexData.refIndexSettings || {});
+            return algoliaParams(this.indexData.refIndexSettings || {});
         },
         advancedIndexSettings: function () {
-            if (this.panelIndexData && this.panelIndexData.advancedIndexSettings) {
-                return this.panelIndexData.advancedIndexSettings;
+            if (this.indexData && this.indexData.advancedIndexSettings) {
+                return this.indexData.advancedIndexSettings;
             }
             return {};
         },
         indexSettingsRaw: function () {
-            return this.panelIndexData.indexSettings || {};
+            return this.indexData.indexSettings || {};
         },
         refIndexSettingsRaw: function () {
-            return this.panelIndexData.refIndexSettings || {};
+            return this.indexData.refIndexSettings || {};
         },
         searchParamsRaw: function () {
-            return this.panelIndexData[this.searchConfigKey];
+            return this.indexData[this.searchConfigKey];
         },
         isIndexSettingsDirty: function () {
             return JSON.stringify(this.indexSettings) !== JSON.stringify(this.refIndexSettings);
         },
         isReadOnly: function () {
-            return this.refIndexSetting && this.refIndexSettings.primary && this.refIndexSettings.primary.length > 0;
+            return this.indexData && this.refIndexSettings && this.refIndexSettings.primary && this.refIndexSettings.primary.length > 0;
         },
-    },
+    }
 }

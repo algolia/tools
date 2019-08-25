@@ -6,7 +6,7 @@
             <history-icon
                 v-if="configKey === 'indexSettings' && isIndexSettingsDirty"
                 class="ml-8 cursor-pointer text-solstice-blue"
-                @click="$store.commit(`${panelIndexCommitPrefix}/resetIndexSettings`)"
+                @click="$store.commit(`${indexCommitPrefix}/resetIndexSettings`)"
                 :class="`flex-grow-0 w-12 h-12 flex-shrink-0 block ${open ? '' : 'rotate-180'}`"
             />
             <tooltip :position="panelKey === 'leftPanel' ? 'center' : 'right'">
@@ -65,14 +65,21 @@
     import FlipLeftIcon from "common/icons/flip-left.svg";
     import FlipRightIcon from "common/icons/flip-right.svg";
     import Tooltip from "common/components/Tooltip";
+    import panelsMixin from "common/mixins/panelsMixin";
     import indexInfoMixin from "common/mixins/indexInfoMixin";
 
     export default {
         name: 'ParamsHeader',
         props: ['panelKey', 'configKey', 'keys', 'open'],
-        mixins: [indexInfoMixin],
+        mixins: [panelsMixin, indexInfoMixin],
         components: {Tooltip, ChevronDownIcon, TrashIcon, FlipLeftIcon, FlipRightIcon, HistoryIcon},
         computed: {
+            appId: function () { // Needed for indexInfoMixin
+                return this.panelAppId;
+            },
+            indexName: function () { // Needed for indexInfoMixin
+                return this.panelIndexName;
+            },
             paramsCamJump: function () {
                 return this.$store.state.panels.splitMode
                     && this.keys.length > 0

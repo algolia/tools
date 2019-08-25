@@ -40,13 +40,13 @@
 
 <script>
     import ChevronDownIcon from "common/icons/chevron-down.svg";
-    import indexInfoMixin from "common/mixins/indexInfoMixin";
+    import panelsMixin from "common/mixins/panelsMixin";
 
     export default {
         name: 'Queries',
         components: {ChevronDownIcon},
         props: ['panelKey'],
-        mixins: [indexInfoMixin],
+        mixins: [panelsMixin],
         data: function () {
             return {
                 open: false,
@@ -80,9 +80,6 @@
             }
         },
         computed: {
-            searchParams: function () {
-                return {};
-            },
             currentQuery: function () {
                 return this.lastQuery !== null ? this.lastQuery : this.panelQuery;
             },

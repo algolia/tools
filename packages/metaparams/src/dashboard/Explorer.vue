@@ -73,23 +73,23 @@
                 :can-jump-rules="canJumpRules"
                 :can-jump-records="canJumpRecords"
                 :jump-to="otherPanelKey"
-                :image-size="panelImageSize"
-                :image-attribute="panelImageAttributeName"
-                :image-base-url="panelImageBaseUrl"
-                :image-suffix-url="panelImageSuffixUrl"
-                :title-attribute-name="panelTitleAttribute"
-                :auto-title-attribute-name="panelAutoTitleAttributeName"
-                :keys-indexer="panelKeysIndexer"
+                :image-size="indexImageSize"
+                :image-attribute="indexImageAttributeName"
+                :image-base-url="indexImageBaseUrl"
+                :image-suffix-url="indexImageSuffixUrl"
+                :title-attribute-name="indexTitleAttribute"
+                :auto-title-attribute-name="indexAutoTitleAttributeName"
+                :keys-indexer="indexKeysIndexer"
                 :display-ranking-info="$store.state.panels.displayRankingInfo"
                 @onUpdateAnalyseMaxNbPoint="analyseMaxNbPoints = $event"
                 @onUpdateDisplayMode="displayMode = $event"
                 @onUpdatePage="onUpdatePage"
-                @onUpdateImageAttribute="panelImageAttributeName = $event"
-                @onUpdateImageBaseUrl="panelImageBaseUrl = $event"
-                @onUpdateImageSuffixUrl="panelImageSuffixUrl = $event"
-                @onUpdateImageSize="panelImageSize = $event"
-                @onUpdateTitleAttributeName="panelTitleAttribute = $event"
-                @onUpdateAutoTitleAttributeName="panelAutoTitleAttributeName = $event"
+                @onUpdateImageAttribute="indexImageAttributeName = $event"
+                @onUpdateImageBaseUrl="indexImageBaseUrl = $event"
+                @onUpdateImageSuffixUrl="indexImageSuffixUrl = $event"
+                @onUpdateImageSize="indexImageSize = $event"
+                @onUpdateTitleAttributeName="indexTitleAttribute = $event"
+                @onUpdateAutoTitleAttributeName="indexAutoTitleAttributeName = $event"
                 @onUpdateCursor="onUpdateCursor"
                 @onDeleteCursor="onDeleteCursor"
 
@@ -103,12 +103,12 @@
                 :api-key="panelAdminAPIKey"
                 :index-name="panelIndexName"
                 :server="panelServer"
-                :image-size="panelImageSize"
-                :image-attribute="panelImageAttributeName"
-                :image-base-url="panelImageBaseUrl"
-                :image-suffix-url="panelImageSuffixUrl"
-                :title-attribute-name="panelTitleAttribute"
-                :auto-title-attribute-name="panelAutoTitleAttributeName"
+                :image-size="indexImageSize"
+                :image-attribute="indexImageAttributeName"
+                :image-base-url="indexImageBaseUrl"
+                :image-suffix-url="indexImageSuffixUrl"
+                :title-attribute-name="indexTitleAttribute"
+                :auto-title-attribute-name="indexAutoTitleAttributeName"
                 :can-jump-synonyms="canJumpSynonyms"
                 :jump-to="otherPanelKey"
             />
@@ -121,19 +121,19 @@
                 :api-key="panelAdminAPIKey"
                 :index-name="panelIndexName"
                 :server="panelServer"
-                :image-size="panelImageSize"
-                :image-attribute="panelImageAttributeName"
-                :image-base-url="panelImageBaseUrl"
-                :image-suffix-url="panelImageSuffixUrl"
-                :title-attribute-name="panelTitleAttribute"
-                :auto-title-attribute-name="panelAutoTitleAttributeName"
+                :image-size="indexImageSize"
+                :image-attribute="indexImageAttributeName"
+                :image-base-url="indexImageBaseUrl"
+                :image-suffix-url="indexImageSuffixUrl"
+                :title-attribute-name="indexTitleAttribute"
+                :auto-title-attribute-name="indexAutoTitleAttributeName"
                 :read-only="isReadOnly"
                 :can-jump-rules="canJumpRules"
                 :jump-to="otherPanelKey"
             />
             <checks
                 v-show="panelCurrentTab === 'checks'"
-                :index-analyser="panelIndexData.indexAnalyzer"
+                :index-analyser="indexData.indexAnalyzer"
                 :searchParams="searchParams"
                 :indexSettings="indexSettings"
                 @onUpdateCount="onUpdateChecksCount"
@@ -169,6 +169,12 @@
             };
         },
         computed: {
+            appId: function () { // Needed for indexInfoMixin
+                return this.panelAppId;
+            },
+            indexName: function () { // Needed for indexInfoMixin
+                return this.panelIndexName;
+            },
             displayMode: {
                 get () {
                     return this.$store.state.panels[this.panelKey].displayMode || 'list';
@@ -208,11 +214,11 @@
 
                 const appId = this.$store.state.panels[otherPanelKey].appId;
                 const indexName = this.$store.state.panels[otherPanelKey].indexName;
-                const panelIndexData = this.$store.state.apps[appId][indexName];
+                const indexData = this.$store.state.apps[appId][indexName];
 
-                if (!panelIndexData || !panelIndexData.refIndexSettings) return false;
+                if (!indexData || !indexData.refIndexSettings) return false;
 
-                return !panelIndexData.refIndexSettings.primary;
+                return !indexData.refIndexSettings.primary;
             },
         },
         methods: {
@@ -237,21 +243,21 @@
                 this.nbChecks = event;
             },
             onUpdatePage: function (page) {
-                this.$store.commit(`${this.panelIndexCommitPrefix}/setParamValue`, {
+                this.$store.commit(`${this.indexCommitPrefix}/setParamValue`, {
                     configKey: this.searchConfigKey,
                     key: 'page',
                     value: page
                 });
             },
             onUpdateCursor: function (cursor) {
-                this.$store.commit(`${this.panelIndexCommitPrefix}/setParamValue`, {
+                this.$store.commit(`${this.indexCommitPrefix}/setParamValue`, {
                     configKey: this.searchConfigKey,
                     key: 'cursor',
                     value: cursor
                 });
             },
             onDeleteCursor: function () {
-                this.$store.commit(`${this.panelIndexCommitPrefix}/deleteParam`, {
+                this.$store.commit(`${this.indexCommitPrefix}/deleteParam`, {
                     configKey: this.searchConfigKey,
                     inputKey: 'cursor',
                 });
