@@ -86,7 +86,17 @@
         },
         computed: {
             params: function () {
-                return Object.assign({}, this.currentTest.testData.when, algoliaParams(this.currentRun.params));
+                return Object.assign(
+                    {},
+                    this.currentTest.testData.when,
+                    algoliaParams(this.currentRun.params),
+                    {
+                        hitsPerPage: this.currentRun.hits_per_page,
+                        getRankingInfo: true,
+                        analytics: false,
+                        enableABTest: false,
+                    }
+                );
             }
         }
     }

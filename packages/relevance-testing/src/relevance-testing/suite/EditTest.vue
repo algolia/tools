@@ -5,8 +5,7 @@
             @click="$emit('onSelected')"
         >
             <div class="flex items-center">
-                <div>query</div>
-                <div class="ml-4 px-4 py-2 text-sm rounded leading-none bg-proton-grey-opacity-40">
+                <div class="px-4 py-2 text-sm rounded leading-none bg-proton-grey-opacity-40">
                     {{ test.testData.when.query ? test.testData.when.query : '&lt;empty&gt;'}}
                 </div>
                 <div v-if="Object.keys(test.testData.when).length > 1" class="ml-4">

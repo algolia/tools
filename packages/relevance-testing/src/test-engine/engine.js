@@ -151,7 +151,7 @@ export class Test {
             if (matchingRecords.length > 0) {
                 return hit.__index__ > matchingRecords[0].__index__;
             }
-            return true;
+            return false;
         }
 
         throw new Error(`invalid condition type: ${condition.type}`);
@@ -190,6 +190,7 @@ export class Test {
                 hitsPerPage: runData.hits_per_page,
                 getRankingInfo: true,
                 analytics: false,
+                enableABTest: false,
             }
         );
         const res = await algoliaIndex.search(params);

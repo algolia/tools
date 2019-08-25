@@ -18,19 +18,19 @@
                         </div>
                     </td>
                 </tr>
-                <template v-for="(group, groupPos) in suite.groups">
+                <tbody v-for="(group, groupPos) in suite.groups" :key="group.id">
                     <tr class="bg-proton-grey-opacity-40">
                         <td>
                             <edit-group :group="group" :group-pos="groupPos" :suite="suite" />
                         </td>
-                        <td v-for="(run, i) in runs">
+                        <td v-for="(run, i) in runs" :key="run.id">
                             <div v-if="group.reports[i]" class="p-8 text-telluric-blue text-xs text-center">
                                 <!--<badge class="mr-16" :passing="group.reports[i].passing" />-->
                                 {{group.reports[i].nbPassing}} / {{group.reports[i].nbTests}}
                             </div>
                         </td>
                     </tr>
-                    <tr v-for="(test, testPos) in group.tests" class="bg-white" :class="{'bg-nebula-blue-opacity-20': currentTestEdit === test}">
+                    <tr v-for="(test, testPos) in group.tests" :key="test.id" class="bg-white" :class="{'bg-nebula-blue-opacity-20': currentTestEdit === test}">
                         <td>
                             <edit-test
                                 :test="test"
@@ -39,7 +39,7 @@
                                 @onSelected="currentTestEdit = test"
                             />
                         </td>
-                        <td v-for="(run, i) in runs">
+                        <td v-for="(run, i) in runs" :key="run.id">
                             <div class="flex items-center justify-center p-8" @click="currentTest = test">
                                 <badge :passing ="test.reports[i] ? test.reports[i].passing : null" />
                             </div>
@@ -55,7 +55,7 @@
                             </button>
                         </td>
                     </tr>
-                </template>
+                </tbody>
             </table>
             <div>
                 <button
@@ -65,8 +65,12 @@
                     Add Group
                 </button>
             </div>
+            <group-generator-from-csv :suite="suite" />
         </div>
         <div class="w-70p" v-if="currentTestEdit">
+            <div class="ml-16 bg-white mb-12 p-8 rounded">
+                <hits-config />
+            </div>
             <div class="rounded bg-white ml-16 border border-solid border-proton-grey-opacity-60">
                 <div class="flex">
                     <div class="min-w-third max-w-third border-r border-proton-grey ">
@@ -91,6 +95,7 @@
 <style>
     td {
         padding: 0;
+        vertical-align: top;
     }
 </style>
 
@@ -105,13 +110,17 @@
     import EditRun from "@/relevance-testing/suite/EditRun";
     import EditTest from "@/relevance-testing/suite/EditTest";
 
+    import HitsConfig from "common/components/configuration/HitsConfig";
+    import GroupGeneratorFromCsv from "@/relevance-testing/generation/GroupGeneratorFromCsv";
+
     export default {
         name: 'Run',
         props: ['suite'],
         components: {
+            GroupGeneratorFromCsv,
             EditTest,
             EditRun,
-            TestPreview, TestEdition, EditGroup, Badge},
+            TestPreview, TestEdition, EditGroup, Badge, HitsConfig},
         data: function () {
             return {
                 hitsPerPage: 8,
@@ -196,7 +205,7 @@
                     body: JSON.stringify({
                         app_id: appId,
                         index_name: null,
-                        hits_per_page: null,
+                        hits_per_page: 8,
                         params: '{}',
                     }),
                 });
