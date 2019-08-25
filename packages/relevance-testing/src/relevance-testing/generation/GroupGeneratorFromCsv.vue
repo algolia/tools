@@ -88,20 +88,19 @@
                 return rows;
             },
             tests: function () {
-                return this.rows.map((row) => {
-                    const test = {
-                        description: '',
-                        when: {
-                            query: '',
-                        },
-                        then: [],
-                    };
+                const queries = {};
+                const tests = [];
+
+                this.rows.forEach((row) => {
+                    let description = '';
+                    let query = '';
+                    let then = [];
 
                     this.columnTypes.forEach((columnType, i) => {
                         if (columnType === 'query') {
-                            test.when.query = row[i];
+                            query = row[i];
                         } else if (columnType === 'objectID') {
-                            test.then.push({
+                            then.push({
                                 test: "contains",
                                 operator: "=",
                                 value: 1,
@@ -115,7 +114,7 @@
                                 ],
                             })
                         } else if (columnType === 'position') {
-                            test.then.push({
+                            then.push({
                                 test: "contains",
                                 operator: "=",
                                 value: 1,
@@ -129,11 +128,26 @@
                                 ],
                             })
                         } else if (columnType === 'description') {
-                            test.description = row[i];
+                            description = row[i];
                         }
                     });
-                    return test;
+
+                    if (query.length > 0 && queries[query]) {
+                        queries[query].then.push(...then);
+                    } else {
+                        const test = {
+                            description,
+                            when: {
+                                query
+                            },
+                            then
+                        };
+                        queries[query] = test;
+                        tests.push(test);
+                    }
                 });
+
+                return tests;
             }
         },
         methods: {

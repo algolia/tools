@@ -39,9 +39,19 @@
                                 @onSelected="currentTestEdit = test"
                             />
                         </td>
-                        <td v-for="(run, i) in runs" :key="run.id">
-                            <div class="flex items-center justify-center p-8" @click="currentTest = test">
-                                <badge :passing ="test.reports[i] ? test.reports[i].passing : null" />
+                        <td v-for="(run, runPos) in runs" :key="run.id">
+                            <div class="flex items-center justify-center p-8">
+                                <div
+                                    class="px-4 py-2 text-xs rounded leading-none"
+                                    :class="{
+                                        'bg-proton-grey': test.reports[runPos].passing === null,
+                                        'bg-jupiter-6': test.reports[runPos].passing === true,
+                                        'bg-mars-1': test.reports[runPos].passing === false,
+                                        'text-white': test.reports[runPos].passing !== null
+                                    }"
+                                >
+                                    {{test.reports[runPos].nbPassing}} / {{test.reports[runPos].nbTests}}
+                                </div>
                             </div>
                         </td>
                     </tr>
