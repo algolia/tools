@@ -125,7 +125,9 @@ export class Test {
             nbPassing += requirement.passing ? 1 : 0;
         });
         const passing = nbPassing === nbTests;
-        Vue.set(this.reports, i, {passing, nbPassing, nbTests});
+        Vue.set(this.reports[i], 'passing', passing);
+        Vue.set(this.reports[i], 'nbPassing', nbPassing);
+        Vue.set(this.reports[i], 'nbTests', nbTests);
     }
 
     static compare(a, operator, b) {
@@ -185,13 +187,9 @@ export class Test {
         });
         await Promise.all(promises);
 
-        this.runs.forEach((run, runIndex) => {
-            this.updateReport(runIndex);
-
-            if (updateGroup) {
-                this.group.updateReport(runIndex, true);
-            }
-        });
+        if (updateGroup) {
+            this.runs.forEach((run, runIndex) => this.group.updateReport(runIndex, true));
+        }
 
 
     }
@@ -262,5 +260,6 @@ export class Test {
         });
 
         Vue.set(this.reports, runIndex, report);
+        this.updateReport(runIndex);
     }
 }

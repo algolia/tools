@@ -1,13 +1,13 @@
 <template>
     <div class="flex">
-        <div :class="{'w-30p': currentTestEdit}">
+        <div :class="{'w-30p': currentTest}">
             <table class="w-full">
                 <tr>
                     <td></td>
                     <td v-for="(run, i) in runs" class="bg-proton-grey-opacity-80">
                         <edit-run :suite="suite" :run="run" :run-position="i" />
                     </td>
-                    <td class="h-1" v-if="currentTestEdit === null">
+                    <td class="h-1" v-if="currentTest === null">
                         <div
                             class="ml-16 px-40 border border-dashed border-proton-grey flex items-center justify-center h-full cursor-pointer"
                             @click="addRun"
@@ -18,54 +18,16 @@
                         </div>
                     </td>
                 </tr>
-                <tbody v-for="(group, groupPos) in suite.groups" :key="group.id">
-                    <tr class="bg-proton-grey-opacity-40">
-                        <td>
-                            <edit-group :group="group" :group-pos="groupPos" :suite="suite" />
-                        </td>
-                        <td v-for="(run, i) in runs" :key="run.id">
-                            <div v-if="group.reports[i]" class="p-8 text-telluric-blue text-xs text-center">
-                                <!--<badge class="mr-16" :passing="group.reports[i].passing" />-->
-                                {{group.reports[i].nbPassing}} / {{group.reports[i].nbTests}}
-                            </div>
-                        </td>
-                    </tr>
-                    <tr v-for="(test, testPos) in group.tests" :key="test.id" class="bg-white" :class="{'bg-nebula-blue-opacity-20': currentTestEdit === test}">
-                        <td>
-                            <edit-test
-                                :test="test"
-                                :test-pos="testPos"
-                                :suite="suite"
-                                @onSelected="currentTestEdit = test"
-                            />
-                        </td>
-                        <td v-for="(run, runPos) in runs" :key="run.id">
-                            <div class="flex items-center justify-center p-8">
-                                <div
-                                    class="px-4 py-2 text-xs rounded leading-none"
-                                    :class="{
-                                        'bg-proton-grey': test.reports[runPos].passing === null,
-                                        'bg-jupiter-6': test.reports[runPos].passing === true,
-                                        'bg-mars-1': test.reports[runPos].passing === false,
-                                        'text-white': test.reports[runPos].passing !== null
-                                    }"
-                                >
-                                    {{test.reports[runPos].nbPassing}} / {{test.reports[runPos].nbTests}}
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr class="bg-moon-grey">
-                        <td>
-                            <button
-                                @click="addTest(group)"
-                                class="mt-8 mb-32 block bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out px-16 p-8 text-sm relative group"
-                            >
-                                Add test
-                            </button>
-                        </td>
-                    </tr>
-                </tbody>
+                <group
+                    v-for="(group, groupPos) in suite.groups"
+                    :key="group.id"
+                    :group="group"
+                    :group-pos="groupPos"
+                    :runs="runs"
+                    :suite="suite"
+                    :current-test="currentTest"
+                    @onTestSelected="currentTest = $event"
+                />
             </table>
             <div>
                 <button
@@ -77,7 +39,7 @@
             </div>
             <group-generator-from-csv :suite="suite" />
         </div>
-        <div class="w-70p" v-if="currentTestEdit">
+        <div class="w-70p" v-if="currentTest">
             <div class="ml-16 bg-white mb-12 p-8 rounded">
                 <hits-config />
             </div>
@@ -85,14 +47,14 @@
                 <div class="flex">
                     <div class="min-w-third max-w-third border-r border-proton-grey ">
                         <test-edition
-                            :test="currentTestEdit"
+                            :test="currentTest"
                             :current-run="suite.runs[0]"
                             :current-run-index="0"
                             :suite="suite"
                         />
                     </div>
                     <test-preview
-                        :current-test="currentTestEdit"
+                        :current-test="currentTest"
                         :current-run="suite.runs[0]"
                         class="min-w-two-third max-w-two-third bg-white p-8"
                     />
@@ -110,31 +72,24 @@
 </style>
 
 <script>
-
-    import Badge from '@/relevance-testing/common/Badge';
     import {GroupTest, Test} from '@/test-engine/engine';
 
-    import EditGroup from "@/relevance-testing/suite/EditGroup";
     import TestEdition from "@/relevance-testing/suite/TestEdition";
     import TestPreview from "@/relevance-testing/suite/TestPreview";
     import EditRun from "@/relevance-testing/suite/EditRun";
-    import EditTest from "@/relevance-testing/suite/EditTest";
 
     import HitsConfig from "common/components/configuration/HitsConfig";
     import GroupGeneratorFromCsv from "@/relevance-testing/generation/GroupGeneratorFromCsv";
+    import Group from "@/relevance-testing/suite/Group";
 
     export default {
         name: 'Run',
         props: ['suite'],
-        components: {
-            GroupGeneratorFromCsv,
-            EditTest,
-            EditRun,
-            TestPreview, TestEdition, EditGroup, Badge, HitsConfig},
+        components: {Group, GroupGeneratorFromCsv, EditRun, TestPreview, TestEdition, HitsConfig},
         data: function () {
             return {
                 hitsPerPage: 8,
-                currentTestEdit: null,
+                currentTest: null,
             }
         },
         created: function () {
@@ -142,7 +97,7 @@
         },
         computed: {
             runs: function () {
-                if (this.currentTestEdit === null) {
+                if (this.currentTest === null) {
                     return this.suite.runs;
                 }
                 if (this.suite.runs.length > 0){
@@ -166,41 +121,6 @@
 
                 const group = await res.json();
                 this.suite.groups.push(new GroupTest(group, this.suite.runs, this.suite));
-            },
-            addTest: async function (group) {
-                const res = await fetch(`${process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT}/relevance-testing/suites/${this.suite.id}/groups/${group.id}/tests`, {
-                    method: 'POST',
-                    credentials: 'include',
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        test_data: JSON.stringify({
-                            name: `test ${group.tests.length + 1}`,
-                            when: {query: ""},
-                            then: [
-                                {
-                                    test: "contains",
-                                    operator: ">=",
-                                    value: 1,
-                                    recordsMatching: [
-                                        {
-                                            "type": "attribute",
-                                            "key": "objectID",
-                                            "operator": "=",
-                                            "value": ""
-                                        }
-                                    ]
-                                }
-                            ]
-                        }),
-                    }),
-                });
-
-                const testData = await res.json();
-                const test = new Test(testData, this.suite.runs, group);
-                group.tests.push(test);
-                test.run();
             },
             addRun: async function () {
                 const apps = Object.keys(this.$store.state.apps);
