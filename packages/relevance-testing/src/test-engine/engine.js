@@ -211,7 +211,7 @@ export class Test {
                 enableABTest: false,
             }
         );
-        const res = await algoliaIndex.search(params);
+        const res = await algoliaIndex.customSearch(params);
 
         res.hits.forEach((hit, i) => {
             hit.__index__ = i;

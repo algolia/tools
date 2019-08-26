@@ -18,6 +18,7 @@
                     :keys="Object.keys(run.params)"
                     :keys-indexer="null"
                     :mutate="true"
+                    panel-key="leftPanel"
                 />
                 <div v-if="suite.reports[runPosition]" class="flex mt-24">
                     <!--<badge class="mr-16" :passing="suite.reports[i].passing" />-->
