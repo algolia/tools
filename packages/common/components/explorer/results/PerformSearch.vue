@@ -93,7 +93,11 @@
                 };
 
                 if (this.fetchFacets) {
-                    forcedParams.disjunctiveFacets = (this.indexSettings.attributesForFaceting || []).map(cleanAttributeName);
+                    let facets = this.searchParams.facets || this.indexSettings.attributesForFaceting || [];
+                    if (facets.some((facet) => facet === '*')) {
+                        facets = this.indexSettings.attributesForFaceting;
+                    }
+                    forcedParams.disjunctiveFacets = facets.map(cleanAttributeName);
                 }
 
                 return Object.assign(nonForcedparams, this.searchParams, forcedParams);
