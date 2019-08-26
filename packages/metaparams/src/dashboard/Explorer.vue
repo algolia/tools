@@ -42,6 +42,7 @@
                 :query="$store.state.panels.query"
                 :fetch-explain="$store.state.panels.displayRankingInfo"
                 :analyse-hits-per-page="$store.state.panels.analyseMaxNbPoints"
+                :fetch-facets="true"
                 @onFetchHits="onFetchHits"
                 @onFetchAnalyseHits="onFetchAnalyseHits"
                 @onUpdateError="errorMessage = $event"
@@ -53,7 +54,10 @@
                 :api-key="panelAdminAPIKey"
                 @onUpdateApiKey="panelAdminAPIKey = $event"
             />
-            <results v-show="panelCurrentTab === 'hits'" :panel-key="panelKey"
+            <results
+                v-show="panelCurrentTab === 'hits'"
+                class="w-full"
+                :panel-key="panelKey"
                 :search-response="algoliaResponse"
                 :analyse-response="analyseAlgoliaResponse"
                 :search-params="searchParams"
@@ -92,7 +96,6 @@
                 @onUpdateAutoTitleAttributeName="indexAutoTitleAttributeName = $event"
                 @onUpdateCursor="onUpdateCursor"
                 @onDeleteCursor="onDeleteCursor"
-
             />
             <fetcher
                 v-show="panelCurrentTab === 'synonyms'"
@@ -230,6 +233,7 @@
                 this.nbRules = nbRules;
             },
             onFetchHits: function (algoliaResponse) {
+                this.$root.$emit(`${this.panelKey}UpdateResponse`, algoliaResponse);
                 this.algoliaResponse = algoliaResponse;
                 this.nbHits = algoliaResponse ? algoliaResponse.nbHits : 0;
                 this.$emit('onFetchHits', algoliaResponse);
@@ -261,7 +265,7 @@
                     configKey: this.searchConfigKey,
                     inputKey: 'cursor',
                 });
-            }
+            },
         },
     }
 </script>

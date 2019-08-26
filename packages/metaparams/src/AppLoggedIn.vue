@@ -23,13 +23,16 @@
                     class="m-8 mr-8"
                 />
             </div>
-            <div class="min-w-0 flex-1" v-if="$store.state.panels.splitMode || !$store.state.panels.expandLeftPanel">
+            <div
+                :class="$store.state.panels.splitMode ? 'min-w-0 flex-1' : 'min-w-0'"
+                v-if="$store.state.panels.splitMode || !$store.state.panels.expandLeftPanel"
+            >
                 <dashboard
                     v-if="$store.state.panels.splitMode"
                     panel-key="rightPanel"
                 />
                 <div v-else class="flex justify-center h-full text-solstice-blue-opacity-60">
-                    <div class="max-w-600 px-auto mt-156 leading-normal">
+                    <div class="max-w-300 mx-48 px-auto mt-156 leading-normal">
                         <div>
                             <p>
                                 Click on Split Mode
@@ -38,8 +41,8 @@
                             </p>
                             <p>In split mode:</p>
                             <ul>
-                                <li>if you have the same index on both explorer you are able to compare search params effect</li>
-                                <li>if you have two differents indices you are able to compare the impact of change to search params and index settings</li>
+                                <li class="ml-8">- if you have the same index on both explorer you are able to compare search params effect</li>
+                                <li class="ml-8">- if you have two differents indices you are able to compare the impact of change to search params and index settings</li>
                             </ul>
                         </div>
 
@@ -58,10 +61,10 @@
                             </p>
                             <p>This is useful for:</p>
                             <ul>
-                                <li>identify weird pattern on any of the ranking criteria</li>
-                                <li>checking where the ties are broken</li>
-                                <li>ensure that the custom ranking is well defined</li>
-                                <li>and things we didn't imagine yet</li>
+                                <li class="ml-8">- identify weird pattern on any of the ranking criteria</li>
+                                <li class="ml-8">- checking where the ties are broken</li>
+                                <li class="ml-8">- ensure that the custom ranking is well defined</li>
+                                <li class="ml-8">- and things we didn't imagine yet</li>
                             </ul>
 
                         </div>

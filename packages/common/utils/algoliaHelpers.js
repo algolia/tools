@@ -15,30 +15,109 @@ const getNewParams = function (params) {
     return newQuery;
 };
 
-indexPrototype.customSearch = function (query, args, callback) {
-    let newQuery = query;
-    let newArgs = args;
+indexPrototype.buildFacetFilters = function (facetFilters, needle) {
+    return facetFilters.map((facetFilter) => {
+        const refinements = Array.isArray(facetFilter) ? facetFilter : [facetFilter];
+        return refinements.filter((refinement) => {
+            return !refinement.startsWith(needle);
+        })
+    }).filter((facetFilter) => facetFilter.length > 0);
+};
 
-    if (query && typeof query === 'object' && query.constructor === Object && query['optionalWords=query'] !== undefined) {
-        newQuery = getNewParams(query);
-    }
-    if (args && typeof args === 'object' && args.constructor === Object && args['optionalWords=query'] !== undefined) {
-        newArgs = getNewParams({...args, query});
-    }
-    return this.search(newQuery, newArgs, callback);
+indexPrototype.getDisjunctiveRequests = function (disjunctiveFacets, paramsWithoutDisjunctiveFacets) {
+    const requests = [];
+
+    requests.push({
+        indexName: this.indexName,
+        params: this.as._getSearchParams(paramsWithoutDisjunctiveFacets, ''),
+    });
+
+    disjunctiveFacets.forEach((facetName) => {
+        const facetFilters = this.buildFacetFilters(paramsWithoutDisjunctiveFacets.facetFilters || [], `${facetName}:`);
+
+        const forcedParams = {
+            facetFilters: facetFilters,
+            facets: [facetName],
+            analytics: false,
+            attributesToRetrieve: [],
+            attributesToHighlight: [],
+            attributesToSnippet: [],
+            hitsPerPage: 1,
+            page: 0,
+            explain: undefined,
+        };
+
+        requests.push({
+            indexName: this.indexName,
+            params: this.as._getSearchParams(Object.assign({}, paramsWithoutDisjunctiveFacets, forcedParams), ''),
+        });
+    });
+
+    return requests;
+};
+
+indexPrototype.disjunctiveSearch = function (params, callback) {
+    const {disjunctiveFacets, ...paramsWithoutDisjunctiveFacets} = params;
+    const requests = this.getDisjunctiveRequests(disjunctiveFacets, paramsWithoutDisjunctiveFacets);
+
+    return new Promise((resolve, reject) => {
+        this.as._jsonRequest({
+            method: 'POST',
+            url: '/1/indexes/*/queries',
+            body: {
+                requests: requests,
+                strategy: 'none'
+            },
+            hostType: 'read',
+            callback: (err, res) => {
+                const newRes = res.results[0];
+                newRes.disjunctiveFacets = {};
+
+                disjunctiveFacets.forEach((facetName, i) => {
+                    newRes.disjunctiveFacets[facetName] = res.results[i + 1].facets[facetName];
+                });
+
+                if (callback) {
+                    return callback(err, newRes);
+                } else {
+                    if (err) {
+                        reject(err)
+                    } else {
+                        resolve(newRes);
+                    }
+                }
+            },
+        });
+    });
+};
+
+indexPrototype.customSearch = function (query, args, callback) {
+    let params = {};
+    if (query && typeof query === 'object' && query.constructor === Object) params = query;
+    if (args && typeof args === 'object' && args.constructor === Object) params = {...args, query};
+
+    params = getNewParams(params);
+
+    if (params.disjunctiveFacets && params.disjunctiveFacets.length > 0) return this.disjunctiveSearch(params, callback);
+    delete (params.disjunctiveFacets);
+
+    return this.search(params, callback);
 };
 
 indexPrototype.customBrowse = function (query, args, callback) {
-    let newQuery = query;
-    let newArgs = args;
-    if (query && typeof query === 'object' && query.constructor === Object && query['optionalWords=query'] !== undefined) {
-        newQuery = getNewParams(query);
-    }
-    if (args && typeof args === 'object' && args.constructor === Object && args['optionalWords=query'] !== undefined) {
-        newArgs = getNewParams({...args, query});
-    }
+    let params = {};
+    if (query && typeof query === 'object' && query.constructor === Object) params = query;
+    if (args && typeof args === 'object' && args.constructor === Object) params = {...args, query};
 
-    return this.browse(newQuery, newArgs, callback);
+    params = getNewParams(params);
+    delete (params.disjunctiveFacets);
+
+    return this.browse(params, callback);
+};
+
+indexPrototype.customSearchForFacetValues = function(args, callback) {
+    const params = getNewParams(args);
+    return this.searchForFacetValues(args, callback);
 };
 
 const clientCache = {};

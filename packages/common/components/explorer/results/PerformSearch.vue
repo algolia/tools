@@ -17,6 +17,7 @@
             'appId', 'indexName', 'apiKey', 'query', 'method',
             'searchParams',
             'fetchExplain', 'analyseHitsPerPage',
+            'fetchFacets'
         ],
         data: function () {
             return {
@@ -90,6 +91,10 @@
                     highlightPreTag: '<em>',
                     highlightPostTag: '</em>',
                 };
+
+                if (this.fetchFacets) {
+                    forcedParams.disjunctiveFacets = (this.indexSettings.attributesForFaceting || []).map(cleanAttributeName);
+                }
 
                 return Object.assign(nonForcedparams, this.searchParams, forcedParams);
             },

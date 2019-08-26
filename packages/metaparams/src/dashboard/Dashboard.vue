@@ -57,11 +57,23 @@
                     <div
                         style="width: calc(100% - 300px)"
                         :class="`${panelKey === 'leftPanel' ? 'border-l': 'border-r'} border-proton-grey `"
+                        class="flex"
                     >
                         <explorer
                             v-if="panelIndexName"
                             :panel-key="panelKey"
-                            class="bg-white"
+                            class="bg-white flex-1 min-w-0"
+                        />
+                        <facets
+                            v-show="!$store.state.panels.splitMode"
+                            class="xxl:min-w-260 xxl:max-w-260 min-w-152 max-w-152 border-l border-proton-grey"
+                            :panel-key="panelKey"
+                            :app-id="panelAppId"
+                            :index-name="panelIndexName"
+                            :search-params="searchParams"
+                            :query="searchParams.query !== undefined ? searchParams.query : $store.state.panels.query"
+                            :index-settings="refIndexSettings"
+                            :config-key="searchConfigKey"
                         />
                     </div>
                     <div v-if="panelKey !== 'leftPanel'" class="w-300 max-w-300 min-w-300">
@@ -83,6 +95,7 @@
     import IndexNew from "@/dashboard/IndexNew";
     import AppSelector from "common/components/selectors/AppSelector";
     import IndexSelector from "common/components/selectors/IndexSelector";
+    import Facets from "common/components/explorer/facets/Facets";
 
     import FlipLeftIcon from "common/icons/flip-left.svg";
     import FlipRightIcon from "common/icons/flip-right.svg";
@@ -117,6 +130,7 @@
             ServerIcon,
             MaximizeIcon,
             MinimizeIcon,
+            Facets
         },
         computed: {
             appId: { // Needed for indexInfoMixin
