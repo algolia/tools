@@ -84,9 +84,6 @@
 </template>
 
 <script>
-    import LoaderIcon from "common/icons/loader.svg";
-    import CheckIcon from "common/icons/check.svg";
-
     import AppSelector from "common/components/selectors/AppSelector";
     import indexInfoMixin from "common/mixins/indexInfoMixin";
     import Tooltip from "common/components/Tooltip";
@@ -99,7 +96,7 @@
 
     export default {
         name: 'SaveOrCopySettings',
-        components: {Tooltip, AppSelector, LoaderIcon, CheckIcon, TaskGroupView},
+        components: {Tooltip, AppSelector, TaskGroupView},
         props: ['panelKey'],
         mixins: [indexInfoMixin, panelsMixin],
         data: function () {
