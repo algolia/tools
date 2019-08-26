@@ -12,11 +12,11 @@ app.use((req, res, next) => {
         return next();
 });
 
-/**app.use(history({
+app.use(history({
     rewrites: [
         { from: /^\/relevance-testing\/.*$/, to: '/relevance-testing/index.html' }
     ]
-}));**/
+}));
 
 
 app.use('/apps', serveStatic(__dirname + "/packages/apps/dist"));
