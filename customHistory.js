@@ -6,13 +6,9 @@ exports = module.exports = function historyApiFallback(options) {
     options = options || {};
     var logger = getLogger(options);
 
-    console.log('ok1');
-
     return function(req, res, next) {
         var headers = req.headers;
-        console.log('ok2');
         if (req.method !== 'GET') {
-            console.log('ok3');
             logger(
                 'Not rewriting',
                 req.method,
@@ -21,7 +17,6 @@ exports = module.exports = function historyApiFallback(options) {
             );
             return next();
         } else if (!headers || typeof headers.accept !== 'string') {
-            console.log('ok4');
             logger(
                 'Not rewriting',
                 req.method,
@@ -30,7 +25,6 @@ exports = module.exports = function historyApiFallback(options) {
             );
             return next();
         } else if (headers.accept.indexOf('application/json') === 0) {
-            console.log('ok5');
             logger(
                 'Not rewriting',
                 req.method,
@@ -39,7 +33,6 @@ exports = module.exports = function historyApiFallback(options) {
             );
             return next();
         } else if (!acceptsHtml(headers.accept, options)) {
-            console.log('ok6');
             logger(
                 'Not rewriting',
                 req.method,
@@ -54,10 +47,8 @@ exports = module.exports = function historyApiFallback(options) {
         var rewriteTarget;
         options.rewrites = options.rewrites || [];
 
-        console.log('ok7');
         if (pathname.lastIndexOf('.') > pathname.lastIndexOf('/') &&
             options.disableDotRule !== true) {
-            console.log('ok8');
             logger(
                 'Not rewriting',
                 req.method,
@@ -68,11 +59,9 @@ exports = module.exports = function historyApiFallback(options) {
         }
 
         for (var i = 0; i < options.rewrites.length; i++) {
-            console.log('ok9' + ' ' + i);
             var rewrite = options.rewrites[i];
             var match = parsedUrl.pathname.match(rewrite.from);
             if (match !== null) {
-                console.log('ok10' + ' ' + i);
                 rewriteTarget = evaluateRewriteRule(parsedUrl, match, rewrite.to, req);
 
                 if(rewriteTarget.charAt(0) !== '/') {
@@ -91,14 +80,13 @@ exports = module.exports = function historyApiFallback(options) {
             }
         }
 
-        console.log('ok11');
         if (options.rewrites.length <= 0) {
-            console.log('ok12');
             rewriteTarget = options.index || '/index.html';
             logger('Rewriting', req.method, req.url, 'to', rewriteTarget);
             req.url = rewriteTarget;
             return next();
         }
+        return next();
     };
 };
 
