@@ -1,12 +1,11 @@
 <template>
-    <div>
+    <div v-if="algoliaResponse && algoliaResponse.disjunctiveFacets">
         <div class="flex p-8 border-b border-proton-grey bg-proton-grey-opacity-40 text-telluric-blue text-xs uppercase tracking-wide">
             <div>
                 Facets
             </div>
         </div>
         <div
-            v-if="algoliaResponse && algoliaResponse.disjunctiveFacets"
             class="px-8 py-12"
         >
             <facet
