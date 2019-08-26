@@ -1,6 +1,6 @@
 <template>
-    <div class="mb-32">
-        <div class="mb-12 text-sm uppercase tracking-wide text-solstice-blue">
+    <div class="mb-32" v-if="facetValues">
+        <div class="mb-12 text-solstice-blue break-all">
             {{facetName}}
         </div>
         <div v-if="isSearchable">
@@ -64,6 +64,7 @@
                 if (this.searchQuery.length > 0) {
                     return this.searchedRefinements;
                 }
+
                 return Object.keys(this.facetValues).map((key) => {
                     const isActive = this.facetFilters.some((r) => {
                         return r === `${this.facetName}:${key}`;
@@ -102,8 +103,12 @@
         },
         methods: {
             refine: async function ($event) {
-                if (!this.isSearchable) return;
                 if ($event) this.searchQuery = $event.target.value;
+                if (this.searchQuery.length <= 0) {
+                    this.searchedRefinements = [];
+                    return;
+                }
+                if (!this.isSearchable) return;
 
                 const index = await getSearchIndex(this.appId, this.$store.state.apps[this.appId].key, this.indexName);
 

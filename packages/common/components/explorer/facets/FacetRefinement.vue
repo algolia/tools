@@ -23,6 +23,9 @@
         methods: {
             toggleRefinement: function (refinement) {
                 const newFacetFilters = this.facetFilters.filter((r) => {
+                    if (Array.isArray(r)) {
+                        return r.filter((r2) => !r2.startsWith(`${this.facetName}:`));
+                    }
                     return !r.startsWith(`${this.facetName}:`); // Todo handle arrays
                 });
                 if (!this.refinement.isActive) {
