@@ -5,23 +5,25 @@ const client = algoliasearch('A', 'B');
 const index = client.initIndex('AB');
 const indexPrototype = Object.getPrototypeOf(index);
 
+const getNewParams = function (params) {
+    const newQuery = {...params};
+    if (params['optionalWords=query'] && params.query) {
+        newQuery.optionalWords = params.query;
+    }
+    delete(newQuery['optionalWords=query']);
+
+    return newQuery;
+};
+
 indexPrototype.customSearch = function (query, args, callback) {
     let newQuery = query;
     let newArgs = args;
 
     if (query && typeof query === 'object' && query.constructor === Object && query['optionalWords=query'] !== undefined) {
-        newQuery = {...query};
-        if (query['optionalWords=query'] && query.query) {
-            newQuery.optionalWords = query.query;
-        }
-        delete(newQuery['optionalWords=query']);
+        newQuery = getNewParams(query);
     }
     if (args && typeof args === 'object' && args.constructor === Object && args['optionalWords=query'] !== undefined) {
-        newArgs = {...newArgs};
-        if (newArgs['optionalWords=query'] && query) {
-            newQuery.optionalWords = query;
-        }
-        delete(newArgs['optionalWords=query']);
+        newArgs = getNewParams({...args, query});
     }
     return this.search(newQuery, newArgs, callback);
 };
@@ -30,19 +32,12 @@ indexPrototype.customBrowse = function (query, args, callback) {
     let newQuery = query;
     let newArgs = args;
     if (query && typeof query === 'object' && query.constructor === Object && query['optionalWords=query'] !== undefined) {
-        newQuery = {...query};
-        if (query['optionalWords=query'] && query.query) {
-            newQuery.optionalWords = query.query;
-        }
-        delete(newQuery['optionalWords=query']);
+        newQuery = getNewParams(query);
     }
     if (args && typeof args === 'object' && args.constructor === Object && args['optionalWords=query'] !== undefined) {
-        newArgs = {...newArgs};
-        if (newArgs['optionalWords=query'] && query) {
-            newQuery.optionalWords = query;
-        }
-        delete(newArgs['optionalWords=query']);
+        newArgs = getNewParams({...args, query});
     }
+
     return this.browse(newQuery, newArgs, callback);
 };
 
