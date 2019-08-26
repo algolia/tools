@@ -7,7 +7,12 @@
             v-html="refinement.highlighted"
         >
         </div>
-        <div class="ml-auto" v-if="refinement.count !== undefined">{{refinement.count}}</div>
+        <div
+            class="ml-auto text-nova-grey"
+            v-if="refinement.count !== undefined"
+        >
+            {{refinement.count}}
+        </div>
     </div>
 </template>
 
