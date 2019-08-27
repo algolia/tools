@@ -18,33 +18,33 @@
                 v-if="!confirmEdit && !confirmDelete"
                 class="flex"
             >
-                <div @click="group.run()">
+                <div @click.stop="group.run()">
                     Run
                 </div>
-                <div @click="confirmEdit = true">
+                <div @click.stop="confirmEdit = true">
                     <edit-icon class="w-12 h-12 block ml-8 cursor-pointer text-solstice-blue" />
                 </div>
-                <div @click="confirmDelete = true">
+                <div @click.stop="confirmDelete = true">
                     <trash-icon class="w-12 h-12 block ml-8 cursor-pointer text-solstice-blue" />
                 </div>
             </div>
             <div class="flex" v-if="confirmEdit || confirmDelete">
                 <button
                     v-if="confirmEdit"
-                    @click="updateGroup"
+                    @click.stop="updateGroup"
                     class="ml-auto block bg-white rounded border border-saturn-2 text-saturn-1 shadow-sm hover:shadow transition-fast-out px-16 p-8 text-sm relative group"
                 >
                     {{ 'Save' }}
                 </button>
                 <button
                     v-if="confirmDelete"
-                    @click="deleteGroup"
+                    @click.stop="deleteGroup"
                     class="rounded bg-mars-1 shadow-sm hover:shadow transition-fast-out text-white p-8"
                 >
                     Delete
                 </button>
                 <button
-                    @click="confirmDelete = false; confirmEdit = false"
+                    @click.stop="confirmDelete = false; confirmEdit = false"
                     class="ml-8 block bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out px-16 p-8 text-sm relative group">
                     Cancel
                 </button>

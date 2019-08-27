@@ -1,6 +1,6 @@
 <template>
     <div v-if="suite">
-        <div class="flex p-16">
+        <div class="flex">
             <h2>
                 <router-link to="/suites">
                     Suites
@@ -9,17 +9,20 @@
                 {{suite.name}}
             </h2>
         </div>
-        <div class="flex p-16">
+        <div class="flex">
             <div :class="{'w-30p': currentTest}">
                 <table class="w-full">
                     <tr>
                         <td></td>
-                        <td v-for="(run, i) in runs" class="bg-proton-grey-opacity-80">
-                            <edit-run :suite="suite" :run="run" :run-position="i" />
-                        </td>
+                        <template v-for="(run, i) in runs">
+                            <td class="w-2 bg-moon-grey"></td>
+                            <td class="bg-proton-grey-opacity-80">
+                                <edit-run :suite="suite" :run="run" :run-position="i" />
+                            </td>
+                        </template>
                         <td class="h-1" v-if="currentTest === null">
                             <div
-                                class="ml-16 px-40 border border-dashed border-proton-grey flex items-center justify-center h-full cursor-pointer"
+                                class="ml-8 px-40 border border-dashed border-proton-grey flex items-center justify-center h-full cursor-pointer"
                                 @click="addRun"
                             >
                                 <div>
@@ -151,7 +154,7 @@
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
-                        name: `Group ${this.suite.groups.length + 1}`,
+                        name: `Group of tests ${this.suite.groups.length + 1}`,
                     }),
                 });
 
