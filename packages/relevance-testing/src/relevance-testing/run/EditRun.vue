@@ -1,10 +1,10 @@
 <template>
     <div class="p-8">
-        <div class="text-telluric-blue text-xs flex items-center">
+        <div class="text-telluric-blue text-sm flex items-center">
             <div>
                 <app-selector v-model="run.app_id" />
                 <index-selector v-model="run.index_name" :app-id="run.app_id" />
-                <div class="flex">
+                <div class="flex mt-12">
                     <div>Page size:</div>
                     <input v-model="run.hits_per_page" type="number" min="1" max="1000" class="input-custom ml-8" />
                 </div>
@@ -20,10 +20,6 @@
                     :mutate="true"
                     panel-key="leftPanel"
                 />
-                <div v-if="suite.reports[runPosition]" class="flex mt-24">
-                    <!--<badge class="mr-16" :passing="suite.reports[i].passing" />-->
-                    <div>{{suite.reports[runPosition].nbPassing}} / {{suite.reports[runPosition].nbTests}}</div>
-                </div>
                 <div @click="suite.runRun(run, runPosition)">Run</div>
                 <div class="mt-8">
                     <trash-icon

@@ -1,89 +1,49 @@
 <template>
-    <div v-if="testData">
-        <div>
-            <div class="text-telluric-blue text-xs uppercase tracking-wide flex items-center border-b border-proton-grey bg-white p-8 bg-proton-grey-opacity-40">
-                When query is
+    <div v-if="testData" class="p-8">
+        <div v-for="(testCase, testCasePos) in testData.then" class="mb-32">
+            <div class="text-telluric-blue text-xs uppercase tracking-wide bg-white p-8">
+                <div class="flex">
+                    <div class="text-xs text-cosmos-black-opacity-70 uppercase tracking-wide">
+                        Test {{testCasePos + 1}}/{{testData.then.length}}
+                    </div>
+                    <badge v-if="test.reports[currentRunIndex]" :passing="test.reports[currentRunIndex].then[testCasePos].passing" class="ml-8 -mt-2" />
+                    <trash-icon
+                        class="ml-auto text-nova-grey-opacity-60 hover:text-telluric-blue w-12 h-12 cursor-pointer"
+                        @click="deleteTest(testData.then, testCasePos)"
+                    />
+                </div>
             </div>
-            <div class="px-8 pb-16 py-12">
-                <div class="flex items-center px-12 bg-white rounded border border-proton-grey-opacity-60">
-                    <search-icon class="block w-12 h-12 mr-12 text-telluric-blue-opacity-60 fill-current"/>
-                    <input
-                        class="flex-1 block h-full py-8 bg-transparent text-black leading-normal"
-                        placeholder="Search for anything"
-                        v-model="query"
+            <div class="flex mt-12">
+                <div class="flex flex-wrap mx-auto bg-moon-grey-opacity-50 border border-proton-grey-opacity-20 p-8 rounded">
+                    <custom-select
+                        v-model="testCase.test"
+                        :options="Object.keys(testOptions)"
+                        class="mr-16 w-104 text-solstice-blue text-sm border-b border-telluric-blue-opacity-60 pb-4"
                     >
+                        <template v-slot:default="{option}">{{testOptions[option]}}</template>
+                    </custom-select>
+                    <sign-select v-model="testCase.operator" class="mr-16" />
+                    <number-select v-model.number="testCase.value" :min="0" :max="8" class="mr-8" />
+                    <div class="flex items-center text-solstice-blue" v-if="testCase.test === 'contains'">
+                        <div>results</div>
+                    </div>
                 </div>
-                <div class="mt-32 mb-16 pb-4 text-xs text-cosmos-black-opacity-70 uppercase tracking-wide border-b border-proton-grey-opacity-20">
-                    with params
-                </div>
-                <params
-                    id="when"
-                    config-key="searchParams"
-                    :params="when"
-                    :ref-params="when"
-                    :raw-params="when"
-                    :keys="Object.keys(when)"
-                    :keys-indexer="null"
-                    :mutate="true"
+            </div>
+            <div v-if="testCase.test === 'contains' && testCase.recordsMatching !== undefined">
+                <requirements
+                    :requirements="testCase.recordsMatching"
+                    :run-index="currentRunIndex"
+                    :reports="test.reports[currentRunIndex] ? test.reports[currentRunIndex].then[testCasePos].recordsMatching : null"
                 />
             </div>
         </div>
         <div>
-            <div class="text-telluric-blue text-xs uppercase tracking-wide flex items-center border-t border-b border-proton-grey bg-white p-8 bg-proton-grey-opacity-40">
-                Then
-            </div>
-            <div class="px-8 py-12">
-                <div class="mb-24 flex items-center px-12 bg-white rounded border border-proton-grey-opacity-60">
-                    <input
-                        class="flex-1 block h-full py-8 bg-transparent text-black leading-normal"
-                        placeholder="Describe what needs to be tested"
-                        v-model="testData.description"
-                    >
-                </div>
-                <div v-for="(testCase, testCasePos) in testData.then" class="mb-32">
-                    <div class="flex my-8 pb-4 border-b border-proton-grey-opacity-20">
-                        <div class="text-xs text-cosmos-black-opacity-70 uppercase tracking-wide">
-                            Test {{testCasePos + 1}}/{{testData.then.length}}
-                        </div>
-                        <badge v-if="test.reports[currentRunIndex]" :passing="test.reports[currentRunIndex].then[testCasePos].passing" class="ml-8 -mt-2" />
-                        <trash-icon
-                            class="ml-auto text-nova-grey-opacity-60 hover:text-telluric-blue w-12 h-12 cursor-pointer"
-                            @click="deleteTest(testData.then, testCasePos)"
-                        />
-                    </div>
-                    <div class="flex">
-                        <div class="flex flex-wrap mx-auto bg-moon-grey-opacity-50 border border-proton-grey-opacity-20 p-8 rounded">
-                            <custom-select
-                                v-model="testCase.test"
-                                :options="Object.keys(testOptions)"
-                                class="mr-16 w-104 text-solstice-blue text-sm border-b border-telluric-blue-opacity-60 pb-4"
-                            >
-                                <template v-slot:default="{option}">{{testOptions[option]}}</template>
-                            </custom-select>
-                            <sign-select v-model="testCase.operator" class="mr-16" />
-                            <number-select v-model.number="testCase.value" :min="0" :max="8" class="mr-8" />
-                            <div class="flex items-center text-solstice-blue" v-if="testCase.test === 'contains'">
-                                <div>results</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div v-if="testCase.test === 'contains' && testCase.recordsMatching !== undefined">
-                        <requirements
-                            :requirements="testCase.recordsMatching"
-                            :run-index="currentRunIndex"
-                            :reports="test.reports[currentRunIndex] ? test.reports[currentRunIndex].then[testCasePos].recordsMatching : null"
-                        />
-                    </div>
-                </div>
-                <div>
-                    <button
-                        class="bg-white border border-b-0 border-proton-grey-opacity-40 rounded shadow-sm hover:shadow transition-fast-out px-16 p-8 text-sm"
-                        @click="addTest()"
-                    >
-                        Add Test
-                    </button>
-                </div>
-            </div>
+            <button
+                class="bg-white border border-b-0 border-proton-grey-opacity-40 rounded shadow-sm hover:shadow transition-fast-out px-16 p-8 text-sm"
+                @click="addTest()"
+            >
+                Add Test
+            </button>
         </div>
     </div>
 </template>

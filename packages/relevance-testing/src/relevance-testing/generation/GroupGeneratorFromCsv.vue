@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="p-12">
         <div class="flex">
             <div>
                 <div>
@@ -12,7 +12,9 @@
                 <div>
                     Ignore first line: <input type="checkbox" v-model="ignoreFirstLine">
                 </div>
-                <textarea v-model="rawCsv"></textarea>
+                <textarea v-model="rawCsv" class="mt-12 p-8 input-custom" placeholder="Paste your CSV content">
+
+                </textarea>
             </div>
             <div>
                 <table>
@@ -190,6 +192,7 @@
                 }
 
                 this.rawCsv = '';
+                this.$root.$emit('onClosePanel');
             }
         }
     }

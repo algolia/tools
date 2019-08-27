@@ -46,7 +46,6 @@ export class TestSuite {
             return group.runRun(runData, i);
         });
         await Promise.all(promises);
-
         this.updateReport(i);
     }
 }
@@ -69,8 +68,10 @@ export class GroupTest {
         let nbTests = 0;
         let nbPassing = 0;
         this.tests.forEach((test) => {
-            nbTests += test.reports[i].nbTests;
-            nbPassing += test.reports[i].nbPassing;
+            if (test.reports[i]) {
+                nbTests += test.reports[i].nbTests;
+                nbPassing += test.reports[i].nbPassing;
+            }
         });
         const passing = nbPassing === nbTests;
         Vue.set(this.reports, i, {passing, nbPassing, nbTests});
@@ -87,7 +88,6 @@ export class GroupTest {
             return test.run();
         });
         await Promise.all(promises);
-
         this.runs.forEach((run, i) => this.updateReport(i));
     }
 
@@ -97,7 +97,6 @@ export class GroupTest {
         const promises = this.tests.map((test) => {
             return test.runRun(runData, i);
         });
-
         await Promise.all(promises);
         this.updateReport(i);
     }
@@ -190,8 +189,6 @@ export class Test {
         if (updateGroup) {
             this.runs.forEach((run, runIndex) => this.group.updateReport(runIndex, true));
         }
-
-
     }
 
     async runRun(runData, runIndex) {

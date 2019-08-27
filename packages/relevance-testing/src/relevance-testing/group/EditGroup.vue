@@ -21,6 +21,9 @@
                 <div @click.stop="group.run()">
                     Run
                 </div>
+                <div @click.stop="addTest">
+                    <plus-icon class="w-12 h-12 block ml-8 cursor-pointer text-solstice-blue" />
+                </div>
                 <div @click.stop="confirmEdit = true">
                     <edit-icon class="w-12 h-12 block ml-8 cursor-pointer text-solstice-blue" />
                 </div>
@@ -56,11 +59,13 @@
 <script>
     import TrashIcon from 'common/icons/trash.svg';
     import EditIcon from 'common/icons/edit.svg';
+    import PlusIcon from 'common/icons/plus-circle.svg';
+    import {Test} from "@/test-engine/engine";
 
     export default {
         name: 'EditGroup',
         props: ['group', 'groupPos', 'suite'],
-        components: {TrashIcon, EditIcon},
+        components: {TrashIcon, EditIcon, PlusIcon},
         data: function () {
             return {
                 name: this.group.name,
@@ -95,6 +100,41 @@
                 });
 
                 this.$delete(this.suite.groups, this.groupPos);
+            },
+            addTest: async function () {
+                const res = await fetch(`${process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT}/relevance-testing/suites/${this.suite.id}/groups/${this.group.id}/tests`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        test_data: JSON.stringify({
+                            name: `test ${this.group.tests.length + 1}`,
+                            when: {query: ""},
+                            then: [
+                                {
+                                    test: "contains",
+                                    operator: ">=",
+                                    value: 1,
+                                    recordsMatching: [
+                                        {
+                                            "type": "attribute",
+                                            "key": "objectID",
+                                            "operator": "=",
+                                            "value": ""
+                                        }
+                                    ]
+                                }
+                            ]
+                        }),
+                    }),
+                });
+
+                const testData = await res.json();
+                const test = new Test(testData, this.suite.runs, this.group);
+                this.group.tests.push(test);
+                test.run();
             },
         }
     }

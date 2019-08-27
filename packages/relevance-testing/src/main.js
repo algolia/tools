@@ -30,6 +30,7 @@ const router = new VueRouter({
         { path: '/', redirect: '/suites' },
         { path: '/suites', component: Suites },
         { path: '/suites/:suiteId', component: Suite, props: true },
+        { path: '/suites/:suiteId/tests/:testId', component: Suite, props: true },
     ],
 });
 

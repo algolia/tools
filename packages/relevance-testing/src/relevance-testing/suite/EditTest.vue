@@ -1,25 +1,71 @@
 <template>
     <div class="flex p-8 items-center group">
         <div
-            class="mr-auto hover:text-nebula-blue hover:underline cursor-pointer text-sm"
+            class="flex-grow cursor-pointer text-sm"
             @click="$emit('onSelected')"
         >
-            <div class="flex items-center">
-                <div class="px-4 py-2 rounded leading-none bg-proton-grey-opacity-40">
-                    {{ test.testData.when.query ? test.testData.when.query : '&lt;empty&gt;'}}
+            <div>
+                <div v-if="!isActive">
+                    <div class="flex items-center flex-wrap">
+                        <div class="px-4 py-2 rounded leading-none bg-proton-grey-opacity-40 mr-4 mb-4">
+                            {{ query ? query : '&lt;empty&gt;' }}
+                        </div>
+                        <div v-if="Object.keys(when).length > 1" class="mb-4 px-4 py-2 rounded leading-none bg-proton-grey-opacity-40">
+                            <div v-for="(value, key) in params">
+                                {{JSON.stringify(key)}}: {{JSON.stringify(value)}}
+                            </div>
+                        </div>
+                    </div>
+                    <div v-if="description" class="text-nova-grey ml-4">
+                        {{description}}
+                    </div>
                 </div>
-                <div v-if="Object.keys(test.testData.when).length > 1" class="ml-4">
-                    +{{Object.keys(test.testData.when).length - 1}} params
+                <div v-else>
+                    <table class="w-full">
+                        <tr>
+                            <td class="w-112 align-top">
+                                Query to test:
+                            </td>
+                            <td class="pl-12">
+                                <input
+                                    class="w-full block py-2 bg-white text-black leading-normal input-custom"
+                                    placeholder="query to test"
+                                    v-model="query"
+                                >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="w-112 pt-12 align-top">Test description:</td>
+                            <td class="pt-12 pl-12">
+                                <textarea
+                                    v-model="description"
+                                    class="py-8 px-8 w-full rounded input-custom"
+                                ></textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="w-112 pt-12 align-top">With search params:</td>
+                            <td class="pt-12 pl-12">
+                                <params
+                                    id="when"
+                                    config-key="searchParams"
+                                    :params="when"
+                                    :ref-params="when"
+                                    :raw-params="when"
+                                    :keys="Object.keys(when)"
+                                    :keys-indexer="null"
+                                    :mutate="true"
+                                />
+                            </td>
+                        </tr>
+                    </table>
                 </div>
-            </div>
-            <div v-if="test.testData.description" class="text-nova-grey mt-4 ml-4">
-                {{test.testData.description}}
             </div>
         </div>
         <div class="ml-16">
             <trash-icon
                 v-if="!confirmDelete"
-                class="w-12 h-12 block ml-8 cursor-pointer text-solstice-blue hidden group-hover:block"
+                class="w-12 h-12 block ml-8 cursor-pointer text-solstice-blue invisible group-hover:visible"
                 @click="confirmDelete = true"
             />
             <div v-if="confirmDelete" class="flex">
@@ -41,17 +87,82 @@
 
 <script>
     import TrashIcon from 'common/icons/trash.svg';
+    import Params from 'common/components/params/Params';
+    import {algoliaParams} from "common/utils/algoliaHelpers";
 
     export default {
         name: 'EditTest',
-        props: ['suite', 'test', 'testPos'],
-        components: {TrashIcon},
+        props: ['suite', 'test', 'testPos', 'isActive'],
+        components: {TrashIcon, Params},
         data: function () {
             return {
                 confirmDelete: false,
+                when: null,
+                query: null,
+            }
+        },
+        created: function () {
+            this.loadTest()
+        },
+        watch: {
+            test: function () {
+                this.loadTest();
+            },
+            query: function () { this.saveTest(); },
+            when: {
+                deep: true,
+                handler: function () { this.saveTest(); }
+            },
+        },
+        computed: {
+            params: function () {
+                return algoliaParams(this.when);
+            },
+            description: {
+                get () {
+                    return this.test.testData.description;
+                },
+                set (value) {
+                    this.test.testData.description = value;
+                    this.saveTest();
+                }
             }
         },
         methods: {
+            loadTest: function () {
+                const searchParams = {};
+                Object.keys(this.test.testData.when).forEach((key) => {
+                    if (key === 'query') {
+                        this.query = this.test.testData.when[key];
+                    }
+                    else {
+                        searchParams[key] = {value: this.test.testData.when[key], enabled: true};
+                    }
+                });
+                this.when = searchParams;
+            },
+            saveTest: async function () {
+                this.test.updateTestData({
+                    ...this.test.testData,
+                    when: {
+                        ...algoliaParams(this.when),
+                        query: this.query,
+                    },
+                });
+
+                await fetch(`${process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT}/relevance-testing/suites/${this.suite.id}/groups/${this.test.group.id}/tests/${this.test.id}`, {
+                    method: 'PUT',
+                    credentials: 'include',
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        test_data: JSON.stringify(this.test.testData),
+                    }),
+                });
+
+                this.test.run(true)
+            },
             deleteTest: async function (test, testPos) {
                 await fetch(`${process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT}/relevance-testing/suites/${this.suite.id}/groups/${test.group.id}/tests/${test.id}`, {
                     method: 'DELETE',
