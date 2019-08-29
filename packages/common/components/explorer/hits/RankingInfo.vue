@@ -55,7 +55,7 @@
                 return this.indexSettings.searchableAttributes || this.indexSettings.attributesToIndex || paramsSpecs.searchableAttributes.default;
             },
             isTypoStrict: function () {
-                if (this.searchParams && this.searchParams.typoTolerance) return this.searchParams.typoTolerance === 'strict';
+                if (this.searchParams && this.searchParams.typoTolerance !== undefined) return this.searchParams.typoTolerance === 'strict';
                 return this.indexSettings.typoTolerance === 'strict';
             },
             criteria: function () {

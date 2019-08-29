@@ -7,7 +7,7 @@ export default function (indexSettings) {
     this.customRanking = indexSettings.customRanking ? indexSettings.customRanking : paramsSpecs.customRanking.default;
 
     this.isTypoStrict = function (searchParams) {
-        if (searchParams && searchParams.typoTolerance) return searchParams.typoTolerance === 'strict';
+        if (searchParams && searchParams.typoTolerance !== undefined) return searchParams.typoTolerance === 'strict';
         return this.indexSettings.typoTolerance === 'strict';
     };
 
