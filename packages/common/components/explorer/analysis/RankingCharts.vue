@@ -40,7 +40,7 @@
     export default {
         name: 'RankingCharts',
         components: {LineChart},
-        props: ['analyseResponse', 'indexSettings', 'analyseMaxNbPoints'],
+        props: ['analyseResponse', 'indexSettings', 'searchParams', 'analyseMaxNbPoints'],
         data: function () {
             return {
                 criteriaStatus: {},
@@ -74,7 +74,7 @@
                 return new RankingInfoAnalyser(this.indexSettings);
             },
             criteria: function () {
-                return this.rankingInfoAnalyzer.getActualCriteria();
+                return this.rankingInfoAnalyzer.getActualCriteria(this.searchParams);
             },
             searchableAttributes: function () {
                 return this.indexSettings.searchableAttributes || this.indexSettings.attributesToIndex || [];

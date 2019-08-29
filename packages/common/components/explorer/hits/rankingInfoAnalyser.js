@@ -6,10 +6,23 @@ export default function (indexSettings) {
     this.ranking = indexSettings.ranking ? indexSettings.ranking : paramsSpecs.ranking.settings_default;
     this.customRanking = indexSettings.customRanking ? indexSettings.customRanking : paramsSpecs.customRanking.default;
 
-    this.getActualCriteria = function () {
+    this.isTypoStrict = function (searchParams) {
+        if (searchParams && searchParams.typoTolerance) return searchParams.typoTolerance === 'strict';
+        return this.indexSettings.typoTolerance === 'strict';
+    };
+
+    this.getActualCriteria = function (searchParams) {
         const actualCriteria = [];
 
-        this.ranking.forEach((item) => {
+        const ranking = [...this.ranking];
+
+        if (this.isTypoStrict(searchParams)) {
+            ranking.sort((a, b) => {
+                return (a === 'typo' ? -1 : 1);
+            });
+        }
+
+        ranking.forEach((item) => {
             if (item === 'custom') {
                 actualCriteria.push('perso');
                 this.customRanking.forEach(function (attribute) {

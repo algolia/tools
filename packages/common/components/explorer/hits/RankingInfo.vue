@@ -28,6 +28,12 @@
                     >
                         <span class="text-sm">was</span> {{criterion.oldVal}}
                     </div>
+                    <div
+                        v-if="criterion.extraInfo"
+                        class="truncate hover:overflow-visible ml-4 text-nova-grey-opacity-80"
+                    >
+                        {{criterion.extraInfo}}
+                    </div>
                 </div>
             </div>
         </div>
@@ -40,7 +46,7 @@
 
     export default {
         name: 'RankingInfo',
-        props: ['item', 'previousItem', 'i', 'indexSettings'],
+        props: ['item', 'previousItem', 'i', 'indexSettings', 'searchParams'],
         computed: {
             rankingInfoAnalyzer: function () {
                 return new RankingInfoAnalyser(this.indexSettings);
@@ -48,15 +54,23 @@
             searchableAttributes: function () {
                 return this.indexSettings.searchableAttributes || this.indexSettings.attributesToIndex || paramsSpecs.searchableAttributes.default;
             },
+            isTypoStrict: function () {
+                if (this.searchParams && this.searchParams.typoTolerance) return this.searchParams.typoTolerance === 'strict';
+                return this.indexSettings.typoTolerance === 'strict';
+            },
             criteria: function () {
                 const criterias = [];
 
-                this.rankingInfoAnalyzer.getActualCriteria().forEach((criterionName) => {
+                this.rankingInfoAnalyzer.getActualCriteria(this.searchParams).forEach((criterionName) => {
                     const criterion = {
                         label: criterionName,
                         val: this.rankingInfoAnalyzer.getCriterionValue(this.item, criterionName),
                         oldVal: this.rankingInfoAnalyzer.getCriterionValue(this.previousItem, criterionName)
                     };
+
+                    if (this.isTypoStrict && criterionName === 'typo') {
+                        criterion.extraInfo = '// typo first because typoTolerance=strict';
+                    }
 
                     if (criterionName === 'geo') {
                         if (criterion.val !== null) criterion.val = `${criterion.val} meters`;

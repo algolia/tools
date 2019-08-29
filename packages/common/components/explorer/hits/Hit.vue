@@ -52,6 +52,7 @@
                     :previous-item="previousHit"
                     :i="hitPosition"
                     :index-settings="indexSettings"
+                    :search-params="searchParams"
                 />
                 <div class="clearfix"></div>
                 <div v-if="listMode" class="flex justify-end items-center text-nova-grey-opacity-80">
