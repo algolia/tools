@@ -54,9 +54,11 @@
             searchableAttributes: function () {
                 return this.indexSettings.searchableAttributes || this.indexSettings.attributesToIndex || paramsSpecs.searchableAttributes.default;
             },
-            isTypoStrict: function () {
-                if (this.searchParams && this.searchParams.typoTolerance !== undefined) return this.searchParams.typoTolerance === 'strict';
-                return this.indexSettings.typoTolerance === 'strict';
+            isTypoStrictOrMin: function () {
+                if (this.searchParams && this.searchParams.typoTolerance !== undefined) {
+                    return ['strict', 'min'].indexOf(this.searchParams.typoTolerance) !== -1;
+                }
+                return ['strict', 'min'].indexOf(this.indexSettings.typoTolerance) !== -1;
             },
             criteria: function () {
                 const criterias = [];
@@ -68,8 +70,8 @@
                         oldVal: this.rankingInfoAnalyzer.getCriterionValue(this.previousItem, criterionName)
                     };
 
-                    if (this.isTypoStrict && criterionName === 'typo') {
-                        criterion.extraInfo = '// typo first because typoTolerance=strict';
+                    if (this.isTypoStrictOrMin && criterionName === 'typo') {
+                        criterion.extraInfo = `// typo first because typoTolerance=${this.searchParams.typoTolerance}`;
                     }
 
                     if (criterionName === 'geo') {

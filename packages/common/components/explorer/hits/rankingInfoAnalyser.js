@@ -6,9 +6,11 @@ export default function (indexSettings) {
     this.ranking = indexSettings.ranking ? indexSettings.ranking : paramsSpecs.ranking.settings_default;
     this.customRanking = indexSettings.customRanking ? indexSettings.customRanking : paramsSpecs.customRanking.default;
 
-    this.isTypoStrict = function (searchParams) {
-        if (searchParams && searchParams.typoTolerance !== undefined) return searchParams.typoTolerance === 'strict';
-        return this.indexSettings.typoTolerance === 'strict';
+    this.isTypoStrictOrMin = function (searchParams) {
+        if (searchParams && searchParams.typoTolerance !== undefined) {
+            return ['strict', 'min'].indexOf(searchParams.typoTolerance) !== -1;
+        }
+        return ['strict', 'min'].indexOf(this.indexSettings.typoTolerance) !== -1;
     };
 
     this.getActualCriteria = function (searchParams) {
@@ -16,7 +18,7 @@ export default function (indexSettings) {
 
         const ranking = [...this.ranking];
 
-        if (this.isTypoStrict(searchParams)) {
+        if (this.isTypoStrictOrMin(searchParams)) {
             ranking.sort((a, b) => {
                 return (a === 'typo' ? -1 : 1);
             });
