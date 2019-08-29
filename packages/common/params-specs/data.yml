@@ -1030,3 +1030,12 @@ enableABTest:
     - true
     - false
   default: true
+
+indexLanguages:
+    scope:
+      - settings
+    value_type: string_list
+    values:
+      - ja
+    default:
+      - ja
