@@ -24,15 +24,18 @@ indexPrototype.buildFacetFilters = function (facetFilters, needle) {
     }).filter((facetFilter) => facetFilter.length > 0);
 };
 
-indexPrototype.getDisjunctiveRequests = function (disjunctiveFacets, paramsWithoutDisjunctiveFacets) {
+indexPrototype.getDisjunctiveRequests = function (disjunctiveFacets, refinedFacets, paramsWithoutDisjunctiveFacets) {
     const requests = [];
 
     requests.push({
         indexName: this.indexName,
-        params: this.as._getSearchParams(paramsWithoutDisjunctiveFacets, ''),
+        params: this.as._getSearchParams({
+            ...paramsWithoutDisjunctiveFacets,
+            facets: disjunctiveFacets,
+        }, ''),
     });
 
-    disjunctiveFacets.forEach((facetName) => {
+    refinedFacets.forEach((facetName) => {
         const facetFilters = this.buildFacetFilters(paramsWithoutDisjunctiveFacets.facetFilters || [], `${facetName}:`);
 
         const forcedParams = {
@@ -58,7 +61,18 @@ indexPrototype.getDisjunctiveRequests = function (disjunctiveFacets, paramsWitho
 
 indexPrototype.disjunctiveSearch = function (params, callback) {
     const {disjunctiveFacets, ...paramsWithoutDisjunctiveFacets} = params;
-    const requests = this.getDisjunctiveRequests(disjunctiveFacets, paramsWithoutDisjunctiveFacets);
+
+    const facetFilters = paramsWithoutDisjunctiveFacets.facetFilters || [];
+    const refinedFacets = disjunctiveFacets.filter((facetName) => {
+        return facetFilters.some((facetFilter) => {
+            const refinements = Array.isArray(facetFilter) ? facetFilter : [facetFilter];
+            return refinements.some((refinement) => {
+                return refinement.startsWith(`${facetName}:`);
+            });
+        });
+    });
+
+    const requests = this.getDisjunctiveRequests(disjunctiveFacets, refinedFacets, paramsWithoutDisjunctiveFacets);
 
     return new Promise((resolve, reject) => {
         this.as._jsonRequest({
@@ -71,9 +85,9 @@ indexPrototype.disjunctiveSearch = function (params, callback) {
             hostType: 'read',
             callback: (err, res) => {
                 const newRes = res.results[0];
-                newRes.disjunctiveFacets = {};
+                newRes.disjunctiveFacets = JSON.parse(JSON.stringify(newRes.facets));
 
-                disjunctiveFacets.forEach((facetName, i) => {
+                refinedFacets.forEach((facetName, i) => {
                     newRes.disjunctiveFacets[facetName] = res.results[i + 1].facets[facetName];
                 });
 
