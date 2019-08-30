@@ -2,7 +2,7 @@
     <algolia-autocomplete
         ref="algoliaautocomplete"
         @onSelected="onSelected"
-        @onBlur="removeEmptyElementInArray(); inputState.setInput('none')"
+        @onBlur="onBlur"
         :app-id="algoliaAppID"
         :api-key="algoliaApiKey"
         index-name="metaparams"
@@ -25,12 +25,18 @@
         components: {AlgoliaAutocomplete},
         mixins: [inputMixin],
         methods: {
+            onBlur: function () {
+                if (this.customOnBlur) return this.customOnBlur();
+                this.removeEmptyElementInArray();
+                this.inputState.setInput('none');
+            },
             onSelected(value, e) {
                 if (value.name !== undefined) {
                     this.value = value.name;
                 } else {
                     this.value = value;
                 }
+                if (this.preventNextInput) return;
                 this.nextInput(e);
             }
         }

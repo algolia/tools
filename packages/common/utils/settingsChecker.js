@@ -48,9 +48,9 @@ const params = {
     attributesToHighlight: [
         ['warning', 'nonExistingAttribute'],
     ],
-    decompoundedAttributes: [
+    /*decompoundedAttributes: [
         ['warning', 'attributeNotInParam', 'searchableAttributes'],
-    ],
+    ],*/
     disableTypoToleranceOnAttributes: [
         ['warning', 'attributeNotInParam', 'searchableAttributes'],
     ]

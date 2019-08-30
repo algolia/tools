@@ -1032,10 +1032,23 @@ enableABTest:
   default: true
 
 indexLanguages:
-    scope:
-      - settings
-    value_type: string_list
-    values:
-      - ja
-    default:
-      - ja
+  scope:
+    - settings
+  value_type: string_list
+  values:
+    - ja
+  default:
+    - ja
+
+decompoundedAttributes:
+  scope:
+    - settings
+  value_type: object
+  object_type: decompounded_attributes
+  values:
+      - nl
+      - de
+      - fi
+  value:
+    value_type: attributes_list
+  default: {}

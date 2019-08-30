@@ -6,7 +6,7 @@
         :value="value"
         :display-empty-query="true"
         @onSelected="onSelected"
-        @onBlur="removeEmptyElementInArray(); inputState.setInput('none')"
+        @onBlur="onBlur"
     >
         <template slot="item" slot-scope="{ index, item }">
             <div v-html="item"></div>
@@ -35,6 +35,11 @@
             }
         },
         methods: {
+            onBlur: function () {
+                if (this.customOnBlur) return this.customOnBlur();
+                this.removeEmptyElementInArray();
+                inputState.setInput('none');
+            },
             onSelected(value, e) {
                 if (value !== null) this.value = value;
                 this.nextInput(e);

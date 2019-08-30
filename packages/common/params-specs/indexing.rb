@@ -11,6 +11,7 @@ objects = []
 params.each do |name, object|
     object['objectID'] = name
     object['name'] = name
+    object['param_name'] = name
     object['label'] = name
     object['camel_case_label'] = object['name']
     object['type'] = 'param'
@@ -33,6 +34,7 @@ params.each do |name, object|
                 'scope': object['scope'],
                 'type': 'value',
                 'value_type': object['value_type'],
+
                 'ranking': 1
             })
         end

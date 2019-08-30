@@ -8,12 +8,14 @@
                 <div>"</div>
                 <div class="ml-1">:</div>
                 <div class="ml-4" v-if="Array.isArray(param.value)">[</div>
+                <div class="ml-4" v-if="isObject(param.value)">{</div>
                 <input-value
                     class="ml-4 max-w-full cursor-pointer"
                     :class="statusClasses.length === 0 ? (['number', 'boolean'].indexOf(typeof param.value) === -1 ? 'text-cosmos-black-opacity-70' : 'text-neptune-1') : statusClasses"
                     v-bind="$props"
                     :value="param.value"
-                    v-if="!Array.isArray(param.value)"
+                    :param-spec="paramSpec"
+                    v-if="!Array.isArray(param.value) && !isObject(param.value)"
                 />
             </div>
             <div class="ml-auto justify-end flex invisible group-hover:visible">
@@ -37,6 +39,15 @@
             </div>
         </div>
         <div class="pl-4">
+            <div v-if="isObject(param.value)">
+                <input-value
+                    :value="param.value"
+                    :param-spec="paramSpec"
+                    :status="status"
+                    v-bind="$props"
+                    class="break-words cursor-pointer"
+                />
+            </div>
             <div
                 v-if="Array.isArray(param.value)"
                 class="pl-12" :class="statusClasses.length === 0 ? 'text-cosmos-black-opacity-70' : statusClasses"
@@ -52,6 +63,7 @@
                         >
                             <input-value
                                 :value="param.value[index]"
+                                :param-spec="paramSpec"
                                 v-bind="$props"
                                 class="break-words cursor-pointer"
                                 style="max-width: calc(100% - 16px)"
@@ -73,9 +85,8 @@
                     +
                 </button>
             </div>
-            <div v-if="Array.isArray(param.value)">
-                ]<!--<span v-if="!isLastElement">,</span>-->
-            </div>
+            <div v-if="Array.isArray(param.value)">]</div>
+            <div v-if="isObject(param.value)">}</div>
         </div>
     </div>
 </template>
@@ -83,11 +94,16 @@
 <script>
     import draggable from 'vuedraggable'
     import InputValue from "./input/InputValue";
+    import paramsSpecs from '../../params-specs';
 
     import TrashIcon from "../../icons/trash.svg"
     import FlipLeftIcon from "../../icons/flip-left.svg";
     import FlipRightIcon from "../../icons/flip-right.svg";
     import HistoryIcon from "../../icons/history.svg";
+
+    const isObject = function (obj) {
+        return obj && typeof obj === 'object' && obj.constructor === Object;
+    };
 
     export default {
         name: 'ParamValue',
@@ -102,6 +118,7 @@
             return {
                 values: [],
                 collapseBigArrays: true,
+                isObject,
             }
         },
         computed: {
@@ -112,6 +129,9 @@
                 set(value) {
                     this.setParamEnabled(this.inputKey, value);
                 }
+            },
+            paramSpec: function () {
+                return paramsSpecs[this.inputKey] || {value_type: 'string'};
             },
             paramCamJump: function () {
                 return this.$store.state.panels.splitMode && (this.configKey !== 'indexSettings' || !this.sameIndexOnEachPanel);

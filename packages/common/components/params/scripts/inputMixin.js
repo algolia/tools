@@ -1,10 +1,14 @@
 import paramsInputState from "./paramsInputState";
 
+const isObject = function (obj) {
+    return obj && typeof obj === 'object' && obj.constructor === Object;
+};
+
 export default {
     props: [
         'id', 'param', 'configKey', 'inputKey', 'currentIndex', 'displayValue',
         'setInput', 'setParamValue', 'addArrayElement', 'deleteArrayElement', 'deleteKey', 'restoreKey',
-        'keysIndexer',
+        'keysIndexer', 'getValue', 'setValue', 'paramSpec', 'status', 'preventNextInput', 'customOnBlur',
     ],
     data: function () {
         return {
@@ -19,16 +23,18 @@ export default {
     },
     computed: {
         inputKeySlug: function () {
-            return this.inputKey.replace(/\W/g, '');
+            return this.inputKey.replace(/=/g, '');
         },
         value: {
             get () {
+                if (this.getValue !== undefined) return this.getValue;
                 if (Array.isArray(this.param.value)) {
                     return this.param.value[this.currentIndex];
                 }
                 return this.param.value;
             },
             set (value) {
+                if (this.setValue !== undefined) return this.setValue(value, this.value);
                 let newVal = value;
                 if (Array.isArray(this.param.value)) {
                     newVal = this.param.value;
@@ -54,6 +60,10 @@ export default {
                 }
             }
 
+            if (this.param && isObject(this.param.value)) {
+                this.removeEmptyElementInObject();
+            }
+
             return this.inputState.setInput('none');
         },
         nextInput: function (e) {
@@ -71,6 +81,10 @@ export default {
                 }
             }
 
+            if (isObject(this.param.value)) {
+                return;
+            }
+
             return this.inputState.setInput('root');
         },
         removeEmptyElementInArray: function () {
@@ -80,8 +94,10 @@ export default {
                         this.deleteArrayElement(this.inputState.inputKey, i);
                     }
                 })
-
             }
+        },
+        removeEmptyElementInObject: function () {
+            this.deleteArrayElement(this.inputState.inputKey, '');
         }
     }
 }

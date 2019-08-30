@@ -29,6 +29,10 @@
     import paramsSpecs from '../../../params-specs';
     import inputMixin from "../scripts/inputMixin";
 
+    const isObject = function (obj) {
+        return obj && typeof obj === 'object' && obj.constructor === Object;
+    };
+
     export default {
         name: 'InputParamName',
         components: {AlgoliaAutocomplete},
@@ -48,13 +52,19 @@
         methods: {
             onSelected: function (selected, e) {
                 if (selected) {
-                    try {
-                        const params = JSON.parse(selected);
-                        Object.keys(params).map((key) => {
-                            this.setParamValue(key, params[key]);
-                        });
-                        return this.inputState.setInput('none');
-                    } catch (e) {}
+                    if (typeof selected === 'string' || selected instanceof String) {
+                        try {
+                            const params = JSON.parse(selected);
+                            Object.keys(params).map((key) => {
+                                this.setParamValue(key, params[key]);
+                            });
+                            return this.inputState.setInput('none');
+                        } catch (e) {}
+                    }
+
+                    if (selected.value_type === 'object') {
+                        selected.type = 'param';
+                    }
 
                     if (selected.type === 'value') {
                         if (['enum', 'boolean'].indexOf(selected.value_type) !== -1) {
@@ -68,15 +78,21 @@
                         this.setParamValue(selected.name, selected.default);
                         return this.inputState.setInput(selected.name);
                     } else if (selected.type === 'param') {
-                        let defaultValue = JSON.parse(JSON.stringify(paramsSpecs[selected.name].default));
-                        if (Array.isArray(defaultValue)) defaultValue.push('');
-                        this.setParamValue(selected.name, defaultValue);
+                        let defaultValue = JSON.parse(JSON.stringify(paramsSpecs[selected.param_name].default));
+
                         if (Array.isArray(defaultValue)) {
-                            return this.inputState.setInput(selected.name, defaultValue.length - 1);
+                            defaultValue.push('');
+                            this.setParamValue(selected.param_name, defaultValue);
+                            return this.inputState.setInput(selected.param_name, defaultValue.length - 1);
+                        } else if (isObject(defaultValue)) {
+                            this.setParamValue(selected.param_name, defaultValue);
+                            return this.inputState.setInput(selected.param_name);
                         } else {
-                            return this.inputState.setInput(selected.name);
+                            this.setParamValue(selected.param_name, defaultValue);
+                            return this.inputState.setInput(selected.param_name);
                         }
-                    } else {
+                    }
+                    else {
                         this.setParamValue(selected, '');
                         return this.inputState.setInput(selected);
                     }

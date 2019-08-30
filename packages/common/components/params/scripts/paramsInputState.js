@@ -10,7 +10,8 @@ const ParamsInputState = function (id) {
         this.positionKey = positionKey !== undefined ? positionKey : null;
 
         Vue.nextTick(() => {
-            const input = document.querySelector(`.param-${this.id}-${this.inputKey.replace(/\W/g, '')} .input`);
+            const inputKey = this.inputKey.replace(/=/g, '');
+            const input = document.querySelector(`.param-${this.id}-${inputKey} .input`);
 
             if (input) {
                 input.focus();
