@@ -77,10 +77,6 @@
         mixins: [inputMixin],
         components: {InputAttribute, InputParamValue, TrashIcon},
         created: function () {
-            if (Object.keys(this.value).length === 0) {
-                this.setParamValue(this.inputKey, {'': []});
-                this.inputState.setInput(this.inputKey, `key.`);
-            }
             if (this.value[''] !== undefined) {
                 this.inputState.setInput(this.inputKey, `key.`);
             }

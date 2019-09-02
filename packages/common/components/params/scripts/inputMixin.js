@@ -47,6 +47,7 @@ export default {
     methods: {
         onBlur: function () {
             if (this.canBlur) {
+                this.removeEmptyElementInArray();
                 this.inputState.setInput('none');
             }
         },

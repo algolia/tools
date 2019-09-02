@@ -1039,6 +1039,7 @@ indexLanguages:
     - ja
   default:
     - ja
+  settings_default: null
 
 decompoundedAttributes:
   scope:
@@ -1051,4 +1052,5 @@ decompoundedAttributes:
       - fi
   value:
     value_type: attributes_list
-  default: {}
+  default: {'': []}
+  settings_default: null
