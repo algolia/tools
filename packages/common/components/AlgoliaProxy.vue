@@ -25,7 +25,6 @@
         },
         methods: {
             connect: async function () {
-                return;
                 if (!this.enabled) return;
 
                 const res = await fetch(`${process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT}/user/info?redirect_to=${window.location.href}`, {
