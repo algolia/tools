@@ -107,7 +107,10 @@
                 if (this.showSearchableAttributes) topAttributes.push(...this.searchableAttributes);
                 if (this.showCustomRanking) topAttributes.push(...(this.indexSettings.customRanking || []));
                 if (this.showAttributesForFaceting) topAttributes.push(...this.attributesForFaceting);
-                if (this.searchParams.attributesToRetrieve) topAttributes.push(...this.searchParams.attributesToRetrieve);
+                if (this.searchParams.attributesToRetrieve) {
+                    if (this.searchParams.attributesToRetrieve.indexOf('*') !== -1) return [];
+                    topAttributes.push(...this.searchParams.attributesToRetrieve);
+                }
 
                 return [...new Set(topAttributes)].map(cleanAttributeName).map(cleanDeepAttributeName);
             },
