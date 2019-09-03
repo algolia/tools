@@ -5,21 +5,20 @@
                 Nb of points : <input type="number" v-model="nbPoints" min="1" style="width: 50px;"/>
             </div>
 
-            <div class="flex">
+            <div class="flex mt-12">
                 <div class="cursor-pointer mr-12" @click="setAllCriteria(true)">Select All</div>
                 <div class="cursor-pointer" @click="setAllCriteria(false)">Unselect All</div>
             </div>
 
-            <div>
-                <span v-for="chart in charts">
+            <div class="flex flex-wrap mt-4">
+                <div v-for="chart in charts" class="mr-12">
                     <input
                             :checked="criteriaStatus[chart.criterion]"
                             type="checkbox"
-                            class="ml-12"
                             v-on:input="setCriterionStatus(chart.criterion, $event.target.checked)"
                     />
                     {{chart.criterion}}
-                </span>
+                </div>
             </div>
         </div>
         <div v-for="chart in enabledCharts" class="w-full" :key="`${chart.criterion}-${forceUpdateInteger}`">

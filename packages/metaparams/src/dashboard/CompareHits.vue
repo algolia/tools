@@ -7,7 +7,7 @@
             <div class="font-bold mt-12 mb-4">
                 Tracked objectIDs:
             </div>
-            <div class="">
+            <div>
                 <div
                     v-for="(objectID, index) in trackedObjectIDs"
                     class="flex"
