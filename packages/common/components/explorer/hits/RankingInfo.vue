@@ -17,10 +17,6 @@
                         :style="criterion.val !== criterion.oldVal ? 'background: rgba(84, 104, 255, 0.1); color: #5468ff;' : ''"
                     >
                         {{criterion.val}}
-                        <span v-if="criterion.label === 'perso'">
-                                (rankingScore: {{item._rankingInfo.personalization.rankingScore}},
-                                filtersScore: {{item._rankingInfo.personalization.filtersScore}})
-                        </span>
                     </div>
                     <div
                         v-if="i > 0 && criterion.val !== criterion.oldVal"

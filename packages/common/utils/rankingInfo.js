@@ -39,6 +39,16 @@ export function getCriterionValue(item, criterion) {
             return item._rankingInfo.personalization.score
         }
         return null;
+    } else if (criterion === 'perso.filtersScore') {
+        if (item._rankingInfo && item._rankingInfo.personalization) {
+            return item._rankingInfo.personalization.filtersScore
+        }
+        return null;
+    } else if (criterion === 'perso.rankingScore') {
+        if (item._rankingInfo && item._rankingInfo.personalization) {
+            return item._rankingInfo.personalization.rankingScore
+        }
+        return null;
     } else {
         const attributeName = criterion.replace(/^(asc|desc)\((.*)\)$/, '$2');
         return get(item, attributeName, '<not present>');

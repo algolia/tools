@@ -14,7 +14,7 @@
 
     export default {
         props: [
-            'appId', 'indexName', 'apiKey', 'query', 'method',
+            'appId', 'indexName', 'apiKey', 'server', 'query', 'method',
             'searchParams',
             'fetchExplain', 'analyseHitsPerPage',
             'fetchFacets'

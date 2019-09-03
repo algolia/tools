@@ -27,6 +27,8 @@ export default function (indexSettings) {
         ranking.forEach((item) => {
             if (item === 'custom') {
                 actualCriteria.push('perso');
+                actualCriteria.push('perso.rankingScore');
+                actualCriteria.push('perso.filtersScore');
                 this.customRanking.forEach(function (attribute) {
                     actualCriteria.push(attribute);
                 });

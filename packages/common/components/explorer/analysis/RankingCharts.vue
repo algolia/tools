@@ -126,9 +126,13 @@
             },
             updateCriteriaStatus: function () {
                 this.criteriaStatus = {};
+
                 this.criteria.forEach((criterion) => {
                     this.$set(this.criteriaStatus, criterion, true);
                 });
+
+                this.$set(this.criteriaStatus, 'perso.rankingScore', false);
+                this.$set(this.criteriaStatus, 'perso.filtersScore', false);
             },
             chartOption: function (criterion) {
                 return {
@@ -146,7 +150,7 @@
                     scales: {
                         yAxes: [{
                             ticks: {
-                                beginAtZero: ['typo', 'words', 'proximity', 'attribute', 'position', 'exact', 'filters'].indexOf(criterion) !== -1,
+                                beginAtZero: ['typo', 'words', 'proximity', 'attribute', 'position', 'exact', 'filters', 'perso.rankingScore', 'perso.filtersScore'].indexOf(criterion) !== -1,
                                 stepSize: ['typo', 'words', 'proximity', 'attribute', 'exact', 'filters'].indexOf(criterion) !== -1 ? 1 : undefined,
                                 max: criterion === 'attribute' ? this.searchableAttributes.length - 1 : undefined,
                                 precision: criterion === 'position' ? 0 : undefined,
