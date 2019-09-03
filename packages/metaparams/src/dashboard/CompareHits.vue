@@ -1,5 +1,5 @@
 <template>
-    <div v-if="leftHits && rightHits" class="mt-16">
+    <div v-if="enabled && leftHits && rightHits" class="mt-16">
         <div class="text-solstice-blue-opacity-80">
             <div class="font-bold">
                 Nb of points : <input type="number" v-model="analyseMaxNbPoints" min="1" style="width: 50px;"/>
@@ -139,6 +139,7 @@
         name: 'CompareHits',
         components: {TrashIcon, LoginIcon},
         mixins: [panelsMixin],
+        props: ['enabled'],
         data: function () {
             return {
                 width: 224,

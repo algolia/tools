@@ -18,9 +18,10 @@
             <div class="min-w-0 flex-1">
                 <dashboard panel-key="leftPanel" />
             </div>
-            <div v-if="$store.state.panels.comparePanels" class="min-w-240 max-w-240 flex-1">
+            <div v-show="$store.state.panels.comparePanels" class="min-w-240 max-w-240 flex-1">
                 <compare-hits
                     class="m-8 mr-8"
+                    :enabled="$store.state.panels.comparePanels"
                 />
             </div>
             <div
