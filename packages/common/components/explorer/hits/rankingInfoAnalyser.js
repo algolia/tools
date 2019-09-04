@@ -24,8 +24,11 @@ export default function (indexSettings) {
             });
         }
 
+        let foundCustom = false;
+
         ranking.forEach((item) => {
             if (item === 'custom') {
+                foundCustom = true;
                 actualCriteria.push('perso');
                 actualCriteria.push('perso.rankingScore');
                 actualCriteria.push('perso.filtersScore');
@@ -40,6 +43,12 @@ export default function (indexSettings) {
                 actualCriteria.push(item);
             }
         });
+
+        if (!foundCustom) {
+            actualCriteria.push('perso');
+            actualCriteria.push('perso.rankingScore');
+            actualCriteria.push('perso.filtersScore');
+        }
 
         return actualCriteria;
     };
