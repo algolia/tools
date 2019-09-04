@@ -140,6 +140,34 @@
                     tooltips: {
                         mode: 'index',
                         intersect: false,
+                        callbacks: {
+                            title: (tooltipItems, data) => {
+                                let title = '';
+                                const labels = data.labels;
+                                const labelCount = labels ? labels.length : 0;
+
+                                if (tooltipItems.length > 0) {
+                                    const item = tooltipItems[0];
+                                    if (item.label) {
+                                        title = item.label;
+                                    } else if (item.xLabel) {
+                                        title = item.xLabel;
+                                    } else if (labelCount > 0 && item.index < labelCount) {
+                                        title = labels[item.index];
+                                    }
+
+                                    if (this.hits[item.index]._rankingInfo.promoted) {
+                                        title = `${title} [promoted]`
+                                    }
+
+                                    if (this.hits[item.index]._rankingInfo.personalization && this.hits[item.index]._rankingInfo.personalization.filtersScore > 0) {
+                                        title = `${title} [personalized]`
+                                    }
+                                }
+
+                                return title;
+                            },
+                        },
                     },
                     legend: {
                         labels: {
