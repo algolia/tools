@@ -165,8 +165,6 @@
                 });
             },
             triggerAnalyseSearch: async function () {
-                if (Object.keys(this.indexSettings).length <= 0) return;
-
                 const index = await getSearchIndex(this.appId, this.apiKey, this.indexName, this.server);
                 const requestNumberAnalysis = this.requestNumberAnalysis++;
 
