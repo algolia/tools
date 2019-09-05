@@ -93,9 +93,10 @@
                 };
 
                 if (this.fetchFacets) {
-                    let facets = this.searchParams.facets || this.indexSettings.attributesForFaceting || [];
+                    const attributesForFaceting = this.indexSettings && this.indexSettings.attributesForFaceting ? this.indexSettings.attributesForFaceting : [];
+                    let facets = this.searchParams.facets || attributesForFaceting || [];
                     if (facets.some((facet) => facet === '*')) {
-                        facets = this.indexSettings.attributesForFaceting;
+                        facets = attributesForFaceting;
                     }
                     forcedParams.disjunctiveFacets = facets.map(cleanAttributeName);
                 }
