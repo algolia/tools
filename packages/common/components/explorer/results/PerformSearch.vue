@@ -81,7 +81,7 @@
                 };
 
                 if (this.fetchExplain) {
-                    nonForcedparams['explain'] = 'match.alternatives';
+                    nonForcedparams['explain'] = 'match.alternatives,params.*';
                 }
 
                 const forcedParams = {

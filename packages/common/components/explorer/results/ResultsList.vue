@@ -3,6 +3,7 @@
         <results-info v-bind="$props" v-if="!searchResponse.cursor"/>
         <div class="w-full" v-if="displayMode === 'list'">
             <applied-alternatives :algolia-response="searchResponse" />
+            <applied-params :algolia-response="searchResponse" :search-params="searchParams" />
             <applied-rules v-bind="$props" v-on="$listeners" />
         </div>
         <div v-if="searchResponse.hits.length > 0">
@@ -58,6 +59,7 @@
     import {cleanAttributeName, cleanDeepAttributeName} from '../../../utils/formatters'
     import AppliedAlternatives from "./AppliedAlternatives";
     import props from "../props";
+    import AppliedParams from "./AppliedParams";
 
     const isString = function (s) {
         return typeof s === 'string' || s instanceof String;
@@ -76,7 +78,7 @@
             ...props.display,
             ...props.actions,
         ],
-        components: {AppliedAlternatives, Hit, ResultsInfo, Pagination, AppliedRules},
+        components: {AppliedParams, AppliedAlternatives, Hit, ResultsInfo, Pagination, AppliedRules},
         watch: {
             titleAttribute: {
                 immediate: true,
