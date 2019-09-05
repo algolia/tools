@@ -42,7 +42,7 @@
                 if (this.algoliaResponse.explain && this.algoliaResponse.explain.match && this.algoliaResponse.explain.params) {
                     return this.algoliaResponse.explain.params;
                 }
-                return {};
+                return false;
             },
             paramsGroups: function () {
                 const groups = [];
@@ -55,7 +55,7 @@
                 if (Object.keys(this.toolsParams).length > 0) {
                     groups.push({
                         key: 2,
-                        name: `${Object.keys(this.toolsParams).length} params forced applied by metaparams`,
+                        name: `${Object.keys(this.toolsParams).length} params forced by metaparams`,
                         params: this.toolsParams,
                     });
                 }
@@ -70,7 +70,7 @@
 
                 groups.push({
                     key: 4,
-                    name: `${Object.keys(this.finalParams).length} final params`,
+                    name: `${Object.keys(this.finalParams).length} final applied params`,
                     params: this.finalParams,
                 });
 
@@ -80,10 +80,12 @@
                 return this.params.final;
             },
             userParams: function () {
-                return {query: this.clientParams.query, ...this.searchParams};
+                const query = this.clientParams ? this.clientParams.query : '';
+                return {query, ...this.searchParams};
             },
             toolsParams: function () {
                 const params = {};
+                console.log(this.params, this.clientParams);
                 Object.keys(this.clientParams).forEach((key) => {
                     if (this.userParams[key] === undefined) {
                         params[key] = this.clientParams[key];

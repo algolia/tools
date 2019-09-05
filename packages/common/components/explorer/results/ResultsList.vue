@@ -2,8 +2,8 @@
     <div>
         <results-info v-bind="$props" v-if="!searchResponse.cursor"/>
         <div class="w-full" v-if="displayMode === 'list'">
-            <applied-alternatives :algolia-response="searchResponse" />
             <applied-params :algolia-response="searchResponse" :search-params="searchParams" />
+            <applied-alternatives :algolia-response="searchResponse" />
             <applied-rules v-bind="$props" v-on="$listeners" />
         </div>
         <div v-if="searchResponse.hits.length > 0">
@@ -11,7 +11,7 @@
                 <div>
                     Extra attribute to display:
                     <input
-                        class="w-128 bg-proton-grey-opacity-20 text-xs p-4"
+                        class="w-128 bg-oton-grey-opacity-20 text-xs p-4"
                         :value="titleAttributeName"
                         @input="$emit('onUpdateTitleAttributeName', $event.target.value)"
                         placeholder="attribute_name"/>
