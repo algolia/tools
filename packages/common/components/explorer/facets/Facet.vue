@@ -36,7 +36,7 @@
     export default {
         name: 'Facet',
         components: {FacetRefinement},
-        props: ['facetName', 'facetValues', 'appId', 'indexName', 'query', 'searchParams', 'indexSettings', 'searchConfigKey'],
+        props: ['facetName', 'facetValues', 'appId', 'indexName', 'query', 'searchParams', 'indexSettings', 'configKey'],
         data: function () {
             return {
                 collapse: true,

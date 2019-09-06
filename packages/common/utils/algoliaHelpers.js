@@ -63,13 +63,20 @@ indexPrototype.disjunctiveSearch = function (params, callback) {
     const {disjunctiveFacets, ...paramsWithoutDisjunctiveFacets} = params;
 
     const facetFilters = paramsWithoutDisjunctiveFacets.facetFilters || [];
-    const refinedFacets = disjunctiveFacets.filter((facetName) => {
-        return facetFilters.some((facetFilter) => {
+    const facetRefinements = {};
+    disjunctiveFacets.forEach((facetName) => {
+        return facetFilters.forEach((facetFilter) => {
+            facetRefinements[facetName] = [];
             const refinements = Array.isArray(facetFilter) ? facetFilter : [facetFilter];
-            return refinements.some((refinement) => {
-                return refinement.startsWith(`${facetName}:`);
+            refinements.forEach((refinement) => {
+                if (refinement.startsWith(`${facetName}:`)) {
+                    facetRefinements[facetName].push(refinement.replace(`${facetName}:`, ''));
+                }
             });
         });
+    });
+    const refinedFacets = Object.keys(facetRefinements).filter((facetName) => {
+        return facetRefinements[facetName].length > 0;
     });
 
     const requests = this.getDisjunctiveRequests(disjunctiveFacets, refinedFacets, paramsWithoutDisjunctiveFacets);
@@ -89,6 +96,11 @@ indexPrototype.disjunctiveSearch = function (params, callback) {
 
                 refinedFacets.forEach((facetName, i) => {
                     newRes.disjunctiveFacets[facetName] = res.results[i + 1].facets[facetName];
+                    facetRefinements[facetName].forEach((value) => {
+                        if (newRes.disjunctiveFacets[facetName][value] === undefined) {
+                            newRes.disjunctiveFacets[facetName][value] = null;
+                        }
+                    });
                 });
 
                 if (callback) {

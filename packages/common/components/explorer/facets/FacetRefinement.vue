@@ -19,7 +19,7 @@
 <script>
     export default {
         name: 'FacetRefinement',
-        props: ['facetName', 'refinement', 'appId', 'indexName', 'searchParams', 'searchConfigKey'],
+        props: ['facetName', 'refinement', 'appId', 'indexName', 'searchParams', 'configKey'],
         computed: {
             facetFilters: function () {
                 return this.searchParams.facetFilters || [];
@@ -38,7 +38,7 @@
                 }
 
                 this.$store.commit(`apps/${this.appId}/${this.indexName}/setParamValue`, {
-                    configKey: this.searchConfigKey,
+                    configKey: this.configKey,
                     key: 'facetFilters',
                     value: newFacetFilters,
                 });

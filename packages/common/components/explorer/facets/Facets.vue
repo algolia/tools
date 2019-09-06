@@ -25,7 +25,7 @@
     export default {
         name: 'Facets',
         components: {Facet},
-        props: ['panelKey', 'appId', 'indexName', 'query', 'searchParams', 'indexSettings', 'searchConfigKey'],
+        props: ['panelKey', 'appId', 'indexName', 'query', 'searchParams', 'indexSettings', 'configKey'],
         data: function () {
             return {
                 algoliaResponse: null,
