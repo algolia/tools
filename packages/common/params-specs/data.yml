@@ -113,8 +113,8 @@ facetFilters:
 optionalFilters:
   scope:
     - search
-  value_type: string
-  default: ''
+  value_type: string_list
+  default: []
 
 personalizationFilters:
   scope:
