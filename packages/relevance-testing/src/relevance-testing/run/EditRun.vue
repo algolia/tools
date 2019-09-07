@@ -1,27 +1,32 @@
 <template>
-    <div class="p-8">
-        <div class="text-telluric-blue text-sm flex items-center">
-            <div>
-                <app-selector v-model="run.app_id" />
-                <index-selector v-model="run.index_name" :app-id="run.app_id" />
-                <div class="flex mt-12">
-                    <div>Page size:</div>
-                    <input v-model="run.hits_per_page" type="number" min="1" max="1000" class="input-custom ml-8" />
+    <div class="p-8 h-full text-telluric-blue text-sm">
+        <div class="flex flex-col h-full">
+            <app-selector v-model="run.app_id" />
+            <index-selector v-model="run.index_name" :app-id="run.app_id" />
+            <div class="flex my-12">
+                <div>Page size:</div>
+                <input v-model="run.hits_per_page" type="number" min="1" max="1000" class="input-custom ml-8" />
+            </div>
+            <params
+                class="mt-auto mb-24"
+                :id="`run-${run.id}`"
+                config-key="searchParams"
+                :params="run.params"
+                :ref-params="run.params"
+                :raw-params="run.params"
+                :keys="Object.keys(run.params)"
+                :keys-indexer="null"
+                :mutate="true"
+                panel-key="leftPanel"
+            />
+            <div class="flex items-center">
+                <div
+                    @click="suite.runRun(run, runPosition)"
+                    class="text-xs uppercase tracking-wide"
+                >
+                    Run
                 </div>
-                <params
-                    class="mt-24"
-                    :id="`run-${run.id}`"
-                    config-key="searchParams"
-                    :params="run.params"
-                    :ref-params="run.params"
-                    :raw-params="run.params"
-                    :keys="Object.keys(run.params)"
-                    :keys-indexer="null"
-                    :mutate="true"
-                    panel-key="leftPanel"
-                />
-                <div @click="suite.runRun(run, runPosition)">Run</div>
-                <div class="mt-8">
+                <div class="ml-auto">
                     <trash-icon
                         v-if="!confirmDelete"
                         @click="confirmDelete = true"

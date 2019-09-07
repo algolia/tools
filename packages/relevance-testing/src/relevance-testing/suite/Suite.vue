@@ -34,7 +34,7 @@
                         <template>
                             <template v-for="(run, i) in suite.runs">
                                 <td class="w-2 bg-moon-grey"></td>
-                                <td class="bg-proton-grey-opacity-80">
+                                <td class="bg-proton-grey-opacity-80 h-1">
                                     <edit-run :suite="suite" :run="run" :run-position="i" />
                                 </td>
                             </template>

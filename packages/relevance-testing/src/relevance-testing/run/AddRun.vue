@@ -1,6 +1,6 @@
 <template>
     <div
-        class="ml-8 px-40 border border-dashed border-proton-grey flex items-center justify-center h-full cursor-pointer"
+        class="ml-8 px-40 border border-dashed border-telluric-blue-opacity-40 flex items-center justify-center h-full cursor-pointer text-telluric-blue"
         @click="addRun"
     >
         <div>
