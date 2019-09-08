@@ -85,7 +85,7 @@
             },
             toolsParams: function () {
                 const params = {};
-                console.log(this.params, this.clientParams);
+
                 Object.keys(this.clientParams).forEach((key) => {
                     if (this.userParams[key] === undefined) {
                         params[key] = this.clientParams[key];
