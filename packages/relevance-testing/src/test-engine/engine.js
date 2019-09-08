@@ -143,7 +143,7 @@ export class Test {
         } else if (operator === '<') {
             return a < b;
         } else if (operator === '<=') {
-            return a >= b;
+            return a <= b;
         }
     }
 

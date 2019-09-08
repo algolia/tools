@@ -10,7 +10,7 @@
                         <div class="px-4 py-2 rounded leading-none bg-proton-grey-opacity-40 mr-4 mb-4">
                             {{ query ? query : '&lt;empty&gt;' }}
                         </div>
-                        <div v-if="Object.keys(when).length > 1" class="mb-4 px-4 py-2 rounded leading-none bg-proton-grey-opacity-40">
+                        <div v-if="Object.keys(when).length > 0" class="mb-4 px-4 py-2 rounded leading-none bg-proton-grey-opacity-40">
                             <div v-for="(value, key) in params">
                                 {{JSON.stringify(key)}}: {{JSON.stringify(value)}}
                             </div>
@@ -99,14 +99,22 @@
                 confirmDelete: false,
                 when: null,
                 query: null,
+                canSave: false,
             }
         },
         created: function () {
-            this.loadTest()
+            this.loadTest();
+            this.$nextTick(() => {
+                this.canSave = true;
+            });
         },
         watch: {
             test: function () {
+                this.canSave = false;
                 this.loadTest();
+                this.$nextTick(() => {
+                    this.canSave = true;
+                });
             },
             query: function () { this.saveTest(); },
             when: {
@@ -142,6 +150,8 @@
                 this.when = searchParams;
             },
             saveTest: async function () {
+                if (!this.canSave) return;
+
                 this.test.updateTestData({
                     ...this.test.testData,
                     when: {
@@ -161,7 +171,7 @@
                     }),
                 });
 
-                this.test.run(true)
+                this.test.run(true);
             },
             deleteTest: async function (test, testPos) {
                 await fetch(`${process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT}/relevance-testing/suites/${this.suite.id}/groups/${test.group.id}/tests/${test.id}`, {
