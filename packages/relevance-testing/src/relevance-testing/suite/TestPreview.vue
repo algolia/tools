@@ -5,7 +5,7 @@
             :error-message="errorMessage"
             :app-id="currentRun.app_id"
             :api-key="currentRun.api_key"
-            @onUpdateApiKey="$store.commit('apps/addAppId', { appId: currentRun.appId, apiKey: $event })"
+            @onUpdateApiKey="onUpdateApiKey"
         />
         <perform-search
             :app-id="currentRun.app_id"
@@ -103,6 +103,12 @@
                         enableABTest: false,
                     }
                 );
+            }
+        },
+        methods: {
+            onUpdateApiKey: function (apiKey) {
+                this.$store.commit('apps/addAppId', { appId: this.currentRun.app_id, apiKey: apiKey });
+                this.$set(this.currentRun, 'api_key', apiKey);
             }
         }
     }
