@@ -55,7 +55,7 @@
             v-on="$listeners"
         />
         <div>
-            <results-info v-bind="$props" v-if="!searchResponse.cursor"/>
+            <results-info v-bind="$props" v-if="searchResponse && !searchResponse.cursor"/>
             <results-list
                 v-if="searchResponse && (displayMode === 'list' || displayMode === 'images')"
                 v-on="$listeners"
