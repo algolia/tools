@@ -68,6 +68,7 @@
                 :api-key="panelAdminAPIKey"
                 :index-name="panelIndexName"
                 :server="panelServer"
+                :method="panelMethod"
                 :query="searchParams.query !== undefined ? searchParams.query : $store.state.panels.query"
                 :display-mode="displayMode"
                 :showSearchableAttributes="$store.state.panels.showSearchableAttributes"
@@ -87,15 +88,14 @@
                 :display-ranking-info="$store.state.panels.displayRankingInfo"
                 @onUpdateAnalyseMaxNbPoint="analyseMaxNbPoints = $event"
                 @onUpdateDisplayMode="displayMode = $event"
-                @onUpdatePage="onUpdatePage"
+                @onSetParamValue="onSetParamValue"
+                @onDeleteParam="onDeleteParam"
                 @onUpdateImageAttribute="indexImageAttributeName = $event"
                 @onUpdateImageBaseUrl="indexImageBaseUrl = $event"
                 @onUpdateImageSuffixUrl="indexImageSuffixUrl = $event"
                 @onUpdateImageSize="indexImageSize = $event"
                 @onUpdateTitleAttributeName="indexTitleAttribute = $event"
                 @onUpdateAutoTitleAttributeName="indexAutoTitleAttributeName = $event"
-                @onUpdateCursor="onUpdateCursor"
-                @onDeleteCursor="onDeleteCursor"
             />
             <fetcher
                 v-show="panelCurrentTab === 'synonyms'"
@@ -246,24 +246,17 @@
             onUpdateChecksCount: function (event) {
                 this.nbChecks = event;
             },
-            onUpdatePage: function (page) {
+            onSetParamValue: function (key, value) {
                 this.$store.commit(`${this.indexCommitPrefix}/setParamValue`, {
                     configKey: this.searchConfigKey,
-                    key: 'page',
-                    value: page
+                    key: key,
+                    value: value
                 });
             },
-            onUpdateCursor: function (cursor) {
-                this.$store.commit(`${this.indexCommitPrefix}/setParamValue`, {
-                    configKey: this.searchConfigKey,
-                    key: 'cursor',
-                    value: cursor
-                });
-            },
-            onDeleteCursor: function () {
+            onDeleteParam: function (key) {
                 this.$store.commit(`${this.indexCommitPrefix}/deleteParam`, {
                     configKey: this.searchConfigKey,
-                    inputKey: 'cursor',
+                    inputKey: key,
                 });
             },
         },

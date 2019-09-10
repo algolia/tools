@@ -139,10 +139,10 @@
                 this.loadKeysIndexer();
             },
             triggerSearch: async function () {
+                const method = this.method === 'search' ? 'customSearch' : 'customBrowse';
+
                 const requestNumber = this.requestNumber++;
                 const index = await getSearchIndex(this.appId, this.apiKey, this.indexName, this.server);
-
-                const method = this.method === 'search' ? 'customSearch' : 'customBrowse';
 
                 index[method](this.searchParamsWithDefaults).then((res) => {
                     if (this.requestNumberReceived > requestNumber) return;
@@ -166,10 +166,14 @@
                 });
             },
             triggerAnalyseSearch: async function () {
+                const method = this.method === 'search' ? 'customSearch' : 'customBrowse';
+                if (method !== 'customSearch') {
+                    this.$emit('onFetchAnalyseHits', null);
+                    return;
+                }
+
                 const index = await getSearchIndex(this.appId, this.apiKey, this.indexName, this.server);
                 const requestNumberAnalysis = this.requestNumberAnalysis++;
-
-                const method = this.method === 'search' ? 'customSearch' : 'customBrowse';
 
                 index[method](this.searchParamsForAnalysis).then((res) => {
                     if (this.requestNumberAnalysisReceived > requestNumberAnalysis) return;

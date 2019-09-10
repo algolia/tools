@@ -34,13 +34,13 @@
         <ul class="flex mt-24 mb-12 pl-0" v-if="cursor">
             <li
                 class="flex items-center mx-4 px-8 py-4 text-nova-grey rounded cursor-pointer bg-moon-grey"
-                @click="$emit('onDeleteCursor')"
+                @click="$emit('onDeleteParam', 'cursor')"
             >
                 First page
             </li>
             <li
                 class="flex items-center mx-4 px-8 py-4 text-nova-grey rounded cursor-pointer bg-moon-grey"
-                @click="$emit('onUpdateCursor', cursor)"
+                @click="$emit('onSetParamValue', 'cursor', cursor)"
             >
                 Next page
             </li>
@@ -67,7 +67,7 @@
         methods: {
             setPage: function (page) {
                 if (this.page >= 0 && this.page < this.nbPages) {
-                    this.$emit('onUpdatePage', page);
+                    this.$emit('onSetParamValue', 'page', page);
                 }
             },
         },

@@ -129,9 +129,6 @@
                 this.criteria.forEach((criterion) => {
                     this.$set(this.criteriaStatus, criterion, true);
                 });
-
-                this.$set(this.criteriaStatus, 'perso.rankingScore', false);
-                this.$set(this.criteriaStatus, 'perso.filtersScore', false);
             },
             chartOption: function (criterion) {
                 return {
@@ -214,10 +211,15 @@
                     }
                 }
 
+                let labelCriterion = criterion;
+                if (['perso.filtersScore', 'perso.rankingScore'].indexOf(criterion) !== -1) {
+                    labelCriterion = criterion + ' (for perso debugging only)'
+                }
+
                 return {
                     labels: labels,
                     datasets: [{
-                        label: criterion,
+                        label: labelCriterion,
                         backgroundColor: 'rgb(255, 99, 132)',
                         borderColor: 'rgb(255, 99, 132)',
                         data: points,

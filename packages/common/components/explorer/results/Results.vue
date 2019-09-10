@@ -55,7 +55,11 @@
             v-on="$listeners"
         />
         <div>
-            <results-info v-bind="$props" v-if="searchResponse && !searchResponse.cursor"/>
+            <results-info
+                v-if="searchResponse && !searchResponse.cursor"
+                v-bind="$props"
+                v-on="$listeners"
+            />
             <results-list
                 v-if="searchResponse && (displayMode === 'list' || displayMode === 'images')"
                 v-on="$listeners"
@@ -74,6 +78,12 @@
                 v-on="$listeners"
                 v-bind="$props"
             />
+            <div
+                v-if="displayMode === 'charts' && method === 'browse'"
+                class="text-nova-grey bg-moon-grey-opacity-50 border border-proton-grey-opacity-20 mt-16 p-8"
+            >
+                Not available in browse mode.
+            </div>
         </div>
     </div>
 </template>

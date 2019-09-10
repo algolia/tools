@@ -92,7 +92,7 @@
                     return this.searchParams.page || 0;
                 },
                 set(value) {
-                    this.$emit('onUpdatePage', value);
+                    this.$emit('onSetParamValue', 'page', value);
                 }
             },
             attributesForFaceting: function () {

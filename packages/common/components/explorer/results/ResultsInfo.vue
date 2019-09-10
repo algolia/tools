@@ -12,11 +12,21 @@
                 <div>Server Used: {{searchResponse.serverUsed}}</div>
             </div>
         </div>
-        <div v-if="persoProfile" class="mt-16">
-            user perso profile:
-            <template v-for="profile in persoProfile">
-                {{profile[0]}}&lt;score={{profile[1]}}&gt;
+        <div v-if="userPersoFilters" class="mt-16">
+            <div>user perso profile:</div>
+            <div>
+            <template v-for="persoFilter in userPersoFilters">
+                {{persoFilter}}
             </template>
+            </div>
+            <div>
+                <button
+                    @click="$emit('onSetParamValue', 'personalizationFilters', userPersoFilters)"
+                    class="mt-8 block bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out mr-8 px-16 p-8 text-sm relative group"
+                >
+                    Set perso profile as personalizationFilters
+                </button>
+            </div>
         </div>
     </div>
 </template>
@@ -30,7 +40,7 @@
         data: function () {
             return {
                 region: 'us',
-                persoProfile: false,
+                userPersoFilters: false,
             }
         },
         watch: {
@@ -52,7 +62,7 @@
             humanNumber: humanNumber,
             fetchPersoProfil: async function () {
                 if (!this.enablePersonalization || !this.userToken) {
-                    this.persoProfile = false;
+                    this.userPersoFilters = false;
                     return;
                 }
 
@@ -69,7 +79,7 @@
                         this.fetchPersoProfil();
                         return;
                     }
-                    this.persoProfile = false;
+                    this.userPersoFilters = false;
                     return;
                 }
 
@@ -77,12 +87,14 @@
                 const profile = [];
                 Object.keys(fetchedProfile.scores).forEach((facetName) => {
                     Object.keys(fetchedProfile.scores[facetName]).forEach((facetValue) => {
-                        profile.push([`${facetName}:${facetValue}`, fetchedProfile.scores[facetName][facetValue]])
+                        profile.push([`${facetName}:${facetValue}`, fetchedProfile.scores[facetName][facetValue]]);
                     });
                 });
 
-                this.persoProfile = profile.sort((a, b) => {
+                this.userPersoFilters = profile.sort((a, b) => {
                     return b[1] - a[1];
+                }).map((profile) => {
+                    return `${profile[0]}<score=${profile[1]}>`;
                 });
             }
         },
