@@ -14,10 +14,8 @@
         </div>
         <div v-if="persoProfile" class="mt-16">
             user perso profile:
-            <template v-for="(facetValues, facetName) in persoProfile.scores">
-                <span v-for="(facetScore, facetValue) in facetValues">
-                    {{facetName}}:{{facetValue}}&lt;score={{facetScore}}&gt;
-                </span>
+            <template v-for="profile in persoProfile">
+                {{profile[0]}}&lt;score={{profile[1]}}&gt;
             </template>
         </div>
     </div>
@@ -75,7 +73,17 @@
                     return;
                 }
 
-                this.persoProfile = await persoProfileQuery.json();
+                const fetchedProfile = await persoProfileQuery.json();
+                const profile = [];
+                Object.keys(fetchedProfile.scores).forEach((facetName) => {
+                    Object.keys(fetchedProfile.scores[facetName]).forEach((facetValue) => {
+                        profile.push([`${facetName}:${facetValue}`, fetchedProfile.scores[facetName][facetValue]])
+                    });
+                });
+
+                this.persoProfile = profile.sort((a, b) => {
+                    return b[1] - a[1];
+                });
             }
         },
     }
