@@ -55,6 +55,7 @@
             v-on="$listeners"
         />
         <div>
+            <results-info v-bind="$props" v-if="!searchResponse.cursor"/>
             <results-list
                 v-if="searchResponse && (displayMode === 'list' || displayMode === 'images')"
                 v-on="$listeners"
@@ -91,6 +92,7 @@
     import HitEdit from "../hits/HitEdit";
     import Tooltip from "../../Tooltip";
     import PerformSearch from "./PerformSearch";
+    import ResultsInfo from "./ResultsInfo";
     import props from '../props';
 
     export default {
@@ -107,6 +109,7 @@
             ...props.actions,
         ],
         components: {
+            ResultsInfo,
             PerformSearch,
             Tooltip,
             HitEdit, ExportParams, RawResponse, RankingCharts, ResultsList, ListIcon, BarChartIcon, CodeIcon, GridIcon, PlusCircleIcon},

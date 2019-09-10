@@ -1,6 +1,5 @@
 <template>
     <div>
-        <results-info v-bind="$props" v-if="!searchResponse.cursor"/>
         <div class="w-full" v-if="displayMode === 'list'">
             <applied-params :algolia-response="searchResponse" :search-params="searchParams" />
             <applied-alternatives :algolia-response="searchResponse" />
