@@ -49,6 +49,14 @@
         created: function () {
             this.createShortLink();
         },
+        watch: {
+            exportableData: {
+                deep: true,
+                handler: function () {
+                    this.$emit('onShouldClose');
+                }
+            },
+        },
         computed: {
             origin: function () {
                 return window.location.origin;

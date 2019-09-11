@@ -3,7 +3,10 @@
         <app-header app-name="Metaparams">
             <display-config class="mx-16 mt-0"/>
         </app-header>
-        <share-view v-if="$store.state.panels.shareStatePanel" />
+        <share-view
+            v-if="$store.state.panels.shareStatePanel"
+            @onShouldClose="$store.commit('panels/setShareStatePanel', false)"
+        />
         <app-management />
         <div class="w-full">
             <search-box
