@@ -249,6 +249,20 @@ page:
   min: 0
   default: 0
 
+offset:
+  scope:
+    - search
+  value_type: integer
+  min: 0
+  default: 0
+
+length:
+  scope:
+    - search
+  value_type: integer
+  min: 0
+  default: 20
+
 cursor:
   scope:
     - search

@@ -72,8 +72,10 @@
                 return this.rankingInfoAnalyzer.getActualCriteria();
             },
             searchParamsWithDefaults: function () {
+                const hitsPerPage = this.searchParams.offset !== undefined ? undefined : 8;
+                console.log(this.searchParams, hitsPerPage);
                 const nonForcedparams = {
-                    hitsPerPage: 8,
+                    hitsPerPage,
                     query: this.query,
                     attributesToSnippet: ['*:10'],
                     snippetEllipsisText: '…',
