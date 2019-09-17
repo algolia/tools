@@ -40,11 +40,23 @@
                 />
             </div>
         </div>
-        <div
-            v-else
-            class="text-nova-grey bg-moon-grey-opacity-50 border border-proton-grey-opacity-20 mt-16 p-8"
-        >
-            No results
+        <div v-else>
+            <div class="text-nova-grey bg-moon-grey-opacity-50 border border-proton-grey-opacity-20 mt-16 p-8">
+                No results for query "{{searchResponse.query}}" <span v-if="searchResponse.object">but found a record by objectID</span>
+            </div>
+
+            <hit
+                v-if="searchResponse.object"
+                :key="searchResponse.object.objectID"
+                :hit="searchResponse.object"
+                :hit-position="0"
+                :previous-hit="searchResponse.object"
+                :top-attributes="topAttributes"
+                :searchable-attributes="searchableAttributes"
+                :title-attribute="titleAttribute"
+                v-bind="$props"
+                v-on="$listeners"
+            />
         </div>
     </div>
 </template>

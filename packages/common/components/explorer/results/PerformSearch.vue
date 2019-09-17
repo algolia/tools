@@ -144,10 +144,15 @@
                 const requestNumber = this.requestNumber++;
                 const index = await getSearchIndex(this.appId, this.apiKey, this.indexName, this.server);
 
-                index[method](this.searchParamsWithDefaults).then((res) => {
+                index[method](this.searchParamsWithDefaults).then(async (res) => {
                     if (this.requestNumberReceived > requestNumber) return;
                     this.requestNumberReceived = requestNumber;
 
+                    if (res.hits.length <= 0 && this.searchParamsWithDefaults.query.length > 0) {
+                        try {
+                            res.object = await index.getObject(this.searchParamsWithDefaults.query);
+                        } catch (e) {}
+                    }
                     this.$emit('onFetchHits', Object.freeze(res));
                     this.$emit('onUpdateError', '');
 
