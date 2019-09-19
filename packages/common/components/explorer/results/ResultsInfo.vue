@@ -12,20 +12,25 @@
                 <div>Server Used: {{searchResponse.serverUsed}}</div>
             </div>
         </div>
-        <div v-if="userPersoFilters" class="mt-16">
+        <div v-if="userToken" class="mt-16">
             <div>user perso profile:</div>
-            <div>
-            <template v-for="persoFilter in userPersoFilters">
-                {{persoFilter}}
-            </template>
+            <div v-if="userPersoFilters">
+                <div>
+                    <template v-for="persoFilter in userPersoFilters">
+                        {{persoFilter}}
+                    </template>
+                </div>
+                <div>
+                    <button
+                        @click="$emit('onSetParamValue', 'personalizationFilters', userPersoFilters)"
+                        class="mt-8 block bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out mr-8 px-16 p-8 text-sm relative group"
+                    >
+                        Set perso profile as personalizationFilters
+                    </button>
+                </div>
             </div>
-            <div>
-                <button
-                    @click="$emit('onSetParamValue', 'personalizationFilters', userPersoFilters)"
-                    class="mt-8 block bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out mr-8 px-16 p-8 text-sm relative group"
-                >
-                    Set perso profile as personalizationFilters
-                </button>
+            <div v-else>
+                Profile for userToken "{{userToken}}" was not found
             </div>
         </div>
     </div>
