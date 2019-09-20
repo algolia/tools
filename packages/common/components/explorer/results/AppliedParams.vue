@@ -95,10 +95,10 @@
                 return params;
             },
             clientParams: function() {
-                return this.params.original;
+                return this.params.original || {};
             },
             rulesParams: function () {
-                return this.params.rules;
+                return this.params.rules || {};
             },
         }
     }
