@@ -1,5 +1,5 @@
 <template>
-    <div id="app" class="bg-moon-grey text-base font-sans-alt">
+    <div id="app" class="bg-moon-grey text-base font-sans-alt min-h-screen">
         <algolia-proxy :enabled="isProduction || false">
             <perso-playground slot="loggedIn" />
             <div slot="loggedOut" class="h-screen flex justify-center items-center">
