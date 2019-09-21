@@ -18,8 +18,7 @@ export interface IndexDiff {
     settings: object;
     objectIDs: string[],
     records: any,
-    browse: any[];
-    index: any;
+    nbHits: any;
     complete: boolean;
     cursor: string | null;
 }
@@ -151,6 +150,8 @@ class DiffGenerator {
                     this[name].records[hit.objectID] = hit;
                 });
 
+                this[name].nbHits = content.nbHits;
+
                 const objectIDs = content.hits.map((record: any): string => {
                     return record.objectID;
                 });
@@ -165,7 +166,7 @@ class DiffGenerator {
             };
 
             if (!this[name].cursor) {
-                index.browse('', {hitsPerPage: 8}, fn);
+                index.browse('', fn);
             } else {
                 index.browseFrom(this[name].cursor as string, fn);
             }
@@ -196,6 +197,7 @@ class DiffGenerator {
                 if (group.added) { added++ } else { lineNumberA++ }
                 if (group.removed) { removed++ } else { lineNumberB++ }
                 if (isModified) modified++;
+                if (!group.added && !group.removed && !isModified) untouched++;
 
                 this.recordsDiff.push({
                     added: group.added,
@@ -210,8 +212,6 @@ class DiffGenerator {
         });
 
         const biggest = Object.keys(this.B.records).length + removed;
-
-        console.log(modified);
 
         this.stats = {
             added,
@@ -229,10 +229,9 @@ class DiffGenerator {
 function getDefaultDiff(): IndexDiff {
     return {
         settings: {},
-        browse: [],
         objectIDs: [],
         records: {},
-        index: { entries: 0 },
+        nbHits: 0,
         complete: false,
         cursor: null,
     };

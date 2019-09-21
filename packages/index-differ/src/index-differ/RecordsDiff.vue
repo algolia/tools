@@ -26,6 +26,18 @@
                 </label>
             </div>
         </div>
+        <div class="flex py-12 items-center justify-around h-56">
+            <div class="">{{differ.A.objectIDs.length}}/{{differ.A.nbHits}} records loaded</div>
+            <div :class="{invisible: differ.isComplete || loading}">
+                <button
+                    @click="loadMore"
+                    class="block bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out mr-8 px-16 p-8 text-sm relative group"
+                >
+                    Load more records
+                </button>
+            </div>
+            <div class="">{{differ.A.objectIDs.length}}/{{differ.B.nbHits}} records loaded</div>
+        </div>
         <record-diff :diff="diff" v-for="diff in diffs" />
     </div>
 </template>
@@ -42,6 +54,7 @@
                 filterRemoved: true,
                 filterModified: true,
                 filterUntouched: true,
+                loading: false,
             }
         },
         computed: {
@@ -57,6 +70,14 @@
                     });
                 }
             },
+        },
+        methods: {
+            loadMore: function () {
+                this.loading = true;
+                this.differ.records().then(() => {
+                    this.loading = false;
+                });
+            }
         }
     }
 </script>
