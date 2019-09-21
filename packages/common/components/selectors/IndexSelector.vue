@@ -86,7 +86,7 @@
         },
         methods: {
             registerIndex: function () {
-                if (this.appId === null) return; // onboarding
+                if (!this.appId) return; // onboarding
 
                 if (this.indexInfo.name) {
                     this.$store.commit(`apps/${this.appId}/addIndex`, this.indexName);
@@ -99,7 +99,7 @@
                 }
             },
             refine: async function (query) {
-                if (this.appId === null) return; // onboarding
+                if (!this.appId) return; // onboarding
 
                 if (query.length <= 0) {
                     this.indices = this.allIndices;
@@ -129,7 +129,7 @@
                 }
             },
             updateIndices: async function (shouldSetIndex) {
-                if (this.appId === null) return; // onboarding
+                if (!this.appId) return; // onboarding
 
                 const client = await getClient(this.appId, this.adminAPIKey);
 

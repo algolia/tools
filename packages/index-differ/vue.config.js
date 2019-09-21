@@ -21,5 +21,29 @@ module.exports = {
             .test(/\.ya?ml$/)
             .use("js-yaml-loader")
             .loader("js-yaml-loader");
+
+        config.resolve.extensions.add(".ts").add(".tsx").add(".js");
+
+        config.module
+            .rule('ts')
+            .test(/\.tsx?$/)
+            .use('ts-loader')
+            .loader('ts-loader');
     },
 };
+
+
+/*module.exports = {
+    resolve: {
+        alias: {
+            "@": require("path").resolve(__dirname, "src") // change this to your folder path
+        },
+        extensions: [".ts", ".tsx", ".js"]
+    },
+    module: {
+        rules: [
+            // all files with a `.ts` or `.tsx` extension will be handled by `ts-loader`
+            { test: /\.tsx?$/, loader: "ts-loader" }
+        ]
+    }
+};*/

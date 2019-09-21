@@ -1,40 +1,16 @@
 <template>
     <div>
         <div v-if="searchResponse" class="flex mt-4">
-            <div class="flex rounded overflow-hidden text-nova-grey">
-                <div
-                    @click="$emit('onUpdateDisplayMode', 'list')"
-                    :class="displayMode === 'list' ? 'text-nebula-blue border-b-2 border-nebula-blue-opacity-80' : ''"
-                    class="bg-moon-grey p-4 h-28 px-12 flex items-center self-start cursor-pointer border-b-2 border-transparent"
-                >
-                    <list-icon class="w-auto h-8 mr-4" />
-                    <div class="text-sm">List</div>
-                </div>
-                <div
-                    @click="$emit('onUpdateDisplayMode', 'images')"
-                    :class="displayMode === 'images' ? 'text-nebula-blue border-b-2 border-nebula-blue-opacity-80' : ''"
-                    class="bg-moon-grey p-4 h-28 px-12 flex items-center self-start cursor-pointer border-b-2 border-transparent"
-                >
-                    <grid-icon class="w-auto h-12 mr-4" />
-                    <div class="text-sm">Images</div>
-                </div>
-                <div
-                    @click="$emit('onUpdateDisplayMode', 'raw')"
-                    :class="displayMode === 'raw' ? 'text-nebula-blue border-b-2 border-nebula-blue-opacity-80' : ''"
-                    class="bg-moon-grey p-4 h-28 px-12 flex items-center self-start cursor-pointer border-b-2 border-transparent"
-                >
-                    <code-icon class="w-auto h-12 mr-4" />
-                    <div class="text-sm">Raw</div>
-                </div>
-                <div
-                    @click="$emit('onUpdateDisplayMode', 'charts')"
-                    :class="displayMode === 'charts' ? 'text-nebula-blue border-b-2 border-nebula-blue-opacity-80' : ''"
-                    class="bg-moon-grey p-4 h-28 px-12 flex items-center self-start cursor-pointer border-b-2 border-transparent"
-                >
-                    <bar-chart-icon class="w-auto h-12 mr-4" />
-                    <div class="text-sm">Charts</div>
-                </div>
-            </div>
+            <small-tabs
+                :value="displayMode"
+                @input="$emit('onUpdateDisplayMode', $event)"
+                :tabs="[
+                    {value: 'list', name: 'List', icon: ListIcon},
+                    {value: 'images', name: 'Images', icon: GridIcon},
+                    {value: 'raw', name: 'Raw', icon: CodeIcon},
+                    {value: 'charts', name: 'Charts', icon: BarChartIcon},
+                ]"
+            />
             <div v-if="!readOnly && displayMode === 'list'" class="ml-auto flex items-center">
                 <button class="relative group">
                     <plus-circle-icon
@@ -104,6 +80,7 @@
     import PerformSearch from "./PerformSearch";
     import ResultsInfo from "./ResultsInfo";
     import props from '../props';
+    import SmallTabs from "../../tabs/SmallTabs";
 
     export default {
         name: 'Results',
@@ -119,10 +96,11 @@
             ...props.actions,
         ],
         components: {
+            SmallTabs,
             ResultsInfo,
             PerformSearch,
             Tooltip,
-            HitEdit, ExportParams, RawResponse, RankingCharts, ResultsList, ListIcon, BarChartIcon, CodeIcon, GridIcon, PlusCircleIcon},
+            HitEdit, ExportParams, RawResponse, RankingCharts, ResultsList, PlusCircleIcon},
         created: function () {
             this.$root.$on(`${this.panelKey}HitJumping`, (record) => {
                 this.isAddingRecord = true;
@@ -133,6 +111,10 @@
             return {
                 isAddingRecord: false,
                 jumpedHit: null,
+                ListIcon,
+                GridIcon: GridIcon,
+                CodeIcon: CodeIcon,
+                BarChartIcon: BarChartIcon,
             }
         },
     }
