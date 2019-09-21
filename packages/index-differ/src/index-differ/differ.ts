@@ -66,13 +66,13 @@ class DiffGenerator {
 
     stats: {
         added: number;
-        addedPct: number;
+        addedPercentage: number;
         untouched: number;
-        untouchedPct: number;
-        deleted: number;
-        deletedPct: number;
+        untouchedPercentage: number;
+        removed: number;
+        removedPercentage: number;
         modified: number;
-        modifiedPct: number;
+        modifiedPercentage: number;
     };
 
     constructor(
@@ -89,13 +89,13 @@ class DiffGenerator {
 
         this.stats = {
             added: 0,
-            addedPct: 0,
+            addedPercentage: 0,
             untouched: 0,
-            untouchedPct: 0,
-            deleted: 0,
-            deletedPct: 0,
+            untouchedPercentage: 0,
+            removed: 0,
+            removedPercentage: 0,
             modified: 0,
-            modifiedPct: 0,
+            modifiedPercentage: 0,
         };
         this.settings();
         this.records();
@@ -150,21 +150,6 @@ class DiffGenerator {
                 content.hits.forEach((hit: any) => {
                     this[name].records[hit.objectID] = hit;
                 });
-                const modified: Entry[] = content.hits.map(
-                    (record: any): Entry => {
-                        return {
-                            record,
-                            exists: false,
-                            diff: false,
-                        };
-                    }
-                );
-
-                const browse: Entry[] = [...this[name].browse, ...modified]/*.sort(
-                    (a: any, b: any) => {
-                        return a.objectID > b.objectID ? 1 : -1;
-                    }
-                );*/
 
                 const objectIDs = content.hits.map((record: any): string => {
                     return record.objectID;
@@ -176,7 +161,6 @@ class DiffGenerator {
                 } else {
                     this[name].cursor = content.cursor;
                 }
-                this[name].browse = browse;
                 resolve();
             };
 
@@ -189,11 +173,9 @@ class DiffGenerator {
     }
 
     postProcessBrowse(): void {
-        const ABrowse = this.A.browse;
-        const BBrowse = this.B.browse;
         let added = 0;
         let untouched = 0;
-        let deleted = 0;
+        let removed = 0;
         let modified = 0;
 
         this.recordsDiff = [];
@@ -209,13 +191,16 @@ class DiffGenerator {
                     this.B.records[value] ? JSON.stringify(this.B.records[value], null, 2) : '',
                 );
 
-                if (!group.added) lineNumberA++;
-                if (!group.removed) lineNumberB++;
+                const isModified = !group.added && !group.removed && Array.isArray(rawDiffs) && rawDiffs.length > 1;
+
+                if (group.added) { added++ } else { lineNumberA++ }
+                if (group.removed) { removed++ } else { lineNumberB++ }
+                if (isModified) modified++;
 
                 this.recordsDiff.push({
                     added: group.added,
                     removed: group.removed,
-                    modified: !group.added && !group.removed && Array.isArray(rawDiffs) && rawDiffs.length > 1,
+                    modified: isModified,
                     lineNumberA,
                     lineNumberB,
                     value: value,
@@ -224,64 +209,19 @@ class DiffGenerator {
             });
         });
 
-        console.log(this.recordsDiff);
+        const biggest = Object.keys(this.B.records).length + removed;
 
-        ABrowse.forEach((entry: Entry) => {
-            if (entry.exists) {
-                return;
-            }
-
-            const inB = this.B.browse.find(
-                entryB => entryB.record.objectID === entry.record.objectID
-            );
-
-            if (!inB) {
-                deleted += 1;
-                entry.exists = false;
-                entry.diff = false;
-            } else {
-                entry.exists = inB;
-            }
-        });
-
-        BBrowse.forEach((entry: Entry) => {
-            if (entry.exists) {
-                if (entry.diff) modified += 1;
-                else untouched += 1;
-                return;
-            }
-
-            const inA = this.A.browse.find(
-                entryA => entryA.record.objectID === entry.record.objectID
-            );
-
-            if (!inA) {
-                added += 1;
-            } else {
-                entry.exists = inA;
-                const diff = Diff.diffJson(inA.record, entry.record);
-                if (Array.isArray(diff) && diff.length > 1) {
-                    entry.diff = true;
-                    modified += 1;
-                } else {
-                    entry.diff = false;
-                    untouched += 1;
-                }
-            }
-        });
-
-        const biggest = this.B.browse.length + deleted;
+        console.log(modified);
 
         this.stats = {
-            ...this.stats,
             added,
-            addedPct: Math.round((added / biggest) * 100),
+            addedPercentage: Math.round((added / biggest) * 100),
             untouched,
-            untouchedPct: Math.round((untouched / biggest) * 100),
-            deleted,
-            deletedPct: Math.round((deleted / biggest) * 100),
+            untouchedPercentage: Math.round((untouched / biggest) * 100),
+            removed,
+            removedPercentage: Math.round((removed / biggest) * 100),
             modified,
-            modifiedPct: Math.round((modified / biggest) * 100),
+            modifiedPercentage: Math.round((modified / biggest) * 100),
         };
     }
 }
