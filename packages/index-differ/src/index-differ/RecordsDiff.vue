@@ -2,19 +2,31 @@
     <div class="text-telluric-blue">
         <div class="flex justify-center py-12">
             <div>
-                Added: {{differ.stats.added}} ({{differ.stats.addedPercentage}}%)
+                <label>
+                    <input type="checkbox" v-model="filterAdded">
+                    Added: {{differ.stats.added}} ({{differ.stats.addedPercentage}}%)
+                </label>
             </div>
             <div class="ml-32">
-                Deleted: {{differ.stats.removed}} ({{differ.stats.removedPercentage}}%)
+                <label>
+                    <input type="checkbox" v-model="filterRemoved">
+                    Deleted: {{differ.stats.removed}} ({{differ.stats.removedPercentage}}%)
+                </label>
             </div>
             <div class="ml-32">
-                Modified: {{differ.stats.modified}} ({{differ.stats.modifiedPercentage}}%)
+                <label>
+                    <input type="checkbox" v-model="filterModified">
+                    Modified: {{differ.stats.modified}} ({{differ.stats.modifiedPercentage}}%)
+                </label>
             </div>
             <div class="ml-32">
-                Untouched: {{differ.stats.untouched}} ({{differ.stats.untouchedPercentage}}%)
+                <label>
+                    <input type="checkbox" v-model="filterUntouched">
+                    Untouched: {{differ.stats.untouched}} ({{differ.stats.untouchedPercentage}}%)
+                </label>
             </div>
         </div>
-        <record-diff :diff="diff" v-for="diff in differ.recordsDiff" />
+        <record-diff :diff="diff" v-for="diff in diffs" />
     </div>
 </template>
 
@@ -24,6 +36,28 @@
         name: 'RecordsDiff',
         components: {RecordDiff},
         props: ['differ'],
+        data: function () {
+            return {
+                filterAdded: true,
+                filterRemoved: true,
+                filterModified: true,
+                filterUntouched: true,
+            }
+        },
+        computed: {
+            diffs: function () {
+                if (this.filterAdded && this.filterRemoved && this.filterModified && this.filterUntouched) {
+                    return this.differ.recordsDiff;
+                } else {
+                    return this.differ.recordsDiff.filter((diff) => {
+                        return (diff.added && this.filterAdded)
+                            || (diff.removed && this.filterRemoved)
+                            || (diff.modified && this.filterModified)
+                            || (diff.untouched && this.filterUntouched);
+                    });
+                }
+            },
+        }
     }
 </script>
 
