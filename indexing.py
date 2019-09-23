@@ -102,7 +102,7 @@ index.set_settings({
         'type'
     ],
     'customRanking': [
-        'rank'
+        'asc(rank)'
     ],
 })
 
