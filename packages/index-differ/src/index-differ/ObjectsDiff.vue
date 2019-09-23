@@ -1,37 +1,38 @@
 <template>
     <div class="text-telluric-blue">
-        <div class="flex justify-center py-12">
-            <div>
-                <label>
-                    <input type="checkbox" v-model="filterAdded">
-                    Added: {{differ.stats[resourceName].added}} ({{differ.stats[resourceName].addedPercentage}}%)
-                </label>
-            </div>
-            <div class="ml-32">
-                <label>
-                    <input type="checkbox" v-model="filterRemoved">
-                    Deleted: {{differ.stats[resourceName].removed}} ({{differ.stats[resourceName].removedPercentage}}%)
-                </label>
-            </div>
-            <div class="ml-32">
-                <label>
-                    <input type="checkbox" v-model="filterModified">
-                    Modified: {{differ.stats[resourceName].modified}} ({{differ.stats[resourceName].modifiedPercentage}}%)
-                </label>
-            </div>
-            <div class="ml-32">
-                <label>
-                    <input type="checkbox" v-model="filterUntouched">
-                    Untouched: {{differ.stats[resourceName].untouched}} ({{differ.stats[resourceName].untouchedPercentage}}%)
-                </label>
+        <div class="flex justify-center">
+            <div class="text-nova-grey bg-moon-grey-opacity-50 border border-proton-grey-opacity-20 px-16 py-8">
+                <div>
+                    <label>
+                        <input type="checkbox" v-model="filterUntouched">
+                        Untouched: {{differ.stats[resourceName].untouched}} ({{differ.stats[resourceName].untouchedPercentage}}%)
+                    </label>
+                </div>
+                <div class="mt-16">
+                    <label>
+                        <input type="checkbox" v-model="filterAdded">
+                        Added: {{differ.stats[resourceName].added}} ({{differ.stats[resourceName].addedPercentage}}%)
+                    </label>
+                </div>
+                <div>
+                    <label>
+                        <input type="checkbox" v-model="filterRemoved">
+                        Deleted: {{differ.stats[resourceName].removed}} ({{differ.stats[resourceName].removedPercentage}}%)
+                    </label>
+                </div>
+                <div>
+                    <label>
+                        <input type="checkbox" v-model="filterModified">
+                        Modified: {{differ.stats[resourceName].modified}} ({{differ.stats[resourceName].modifiedPercentage}}%)
+                    </label>
+                </div>
             </div>
         </div>
         <div class="flex py-12 items-center justify-around h-56">
             <div>
                 {{differ.A.ids[resourceName].length}}
                 <span v-if="resourceName === 'records'">/{{differ.A.nbHits[resourceName]}}</span>
-                {{resourceName}}
-                <span v-if="resourceName === 'records'">loaded</span>
+                {{resourceName}} loaded
             </div>
             <div :class="{invisible: differ.isComplete || loading}" v-if="resourceName === 'records'">
                 <button
@@ -44,10 +45,15 @@
             <div>
                 {{differ.B.ids[resourceName].length}}
                 <span v-if="resourceName === 'records'">/{{differ.B.nbHits[resourceName]}}</span>
-                {{resourceName}}
-                <span v-if="resourceName === 'records'">loaded</span>
+                {{resourceName}} loaded
             </div>
         </div>
+        <!--<div v-for="diff in diffs" class="mt-12">
+            <div>added {{diff.added}}</div>
+            <div>removed {{diff.removed}}</div>
+            <div>modified {{diff.modified}}</div>
+            <div>untouched {{diff.untouched}}</div>
+        </div>-->
         <object-diff :diff="diff" v-for="diff in diffs" />
     </div>
 </template>

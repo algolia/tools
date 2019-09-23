@@ -1,5 +1,6 @@
 <template>
     <div
+        class="my-4"
         :class="{
             'd2h-del': diff.removed,
             'd2h-mod': diff.modified,
@@ -32,7 +33,7 @@
             </div>
         </div>
         <div v-if="!collapsed" class="p-1">
-            <div class="bg-moon-grey mx-16 mb-16">
+            <div class="bg-white mx-16 mb-16">
                 <div class="flex justify-center">
                     <div class="text-sm uppercase tracking-wide pt-16">Comparison</div>
                 </div>

@@ -273,6 +273,7 @@ class DiffGenerator {
                     added: group.added,
                     removed: group.removed,
                     modified: isModified,
+                    untouched: (!group.added && !group.removed && !isModified),
                     lineNumberA,
                     lineNumberB,
                     value: value,
