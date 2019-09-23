@@ -29,7 +29,8 @@ with open('./dictionaries/out/stopwords/stopwords.txt') as f:
         records.append({
             'lang': split[0].strip(),
             'words': [split[1].strip()],
-            'type': 'stopword'
+            'type': 'stopword',
+            'rank': 1,
         })
         nb_stop_words += 1
 
@@ -46,7 +47,8 @@ with open('./dictionaries/out/plurals/plurals.txt') as f:
         records.append({
             'lang': split[0].strip(),
             'words': split[1].strip().split(','),
-            'type': 'plural'
+            'type': 'plural',
+            'rank': 2,
         })
         nb_plurals += 1
 
@@ -63,7 +65,8 @@ with open('./dictionaries/out/compounds/compounds.txt') as f:
         records.append({
             'lang': split[0].strip(),
             'words': split[1].strip().split(','),
-            'type': 'compound'
+            'type': 'compound',
+            'rank': 3,
         })
         nb_compounds += 1
 
@@ -80,7 +83,8 @@ with open('./dictionaries/out/segmentation/cjkt-words.txt') as f:
         records.append({
             'lang': 'cjkt',
             'words': line,
-            'type': 'segmentation'
+            'type': 'segmentation',
+            'rank': 4,
         })
         nb_words += 1
 
@@ -88,16 +92,19 @@ print('%s segmentations processed' % nb_words)
 
 
 index.replace_all_objects(records, {'autoGenerateObjectIDIfNotExist': True, 'safe': True})
-# index.set_settings({
-#     'searchableAttributes': [
-#         'unordered(words)',
-#         'unordered(lang)',
-#     ],
-#     'attributesForFaceting': [
-#         'searchable(lang)',
-#         'type'
-#     ]
-# })
+index.set_settings({
+    'searchableAttributes': [
+        'unordered(words)',
+        'unordered(lang)',
+    ],
+    'attributesForFaceting': [
+        'searchable(lang)',
+        'type'
+    ],
+    'customRanking': [
+        'rank'
+    ],
+})
 
 processingTime = round(time.time() - time_start, 2)
 print('%s records imported in %s seconds' % (len(records), processingTime))
