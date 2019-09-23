@@ -18,18 +18,18 @@
     "default": {
         "algoliasearch": {
             "hashes": [
-                "sha256:656d2b59a003ea9d83eae7ed4c7a709b1282945a7e641fb31fe6af63193d640f",
-                "sha256:ef5f7b351660767a8892dbde17d146ba7c7c20e37610490bc4c56d7f1a208017"
+                "sha256:345aab10d7e850ecfd8ae91ddd92dc1d9de2973eddb2b56c6659b3a5e6b8121c",
+                "sha256:e42b737b4310523519b9243091a7f519a515fb2716c6b58e950cc23f989bc227"
             ],
             "index": "pypi",
-            "version": "==2.0.3"
+            "version": "==2.1.0"
         },
         "certifi": {
             "hashes": [
-                "sha256:59b7658e26ca9c7339e00f8f4636cdfe59d34fa37b9b04f6f9e9926b3cece1a5",
-                "sha256:b26104d6835d1f5e49452a26eb2ff87fe7090b89dfcaee5ea2212697e1e1d7ae"
+                "sha256:e4f3620cfea4f83eedc95b24abd9cd56f3c4b146dd0177e83a21b4eb49e21e50",
+                "sha256:fd7c7c74727ddcf00e9acd26bba8da604ffec95bf1c2144e67aff7a8b50e6cef"
             ],
-            "version": "==2019.3.9"
+            "version": "==2019.9.11"
         },
         "chardet": {
             "hashes": [
@@ -54,10 +54,10 @@
         },
         "urllib3": {
             "hashes": [
-                "sha256:b246607a25ac80bedac05c6f282e3cdaf3afb65420fd024ac94435cabe6e18d1",
-                "sha256:dbe59173209418ae49d485b87d1681aefa36252ee85884c31346debd19463232"
+                "sha256:2f3eadfea5d92bc7899e75b5968410b749a054b492d5a6379c1344a1481bc2cb",
+                "sha256:9c6c593cb28f52075016307fc26b0a0f8e82bc7d1ff19aaaa959b91710a56c47"
             ],
-            "version": "==1.25.3"
+            "version": "==1.25.5"
         }
     },
     "develop": {}
