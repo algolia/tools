@@ -12,6 +12,7 @@ var search = instantsearch({
 search.addWidget(
   instantsearch.widgets.searchBox({
     container: '#search-box',
+    placeholder: 'Search words',
   })
 );
 
@@ -21,10 +22,12 @@ search.addWidget(
     templates: {
       item: ` 
         <div class="hit">
-            <div class="info">{{type}} - {{{_highlightResult.lang.value}}}</div>
-            {{#_highlightResult.words}}
-                {{{value}}}
-            {{/_highlightResult.words}}
+            <div class="info">{{type}} – {{{_highlightResult.lang.value}}}</div>
+            <div class="words">
+              {{#_highlightResult.words}}
+                  {{{value}}}
+              {{/_highlightResult.words}}
+            </div>
         </div>
       `
     }
@@ -33,8 +36,8 @@ search.addWidget(
 
 const refinementListWithPanelDictionary = instantsearch.widgets.panel({
   templates: {
-      header: 'Dictionary'
-    }
+    header: 'Dictionary'
+  }
 })(instantsearch.widgets.refinementList);
 
 search.addWidget(
@@ -42,15 +45,15 @@ search.addWidget(
     container: '#refinement-list-type',
     attribute: 'type',
     operator: 'or',
-    limit: 1000,
-    sortBy: ["name:asc"],
+    limit: 10,
+    sortBy: ['name:asc'],
   })
 );
 
 const refinementListWithPanelLanguage = instantsearch.widgets.panel({
   templates: {
-      header: 'Language'
-    }
+    header: 'Language'
+  }
 })(instantsearch.widgets.refinementList);
 
 search.addWidget(
@@ -58,9 +61,11 @@ search.addWidget(
     container: '#refinement-list-lang',
     attribute: 'lang',
     operator: 'or',
-    limit: 100,
+    limit: 20,
+    showMore: true,
+    showMoreLimit: 100,
     searchable: true,
-    sortBy: ["name:asc"],
+    sortBy: ['name:asc'],
     templates: {
       header: 'Language'
     }
@@ -70,7 +75,7 @@ search.addWidget(
 search.addWidget(
   instantsearch.widgets.pagination({
     container: '#pagination',
-    maxPages: 50,
+    totalPages: 25,
     // default is to scroll to 'body', here we disable this behavior
     scrollTo: false,
     showFirstLast: true,
