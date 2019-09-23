@@ -28,12 +28,7 @@
                 </div>
             </div>
         </div>
-        <div class="flex py-12 items-center justify-around h-56">
-            <div>
-                {{differ.A.ids[resourceName].length}}
-                <span v-if="resourceName === 'records'">/{{differ.A.nbHits[resourceName]}}</span>
-                {{resourceName}} loaded
-            </div>
+        <div class="flex py-12 items-center justify-around">
             <div :class="{invisible: differ.isComplete || loading}" v-if="resourceName === 'records'">
                 <button
                     @click="loadMore"
@@ -42,10 +37,17 @@
                     Load more records
                 </button>
             </div>
-            <div>
-                {{differ.B.ids[resourceName].length}}
-                <span v-if="resourceName === 'records'">/{{differ.B.nbHits[resourceName]}}</span>
-                {{resourceName}} loaded
+        </div>
+        <div class="flex py-12">
+            <div class="flex w-half ml-32">
+                <div><span class="capitalize">{{resourceName}}</span> loaded:</div>
+                <div class="ml-4">{{differ.A.ids[resourceName].length}}</div>
+                <div v-if="resourceName === 'records'">/{{differ.A.nbHits[resourceName]}}</div>
+            </div>
+            <div class="flex w-half ml-32">
+                <div><span class="capitalize">{{resourceName}}</span> loaded:</div>
+                <div class="ml-4">{{differ.B.ids[resourceName].length}}</div>
+                <div v-if="resourceName === 'records'">/{{differ.B.nbHits[resourceName]}}</div>
             </div>
         </div>
         <object-diff :diff="diff" v-for="diff in diffs" />
