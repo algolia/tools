@@ -42,37 +42,47 @@
     export default {
         name: 'IndexDiffer',
         components: {Diffs, DisplayConfig, AppHeader, AppManagement, AppSelector, IndexSelector},
+        created: function () {
+            if (!this.leftAppId && Object.keys(this.$store.state.apps).length > 0) {
+                this.leftAppId = Object.keys(this.$store.state.apps)[0];
+            }
+            if (!this.rightAppId && Object.keys(this.$store.state.apps).length > 0) {
+                this.rightAppId = Object.keys(this.$store.state.apps)[0];
+            }
+        },
         computed: {
             leftAppId: {
                 get () {
-                    return this.$store.state.panels.leftPanel.appId;
+                    return this.$store.state.indexdiffer.leftAppId;
                 },
                 set (appId) {
-                    this.$store.commit(`panels/leftPanel/setPanelConfig`, {appId: appId, indexName: null});
+                    this.leftIndexName = null;
+                    this.$store.commit(`indexdiffer/setLeftAppId`, appId);
                 }
             },
             leftIndexName: {
                 get () {
-                    return this.$store.state.panels.leftPanel.indexName;
+                    return this.$store.state.indexdiffer.leftIndexName;
                 },
                 set (indexName) {
-                    this.$store.commit('panels/leftPanel/setPanelConfig', {appId: this.leftAppId, indexName: indexName});
+                    this.$store.commit('indexdiffer/setLeftIndexName', indexName);
                 }
             },
             rightAppId: {
                 get () {
-                    return this.$store.state.panels.rightPanel.appId;
+                    return this.$store.state.indexdiffer.rightAppId;
                 },
                 set (appId) {
-                    this.$store.commit(`panels/rightPanel/setPanelConfig`, {appId: appId, indexName: null});
+                    this.rightIndexName = null;
+                    this.$store.commit(`indexdiffer/setRightAppId`, appId);
                 }
             },
             rightIndexName: {
                 get () {
-                    return this.$store.state.panels.rightPanel.indexName;
+                    return this.$store.state.indexdiffer.rightIndexName;
                 },
                 set (indexName) {
-                    this.$store.commit('panels/rightPanel/setPanelConfig', {appId: this.rightAppId, indexName: indexName});
+                    this.$store.commit('indexdiffer/setRightIndexName', indexName);
                 }
             },
         }

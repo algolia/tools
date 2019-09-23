@@ -46,7 +46,6 @@
                 leftIndex: null,
                 rightIndex: null,
                 differ: null,
-                currentTab: 'settings',
             }
         },
         created: async function () {
@@ -70,6 +69,16 @@
             rightIndexName: async function () {
                 await this.getRightIndex();
                 this.getDiffer();
+            },
+        },
+        computed: {
+            currentTab: {
+                get () {
+                    return this.$store.state.indexdiffer.currentTab || 'settings';
+                },
+                set (tabName) {
+                    this.$store.commit(`indexdiffer/setCurrentTab`, tabName);
+                }
             },
         },
         methods: {
