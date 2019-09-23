@@ -48,12 +48,6 @@
                 {{resourceName}} loaded
             </div>
         </div>
-        <!--<div v-for="diff in diffs" class="mt-12">
-            <div>added {{diff.added}}</div>
-            <div>removed {{diff.removed}}</div>
-            <div>modified {{diff.modified}}</div>
-            <div>untouched {{diff.untouched}}</div>
-        </div>-->
         <object-diff :diff="diff" v-for="diff in diffs" />
     </div>
 </template>
@@ -69,7 +63,7 @@
                 filterAdded: true,
                 filterRemoved: true,
                 filterModified: true,
-                filterUntouched: true,
+                filterUntouched: false,
                 loading: false,
             }
         },

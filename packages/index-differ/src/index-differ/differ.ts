@@ -226,6 +226,9 @@ class DiffGenerator {
                     return record.objectID;
                 });
                 this[name].ids.records.push(...recordsIds);
+                this[name].ids.records.sort((a: string, b: string) => {
+                    return a.localeCompare(b);
+                });
 
                 if (content.cursor === undefined) {
                     this[name].complete = true;
