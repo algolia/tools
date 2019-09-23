@@ -63,20 +63,30 @@
                 filterAdded: true,
                 filterRemoved: true,
                 filterModified: true,
-                filterUntouched: false,
+                filterUntouched: true,
                 loading: false,
             }
         },
         computed: {
             diffs: function () {
                 if (this.filterAdded && this.filterRemoved && this.filterModified && this.filterUntouched) {
-                    return this.differ.diffs[this.resourceName];
+                    return this.differ.diffs[this.resourceName].sort((a, b) => {
+                        if (a.added > b.added) return -1;
+                        if (a.removed > b.removed) return -1;
+                        if (a.modified > b.modified) return -1;
+                        return a.untouched - b.untouched;
+                    });
                 } else {
                     return this.differ.diffs[this.resourceName].filter((diff) => {
                         return (diff.added && this.filterAdded)
                             || (diff.removed && this.filterRemoved)
                             || (diff.modified && this.filterModified)
                             || (diff.untouched && this.filterUntouched);
+                    }).sort((a, b) => {
+                        if (a.added > b.added) return 1;
+                        if (a.removed > b.removed) return 1;
+                        if (a.modified > b.modified) return 1;
+                        return a.untouched - b.untouched;
                     });
                 }
             },
