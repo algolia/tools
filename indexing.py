@@ -17,8 +17,11 @@ index = client.init_index(index_name)
 records = []
 time_start = time.time()
 
-# stopwords.txt can be found there:
-# https://github.com/algolia/dictionaries/blob/master/out/stopwords/stopwords.txt
+'''
+DICTIONARIES: https://github.com/algolia/dictionaries/blob/master/out/
+'''
+
+# STOPWORDS
 nb_stop_words = 0
 with open('./dictionaries/out/stopwords/stopwords.txt') as f:
     for line in f:
@@ -32,6 +35,7 @@ with open('./dictionaries/out/stopwords/stopwords.txt') as f:
 
 print('%s stopwords processed' % nb_stop_words)
 
+# PLURALS
 nb_plurals = 0
 with open('./dictionaries/out/plurals/plurals.txt') as f:
     for line in f:
@@ -48,18 +52,52 @@ with open('./dictionaries/out/plurals/plurals.txt') as f:
 
 print('%s plurals processed' % nb_plurals)
 
+# COMPOUNDS
+nb_compounds = 0
+with open('./dictionaries/out/compounds/compounds.txt') as f:
+    for line in f:
+        if '=' not in line:
+            continue
 
-index.replace_all_objects(records, {"autoGenerateObjectIDIfNotExist": True, 'safe': True})
-index.set_settings({
-    'searchableAttributes': [
-        'unordered(words)',
-        'unordered(lang)',
-    ],
-    'attributesForFaceting': [
-        'searchable(lang)',
-        'type'
-    ]
-})
+        split = line.split('=')
+        records.append({
+            'lang': split[0].strip(),
+            'words': split[1].strip().split(','),
+            'type': 'compound'
+        })
+        nb_compounds += 1
+
+print('%s compounds processed' % nb_compounds)
+
+# SEGMENTATION
+nb_words = 0
+with open('./dictionaries/out/segmentation/cjkt-words.txt') as f:
+    for line in f:
+        if len(line) == 0 or line.startswith('#') or line == '\n':
+            continue
+
+        split = line.split('=')
+        records.append({
+            'lang': 'cjkt',
+            'words': line,
+            'type': 'segmentation'
+        })
+        nb_words += 1
+
+print('%s segmentations processed' % nb_words)
+
+
+index.replace_all_objects(records, {'autoGenerateObjectIDIfNotExist': True, 'safe': True})
+# index.set_settings({
+#     'searchableAttributes': [
+#         'unordered(words)',
+#         'unordered(lang)',
+#     ],
+#     'attributesForFaceting': [
+#         'searchable(lang)',
+#         'type'
+#     ]
+# })
 
 processingTime = round(time.time() - time_start, 2)
 print('%s records imported in %s seconds' % (len(records), processingTime))
