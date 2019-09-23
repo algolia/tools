@@ -5,12 +5,20 @@
                 v-model="currentTab"
                 :tabs="[
                     {value: 'settings', name: 'Settings'},
+                    {value: 'synonyms', name: 'Synonyms'},
+                    {value: 'rules', name: 'Rules'},
                     {value: 'records', name: 'Records'},
                 ]"
             />
         </div>
         <div v-if="currentTab === 'records'">
-            <records-diff v-if="differ && differ.recordsDiff" :differ="differ" />
+            <objects-diff v-if="differ && differ.diffs.records" :differ="differ" :resource-name="currentTab" />
+        </div>
+        <div v-if="currentTab === 'synonyms'">
+            <objects-diff v-if="differ && differ.diffs.synonyms" :differ="differ" :resource-name="currentTab" />
+        </div>
+        <div v-if="currentTab === 'rules'">
+            <objects-diff v-if="differ && differ.diffs.rules" :differ="differ" :resource-name="currentTab" />
         </div>
         <div v-if="currentTab === 'settings'">
             <compare-strings
@@ -27,11 +35,11 @@
     import Differ from "@/index-differ/differ";
     import CompareStrings from "@/index-differ/CompareStrings";
     import SmallTabs from "common/components/tabs/SmallTabs";
-    import RecordsDiff from "@/index-differ/RecordsDiff";
+    import ObjectsDiff from "@/index-differ/ObjectsDiff";
 
     export default {
         name: 'Diffs',
-        components: {RecordsDiff, CompareStrings, SmallTabs},
+        components: {ObjectsDiff, CompareStrings, SmallTabs},
         props: ['leftAppId', 'leftIndexName', 'rightAppId', 'rightIndexName'],
         data: function () {
             return {

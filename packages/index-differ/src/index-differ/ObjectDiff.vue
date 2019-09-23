@@ -34,7 +34,7 @@
         <div v-if="!collapsed" class="p-1">
             <div class="bg-moon-grey mx-16 mb-16">
                 <div class="flex justify-center">
-                    <div class="text-sm uppercase tracking-wide pt-16">Record Comparison</div>
+                    <div class="text-sm uppercase tracking-wide pt-16">Comparison</div>
                 </div>
                 <compare-strings
                     class="nested-compare p-16"

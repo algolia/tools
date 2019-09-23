@@ -5,20 +5,41 @@ enum Version {
     A = 'A',
     B = 'B',
 }
-export interface Record {
-    objectID: string;
+
+enum ResourceName {
+    RECORDS = 'records',
+    SYNONYMS = 'synonyms',
+    RULES = 'rules',
 }
-export interface Entry {
-    record: Record;
-    exists: Entry | false;
-    diff: boolean;
+
+interface Stat {
+    added: number;
+    addedPercentage: number;
+    untouched: number;
+    untouchedPercentage: number;
+    removed: number;
+    removedPercentage: number;
+    modified: number;
+    modifiedPercentage: number;
 }
 
 export interface IndexDiff {
     settings: object;
-    objectIDs: string[],
-    records: any,
-    nbHits: any;
+    ids: {
+        records: string[],
+        synonyms: string[],
+        rules: string[],
+    }
+    objects: {
+        records: any,
+        synonyms: any,
+        rules: any,
+    },
+    nbHits: {
+        records: number,
+        synonyms: number,
+        rules: number,
+    };
     complete: boolean;
     cursor: string | null;
 }
@@ -52,7 +73,7 @@ function createPatchFromDiffs(rawDiffs:any) {
 export function createPatch(a:string, b:string) {
     const rawDiffs = createDiffObject(a, b);
     return createPatchFromDiffs(rawDiffs);
-};
+}
 
 class DiffGenerator {
     indexA: algoliasearch.Index;
@@ -61,17 +82,16 @@ class DiffGenerator {
     A: IndexDiff;
     B: IndexDiff;
 
-    recordsDiff: any[];
+    diffs: {
+        records: any[],
+        rules: any[],
+        synonyms: any[],
+    };
 
     stats: {
-        added: number;
-        addedPercentage: number;
-        untouched: number;
-        untouchedPercentage: number;
-        removed: number;
-        removedPercentage: number;
-        modified: number;
-        modifiedPercentage: number;
+        records: Stat,
+        rules: Stat,
+        synonyms: Stat,
     };
 
     constructor(
@@ -84,20 +104,22 @@ class DiffGenerator {
         this.A = getDefaultDiff();
         this.B = getDefaultDiff();
 
-        this.recordsDiff = [];
+        this.diffs = {
+            records: [],
+            rules: [],
+            synonyms: [],
+        };
 
         this.stats = {
-            added: 0,
-            addedPercentage: 0,
-            untouched: 0,
-            untouchedPercentage: 0,
-            removed: 0,
-            removedPercentage: 0,
-            modified: 0,
-            modifiedPercentage: 0,
+            records: getDefaultStat(),
+            synonyms: getDefaultStat(),
+            rules: getDefaultStat(),
         };
+
         this.settings();
         this.records();
+        this.synonyms();
+        this.rules();
     }
 
     get isComplete(): boolean {
@@ -114,14 +136,30 @@ class DiffGenerator {
     async records(): Promise<void> {
         const toCompute = [];
         if (!this.A.complete) {
-            toCompute.push(this.getBrowse(Version.A, this.indexA));
+            toCompute.push(this.getRecords(Version.A, this.indexA));
         }
         if (!this.B.complete) {
-            toCompute.push(this.getBrowse(Version.B, this.indexB));
+            toCompute.push(this.getRecords(Version.B, this.indexB));
         }
 
         await Promise.all(toCompute);
-        await this.postProcessBrowse();
+        this.postProcess(ResourceName.RECORDS);
+    }
+
+    async synonyms(): Promise<void> {
+        await Promise.all([
+            this.getSynonyms(Version.A, this.indexA),
+            this.getSynonyms(Version.B, this.indexB),
+        ]);
+        this.postProcess(ResourceName.SYNONYMS);
+    }
+
+    async rules(): Promise<void> {
+        await Promise.all([
+            this.getRules(Version.A, this.indexA),
+            this.getRules(Version.B, this.indexB),
+        ]);
+        this.postProcess(ResourceName.RULES);
     }
 
     private getSettings(name: Version, index: algoliasearch.Index): Promise<undefined> {
@@ -138,7 +176,39 @@ class DiffGenerator {
         });
     }
 
-    private getBrowse(name: Version, index: algoliasearch.Index) {
+    private async getSynonyms(name: Version, index: algoliasearch.Index): Promise<void> {
+        const synonyms: any[] = [];
+
+        // @ts-ignore: exportSynonyms is not in @types/algolia
+        await index.exportSynonyms(1000, (fetchedSynonyms: any) => {
+            synonyms.push(...fetchedSynonyms);
+        });
+
+        this[name].ids.synonyms = synonyms.map((synonym) => synonym.objectID);
+        this[name].nbHits.synonyms = synonyms.length;
+        this[name].objects.synonyms = synonyms.reduce((obj:any, synonym) => {
+            obj[synonym.objectID] = synonym;
+            return obj;
+        }, {});
+    }
+
+    private async getRules(name: Version, index: algoliasearch.Index): Promise<void> {
+        const rules: any[] = [];
+
+        // @ts-ignore: exportRules is not in @types/algolia
+        await index.exportRules(1000, (fetchedRules: any) => {
+            rules.push(...fetchedRules);
+        });
+
+        this[name].ids.rules = rules.map((rule) => rule.objectID);
+        this[name].nbHits.rules = rules.length;
+        this[name].objects.rules = rules.reduce((obj:any, rule) => {
+            obj[rule.objectID] = rule;
+            return obj;
+        }, {});
+    }
+
+    private getRecords(name: Version, index: algoliasearch.Index) {
         return new Promise((resolve, reject) => {
             const fn = (err: any, content: any) => {
                 if (err) {
@@ -147,15 +217,15 @@ class DiffGenerator {
                 }
 
                 content.hits.forEach((hit: any) => {
-                    this[name].records[hit.objectID] = hit;
+                    this[name].objects.records[hit.objectID] = hit;
                 });
 
-                this[name].nbHits = content.nbHits;
+                this[name].nbHits[ResourceName.RECORDS] = content.nbHits;
 
-                const objectIDs = content.hits.map((record: any): string => {
+                const recordsIds = content.hits.map((record: any): string => {
                     return record.objectID;
                 });
-                this[name].objectIDs.push(...objectIDs);
+                this[name].ids.records.push(...recordsIds);
 
                 if (content.cursor === undefined) {
                     this[name].complete = true;
@@ -173,23 +243,23 @@ class DiffGenerator {
         });
     }
 
-    postProcessBrowse(): void {
+    postProcess(resourceName:ResourceName): void {
         let added = 0;
         let untouched = 0;
         let removed = 0;
         let modified = 0;
 
-        this.recordsDiff = [];
+        this.diffs[resourceName] = [];
 
         let lineNumberA = 0;
         let lineNumberB = 0;
 
         // @ts-ignore
-        Diff.diffArrays(this.A.objectIDs, this.B.objectIDs).forEach((group: any) => {
+        Diff.diffArrays(this.A.ids[resourceName], this.B.ids[resourceName]).forEach((group: any) => {
             group.value.forEach((value: any) => {
                 const rawDiffs = createDiffObject(
-                    this.A.records[value] ? JSON.stringify(this.A.records[value], null, 2) : '',
-                    this.B.records[value] ? JSON.stringify(this.B.records[value], null, 2) : '',
+                    this.A.objects[resourceName][value] ? JSON.stringify(this.A.objects[resourceName][value], null, 2) : '',
+                    this.B.objects[resourceName][value] ? JSON.stringify(this.B.objects[resourceName][value], null, 2) : '',
                 );
 
                 const isModified = !group.added && !group.removed && Array.isArray(rawDiffs) && rawDiffs.length > 1;
@@ -199,7 +269,7 @@ class DiffGenerator {
                 if (isModified) modified++;
                 if (!group.added && !group.removed && !isModified) untouched++;
 
-                this.recordsDiff.push({
+                this.diffs[resourceName].push({
                     added: group.added,
                     removed: group.removed,
                     modified: isModified,
@@ -211,9 +281,9 @@ class DiffGenerator {
             });
         });
 
-        const biggest = Object.keys(this.B.records).length + removed;
+        const biggest = Object.keys(this.B.objects[resourceName]).length + removed;
 
-        this.stats = {
+        this.stats[resourceName] = {
             added,
             addedPercentage: Math.round((added / biggest) * 100),
             untouched,
@@ -229,11 +299,36 @@ class DiffGenerator {
 function getDefaultDiff(): IndexDiff {
     return {
         settings: {},
-        objectIDs: [],
-        records: {},
-        nbHits: 0,
+        ids: {
+            records: [],
+            synonyms: [],
+            rules: [],
+        },
+        objects: {
+            records: {},
+            synonyms: {},
+            rules: {},
+        },
+        nbHits: {
+            records: 0,
+            synonyms: 0,
+            rules: 0,
+        },
         complete: false,
         cursor: null,
+    };
+}
+
+function getDefaultStat() {
+    return {
+        added: 0,
+        addedPercentage: 0,
+        untouched: 0,
+        untouchedPercentage: 0,
+        removed: 0,
+        removedPercentage: 0,
+        modified: 0,
+        modifiedPercentage: 0,
     };
 }
 
