@@ -7,12 +7,26 @@
         <div class="max-w-960 mx-auto">
             <div class="rounded border border-proton-grey-opacity-60 mt-24">
                 <div class="flex bg-white p-8 bg-proton-grey-opacity-40 text-telluric-blue">
-                    <div class="flex w-full">
+                    <div class="flex w-full justify-between">
                         <div class="flex">
                             <app-selector v-model="leftAppId" class="mb-4" />
                             <index-selector v-model="leftIndexName" :app-id="leftAppId" class="ml-12 mb-4" />
                         </div>
-                        <div class="flex ml-auto">
+                        <div
+                            v-if="leftAppId === rightAppId && leftIndexName === rightIndexName"
+                            class="flex items-center border border-saturn-2 border-saturn-2 text-saturn-1 px-8 rounded"
+                        >
+                            <div>
+                                Diffing the same index
+                            </div>
+                        </div>
+                        <div v-else class="flex items-center justify-center">
+                            <swap-icon
+                                @click="swapIndex"
+                                class="w-24 h-24 cursor-pointer"
+                            />
+                        </div>
+                        <div class="flex">
                             <app-selector v-model="rightAppId" class="mb-4" />
                             <index-selector v-model="rightIndexName" :app-id="rightAppId" class="ml-12 mb-4" />
                         </div>
@@ -37,11 +51,12 @@
     import AppManagement from "common/components/configuration/AppManagement";
     import AppSelector from "common/components/selectors/AppSelector";
     import IndexSelector from "common/components/selectors/IndexSelector";
+    import SwapIcon from "common/icons/swap.svg";
     import Diffs from "@/index-differ/Diffs";
 
     export default {
         name: 'IndexDiffer',
-        components: {Diffs, DisplayConfig, AppHeader, AppManagement, AppSelector, IndexSelector},
+        components: {SwapIcon, Diffs, DisplayConfig, AppHeader, AppManagement, AppSelector, IndexSelector},
         created: function () {
             if (!this.leftAppId && Object.keys(this.$store.state.apps).length > 0) {
                 this.leftAppId = Object.keys(this.$store.state.apps)[0];
@@ -84,6 +99,17 @@
                 set (indexName) {
                     this.$store.commit('indexdiffer/setRightIndexName', indexName);
                 }
+            },
+        },
+        methods: {
+            swapIndex: function () {
+                const tmpAppId = this.leftAppId;
+                const tmpIndexName = this.leftIndexName;
+
+                this.leftAppId = this.rightAppId;
+                this.leftIndexName = this.rightIndexName;
+                this.rightAppId = tmpAppId;
+                this.rightIndexName = tmpIndexName;
             },
         }
     }
