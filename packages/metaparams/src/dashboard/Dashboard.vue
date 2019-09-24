@@ -13,14 +13,14 @@
                     <index-delete v-if="!isReadOnly" class="mb-12 pb-4" :panel-key="panelKey" />
                     <button v-if="$store.state.panels.splitMode && !sameIndexOnEachPanel && panelKey === 'leftPanel'"
                             @click="$store.commit('panels/rightFromLeft')"
-                            class="block ml-8 mb-12 relative group"
+                            class="block ml-8 mb-12 pb-4 relative group"
                     >
                         <flip-right-icon class="block w-16 h-16 text-solstice-blue fill-current"/>
                         <tooltip>Open this index in the right panel</tooltip>
                     </button>
                     <button v-if="$store.state.panels.splitMode && !sameIndexOnEachPanel && panelKey === 'rightPanel'"
                             @click="$store.commit('panels/leftFromRight')"
-                            class="block ml-8 mb-12 relative group"
+                            class="block ml-8 mb-12 pb-4 relative group"
                     >
                         <flip-left-icon class="block w-16 h-16 text-solstice-blue fill-current"/>
                         <tooltip>Open this index in the left panel</tooltip>
