@@ -19,9 +19,7 @@ export default function (indexSettings) {
         const ranking = [...this.ranking];
 
         if (this.isTypoStrictOrMin(searchParams)) {
-            ranking.sort((a, b) => {
-                return (a === 'typo' ? -1 : 1);
-            });
+            actualCriteria.push('typo');
         }
 
         let foundCustom = false;
@@ -35,6 +33,10 @@ export default function (indexSettings) {
                 this.customRanking.forEach(function (attribute) {
                     actualCriteria.push(attribute);
                 });
+            } else if (item === 'typo') {
+                if (actualCriteria.indexOf('typo') === -1) { // Might have been pushed already by typo min/strict
+                    actualCriteria.push('typo');
+                }
             } else if (item === 'attribute') {
                 actualCriteria.push('attribute');
                 actualCriteria.push('position');

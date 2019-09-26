@@ -67,7 +67,7 @@
                     };
 
                     if (this.isTypoStrictOrMin && criterionName === 'typo') {
-                        criterion.extraInfo = `// typo first because typoTolerance=${this.searchParams.typoTolerance}`;
+                        criterion.extraInfo = `// typo first because typoTolerance=${this.indexSettings.typoTolerance || this.searchParams.typoTolerance}`;
                     }
 
                     if (criterionName === 'geo') {
