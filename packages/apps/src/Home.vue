@@ -38,13 +38,14 @@
                         description: 'Feature complete. Used by several people on real use case already.',
                         apps: [
                             {name: 'Metaparams', url: '/metaparams'},
+                            {name: 'Logs', url: '/logs'},
                         ],
                     },
                     {
                         name: 'Beta',
                         description: 'Ready in terms of feature set. Not enough people tried it yet to consider it ready',
                         apps: [
-                            {name: 'Logs', url: '/logs'},
+                            {name: 'Index Differ', url: '/index-differ'},
                         ],
                     },
                     /*{
