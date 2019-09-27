@@ -151,6 +151,14 @@ const searchClientCache = {};
 const indexCache = {};
 
 function searchClient(appId, apiKey, server) {
+    if (appId === 'MySuperApp') {
+      return algoliasearch(appId, apiKey || ' ', {
+        _useCache: false,
+        hosts: ['127.0.0.1:9000'],
+        protocol: 'http',
+      });
+    }
+
     if (server === undefined || server === 'dsn') {
         return algoliasearch(appId, apiKey || ' ', {
             _useCache: false,
@@ -172,6 +180,15 @@ function searchClient(appId, apiKey, server) {
 export async function getClient(appId, apiKey) {
     const cacheKey = `${appId}-${apiKey}`;
     if (clientCache[cacheKey]) return clientCache[cacheKey];
+
+    if (appId === 'MySuperApp') {
+      return algoliasearch(appId, apiKey || ' ', {
+        _useCache: false,
+        hosts: ['127.0.0.1:9000'],
+        protocol: 'http',
+      });
+    }
+
     const client = algoliasearch(appId, apiKey || ' ', {
         _useCache: false,
         hosts: [appId + '-1.algolianet.com', appId + '-2.algolianet.com', appId + '-3.algolianet.com']
@@ -188,7 +205,7 @@ export async function getSearchClient(appId, apiKey, server) {
     const cacheKey = `${appId}-${apiKey}-${server}`;
     if (searchClientCache[cacheKey]) return searchClientCache[cacheKey];
     const client = searchClient(appId, apiKey, server);
-    if (apiKey) {
+    if (apiKey && appId !== 'MySuperApp') {
         const signature = await getSignature(appId);
         client.setExtraHeader('X-Algolia-Signature', signature);
     }
