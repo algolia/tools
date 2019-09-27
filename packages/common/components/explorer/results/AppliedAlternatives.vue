@@ -35,7 +35,7 @@
         data: function () {
             return {
                 // ignoreTypes: ['original', 'typo', 'conjugation']
-                keepTypes: ['excluded', 'plural', 'split', 'concat', 'synonym'],
+                keepTypes: ['excluded', 'plural', 'split', 'concat', 'synonym', 'compound'],
                 originalTypes: ['original', 'stopword', 'optional'],
             }
         },
