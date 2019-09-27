@@ -11,3 +11,4 @@ php -S localhost:8000 -t app
 ```
 cd indexing && update_dicts.sh
 ```
+
