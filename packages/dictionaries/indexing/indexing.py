@@ -3,9 +3,9 @@ from algoliasearch.configs import SearchConfig
 import time
 from os import environ
 
-app_id = environ['ALGOLIA_APP_ID']
-api_key = environ['ALGOLIA_WRITE_API_KEY']
-index_name = environ['INDEX_NAME']
+app_id = environ['DICTS_ALGOLIA_APP_ID']
+api_key = environ['DICTS_ALGOLIA_WRITE_API_KEY']
+index_name = environ['DICTS_INDEX_NAME']
 
 # init Algolia
 config = SearchConfig(app_id, api_key)
