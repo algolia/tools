@@ -24,4 +24,4 @@ yarn-error.log*
 src/assets/css/all.css
 stopwords*
 venv
-dictionaries/
+packages/dictionaries/dictionaries
