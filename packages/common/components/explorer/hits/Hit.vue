@@ -88,7 +88,7 @@
                         />
                         <tooltip>Delete this record.<br>Will ask for confirmation</tooltip>
                     </button>
-                    <div v-if="isReplica" class="ml-12">
+                    <div v-if="!readOnly && isReplica" class="ml-12">
                         Read-only replica
                     </div>
                 </div>
