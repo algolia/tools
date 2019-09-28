@@ -71,9 +71,6 @@
             run: {
                 deep: true,
                 handler () {
-                    if (this.$store.state.apps[this.run.app_id]) {
-                        this.run.api_key = this.$store.state.apps[this.run.app_id].key;
-                    }
                     this.suite.runRun(this.run, this.runPosition);
                     this.updateRun();
                 }
@@ -104,7 +101,9 @@
                     },
                 });
 
+                this.confirmDelete = false;
                 this.$delete(this.suite.runs, this.runPosition);
+                this.$emit('onDelete', this.run.id);
             }
         }
     }

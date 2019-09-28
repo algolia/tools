@@ -3,14 +3,14 @@
         <error-message
             v-if="errorMessage"
             :error-message="errorMessage"
-            :app-id="currentRun.app_id"
-            :api-key="currentRun.api_key"
+            :app-id="appId"
+            :api-key="apiKey"
             @onUpdateApiKey="onUpdateApiKey"
         />
         <perform-search
-            :app-id="currentRun.app_id"
-            :api-key="currentRun.api_key"
-            :index-name="currentRun.index_name"
+            :app-id="appId"
+            :api-key="apiKey"
+            :index-name="indexName"
             method="search"
             :search-params="params"
             query=""
@@ -28,9 +28,9 @@
             :index-settings="refIndexSettings"
             :analyse-max-nb-points="maxNbPoints"
             :read-only="true"
-            :app-id="currentRun.app_id"
-            :api-key="currentRun.api_key"
-            :index-name="currentRun.index_name"
+            :app-id="appId"
+            :api-key="apiKey"
+            :index-name="indexName"
             :query="currentTest.testData.when.query !== undefined ? currentTest.testData.when.query : ''"
             :display-mode="displayMode"
             :showSearchableAttributes="$store.state.panels.showSearchableAttributes"
@@ -91,6 +91,12 @@
             indexName: function () {
                 return this.currentRun.index_name;
             },
+            apiKey: function () {
+                if (this.$store.state.apps[this.appId]) {
+                    return this.$store.state.apps[this.appId].key;
+                }
+                return '';
+            },
             params: function () {
                 return Object.assign(
                     {},
@@ -107,8 +113,7 @@
         },
         methods: {
             onUpdateApiKey: function (apiKey) {
-                this.$store.commit('apps/addAppId', { appId: this.currentRun.app_id, apiKey: apiKey });
-                this.$set(this.currentRun, 'api_key', apiKey);
+                this.$store.commit('apps/addAppId', { appId: this.appId, apiKey: apiKey });
             }
         }
     }

@@ -2,7 +2,7 @@
     <tbody>
         <tr><td colspan="0" class="h-2 bg-moon-grey"></td></tr>
         <tr>
-            <td @click="collapse = !collapse" class="w-500">
+            <td @click="collapse = !collapse" class="w-500 min-w-500">
                 <edit-group
                     class="bg-proton-grey-opacity-40 ml-24"
                     :group="group"
@@ -23,7 +23,7 @@
             <template v-for="(test, testPos) in group.tests">
                 <tr><td colspan="0" class="h-2 bg-moon-grey"></td></tr>
                 <tr :key="test.id">
-                    <td class="h-1 w-500">
+                    <td class="h-1 w-500 min-w-500">
                         <edit-test
                             :test="test"
                             :test-pos="testPos"

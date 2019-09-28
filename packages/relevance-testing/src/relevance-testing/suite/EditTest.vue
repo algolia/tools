@@ -76,15 +76,15 @@
                                     </div>
                                     <div v-if="confirmDelete" class="flex">
                                         <button
-                                            @click="deleteTest(test, testPos)"
-                                            class="rounded bg-mars-1 shadow-sm hover:shadow transition-fast-out text-white p-8"
-                                        >
-                                            Confirm Delete
+                                            @click="confirmDelete = false"
+                                            class="block bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out px-16 p-8 text-sm relative group">
+                                            Cancel
                                         </button>
                                         <button
-                                            @click="confirmDelete = false"
-                                            class="ml-8 block bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out px-16 p-8 text-sm relative group">
-                                            Cancel
+                                            @click="deleteTest(test, testPos)"
+                                            class="ml-8 rounded bg-mars-1 shadow-sm hover:shadow transition-fast-out text-white p-8"
+                                        >
+                                            Confirm Delete
                                         </button>
                                     </div>
                                 </div>

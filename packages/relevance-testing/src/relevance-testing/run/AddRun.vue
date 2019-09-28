@@ -36,6 +36,7 @@
                 run.params = JSON.parse(run.params);
 
                 this.suite.runs.push(run);
+                this.$emit('onAddRun');
             },
         },
     }

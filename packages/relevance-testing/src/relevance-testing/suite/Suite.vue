@@ -4,7 +4,7 @@
             <div>
                 <table class="w-full">
                     <tr>
-                        <td class="w-500">
+                        <td class="w-500 min-w-500">
                             <div class="px-12">
                                 <div class="flex">
                                     <h2 class="text-telluric-blue">
@@ -35,11 +35,19 @@
                             <template v-for="(run, i) in suite.runs">
                                 <td class="w-2 bg-moon-grey"></td>
                                 <td class="bg-proton-grey-opacity-80 h-1 min-w-232">
-                                    <edit-run :suite="suite" :run="run" :run-position="i" />
+                                    <edit-run
+                                        :suite="suite"
+                                        :run="run"
+                                        :run-position="i"
+                                        @onDelete="onDeleteRun"
+                                    />
                                 </td>
                             </template>
                             <td class="h-1">
-                                <add-run :suite="suite" />
+                                <add-run
+                                    :suite="suite"
+                                    @onAddRun="onAddRun"
+                                />
                             </td>
                         </template>
                     </tr>
@@ -95,17 +103,41 @@
                             />
                         </div>
                         <div class="h-full min-w-two-third max-w-two-third bg-white">
-                            <div class="p-8 overflow-y-scroll h-full">
-                                <div class="flex">
+                            <div class="overflow-y-scroll h-full">
+                                <div v-if="currentRun">
                                     <div>
-                                        Run selector
+                                        <div class="flex text-nova-grey bg-moon-grey w-full overflow-x-auto">
+                                            <div
+                                                v-for="(run, i) in suite.runs"
+                                                class="px-24 py-8 cursor-pointer"
+                                                @click="currentRun = run"
+                                                :class="currentRun === run ? 'text-nebula-blue border-b-2 border-nebula-blue-opacity-80' : ''"
+                                            >
+                                                <div>{{run.app_id}}</div>
+                                                <div>{{run.index_name}}</div>
+                                                <div>pageSize: {{run.hits_per_page}}</div>
+                                                <template v-for="(paramValue, paramName) in run.params">
+                                                    <template v-if="paramValue.enabled">
+                                                        <div>
+                                                            {{paramName}}: {{JSON.stringify(paramValue.value)}}
+                                                        </div>
+                                                    </template>
+                                                </template>
+                                            </div>
+                                        </div>
+                                        <div class="flex">
+                                            <hits-config class="mt-12 mb-4 -ml-40" />
+                                        </div>
                                     </div>
-                                    <hits-config class="ml-auto" />
+                                    <test-preview
+                                        class="p-8"
+                                        :current-test="currentTest"
+                                        :current-run="currentRun"
+                                    />
                                 </div>
-                                <test-preview
-                                    :current-test="currentTest"
-                                    :current-run="suite.runs[0]"
-                                />
+                                <div v-else class="p-8">
+                                    No Runs configured
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -134,7 +166,6 @@
     import TestPreview from "@/relevance-testing/suite/TestPreview";
     import AddRun from "@/relevance-testing/run/AddRun";
 
-    import PlusIcon from 'common/icons/plus-circle.svg';
     import StatusRun from "@/relevance-testing/run/StatusRun";
     import SlidingPanel from "@/relevance-testing/SlidingPanel";
 
@@ -144,11 +175,12 @@
         components: {
             SlidingPanel,
             StatusRun,
-            AddRun, TestPreview, TestEdition, Group, GroupGeneratorFromCsv, EditRun, HitsConfig, PlusIcon},
+            AddRun, TestPreview, TestEdition, Group, GroupGeneratorFromCsv, EditRun, HitsConfig},
         data: function () {
             return {
                 suite: null,
                 currentTest: null,
+                currentRun: null,
                 displayGenerator: null,
             };
         },
@@ -171,13 +203,10 @@
                     return;
                 }
 
-                suiteData.runs.forEach((r) => {
-                    if (this.$store.state.apps[r.app_id]) {
-                        r.api_key = this.$store.state.apps[r.app_id].key;
-                    }
-                });
                 this.suite = new TestSuite(suiteData);
                 this.suite.run();
+                this.currentRun = suiteData.runs.length > 0 ? suiteData.runs[0]: null;
+                this.currentTest = this.suite.groups[0].tests[0];
             },
             addGroup: async function () {
                 const res = await fetch(`${process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT}/relevance-testing/suites/${this.suite.id}/groups`, {
@@ -194,6 +223,16 @@
                 const group = await res.json();
                 this.suite.groups.push(new GroupTest(group, this.suite.runs, this.suite));
             },
+            onDeleteRun: function (runId) {
+                if (this.currentRun.id === runId) {
+                    this.currentRun = this.suite.runs.length > 0 ? this.suite.runs[0] : null;
+                }
+            },
+            onAddRun: function () {
+                if (this.suite.runs.length === 1) {
+                    this.currentRun = this.suite.runs[0];
+                }
+            }
         }
     }
 </script>
