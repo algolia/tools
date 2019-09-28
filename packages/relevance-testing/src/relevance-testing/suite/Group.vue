@@ -32,6 +32,7 @@
                             class="h-full bg-white ml-48"
                             :class="{'bg-proton-grey-opacity-10': currentTest === test}"
                             @onSelected="$emit('onTestSelected', test)"
+                            @onDeleted="$emit('onTestSelected', null)"
                         />
                     </td>
                     <template>

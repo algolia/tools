@@ -1,7 +1,7 @@
 <template>
-    <div class="flex p-8 items-center group">
+    <div class="p-8">
         <div
-            class="flex-grow cursor-pointer text-sm"
+            class="cursor-pointer text-sm"
             @click="$emit('onSelected')"
         >
             <div>
@@ -58,28 +58,40 @@
                                 />
                             </td>
                         </tr>
+                        <tr>
+                            <td class="w-112 pt-12"></td>
+                            <td class="pt-12 pl-12">
+                                <div class="mt-40">
+                                    <div class="flex">
+                                        <button
+                                            v-if="!confirmDelete"
+                                            @click="confirmDelete = true"
+                                            class="flex item-center bg-white rounded border border-b-0 border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out px-16 p-8"
+                                        >
+                                            <trash-icon class="w-12 h-12 block cursor-pointer mr-4 -mt-1" />
+                                            <div>
+                                                Delete test
+                                            </div>
+                                        </button>
+                                    </div>
+                                    <div v-if="confirmDelete" class="flex">
+                                        <button
+                                            @click="deleteTest(test, testPos)"
+                                            class="rounded bg-mars-1 shadow-sm hover:shadow transition-fast-out text-white p-8"
+                                        >
+                                            Confirm Delete
+                                        </button>
+                                        <button
+                                            @click="confirmDelete = false"
+                                            class="ml-8 block bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out px-16 p-8 text-sm relative group">
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
                     </table>
                 </div>
-            </div>
-        </div>
-        <div class="ml-16">
-            <trash-icon
-                v-if="!confirmDelete"
-                class="w-12 h-12 block ml-8 cursor-pointer text-solstice-blue invisible group-hover:visible"
-                @click="confirmDelete = true"
-            />
-            <div v-if="confirmDelete" class="flex">
-                <button
-                    @click="deleteTest(test, testPos)"
-                    class="rounded bg-mars-1 shadow-sm hover:shadow transition-fast-out text-white p-8"
-                >
-                    Delete
-                </button>
-                <button
-                    @click="confirmDelete = false"
-                    class="ml-8 block bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out px-16 p-8 text-sm relative group">
-                    Cancel
-                </button>
             </div>
         </div>
     </div>
@@ -182,6 +194,7 @@
                     },
                 });
 
+                this.$emit('onDeleted');
                 this.$delete(test.group.tests, testPos);
             },
         }

@@ -18,9 +18,6 @@
                 v-if="!confirmEdit && !confirmDelete"
                 class="flex"
             >
-                <div @click.stop="group.run()">
-                    Run
-                </div>
                 <div @click.stop="addTest">
                     <plus-icon class="w-12 h-12 block ml-8 cursor-pointer text-solstice-blue" />
                 </div>

@@ -84,7 +84,7 @@
                         class="bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out px-8 p-4 text-sm"
                         :class="{'mt-4': testSuite.permissions.length > 0}"
                     >
-                        +
+                        Add collaborator
                     </button>
                 </div>
             </div>
