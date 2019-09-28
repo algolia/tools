@@ -2,6 +2,10 @@
     <div class="flex p-8 text-telluric-blue text-xs uppercase tracking-wide">
         <div>
             <div class="mr-auto" v-if="!confirmEdit">
+                <chevron-left-icon
+                    class="w-12 h-12 cursor-pointer text-solstice-blue"
+                    :class="!collapsed ? 'rotate-270' : 'rotate-180'"
+                />
                 {{group.name}}
             </div>
             <div>
@@ -57,18 +61,18 @@
     import TrashIcon from 'common/icons/trash.svg';
     import EditIcon from 'common/icons/edit.svg';
     import PlusIcon from 'common/icons/plus-circle.svg';
+    import ChevronLeftIcon from 'common/icons/chevron-left.svg';
     import {Test} from "@/test-engine/engine";
 
     export default {
         name: 'EditGroup',
-        props: ['group', 'groupPos', 'suite'],
-        components: {TrashIcon, EditIcon, PlusIcon},
+        props: ['group', 'groupPos', 'suite', 'collapsed'],
+        components: {TrashIcon, EditIcon, PlusIcon, ChevronLeftIcon},
         data: function () {
             return {
                 name: this.group.name,
                 confirmDelete: false,
                 confirmEdit: false,
-
             };
         },
         methods: {

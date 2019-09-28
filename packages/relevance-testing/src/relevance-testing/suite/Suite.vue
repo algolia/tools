@@ -66,6 +66,7 @@
                     </tr>
                     <group
                         v-for="(group, groupPos) in suite.groups"
+                        :force-open="currentTest && group.id === currentTest.group.id"
                         :key="group.id"
                         :group="group"
                         :group-pos="groupPos"
@@ -260,7 +261,7 @@
                 if (this.currentTest) url += `/tests/${this.currentTest.id}`;
                 if (this.currentRun) url += `/runs/${this.currentRun.id}`;
 
-                this.$router.push(url);
+                this.$router.replace(url);
             },
             setCurrentTest: function (test) {
                 this.currentTest = test;

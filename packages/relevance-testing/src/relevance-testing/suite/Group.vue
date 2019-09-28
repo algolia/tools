@@ -8,6 +8,7 @@
                     :group="group"
                     :group-pos="groupPos"
                     :suite="suite"
+                    :collapsed="isCollapsed"
                 />
             </td>
             <template>
@@ -19,7 +20,7 @@
                 </template>
             </template>
         </tr>
-        <template v-if="!collapse">
+        <template v-if="!isCollapsed">
             <template v-for="(test, testPos) in group.tests">
                 <tr><td colspan="0" class="h-2 bg-moon-grey"></td></tr>
                 <tr :key="test.id">
@@ -61,12 +62,17 @@
 
     export default {
         name: 'Group',
-        props: ['group', 'groupPos', 'runs', 'suite', 'currentTest'],
+        props: ['group', 'groupPos', 'runs', 'suite', 'currentTest', 'forceOpen'],
         components: {TestStatus, GroupStatus, EditTest, EditGroup},
         data: function () {
             return {
                 collapse: this.suite.groups.length > 1 && this.group.tests.length > 0,
             }
         },
+        computed: {
+            isCollapsed: function () {
+                return this.collapse && !this.forceOpen;
+            }
+        }
     }
 </script>
