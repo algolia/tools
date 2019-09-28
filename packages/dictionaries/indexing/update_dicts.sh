@@ -8,4 +8,3 @@ ls dictionaries || git clone git@github.com:algolia/dictionaries.git
 cd dictionaries && git pull origin master && cd ..
 python indexing.py
 ssh-agent -k
-© 2019 GitHub, Inc.

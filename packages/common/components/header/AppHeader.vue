@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="flex flex-col w-full bg-white flex z-10 border-b border-solid border-proton-grey-opacity-80">
+        <div class="flex flex-col justify-center h-92 w-full bg-white z-10 border-b border-solid border-proton-grey-opacity-80">
             <div class="flex px-16 py-12">
                 <div class="flex w-full">
                     <div class="flex items-center text-telluric-blue mr-16 text-lg">
