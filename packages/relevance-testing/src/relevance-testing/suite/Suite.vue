@@ -43,11 +43,13 @@
                                     All groups
                                 </div>
                                 <div class="ml-auto ml-8 flex">
-                                    <div @click.stop="addGroup">
+                                    <div @click.stop="addGroup" class="relative group">
                                         <plus-icon class="w-12 h-12 block ml-8 cursor-pointer text-solstice-blue" />
+                                        <tooltip>Create group of tests</tooltip>
                                     </div>
-                                    <div @click.stop="displayGenerator = true">
+                                    <div @click.stop="displayGenerator = true" class="relative group">
                                         <upload-icon class="w-12 h-12 block ml-8 cursor-pointer text-solstice-blue" />
+                                        <tooltip>Create group of tests from CSV</tooltip>
                                     </div>
                                 </div>
                             </div>
@@ -167,6 +169,8 @@
     import StatusRun from "@/relevance-testing/run/StatusRun";
     import SlidingPanel from "@/relevance-testing/SlidingPanel";
 
+    import Tooltip from "common/components/Tooltip";
+
     import PlusIcon from 'common/icons/plus-circle.svg';
     import UploadIcon from 'common/icons/upload.svg';
 
@@ -176,7 +180,7 @@
         components: {
             SlidingPanel,
             StatusRun,
-            AddRun, TestPreview, TestEdition, Group, GroupGeneratorFromCsv, EditRun, HitsConfig, PlusIcon, UploadIcon},
+            AddRun, TestPreview, TestEdition, Group, GroupGeneratorFromCsv, EditRun, HitsConfig, Tooltip, PlusIcon, UploadIcon},
         data: function () {
             return {
                 suite: null,

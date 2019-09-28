@@ -1,7 +1,7 @@
 <template>
-    <div class="flex p-8 text-telluric-blue text-xs uppercase tracking-wide">
+    <div class="flex p-8 text-telluric-blue cursor-pointer">
         <div>
-            <div class="mr-auto" v-if="!confirmEdit">
+            <div class="mr-auto text-xs uppercase tracking-wide" v-if="!confirmEdit">
                 <chevron-left-icon
                     class="w-12 h-12 cursor-pointer text-solstice-blue"
                     :class="!collapsed ? 'rotate-270' : 'rotate-180'"
@@ -22,14 +22,17 @@
                 v-if="!confirmEdit && !confirmDelete"
                 class="flex"
             >
-                <div @click.stop="addTest">
+                <div @click.stop="addTest" class="relative group">
                     <plus-icon class="w-12 h-12 block ml-8 cursor-pointer text-solstice-blue" />
+                    <tooltip>Add test</tooltip>
                 </div>
-                <div @click.stop="confirmEdit = true">
+                <div @click.stop="confirmEdit = true" class="relative group">
                     <edit-icon class="w-12 h-12 block ml-8 cursor-pointer text-solstice-blue" />
+                    <tooltip>Edit group name</tooltip>
                 </div>
-                <div @click.stop="confirmDelete = true">
+                <div @click.stop="confirmDelete = true" class="relative group">
                     <trash-icon class="w-12 h-12 block ml-8 cursor-pointer text-solstice-blue" />
+                    <tooltip>Delete group. Will ask for confirmation</tooltip>
                 </div>
             </div>
             <div class="flex" v-if="confirmEdit || confirmDelete">
@@ -62,12 +65,13 @@
     import EditIcon from 'common/icons/edit.svg';
     import PlusIcon from 'common/icons/plus-circle.svg';
     import ChevronLeftIcon from 'common/icons/chevron-left.svg';
+    import Tooltip from "common/components/Tooltip";
     import {Test} from "@/test-engine/engine";
 
     export default {
         name: 'EditGroup',
         props: ['group', 'groupPos', 'suite', 'collapsed'],
-        components: {TrashIcon, EditIcon, PlusIcon, ChevronLeftIcon},
+        components: {TrashIcon, EditIcon, PlusIcon, ChevronLeftIcon, Tooltip},
         data: function () {
             return {
                 name: this.group.name,

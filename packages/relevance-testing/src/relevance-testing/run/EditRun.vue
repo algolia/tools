@@ -20,18 +20,24 @@
                 panel-key="leftPanel"
             />
             <div class="flex items-center">
-                <div
-                    @click="suite.runRun(run, runPosition)"
-                    class="text-xs uppercase tracking-wide"
-                >
-                    Run
+                <div class="relative group">
+                    <div
+                        @click="suite.runRun(run, runPosition)"
+                        class="text-xs uppercase tracking-wide cursor-pointer"
+                    >
+                        Run
+                    </div>
+                    <tooltip>Re-Run all tests for this index</tooltip>
                 </div>
                 <div class="ml-auto">
-                    <trash-icon
-                        v-if="!confirmDelete"
-                        @click="confirmDelete = true"
-                        class="w-12 h-12 block cursor-pointer text-solstice-blue"
-                    />
+                    <div class="relative group">
+                        <trash-icon
+                            v-if="!confirmDelete"
+                            @click="confirmDelete = true"
+                            class="w-12 h-12 block cursor-pointer text-solstice-blue"
+                        />
+                        <tooltip>Delete Run. Will ask for confirmation</tooltip>
+                    </div>
                     <div v-if="confirmDelete" class="flex">
                         <button
                             @click="deleteRun"
@@ -54,6 +60,7 @@
 <script>
     import AppSelector from 'common/components/selectors/AppSelector';
     import IndexSelector from 'common/components/selectors/IndexSelector';
+    import Tooltip from "common/components/Tooltip";
     import Params from 'common/components/params/Params';
 
     import TrashIcon from 'common/icons/trash.svg';
@@ -61,7 +68,7 @@
     export default {
         name: 'EditRun',
         props: ['suite', 'run', 'runPosition'],
-        components: {AppSelector, IndexSelector, TrashIcon, Params},
+        components: {AppSelector, IndexSelector, TrashIcon, Params, Tooltip},
         data: function () {
             return {
                 confirmDelete: false,
