@@ -1,38 +1,57 @@
 <template>
     <div class="h-full overflow-y-scroll">
         <div class="p-12">
-            <div class="flex w-full">
-                <div>
-                    <div>
-                        Delimitor: <select v-model="delimitor">
-                        <option value=",">,</option>
-                        <option value=";">;</option>
-                        <option value="\t">\t</option>
-                    </select>
-                    </div>
-                    <div>
-                        Ignore first line: <input type="checkbox" v-model="ignoreFirstLine">
-                    </div>
-                    <textarea v-model="rawCsv" class="mt-12 p-8 input-custom" placeholder="Paste your CSV content">
-
-                    </textarea>
-                </div>
-                <div>
+            <div class="flex w-full mt-12">
+                <div class="ml-16">
                     <table>
+                        <tr>
+                            <td class="align-middle">CSV Data</td>
+                            <td class="pl-12">
+                                <textarea
+                                    v-model="rawCsv"
+                                    class="p-8 input-custom"
+                                    placeholder="Paste your CSV content"
+                                ></textarea>
+                            </td>
+                        </tr>
+                        <template>
+                            <tr>
+                                <td class="align-middle pt-8">Delimitor</td>
+                                <td class="pl-12 pt-8">
+                                    <select v-model="delimitor">
+                                        <option value=",">,</option>
+                                        <option value=";">;</option>
+                                        <option value="\t">\t</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="align-middle pt-8">Ignore first line</td>
+                                <td class="pl-12 pt-8"><input type="checkbox" v-model="ignoreFirstLine"></td>
+                            </tr>
+                        </template>
+                    </table>
+                    <table class="mt-12">
                         <tr v-if="columnTypes.length > 0" class="border border-proton-grey-opacity-60">
                             <td v-for="(type, i) in columnTypes" class="p-8 border border-proton-grey-opacity-60">
                                <select v-model="columnTypes[i]">
                                    <option value=""></option>
-                                   <option value="query">query</option>
-                                   <option value="objectID">objectID</option>
-                                   <option value="position">position</option>
-                                   <option value="description">description</option>
-                                   <option value="searchParams">searchParams</option>
-                                   <option value="contains">contains</option>
-                                   <option value="containsOperator">containsOperator</option>
-                                   <option value="attributeName">attributeName</option>
-                                   <option value="operator">operator</option>
-                                   <option value="attributeValue">attributeValue</option>
+                                   <optgroup label="When">
+                                       <option value="query">query</option>
+                                       <option value="searchParams">searchParams</option>
+                                       <option value="description">description</option>
+                                   </optgroup>
+                                   <optgroup label="Basic requirement">
+                                        <option value="objectID">has objectID</option>
+                                       <option value="position">is at position</option>
+                                   </optgroup>
+                                   <optgroup label="Attribute requirement">
+                                       <option value="contains">contains N</option>
+                                       <option value="containsOperator">containsOperator</option>
+                                       <option value="attributeName">attribute name</option>
+                                       <option value="operator">attribute operator</option>
+                                       <option value="attributeValue">attribute value</option>
+                                   </optgroup>
                                </select>
                             </td>
                         </tr>
@@ -163,7 +182,7 @@
                                 value: 1,
                                 recordsMatching: [
                                     {
-                                        type: "attribute",
+                                        type: "position",
                                         key: "position",
                                         operator: "=",
                                         value: row[i],
