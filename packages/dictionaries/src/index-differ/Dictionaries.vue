@@ -80,18 +80,29 @@
                     </ais-search-box>
 
                     <div class="bg-white border border-proton-grey-opacity-40 rounded mt-24 p-12 pt-0 rounded">
-                        <ais-hits :escapeHTML="false" class="pb-20">
-                            <div class="mt-0" slot-scope="{ items }">
-                                <div class="border-b border-nova-grey-opacity-20 py-12" v-for="item in items" :key="item.objectID">
-                                    <div class="hit">
-                                        <div class="text-telluric-blue mb-8">{{item.type}} – {{item._highlightResult.lang.value}}</div>
-                                        <template v-for="word in item._highlightResult.words">
-                                            <span class="words" v-html="word.value"></span>&nbsp;
-                                        </template>
+                        <ais-state-results>
+                            <template slot-scope="{ hits }">
+                                <ais-hits
+                                    v-if="hits.length > 0"
+                                    :escapeHTML="false"
+                                    class="pb-20"
+                                >
+                                    <div class="mt-0" slot-scope="{ items }">
+                                        <div class="border-b border-nova-grey-opacity-20 py-12" v-for="item in items" :key="item.objectID">
+                                            <div class="hit">
+                                                <div class="text-telluric-blue mb-8">{{item.type}} – {{item._highlightResult.lang.value}}</div>
+                                                <template v-for="word in item._highlightResult.words">
+                                                    <span class="words" v-html="word.value"></span>&nbsp;
+                                                </template>
+                                            </div>
+                                        </div>
                                     </div>
+                                </ais-hits>
+                                <div v-else class="py-12">
+                                    No results
                                 </div>
-                            </div>
-                        </ais-hits>
+                            </template>
+                        </ais-state-results>
 
                         <ais-state-results class="flex justify-center">
                             <ais-pagination slot-scope="{ _rawResults }">
