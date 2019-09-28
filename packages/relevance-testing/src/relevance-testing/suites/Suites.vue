@@ -1,7 +1,7 @@
 <template>
-    <div class="flex justify-center">
-        <div class="w-full p-16 max-w-800">
-            <h2>Test Suites</h2>
+    <div class="flex">
+        <div class="w-full p-16 pt-0 max-w-800">
+            <h2 class="text-telluric-blue">Test Suites</h2>
             <div class="flex mt-24 px-8" v-if="persoSuites.length > 0">
                 <div class="w-third">Name</div>
                 <div class="w-third">Collaborators</div>

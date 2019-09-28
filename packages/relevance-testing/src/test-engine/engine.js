@@ -5,10 +5,11 @@ import Vue from 'vue';
 import {algoliaParams} from "common/utils/algoliaHelpers";
 
 export class TestSuite {
-    constructor(testSuiteData) {
+    constructor(testSuiteData, fetchApiKey) {
         this.id = testSuiteData.id;
         this.runs = testSuiteData.runs;
         this.name = testSuiteData.name;
+        this.fetchApiKey = fetchApiKey;
         this.groups = testSuiteData.groups.map((g) => new GroupTest(g, this.runs, this));
         this.reports = {};
 
@@ -194,9 +195,11 @@ export class Test {
     async runRun(runData, runIndex) {
         Vue.set(this.reports, runIndex, undefined);
 
-        if (!runData.api_key || !runData.index_name) return;
+        const apiKey = this.group.suite.fetchApiKey(runData.app_id);
 
-        const algoliaIndex = await getSearchIndex(runData.app_id, runData.api_key, runData.index_name);
+        if (!apiKey || !runData.index_name) return;
+
+        const algoliaIndex = await getSearchIndex(runData.app_id, apiKey, runData.index_name);
         const params = Object.assign(
             {},
             this.testData.when,

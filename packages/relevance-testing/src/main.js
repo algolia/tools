@@ -29,8 +29,11 @@ const router = new VueRouter({
     routes: [
         { path: '/', redirect: '/suites' },
         { path: '/suites', component: Suites },
-        { path: '/suites/:suiteId', component: Suite, props: true },
+        { path: '/suites/:suiteId/tests/:testId/runs/:runId', component: Suite, props: true },
+        { path: '/suites/:suiteId/runs/:runId/tests/:testId', component: Suite, props: true },
         { path: '/suites/:suiteId/tests/:testId', component: Suite, props: true },
+        { path: '/suites/:suiteId/runs/:runId', component: Suite, props: true },
+        { path: '/suites/:suiteId', component: Suite, props: true },
     ],
 });
 

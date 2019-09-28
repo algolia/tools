@@ -38,7 +38,11 @@
                     <template>
                         <template v-for="(run, runPos) in runs">
                             <td class="w-2 bg-moon-grey"></td>
-                            <td class="h-1 bg-white" :key="run.id">
+                            <td
+                                class="h-1 bg-white cursor-pointer"
+                                :key="run.id"
+                                @click="$emit('onTestSelected', test); $emit('onRunSelected', run)"
+                            >
                                 <test-status :test="test" :run-pos="runPos" />
                             </td>
                         </template>
