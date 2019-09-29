@@ -90,7 +90,7 @@
                                     <div class="mt-0" slot-scope="{ items }">
                                         <div class="border-b border-nova-grey-opacity-20 py-12" v-for="item in items" :key="item.objectID">
                                             <div class="hit">
-                                                <div class="text-telluric-blue mb-8">{{item.type}} – {{item._highlightResult.lang.value}}</div>
+                                                <div class="text-telluric-blue mb-8">{{item.type}} – <span v-html="item._highlightResult.lang.value"></span></div>
                                                 <template v-for="word in item._highlightResult.words">
                                                     <span class="words" v-html="word.value"></span>&nbsp;
                                                 </template>
