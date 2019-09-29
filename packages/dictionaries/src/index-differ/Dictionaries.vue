@@ -28,6 +28,7 @@
                                     'ais-RefinementList-checkbox': 'm-2',
                                     'ais-SearchBox-submit': 'hidden',
                                     'ais-SearchBox-reset': 'hidden',
+                                    'ais-SearchBox-form': 'hidden'
                                 }"
                             />
                         </div>
