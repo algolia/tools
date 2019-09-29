@@ -49,8 +49,6 @@
 </template>
 
 <script>
-    import SearchIcon from "common/icons/search.svg";
-    import Params from 'common/components/params/Params';
     import CustomSelect from "common/components/selectors/CustomSelect";
     import {algoliaParams} from "common/utils/algoliaHelpers";
     import SignSelect from "@/relevance-testing/common/SignSelect";
@@ -64,16 +62,18 @@
         props: ['suite', 'test', 'currentRun', 'currentRunIndex'],
         components: {
             Requirements,
-            Badge, NumberSelect, SignSelect, Params, CustomSelect, TrashIcon, SearchIcon},
+            Badge, NumberSelect, SignSelect, CustomSelect, TrashIcon},
         data: function () {
+            const {when, testData, query} = this.loadTest();
+
             return {
                 testOptions: {
                     'contains': 'page contains',
                     'nbHits': 'nbHits',
                 },
-                testData: null,
-                query: null,
-                when: null,
+                query,
+                testData,
+                when,
             }
         },
         created: function () {
@@ -81,7 +81,10 @@
         },
         watch: {
             test: function () {
-                this.loadTest();
+                const {when, testData, query} = this.loadTest();
+                this.when = when;
+                this.testData = testData;
+                this.query = query;
             },
             testData: {
                 deep: true,
@@ -100,15 +103,16 @@
                 const copy = JSON.parse(JSON.stringify(this.test.testData));
 
                 const searchParams = {};
+                let query = '';
                 Object.keys(copy.when).forEach((key) => {
                     if (key === 'query') {
-                        this.query = copy.when[key];
+                        query = copy.when[key];
                     } else {
                         searchParams[key] = {value: copy.when[key], enabled: true};
                     }
                 });
-                this.when = searchParams;
-                this.testData = copy;
+
+                return {when: searchParams, testData: copy, query};
             },
             saveTest: async function () {
                 const params = algoliaParams(this.when);
