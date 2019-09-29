@@ -115,7 +115,7 @@
                         </div>
                     </div>
                     <div class="flex h-full">
-                        <div class="min-w-third max-w-third border-r border-proton-grey overflow-y-scroll h-full">
+                        <div class="min-w-third max-w-third border-r border-proton-grey overflow-y-scroll h-full pb-96">
                             <test-edition
                                 :test="currentTest"
                                 :current-run="currentRun"
@@ -124,7 +124,7 @@
                             />
                         </div>
                         <div class="h-full min-w-two-third max-w-two-third bg-white">
-                            <div class="overflow-y-scroll h-full">
+                            <div class="overflow-y-scroll h-full pb-96">
                                 <div v-if="currentRun">
                                     <div class="flex">
                                         <hits-config class="mt-12 mb-4 -ml-40" />
