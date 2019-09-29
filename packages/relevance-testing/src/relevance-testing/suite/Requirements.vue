@@ -20,6 +20,7 @@
                     :requirement-pos="requirementPos"
                     :passing="reports ? reports[requirementPos].passing : null"
                     :run-index="runIndex"
+                    :noBadge="noBadge"
                     class="mx-auto"
                     @onDelete="deleteRequirement(requirements, requirementPos)"
                 />
@@ -47,7 +48,7 @@
         components: {
             Requirement: () => import('./Requirement.vue')
         },
-        props: ['requirements', 'runIndex', 'reports'],
+        props: ['requirements', 'runIndex', 'reports', 'noBadge'],
         methods: {
             addRequirement: function (requirements) {
                 requirements.push({

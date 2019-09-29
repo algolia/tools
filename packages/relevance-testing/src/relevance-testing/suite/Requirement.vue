@@ -15,7 +15,7 @@
         </div>
         <div class="relative bg-moon-grey-opacity-50 border border-proton-grey-opacity-20 border-l border-proton-grey p-8 rounded">
             <badge
-                v-if="passing !== undefined"
+                v-if="noBadge !== true && passing !== undefined"
                 :passing="passing"
                 class="absolute"
                 style="top: -8px; left: 0; transform: translate(0%, -100%);"
@@ -25,7 +25,8 @@
                     <custom-select
                         v-model="requirement.type"
                         :options="['attribute', 'position', 'rankingInfo', 'is before', 'is after']"
-                        class="mr-8 w-104 text-solstice-blue text-sm border-b border-telluric-blue-opacity-60 pb-4"
+                        class="w-104 text-solstice-blue text-sm border-b border-telluric-blue-opacity-60 pb-4"
+                        :class="requirement.type === 'is before' || requirement.type === 'is after' ? 'mx-auto' : 'mr-8'"
                     >
                         <template v-slot:default="{option}">{{option}}</template>
                     </custom-select>
@@ -43,6 +44,14 @@
                         <template v-slot:default="{option}">{{option}}</template>
                     </custom-select>
                 </div>
+                <requirements
+                    class="px-24"
+                    v-if="requirement.type === 'is before' || requirement.type === 'is after'"
+                    :requirements="requirement.value"
+                    :run-index="runIndex"
+                    :reports="null"
+                    :no-badge="true"
+                />
                 <div class="flex flex-wrap items-center">
                     <sign-select
                         v-if="requirement.type !== 'is before' && requirement.type !== 'is after'"
@@ -76,13 +85,6 @@
                 @click="$emit('onDelete')"
             />
         </div>
-        <div class="ml-160" v-if="requirement.type === 'is before' || requirement.type === 'is after'">
-            <requirements
-                :requirements="requirement.value"
-                :run-index="runIndex"
-                :reports="null"
-            />
-        </div>
     </div>
 </template>
 
@@ -97,7 +99,7 @@
     export default {
         name: 'Requirement',
         components: {Requirements, Badge, SignSelect, CustomSelect, TrashIcon},
-        props: ['requirement', 'requirementPos', 'passing', 'runIndex'],
+        props: ['requirement', 'requirementPos', 'passing', 'runIndex', 'noBadge'],
         watch: {
             type: function () {
                 if (this.type === 'attribute') {
