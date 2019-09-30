@@ -154,8 +154,7 @@ function searchClient(appId, apiKey, server) {
     if (appId === 'MySuperApp') {
       return algoliasearch(appId, apiKey || ' ', {
         _useCache: false,
-        hosts: ['127.0.0.1:9000'],
-        protocol: 'http',
+        hosts: ['localhost-1.algolia.io:8080'],
       });
     }
 
@@ -184,8 +183,7 @@ export async function getClient(appId, apiKey) {
     if (appId === 'MySuperApp') {
       return algoliasearch(appId, apiKey || ' ', {
         _useCache: false,
-        hosts: ['127.0.0.1:9000'],
-        protocol: 'http',
+        hosts: ['localhost-1.algolia.io:8080'],
       });
     }
 
