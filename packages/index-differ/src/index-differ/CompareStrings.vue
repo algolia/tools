@@ -29,6 +29,10 @@
         display: none
     }
 
+    .d2h-file-side-diff {
+        overflow-x: auto;
+    }
+
     .d2h-diff-tbody tr:first-child {
         display: none;
     }

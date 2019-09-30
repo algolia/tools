@@ -6,7 +6,7 @@
         <app-management />
         <div class="max-w-960 mx-auto">
             <div class="rounded border border-proton-grey-opacity-60 mt-24">
-                <div class="flex bg-white p-8 bg-proton-grey-opacity-40 text-telluric-blue">
+                <div class="flex p-8 bg-proton-grey-opacity-40 text-telluric-blue">
                     <div class="flex w-full justify-between">
                         <div class="flex">
                             <app-selector v-model="leftAppId" class="mb-4" />
