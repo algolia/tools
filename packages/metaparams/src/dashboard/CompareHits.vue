@@ -33,16 +33,16 @@
                     </div>
                     <div class="ml-auto w-12 h-12">
                         <login-icon
-                            v-if="leftHits.some((hit) => { return hit === objectID})"
+                            v-if="leftHits.some((hit) => { return hit.objectID === objectID})"
                             class="w-full h-full cursor-pointer rotate-180"
-                            @click="goToHit(leftHits.findIndex((hit) => { return hit === objectID}) + 1, 'leftPanel')"
+                            @click="goToHit(leftHits.findIndex((hit) => { return hit.objectID === objectID}) + 1, 'leftPanel')"
                         />
                     </div>
                     <div class="ml-4 w-12 h-12">
                         <login-icon
                             v-if="rightHits.some((hit) => { return hit === objectID})"
                             class="w-full h-full cursor-pointer"
-                            @click="goToHit(rightHits.findIndex((hit) => { return hit === objectID}) + 1, 'rightPanel')"
+                            @click="goToHit(rightHits.findIndex((hit) => { return hit.objectID === objectID}) + 1, 'rightPanel')"
                         />
                     </div>
                     <div class="ml-4 w-12 h-12">
