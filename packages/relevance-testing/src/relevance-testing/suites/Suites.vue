@@ -15,7 +15,7 @@
                 Create Suite
             </button>
             <div v-if="sharedSuites.length > 0">
-                <h2 class="mt-48 mb-24">Test Suites shared with you</h2>
+                <h2 class="mt-48 mb-24 text-telluric-blue">Test Suites shared with you</h2>
                 <small-suite v-for="suite in sharedSuites" :key="`shared-${suite.id}`" :suite="suite" :read-only="true" @shouldUpdate="fetchSuites"/>
             </div>
         </div>

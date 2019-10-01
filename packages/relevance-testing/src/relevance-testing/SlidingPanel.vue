@@ -4,7 +4,7 @@
             @click="closePanel"
             :class="open ? 'uncollapsed' : 'collapsed'"
             class="transition rotate fixed z-10 rotate-270 inset-y-full overflow-hidden"
-            style="left: 422px; top: calc((100vh - 94px) / 2 - 48px);"
+            style="right: calc(100% - 500px - 41px); top: calc((100vh - 94px) / 2 - 48px);"
         >
             <div
                 class="mt-12 ml-12 mr-12 text-sm text-proton-grey rounded-tl rounded-tr bg-white cursor-pointer px-24 py-8"
@@ -16,7 +16,7 @@
         <div
             :class="open ? 'uncollapsed' : 'collapsed'"
             class="transition fixed h-full right-0 shadow bg-white"
-            style="width: calc(100vw - 500px); height: calc(100vh - 94px); top: 94px;"
+            style="width: calc(100% - 500px); height: calc(100vh - 94px); top: 94px;"
         >
             <slot name="default" />
         </div>
