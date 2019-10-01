@@ -19,14 +19,18 @@
             return {
                 options: {
                     'is': 'is',
-                    'is not': 'is not',
+                    'isNot': 'is not',
                     'contains': 'contains',
+                    'notContains': 'doesn\'t contains',
                     '=': '(=) equals',
                     '!=': '!= not equals',
                     '>': '(>) more than',
                     '>=': '(>=) at least',
                     '<': '(<) less than',
                     '<=': '(<=) at most',
+                    'isTrue': 'is true',
+                    'isFalse': 'is false',
+                    'isNull': 'is null',
                 }
             }
         },

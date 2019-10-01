@@ -135,13 +135,22 @@ export class Test {
 
         if (operator === 'contains') {
             if (Array.isArray(recordValue)) return recordValue.some((v) => v.includes(refValue));
-            return recordValue.includes(refValue) !== -1;
+            return recordValue.includes(refValue);
+        } else if (operator === 'notContains') {
+            if (Array.isArray(recordValue)) return recordValue.every((v) => !v.includes(refValue));
+            return !recordValue.includes(refValue);
         } else if (operator === 'is') {
             if (Array.isArray(recordValue)) return recordValue.includes(refValue);
             return recordValue === refValue;
-        } else if (operator === 'is not') {
+        } else if (operator === 'isNot') {
             if (Array.isArray(recordValue)) return !recordValue.includes(refValue);
-            return recordValue === refValue;
+            return recordValue !== refValue;
+        } else if (operator === 'isTrue') {
+            return recordValue === true;
+        } else if (operator === 'isFalse') {
+            return recordValue === false;
+        } else if (operator === 'isNull') {
+            return recordValue === null;
         } else if (operator === '=') {
             if (Array.isArray(recordValue)) return recordValue.some((v) => v === parseFloat(refValue));
             return recordValue === parseFloat(refValue);

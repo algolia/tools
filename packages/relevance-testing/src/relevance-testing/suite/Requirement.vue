@@ -59,7 +59,7 @@
                         class="mr-8 my-8 w-104"
                     />
                     <input
-                        v-if="requirement.type === 'attribute'"
+                        v-if="requirement.type === 'attribute' && !['isTrue', 'isFalse', 'isNull'].includes(requirement.operator)"
                         v-model="requirement.value"
                         class="input-custom w-104 shadow-sm p-4 w-108"
                     />
