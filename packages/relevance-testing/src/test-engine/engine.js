@@ -130,21 +130,32 @@ export class Test {
         Vue.set(this.reports[i], 'nbTests', nbTests);
     }
 
-    static compare(a, operator, b) {
-        if (operator === '=') {
-            if (Array.isArray(a)) return a.indexOf(b) !== -1;
-            return a === b;
+    static compare(recordValue, operator, refValue) {
+        if (recordValue === undefined || recordValue === null) return false;
+
+        if (operator === 'contains') {
+            if (Array.isArray(recordValue)) return recordValue.some((v) => v.includes(refValue));
+            return recordValue.includes(refValue) !== -1;
+        } else if (operator === 'is') {
+            if (Array.isArray(recordValue)) return recordValue.includes(refValue);
+            return recordValue === refValue;
+        } else if (operator === 'is not') {
+            if (Array.isArray(recordValue)) return !recordValue.includes(refValue);
+            return recordValue === refValue;
+        } else if (operator === '=') {
+            if (Array.isArray(recordValue)) return recordValue.some((v) => v === parseFloat(refValue));
+            return recordValue === parseFloat(refValue);
         } else if (operator === '!=') {
-            if (Array.isArray(a)) return a.indexOf(b) === -1;
-            return a !== b;
+            if (Array.isArray(recordValue)) return recordValue.some((v) => v !== parseFloat(refValue));
+            return recordValue !== parseFloat(refValue);
         } else if (operator === '>') {
-            return a > b;
+            return recordValue > parseFloat(refValue);
         } else if (operator === '>=') {
-            return a >= b;
+            return recordValue >= parseFloat(refValue);
         } else if (operator === '<') {
-            return a < b;
+            return recordValue < parseFloat(refValue);
         } else if (operator === '<=') {
-            return a <= b;
+            return recordValue <= parseFloat(refValue);
         }
     }
 

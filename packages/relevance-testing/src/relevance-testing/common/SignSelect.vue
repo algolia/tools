@@ -18,6 +18,9 @@
         data: function () {
             return {
                 options: {
+                    'is': 'is',
+                    'is not': 'is not',
+                    'contains': 'contains',
                     '=': '(=) equals',
                     '!=': '!= not equals',
                     '>': '(>) more than',
