@@ -107,7 +107,9 @@
                 const attributesToRetrieve = this.criteria.map((criterion) => {
                     return cleanAttributeName(criterion)
                 });
+                const attributesForFaceting = this.indexSettings && this.indexSettings.attributesForFaceting ? this.indexSettings.attributesForFaceting : [];
                 attributesToRetrieve.push('_geoloc');
+                attributesToRetrieve.push(...attributesForFaceting.map(cleanAttributeName));
 
                 return Object.assign(
                     {
