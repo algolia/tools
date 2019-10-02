@@ -9,7 +9,7 @@
         <template slot="icon"><box-icon class="block w-12 h-12 -mt-1 mr-8 fill-current"/></template>
         <template v-slot:default="{option, inDropDown, isSelected, highlightString}">
             <div>
-                <div>
+                <div class="flex">
                     <div v-html="inDropDown ? highlightString(option) : option"></div>
                     <span v-if="inDropDown && apps[option].__app_name">
                             &nbsp;- {{highlightString(apps[option].__app_name)}}
