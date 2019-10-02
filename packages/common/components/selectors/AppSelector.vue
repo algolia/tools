@@ -12,7 +12,7 @@
                 <div class="flex">
                     <div v-html="inDropDown ? highlightString(option) : option"></div>
                     <span v-if="inDropDown && apps[option].__app_name">
-                            &nbsp;- {{highlightString(apps[option].__app_name)}}
+                        &nbsp;- <span v-html="highlightString(apps[option].__app_name)"></span>
                         </span>
                 </div>
                 <div
@@ -48,9 +48,11 @@
 
                 if (this.query.length === 0) return appIds;
 
+                const query = this.query.toLowerCase();
+
                 return appIds.filter((appId) => {
-                    if (this.apps[appId].__app_name && this.apps[appId].__app_name.includes(this.query)) return true;
-                    if (this.apps[appId].__app_owner && this.apps[appId].__app_owner.includes(this.query)) return true;
+                    if (this.apps[appId].__app_name && this.apps[appId].__app_name.toLowerCase().includes(query)) return true;
+                    if (this.apps[appId].__app_owner && this.apps[appId].__app_owner.includes(query)) return true;
 
                     return appId.includes(this.query)
                 });
