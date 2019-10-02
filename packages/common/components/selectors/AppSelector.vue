@@ -3,7 +3,8 @@
         :value="value"
         @input="onInput"
         class="min-w-140 border-b border-telluric-blue-opacity-60 text-solstice-blue pb-4"
-        :options="Object.keys(apps)"
+        :options="appIds"
+        :refine="refine"
     >
         <template slot="icon"><box-icon class="block w-12 h-12 -mt-1 mr-8 fill-current"/></template>
         <template v-slot:default="{option, inDropDown, isSelected}">
@@ -18,7 +19,6 @@
                     {{apps[option].__app_owner}}
                 </div>
             </div>
-
         </template>
     </custom-select>
 </template>
@@ -31,16 +31,37 @@
         name: 'AppSelector',
         components: {CustomSelect, BoxIcon},
         props: ['value'],
+        data: function () {
+            return {
+                query: '',
+            };
+        },
         computed: {
             apps: function () {
                 return this.$store.state.apps;
+            },
+            appIds: function () {
+                const appIds = Object.keys(this.apps);
+
+                if (this.query.length === 0) return appIds;
+
+                return appIds.filter((appId) => {
+                    if (this.apps[appId].__app_name && this.apps[appId].__app_name.includes(this.query)) return true;
+                    if (this.apps[appId].__app_owner && this.apps[appId].__app_owner.includes(this.query)) return true;
+
+                    return appId.includes(this.query)
+                });
             }
         },
         created: function () {
             if (this.value) this.$store.commit("apps/addAppId", {appId: this.value});
         },
         methods: {
+            refine: function (query) {
+                this.query = query;
+            },
             onInput: function (e) {
+                this.query = '';
                 this.$emit('input', e);
                 this.$store.commit("apps/addAppId", {appId: e});
             },
