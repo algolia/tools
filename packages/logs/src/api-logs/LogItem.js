@@ -91,4 +91,22 @@ export default function (rawLog) {
     this.response = rawLog.answer;
 
     this.operation = findOperation(this);
+
+    this.getQueries = () => {
+        const queries = [];
+
+        if (this.params.bodies && this.params.bodies.length > 0) {
+            queries.push(...this.params.bodies.map(r => decodeURIComponent(r.params.query) || '&lt;empty&gt;'))
+        }
+        else {
+            if (this.params.all.query && this.params.all.query.length > 0) {
+                queries.push(decodeUriComponent(this.params.all.query));
+            }
+            else {
+                queries.push('&lt;empty&gt;');
+            }
+        }
+
+        return queries;
+    }
 }

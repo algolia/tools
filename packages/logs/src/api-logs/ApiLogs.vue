@@ -9,9 +9,20 @@
                 <search-icon class="block w-16 h-16 mr-16 text-telluric-blue fill-current"/>
                 <input
                     class="flex-1 block h-full py-8 bg-transparent text-telluric-blue leading-normal"
-                    placeholder="Search for anything"
+                    placeholder="Search logs below"
                     v-model="query"
                 >
+            </div>
+            <div class="flex mt-8 text-telluric-blue">
+                <span class="mr-8">Search in:</span>
+
+                <input type="checkbox" id="all" name="all" class="mr-4" v-model="allFieldsChecked" checked>
+                <label for="all" class="mr-8">all</label>
+
+                <span v-for="key in Object.keys(searchFields)">
+                    <input type="checkbox" :id="key" :name="key" class="mr-4" v-model="searchFields[key]" :disabled="allFieldsChecked" checked>
+                    <label :for="key" class="mr-8">{{key}}</label>
+                </span>
             </div>
             <div class="rounded border border-proton-grey-opacity-60 mt-24">
                 <div class="flex bg-white p-8 pb-12 bg-proton-grey-opacity-40 text-telluric-blue">
@@ -85,6 +96,15 @@
                 },
                 interval: null,
                 stopIfFound: false,
+                searchFields: {
+                  query: true,
+                  body: true,
+                  response: true,
+                  userAgent: true,
+                  apiKey: true,
+                  url: true,
+                  ip: true,
+                },
             };
         },
         watch: {
@@ -97,7 +117,8 @@
                     this.stopInterval();
                     this.stopIfFound = false;
                 }
-            }
+            },
+
         },
         created: function () {
             if (!this.appId && Object.keys(this.$store.state.apps).length > 0) {
@@ -118,7 +139,7 @@
                 set (val) {
                     this.indexName = 'All Indices';
                     this.$store.commit('apilogs/setAppId', val);
-                }
+                },
             },
             indexName: {
                 get () {
@@ -126,6 +147,19 @@
                 },
                 set (val) {
                     this.$store.commit('apilogs/setIndexName', val);
+                }
+            },
+            allFieldsChecked: {
+                get () {
+                    return Object.keys(this.searchFields).every(field => this.searchFields[field]);
+                },
+                set (isChecked) {
+                    if (isChecked) {
+                        Object.keys(this.searchFields).forEach(field => this.searchFields[field] = true);
+                    }
+                    else {
+                        Object.keys(this.searchFields).forEach(field => this.searchFields[field] = false);
+                    }
                 }
             },
             apiKey: function () {
@@ -138,8 +172,39 @@
             filteredLogs: function () {
                 if (this.query.length === 0) return this.logs;
 
-                return this.logs.filter((log) => {
-                    return log.rawLogString.indexOf(this.query) !== -1;
+                const allFieldsChecked = this.allFieldsChecked; // caching computation
+
+                return this.logs.filter(log => {
+                    if (allFieldsChecked) {
+                        return log.rawLogString.includes(this.query);
+                    }
+                    else if (this.searchFields.query && log.getQueries().some(query => query.includes(this.query))) {
+                        return true;
+                    }
+                    else if (this.searchFields.body && log.params.rawBody.includes(this.query)) {
+                        return true;
+                    }
+                    else if (this.searchFields.response && log.response.includes(this.query)) {
+                        return true;
+                    }
+                    else if (this.searchFields.userAgent && log.params.all['x-algolia-agent'] && log.params.all['x-algolia-agent'].includes(this.query)) {
+                        return true;
+                    }
+                    else if (this.searchFields.userAgent && log.params.all['user-agent'] && log.params.all['user-agent'].includes(this.query)) {
+                        return true;
+                    }
+                    else if (this.searchFields.apiKey && log.params.headers['X-Algolia-Api-Key'] && log.params.headers['X-Algolia-Api-Key'].includes(this.query)) {
+                        return true;
+                    }
+                    else if (this.searchFields.apiKey && log.params.all['x-algolia-api-key'] && log.params.all['x-algolia-api-key'].includes(this.query)) {
+                        return true;
+                    }
+                    else if (this.searchFields.url && log.url.includes(this.query)) {
+                        return true;
+                    }
+                    else {
+                        return this.searchFields.ip && log.ip.includes(this.query);
+                    }
                 });
             },
         },
@@ -169,9 +234,7 @@
 
                 const res = await client.getLogs(options);
 
-                this.logs = res.logs.map((logItem) => {
-                    return new LogItem(logItem);
-                });
+                this.logs = res.logs.map(logItem => new LogItem(logItem));
             }
         }
     }
