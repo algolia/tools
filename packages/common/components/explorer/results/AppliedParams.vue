@@ -85,7 +85,7 @@
             },
             toolsParams: function () {
                 const params = {};
-
+                
                 Object.keys(this.clientParams).forEach((key) => {
                     if (this.userParams[key] === undefined) {
                         params[key] = this.clientParams[key];
@@ -95,7 +95,7 @@
                 return params;
             },
             clientParams: function() {
-                return this.params.original || {};
+                return this.params.client || {};
             },
             rulesParams: function () {
                 return this.params.rules || {};

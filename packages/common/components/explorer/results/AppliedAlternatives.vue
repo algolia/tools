@@ -1,30 +1,36 @@
 <template>
-    <div class="mt-32" v-if="originals.length > 0 || displayedAlternatives.length > 0">
-        <div class="text-center text-sm uppercase tracking-wide">Considered Alternatives</div>
-        <table class="border-collapse bg-white border border-proton-grey-opacity-50 text-center w-full mt-8">
-            <tr>
-                <td
-                    v-for="original in originals"
-                    class="p-8 border border-proton-grey-opacity-50 bg-moon-grey-opacity-50"
-                >
-                    {{original.words[0]}}
-                    <div class="text-nova-grey">{{original.type}}</div>
-                </td>
-            </tr>
-            <tr v-for="row in getRows">
-                <td
-                    v-for="alternative in row"
-                    :colspan="alternative.length"
-                    class="p-8 border border-proton-grey-opacity-50"
-                    :class="{'bg-moon-grey-opacity-50': alternative.type}"
-                >
-                    <template v-if="alternative.type">
-                        <div>{{alternative.words.join(' ')}}</div>
-                        <div class="text-nova-grey">{{alternative.type}}</div>
-                    </template>
-                </td>
-            </tr>
-        </table>
+    <div>
+        <div class="mt-32" v-if="originals.length > 0 || displayedAlternatives.length > 0">
+            <div class="text-center text-sm uppercase tracking-wide">Considered Alternatives</div>
+            <table class="border-collapse bg-white border border-proton-grey-opacity-50 text-center w-full mt-8">
+                <tr>
+                    <td
+                        v-for="original in originals"
+                        class="p-8 border border-proton-grey-opacity-50 bg-moon-grey-opacity-50 align-top"
+                    >
+                        <div>{{original.words[0]}}</div>
+                        <div class="text-nova-grey" v-for="type in original.types">
+                            {{type}}
+                        </div>
+                    </td>
+                </tr>
+                <tr v-for="row in getRows">
+                    <td
+                        v-for="alternative in row"
+                        :colspan="alternative.length"
+                        class="p-8 border border-proton-grey-opacity-50 align-top"
+                        :class="{'bg-moon-grey-opacity-50': alternative.types}"
+                    >
+                        <template v-if="alternative.types">
+                            <div>{{alternative.words.join(' ')}}</div>
+                            <div class="text-nova-grey" v-for="type in alternative.types">
+                                {{type}}
+                            </div>
+                        </template>
+                    </td>
+                </tr>
+            </table>
+        </div>
     </div>
 </template>
 
@@ -35,7 +41,7 @@
         data: function () {
             return {
                 // ignoreTypes: ['original', 'typo', 'conjugation']
-                keepTypes: ['excluded', 'plural', 'split', 'concat', 'synonym', 'compound'],
+                keepTypes: ['excluded', 'plural', 'split', 'concat', 'synonym', 'compound', 'altcorrection'],
                 originalTypes: ['original', 'stopword', 'optional'],
             }
         },
@@ -48,18 +54,28 @@
             },
             displayedAlternatives: function () {
                 return this.alternatives.filter((alternative) => {
-                    return this.keepTypes.indexOf(alternative.type) !== -1;
+                    for (let i = 0; i < alternative.types.length; i++) {
+                        if (this.keepTypes.indexOf(alternative.types[i]) !== -1) {
+                            return true;
+                        }
+                    }
+                    return false;
                 }).sort((a, b) => {return a.offset - b.offset}).sort((a, b) => {return a.length - b.length});
             },
             originals: function () {
                 return this.alternatives.filter((alternative) => {
-                    if (alternative.type === 'original') {
-                        if (this.alternatives.findIndex((a) => { return a.type === 'optional' && a.offset === alternative.offset && a.length === alternative.length}) !== -1) {
+                    if (alternative.types.includes('original')) {
+                        if (this.alternatives.findIndex((a) => { return a.types.includes('optional') && a.offset === alternative.offset && a.length === alternative.length}) !== -1) {
                             return false;
                         }
                     }
 
-                    return this.originalTypes.indexOf(alternative.type) !== -1;
+                    for (let i = 0; i < alternative.types.length; i++) {
+                        if (this.originalTypes.includes(alternative.types[i])) {
+                            return true;
+                        }
+                    }
+                    return false;
                 }).sort((a, b) => a.offset - b.offset);
             },
             getRows: function () {
