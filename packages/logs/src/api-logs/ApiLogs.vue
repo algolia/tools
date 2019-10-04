@@ -170,7 +170,7 @@
                 return algoliasearch(this.appId, this.apiKey);
             },
             filteredLogs: function () {
-                if (this.query.length === 0) return this.logs;
+                if (this.query.length === 0) return this.logs.slice(0, 100);
 
                 const allFieldsChecked = this.allFieldsChecked; // caching computation
 
@@ -205,7 +205,7 @@
                     else {
                         return this.searchFields.ip && log.ip.includes(this.query);
                     }
-                });
+                }).slice(0, 100);
             },
         },
         methods: {
