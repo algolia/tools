@@ -330,6 +330,7 @@
             ...props.credentials,
             ...props.images,
             ...props.attributes,
+            ...props.paramsAndSettings,
         ],
         components: {PromotedHit, HitAutocomplete, Params, AceEditor, TrashIcon, LoaderIcon},
         data: function () {
@@ -349,9 +350,12 @@
         },
         computed: {
             facetsInQuery: function () {
-                return Array.from(this.newRule.pattern.matchAll(/{facet:(.*?)}/g)).map((match) => {
-                    return match[1];
-                })
+                if (this.newRule.pattern) {
+                    return Array.from(this.newRule.pattern.matchAll(/{facet:(.*?)}/g)).map((match) => {
+                        return match[1];
+                    })
+                }
+                return [];
             },
             potentialFilters: function () {
                 const potentialFilters = {};
@@ -374,8 +378,10 @@
                 return potentialFilters;
             },
             canBeSaved: function () {
-                if (this.newRule.objectID.length <= 0) return false;
-                if (this.newRule.pattern.length === 0 && this.newRule.anchoring !== 'is') return false;
+                if (this.newRule.hasCondition) {
+                    if (this.newRule.objectID.length <= 0) return false;
+                    if (this.newRule.pattern && this.newRule.pattern.length === 0 && this.newRule.anchoring !== 'is') return false;
+                }
 
                 if (this.newRule.hasUserData && this.nbErrorsUserData > 0) return false;
 

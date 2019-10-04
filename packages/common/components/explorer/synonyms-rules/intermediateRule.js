@@ -96,6 +96,7 @@ export default function (rule) {
     this.description = ruleCopy.description;
     this.validity = ruleCopy.validity;
 
+    this.hasCondition = ruleCopy.condition !== undefined;
     this.pattern = ruleCopy.condition.pattern;
     this.anchoring = ruleCopy.condition.anchoring;
     this.context = ruleCopy.condition.context || '';
