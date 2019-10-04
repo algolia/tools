@@ -17,7 +17,7 @@
             :fetch-explain="$store.state.panels.displayRankingInfo"
             :analyse-hits-per-page="maxNbPoints"
             @onFetchHits="searchResponse = $event"
-            @onFetchAnalyseHits="analyseResponse = $event"
+            @onFetchAnalyseHits="onFetchAnalyticsHits"
             @onUpdateError="errorMessage = $event"
         />
         <results
@@ -109,12 +109,16 @@
                         enableABTest: false,
                     }
                 );
-            }
+            },
         },
         methods: {
+            onFetchAnalyticsHits: function (algoliaResponse) {
+                this.analyseResponse = algoliaResponse;
+                this.$root.$emit(`leftPanelUpdateAnalyseResponse`, algoliaResponse);
+            },
             onUpdateApiKey: function (apiKey) {
                 this.$store.commit('apps/addAppId', { appId: this.appId, apiKey: apiKey });
-            }
+            },
         }
     }
 </script>

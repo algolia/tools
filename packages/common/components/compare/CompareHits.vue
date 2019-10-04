@@ -96,7 +96,7 @@
         name: 'CompareHits',
         components: {TrackedElements},
         mixins: [panelsMixin],
-        props: ['enabled'],
+        props: ['enabled', 'forcedTracked'],
         data: function () {
             return {
                 width: 224,
@@ -107,7 +107,7 @@
                 circleFilledColor: '#8d97e3',
                 circleStrokeColorPerso: '#e34340',
                 circleFilledColorTransparent: 'rgba(166, 176, 249, 0.8)',
-                trackedObjectIDs: [''],
+                trackedObjectIDs: [...(this.forcedTracked || []), ''],
                 leftResponse: null,
                 rightResponse: null,
                 leftTrackedPositions: [],
@@ -131,7 +131,10 @@
         watch: {
             trackedObjectIDs: function () {
                 this.compute();
-            }
+            },
+            forcedTracked: function () {
+                this.trackedObjectIDs = [...(this.forcedTracked || []), ''];
+            },
         },
         computed: {
             splitMode: function () {

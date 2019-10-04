@@ -91,27 +91,23 @@
                 @onClosePanel="setCurrentTest(null)"
             >
                 <div class="h-full">
-                    <div>
-                        <div>
-                            <div class="flex text-nova-grey bg-moon-grey w-full overflow-x-auto">
-                                <div
-                                    v-for="(run, i) in suite.runs"
-                                    class="px-24 py-8 cursor-pointer"
-                                    @click="setCurrentRun(run)"
-                                    :class="currentRun === run ? 'text-nebula-blue border-b-2 border-nebula-blue-opacity-80' : ''"
-                                >
-                                    <div>{{run.app_id}}</div>
-                                    <div>{{run.index_name}}</div>
-                                    <div>pageSize: {{run.hits_per_page}}</div>
-                                    <template v-for="(paramValue, paramName) in run.params">
-                                        <template v-if="paramValue.enabled">
-                                            <div>
-                                                {{paramName}}: {{JSON.stringify(paramValue.value)}}
-                                            </div>
-                                        </template>
-                                    </template>
-                                </div>
-                            </div>
+                    <div class="flex text-nova-grey bg-moon-grey w-full overflow-x-auto">
+                        <div
+                            v-for="(run, i) in suite.runs"
+                            class="px-24 py-8 cursor-pointer"
+                            @click="setCurrentRun(run)"
+                            :class="currentRun === run ? 'text-nebula-blue border-b-2 border-nebula-blue-opacity-80' : ''"
+                        >
+                            <div>{{run.app_id}}</div>
+                            <div>{{run.index_name}}</div>
+                            <div>pageSize: {{run.hits_per_page}}</div>
+                            <template v-for="(paramValue, paramName) in run.params">
+                                <template v-if="paramValue.enabled">
+                                    <div>
+                                        {{paramName}}: {{JSON.stringify(paramValue.value)}}
+                                    </div>
+                                </template>
+                            </template>
                         </div>
                     </div>
                     <div class="flex h-full">
@@ -125,18 +121,30 @@
                         </div>
                         <div class="h-full min-w-two-third max-w-two-third bg-white">
                             <div class="overflow-y-scroll h-full pb-96">
-                                <div v-if="currentRun">
-                                    <div class="flex">
-                                        <hits-config class="mt-12 mb-4 -ml-40" />
+                                <div class="flex h-full">
+                                    <div class="flex-grow">
+                                        <div v-if="currentRun">
+                                            <div class="flex">
+                                                <hits-config class="mt-12 mb-4 -ml-40" />
+                                                <panels-config class="mt-12 mb-4 ml-auto" :hide-split="true" />
+                                            </div>
+                                            <test-preview
+                                                class="p-8"
+                                                :current-test="currentTest"
+                                                :current-run="currentRun"
+                                            />
+                                        </div>
+                                        <div v-else class="p-8">
+                                            No Runs configured
+                                        </div>
                                     </div>
-                                    <test-preview
-                                        class="p-8"
-                                        :current-test="currentTest"
-                                        :current-run="currentRun"
-                                    />
-                                </div>
-                                <div v-else class="p-8">
-                                    No Runs configured
+                                    <div v-show="$store.state.panels.comparePanels" class="min-w-240 max-w-240 flex-1">
+                                        <compare-hits
+                                            class="pb-8 pl-8 pr-32"
+                                            :enabled="$store.state.panels.comparePanels"
+                                            :forced-tracked="forcedTracked"
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -158,8 +166,10 @@
     import {GroupTest, TestSuite} from "@/test-engine/engine";
     import TestEdition from "@/relevance-testing/suite/TestEdition"
     import EditRun from "@/relevance-testing/run/EditRun";
+    import CompareHits from "common/components/compare/CompareHits";
 
     import HitsConfig from "common/components/configuration/HitsConfig";
+    import PanelsConfig from "common/components/configuration/PanelsConfig";
     import GroupGeneratorFromCsv from "@/relevance-testing/generation/GroupGeneratorFromCsv";
     import Group from "@/relevance-testing/suite/Group";
 
@@ -180,7 +190,7 @@
         components: {
             SlidingPanel,
             StatusRun,
-            AddRun, TestPreview, TestEdition, Group, GroupGeneratorFromCsv, EditRun, HitsConfig, Tooltip, PlusIcon, UploadIcon},
+            AddRun, TestPreview, TestEdition, Group, GroupGeneratorFromCsv, EditRun, HitsConfig, PanelsConfig, Tooltip, PlusIcon, UploadIcon, CompareHits},
         data: function () {
             return {
                 suite: null,
@@ -191,6 +201,29 @@
         },
         created: function () {
             this.fetchSuite();
+        },
+        computed: {
+            forcedTracked: function () {
+                const tracked = [];
+                this.currentTest.testData.then.forEach((then) => {
+                    if (then.recordsMatching) {
+                        then.recordsMatching.forEach((requirement) => {
+                            if (requirement.type === 'attribute') {
+                                tracked.push(`${requirement.key}:${requirement.value}`);
+                            }
+                            if (requirement.type === 'is before' || requirement.type === 'is after') {
+                                requirement.value.forEach((requirement2) => {
+                                    if (requirement2.type === 'attribute') {
+                                        tracked.push(`${requirement2.key}:${requirement2.value}`);
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+
+                return [...new Set(tracked)];
+            },
         },
         methods: {
             fetchSuite: async function () {

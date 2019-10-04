@@ -1,21 +1,21 @@
 <template>
     <div>
         <div
-            v-for="(objectID, index) in trackedElements"
+            v-for="(objectID, index) in value"
             class="flex"
         >
             <div class="flex truncate pb-4" style="width: calc(100% - 48px);">
                 <span class="font-bold">
                     {{String.fromCharCode(97 + index)}}.
                 </span>
-                <span class="ml-4" v-if="index < trackedElements.length - 1">
+                <span class="ml-4" v-if="index < value.length - 1">
                     {{objectID}}
                 </span>
                 <input v-else
                        ref="objectidinput"
                        class="input-custom shadow-sm focus:shadow-sm ml-4 mr-0"
-                       v-model="trackedElements[trackedElements.length - 1]"
-                       @input="$emit('input', trackedElements)"
+                       v-model="value[value.length - 1]"
+                       @input="$emit('input', value)"
                        @keyup.enter="addTrackedObjectID"
                 />
             </div>
@@ -35,7 +35,7 @@
             </div>
             <div class="ml-4 w-12 h-12">
                 <trash-icon
-                    v-if="index < trackedElements.length - 1"
+                    v-if="index < value.length - 1"
                     class="w-full h-full ml-4 cursor-pointer"
                     @click="removeTrackedObjectID(index)"
                 />
@@ -52,24 +52,17 @@
         name: 'TrackedElements',
         components: {TrashIcon, LoginIcon},
         props: ['value', 'leftPositions', 'rightPositions'],
-        data: function () {
-            return {
-                trackedElements: JSON.parse(JSON.stringify(this.value)),
-            }
-        },
         methods: {
             addTrackedObjectID: function () {
-                if (this.trackedElements[this.trackedElements.length - 1].length > 0) {
-                    this.trackedElements.push('');
+                if (this.value[this.value.length - 1].length > 0) {
+                    this.value.push('');
                     this.$nextTick(() => {
                         this.$refs.objectidinput[0].focus();
                     });
-                    this.$emit('input', this.trackedElements);
                 }
             },
             removeTrackedObjectID: function (index) {
-                this.trackedElements.splice(index, 1);
-                this.$emit('input', this.trackedElements);
+                this.value.splice(index, 1);
             },
         }
     }
