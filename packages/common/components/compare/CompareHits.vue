@@ -162,10 +162,8 @@
 
                     for (let i = 0; i < hits.length; i++) {
                         if (panel === 'left') {
-                            for (let j = 0; j < otherHits.length; j++) {
-                                leftOnOther[i] = otherHits.findIndex((hit) => hit.objectID === hits[i].objectID);
-                                if (leftOnOther[i] !== -1) rightOnOther[leftOnOther[i]] = i;
-                            }
+                            leftOnOther[i] = otherHits.findIndex((hit) => hit.objectID === hits[i].objectID);
+                            if (leftOnOther[i] !== -1) rightOnOther[leftOnOther[i]] = i;
                         }
 
                         this.trackedObjectIDs.forEach((needle, needleIndex) => {
