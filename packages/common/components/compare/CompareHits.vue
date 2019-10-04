@@ -32,8 +32,6 @@
                         :stroke="circleFilledColorTransparent"
                         stroke-width="2"
                     />
-                </g>
-                <g v-for="(hit, i) in leftHits">
                     <g class="cursor-pointer" @click="goToHit(i + 1, 'leftPanel')">
                         <circle
                             :r="radius"
@@ -58,7 +56,7 @@
                         </g>
                     </g>
                 </g>
-                <template v-if="$store.state.panels.splitMode">
+                <g v-if="$store.state.panels.splitMode">
                     <g class="cursor-pointer" v-for="(hit, i) in rightHits" @click="goToHit(i + 1, 'rightPanel')">
                         <circle
                             :r="radius"
@@ -82,7 +80,7 @@
                             </text>
                         </g>
                     </g>
-                </template>
+                </g>
             </svg>
         </div>
     </div>
