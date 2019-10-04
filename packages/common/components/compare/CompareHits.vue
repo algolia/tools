@@ -24,7 +24,7 @@
                 </defs>
                 <g v-for="(hit, i) in leftHits">
                     <line
-                        v-if="leftInOther[i] !== -1 && $store.state.panels.splitMode"
+                        v-if="leftInOther[i] !== -1 && splitMode"
                         :x1="circleX"
                         :y1="spaceBetweenCircle * i + 36"
                         :x2="width - circleX"
@@ -56,7 +56,7 @@
                         </g>
                     </g>
                 </g>
-                <g v-if="$store.state.panels.splitMode">
+                <g v-if="splitMode">
                     <g class="cursor-pointer" v-for="(hit, i) in rightHits" @click="goToHit(i + 1, 'rightPanel')">
                         <circle
                             :r="radius"
@@ -134,6 +134,9 @@
             }
         },
         computed: {
+            splitMode: function () {
+                return this.$store.state.panels.splitMode;
+            },
             leftHits: function () {
                 if (this.leftResponse && this.leftResponse.hits) {
                     return this.leftResponse.hits;
@@ -155,12 +158,11 @@
                 ['left', 'right'].forEach((panel) => {
                     const trackedPositions = this.trackedObjectIDs.map(() => -1);
                     const hits = panel === 'left' ? this.leftHits : this.rightHits;
-                    const otherHits = panel === 'left' ? this.rightHits : this.leftHits;
                     const hitsTracked = hits.map(() => -1);
 
                     for (let i = 0; i < hits.length; i++) {
                         if (panel === 'left') {
-                            leftOnOther[i] = otherHits.findIndex((hit) => hit.objectID === hits[i].objectID);
+                            leftOnOther[i] = this.rightHits.findIndex((hit) => hit.objectID === hits[i].objectID);
                             if (leftOnOther[i] !== -1) rightOnOther[leftOnOther[i]] = i;
                         }
 
@@ -177,19 +179,19 @@
                         });
                     }
 
-                    this[`${panel}TrackedPositions`] = trackedPositions;
-                    this[`${panel}HitsTracked`] = hitsTracked;
+                    this[`${panel}TrackedPositions`] = Object.freeze(trackedPositions);
+                    this[`${panel}HitsTracked`] = Object.freeze(hitsTracked);
                 });
 
-                this.leftInOther = leftOnOther;
-                this.rightInOther = rightOnOther;
+                this.leftInOther = Object.freeze(leftOnOther);
+                this.rightInOther = Object.freeze(rightOnOther);
             },
             personalized(hit) {
                 return hit._rankingInfo && hit._rankingInfo.personalization && hit._rankingInfo.personalization.filtersScore > 0;
             },
             hitColor: function (isLeft, hitPos) {
                 if (isLeft) {
-                    if (!this.$store.state.panels.splitMode || this.leftInOther[hitPos] !== -1) {
+                    if (!this.splitMode || this.leftInOther[hitPos] !== -1) {
                         return this.circleFilledColor;
                     }
                     return 'white';
