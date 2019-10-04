@@ -96,7 +96,12 @@ export default function (rawLog) {
         const queries = [];
 
         if (this.params.bodies && this.params.bodies.length > 0) {
-            queries.push(...this.params.bodies.map(r => decodeURIComponent(r.params.query) || '&lt;empty&gt;'))
+            queries.push(...this.params.bodies.map(r => {
+                if (r.params) {
+                    return decodeURIComponent(r.params.query) || '&lt;empty&gt;';
+                }
+                return r.query || '&lt;empty&gt;';
+            }))
         }
         else {
             if (this.params.all.query && this.params.all.query.length > 0) {
