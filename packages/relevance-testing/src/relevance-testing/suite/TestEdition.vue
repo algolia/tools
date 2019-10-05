@@ -22,8 +22,17 @@
                     >
                         <template v-slot:default="{option}">{{testOptions[option]}}</template>
                     </custom-select>
-                    <sign-select v-model="testCase.operator" class="mr-16" />
-                    <number-select v-model.number="testCase.value" :min="0" :max="1000" class="mr-8" />
+                    <sign-select
+                        v-model="testCase.operator"
+                        :numeric-only="true"
+                        class="mr-16"
+                    />
+                    <number-select
+                        v-model.number="testCase.value"
+                        :min="0"
+                        :max="1000"
+                        class="mr-8"
+                    />
                     <div class="flex items-center text-solstice-blue" v-if="testCase.test === 'contains'">
                         <div>results</div>
                     </div>

@@ -14,23 +14,39 @@
 
     export default {
         name: 'SignSelect',
-        props: ['value'],
+        props: ['value', 'numericOnly'],
         data: function () {
             return {
-                options: {
+                stringOptions: {
                     'is': 'is',
                     'isNot': 'is not',
                     'contains': 'contains',
                     'notContains': 'doesn\'t contains',
+                },
+                numericOptions: {
                     '=': '(=) equals',
                     '!=': '!= not equals',
                     '>': '(>) more than',
                     '>=': '(>=) at least',
                     '<': '(<) less than',
                     '<=': '(<=) at most',
+                },
+                otherOptions: {
                     'isTrue': 'is true',
                     'isFalse': 'is false',
                     'isNull': 'is null',
+                }
+            }
+        },
+        computed: {
+            options: function () {
+                if (this.numericOnly) {
+                    return this.numericOptions;
+                }
+                return {
+                    ...this.stringOptions,
+                    ...this.numericOptions,
+                    ...this.otherOptions,
                 }
             }
         },
