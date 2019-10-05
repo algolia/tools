@@ -9,6 +9,7 @@
                     :group-pos="groupPos"
                     :suite="suite"
                     :collapsed="collapse"
+                    @onTestCreated="$emit('onTestSelected', $event)"
                 />
             </td>
             <template>

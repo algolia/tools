@@ -67,6 +67,7 @@
     import ChevronLeftIcon from 'common/icons/chevron-left.svg';
     import Tooltip from "common/components/Tooltip";
     import {Test} from "@/test-engine/engine";
+    import {goToAnchor} from "common/utils/domHelpers";
 
     export default {
         name: 'EditGroup',
@@ -126,7 +127,7 @@
                                         {
                                             "type": "attribute",
                                             "key": "objectID",
-                                            "operator": "=",
+                                            "operator": "is",
                                             "value": ""
                                         }
                                     ]
@@ -140,6 +141,12 @@
                 const test = new Test(testData, this.suite.runs, this.group);
                 this.group.tests.push(test);
                 test.run();
+                this.$nextTick(() => {
+                    this.$emit('onTestCreated', test);
+                    window.setTimeout(() => {
+                        goToAnchor(`#test-${test.id}`);
+                    }, 200);
+                })
             },
         }
     }

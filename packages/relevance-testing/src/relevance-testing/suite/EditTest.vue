@@ -1,5 +1,5 @@
 <template>
-    <div class="p-8">
+    <div class="p-8" :id="`test-${test.id}`">
         <div
             class="cursor-pointer text-sm"
             @click="$emit('onSelected')"
