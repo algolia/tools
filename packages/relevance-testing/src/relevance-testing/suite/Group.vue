@@ -22,7 +22,7 @@
             </template>
         </tr>
         <template v-if="!collapse">
-            <template v-for="(test, testPos) in group.tests">
+            <template v-for="(test, testPos) in filteredTests">
                 <tr><td colspan="0" class="h-2 bg-moon-grey"></td></tr>
                 <tr :key="test.id">
                     <td class="h-1 w-500 min-w-500">
@@ -63,12 +63,34 @@
 
     export default {
         name: 'Group',
-        props: ['group', 'groupPos', 'runs', 'suite', 'currentTest', 'forceOpen'],
+        props: ['group', 'groupPos', 'runs', 'suite', 'currentTest', 'forceOpen', 'filtering'],
         components: {TestStatus, GroupStatus, EditTest, EditGroup},
         data: function () {
             return {
-                collapse: (this.suite.groups.length > 1 && this.group.tests.length > 0) && !this.forceOpen,
+                collapse: (this.suite.groups.length > 1 && this.filteredTests.length > 0) && !this.forceOpen,
             }
+        },
+        computed: {
+            filteredTests: function () {
+                return this.group.tests.filter((test) => {
+                    if (this.currentTest && test.id === this.currentTest.id) return true;
+
+                    if (this.filtering === 'allPassing') {
+                        return this.runs.every((run, index) => test.reports && test.reports[index] && test.reports[index].passing === true);
+                    } else if (this.filtering === 'allFailing') {
+                        return this.runs.every((run, index) => test.reports && test.reports[index] && test.reports[index].passing === false);
+                    } else if (this.filtering === 'onePassing') {
+                        return this.runs.some((run, index) => test.reports && test.reports[index] && test.reports[index].passing === true);
+                    } else if (this.filtering === 'oneFailing') {
+                        return this.runs.some((run, index) => test.reports && test.reports[index] && test.reports[index].passing === false);
+                    } else if (this.filtering === 'onePassingOneFailing') {
+                        return this.runs.some((run, index) => test.reports && test.reports[index] && test.reports[index].passing === true) &&
+                            this.runs.some((run, index) => test.reports && test.reports[index] && test.reports[index].passing === false);
+                    }
+
+                    return true;
+                });
+            },
         },
     }
 </script>

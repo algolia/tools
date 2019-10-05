@@ -8,11 +8,23 @@
                             <div class="px-12">
                                 <h2 class="text-telluric-blue">
                                     <router-link to="/suites" class="hover:underline">
-                                        Test Suites
+                                        Tests Suites
                                     </router-link>
                                     >
                                     {{suite.name}}
                                 </h2>
+                                <div class="mt-24 flex items-center">
+                                    <div>
+                                        Display tests:
+                                    </div>
+                                    <custom-select
+                                        v-model="filtering"
+                                        :options="Object.keys(filteringOptions)"
+                                        class="ml-12 mr-16 w-176 text-solstice-blue text-sm border-b border-telluric-blue-opacity-60"
+                                    >
+                                        <template v-slot:default="{option}">{{filteringOptions[option]}}</template>
+                                    </custom-select>
+                                </div>
                             </div>
                         </td>
                         <template>
@@ -75,6 +87,7 @@
                         :runs="suite.runs"
                         :suite="suite"
                         :current-test="currentTest"
+                        :filtering="filtering"
                         @onTestSelected="setCurrentTest"
                         @onRunSelected="setCurrentRun"
                     />
@@ -170,6 +183,7 @@
     import TestEdition from "@/relevance-testing/suite/TestEdition"
     import EditRun from "@/relevance-testing/run/EditRun";
     import CompareHits from "common/components/compare/CompareHits";
+    import CustomSelect from "common/components/selectors/CustomSelect";
 
     import HitsConfig from "common/components/configuration/HitsConfig";
     import PanelsConfig from "common/components/configuration/PanelsConfig";
@@ -194,7 +208,7 @@
         components: {
             SlidingPanel,
             StatusRun,
-            AddRun, TestPreview, TestEdition, Group, GroupGeneratorFromCsv, EditRun, HitsConfig, PanelsConfig, Tooltip, PlusIcon, UploadIcon, CompareHits},
+            AddRun, TestPreview, TestEdition, Group, GroupGeneratorFromCsv, EditRun, HitsConfig, PanelsConfig, Tooltip, PlusIcon, UploadIcon, CompareHits, CustomSelect},
         data: function () {
             return {
                 page: 0,
@@ -202,12 +216,28 @@
                 currentTest: null,
                 currentRun: null,
                 displayGenerator: null,
+                filteringOptions: {
+                    'all': 'all',
+                    'allPassing': 'all passing',
+                    'allFailing': 'all failing',
+                    'onePassing': '>= 1 passing',
+                    'oneFailing': '>= 1 failing',
+                    'onePassingOneFailing': '>= 1 passing and >= 1 failing',
+                }
             };
         },
         created: function () {
             this.fetchSuite();
         },
         computed: {
+            filtering: {
+                get () {
+                    return this.$store.state.relevancetesting.filtering || 'all';
+                },
+                set (val) {
+                    this.$store.commit('relevancetesting/setFiltering', val);
+                }
+            },
             forcedTracked: function () {
                 const tracked = [];
                 this.currentTest.testData.then.forEach((then) => {
