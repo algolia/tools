@@ -86,7 +86,6 @@ export default function (rawLog) {
     this.answer_code = rawLog.answer_code;
     this.nb_operations = rawLog.nb_api_calls;
     this.processing_time_ms = rawLog.processing_time_ms;
-    //this.operation = extractOperation(rawLog);
 
     this.response = rawLog.answer;
 
