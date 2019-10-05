@@ -93,11 +93,13 @@
         },
         watch: {
             rows: function () {
-                this.columnTypes = [];
                 if (this.rows.length > 0) {
-                    this.rows[0].forEach(() => {
-                        this.columnTypes.push('');
-                    })
+                    const currentLength = this.columnTypes.length;
+                    const lengthDiff = this.rows[0].length - currentLength;
+                    this.columnTypes.length += lengthDiff;
+                    for (let i = 0; i < lengthDiff; i++) {
+                        this.columnTypes[currentLength + i] = '';
+                    }
                 }
             }
         },
@@ -141,9 +143,13 @@
 
                     this.columnTypes.forEach((columnType, i) => {
                         if (columnType === 'query') {
-                            query = row[i];
+                            query = row[i] || '';
                         } else if (columnType === 'searchParams') {
-                            searchParams = JSON.parse(row[i]);
+                            try {
+                                searchParams = JSON.parse(row[i]);
+                            } catch (e) {
+                                searchParams = {};
+                            }
                         } else if (columnType === 'contains') {
                             addRequirement = true;
                             requirement.value = parseInt(row[i]);
