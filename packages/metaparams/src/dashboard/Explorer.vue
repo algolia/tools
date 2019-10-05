@@ -88,6 +88,7 @@
                 :display-ranking-info="$store.state.panels.displayRankingInfo"
                 @onUpdateAnalyseMaxNbPoint="analyseMaxNbPoints = $event"
                 @onUpdateDisplayMode="displayMode = $event"
+                @onUpdatePage="onSetParamValue('page', $event)"
                 @onSetParamValue="onSetParamValue"
                 @onDeleteParam="onDeleteParam"
                 @onUpdateImageAttribute="indexImageAttributeName = $event"

@@ -88,7 +88,6 @@
 
 <script>
     import Vue from 'vue';
-    import {goToAnchor} from "common/utils/domHelpers";
     import panelsMixin from "common/mixins/panelsMixin";
     import TrackedElements from "./TrackedElements";
 
@@ -206,28 +205,7 @@
                 return 'white';
             },
             goToHit: function (i, panelKey) {
-                const otherPanelKey = panelKey === 'leftPanel' ? 'rightPanel': 'leftPanel';
-                const appId = this.$store.state.panels[panelKey].appId;
-                const indexName = this.$store.state.panels[panelKey].indexName;
-                const otherAppId = this.$store.state.panels[otherPanelKey].appId;
-                const otherIndexName = this.$store.state.panels[otherPanelKey].indexName;
-                const isSameIndexOnBothPanels = appId === otherAppId && indexName === otherIndexName;
-                const searchConfigKey = isSameIndexOnBothPanels && panelKey === 'rightPanel' ? 'searchParams2' : 'searchParams';
-                const searchParamsRaw = this.$store.state.apps[appId][indexName][searchConfigKey];
-                const hitsPerPage = searchParamsRaw.hitsPerPage && searchParamsRaw.hitsPerPage.enabled ? searchParamsRaw.hitsPerPage.value : 8;
-                const page = searchParamsRaw.page && searchParamsRaw.page.enabled ? searchParamsRaw.page.value : 0;
-                const pageSize = hitsPerPage || 1;
-                const goToPage = Math.floor((i - 1) / pageSize);
-                const anchor = `#${panelKey}-${i}`;
-
-                if (page !== goToPage) {
-                    this.$store.commit(`apps/${appId}/${indexName}/setParamValue`, {configKey: searchConfigKey, key: 'page', value: goToPage});
-                    this.$root.$emit('wantsToGoToAnchorAtNext', anchor);
-                } else {
-                    Vue.nextTick(() => {
-                        goToAnchor(anchor);
-                    });
-                }
+                this.$emit('onGoToHit', i, panelKey);
             },
         }
     }

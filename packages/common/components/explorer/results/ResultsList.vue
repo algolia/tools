@@ -33,8 +33,7 @@
             <div class="flex justify-center" v-if="!disablePagination">
                 <pagination
                     v-on="$listeners"
-                    @onUpdatePage="page = $event"
-                    :page="page"
+                    :page="searchResponse.page"
                     :cursor="searchResponse.cursor"
                     :nb-pages="searchResponse.nbPages"
                 />
@@ -99,14 +98,6 @@
             }
         },
         computed: {
-            page: {
-                get () {
-                    return this.searchParams.page || 0;
-                },
-                set(value) {
-                    this.$emit('onSetParamValue', 'page', value);
-                }
-            },
             attributesForFaceting: function () {
                 return this.indexSettings.attributesForFaceting || [];
             },

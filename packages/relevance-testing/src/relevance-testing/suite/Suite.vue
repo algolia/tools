@@ -110,8 +110,8 @@
                             </template>
                         </div>
                     </div>
-                    <div class="flex h-full">
-                        <div class="min-w-third max-w-third border-r border-proton-grey overflow-y-scroll h-full pb-96">
+                    <div class="flex h-full pb-96">
+                        <div class="min-w-third max-w-third border-r border-proton-grey overflow-y-scroll h-full">
                             <test-edition
                                 :test="currentTest"
                                 :current-run="currentRun"
@@ -132,6 +132,8 @@
                                                 class="p-8"
                                                 :current-test="currentTest"
                                                 :current-run="currentRun"
+                                                :page="page"
+                                                @onUpdatePage="page = $event"
                                             />
                                         </div>
                                         <div v-else class="p-8">
@@ -143,6 +145,7 @@
                                             class="pb-8 pl-8 pr-32"
                                             :enabled="$store.state.panels.comparePanels"
                                             :forced-tracked="forcedTracked"
+                                            @onGoToHit="onGoToHit"
                                         />
                                     </div>
                                 </div>
@@ -183,6 +186,7 @@
 
     import PlusIcon from 'common/icons/plus-circle.svg';
     import UploadIcon from 'common/icons/upload.svg';
+    import {goToAnchor} from "common/utils/domHelpers";
 
     export default {
         name: 'RelevanceTesting',
@@ -193,6 +197,7 @@
             AddRun, TestPreview, TestEdition, Group, GroupGeneratorFromCsv, EditRun, HitsConfig, PanelsConfig, Tooltip, PlusIcon, UploadIcon, CompareHits},
         data: function () {
             return {
+                page: 0,
                 suite: null,
                 currentTest: null,
                 currentRun: null,
@@ -226,6 +231,20 @@
             },
         },
         methods: {
+            onGoToHit: function (i) {
+                const pageSize = this.currentRun.hits_per_page || this.currentTest.testData.hits_per_page || 1;
+                const goToPage = Math.floor((i - 1) / pageSize);
+                const anchor = `#leftPanel-${i}`;
+
+                if (this.page !== goToPage) {
+                    this.page = goToPage;
+                    this.$root.$emit('wantsToGoToAnchorAtNext', anchor);
+                } else {
+                    this.$nextTick(() => {
+                        goToAnchor(anchor);
+                    });
+                }
+            },
             fetchSuite: async function () {
                 const res = await fetch(`${process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT}/relevance-testing/suites/${this.suiteId}`, {
                     credentials: 'include',

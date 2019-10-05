@@ -67,7 +67,7 @@
         methods: {
             setPage: function (page) {
                 if (this.page >= 0 && this.page < this.nbPages) {
-                    this.$emit('onSetParamValue', 'page', page);
+                    this.$emit('onUpdatePage', page);
                 }
             },
         },

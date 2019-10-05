@@ -27,6 +27,7 @@
             :search-params="currentTest.testData.when"
             :index-settings="refIndexSettings"
             :analyse-max-nb-points="maxNbPoints"
+            panel-key="leftPanel"
             :read-only="true"
             :app-id="appId"
             :api-key="apiKey"
@@ -47,7 +48,7 @@
             :auto-title-attribute-name="indexAutoTitleAttributeName"
             :keys-indexer="indexKeysIndexer"
             :display-ranking-info="$store.state.panels.displayRankingInfo"
-            :disable-pagination="true"
+            @onUpdatePage="$emit('onUpdatePage', $event)"
             @onUpdateAnalyseMaxNbPoint="maxNbPoints = $event"
             @onUpdateDisplayMode="displayMode = $event"
             @onUpdateImageAttribute="indexImageAttributeName = $event"
@@ -71,7 +72,7 @@
         name: 'TestPreview',
         components: {Results, PerformSearch, ErrorMessage},
         mixins: [indexInfoMixin],
-        props: ['currentTest', 'currentRun'],
+        props: ['currentTest', 'currentRun', 'page'],
         data: function () {
             return {
                 searchResponse: null,
@@ -107,6 +108,7 @@
                         getRankingInfo: true,
                         analytics: false,
                         enableABTest: false,
+                        page: this.page,
                     }
                 );
             },

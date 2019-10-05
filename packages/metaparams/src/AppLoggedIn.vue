@@ -25,6 +25,7 @@
                 <compare-hits
                     class="m-8 mr-8"
                     :enabled="$store.state.panels.comparePanels"
+                    @onGoToHit="onGoToHit"
                 />
             </div>
             <div
@@ -92,6 +93,8 @@
     import ShareView from "@/dashboard/ShareView";
     import SearchBox from "@/dashboard/SearchBox";
 
+    import {goToAnchor} from "common/utils/domHelpers";
+
     export default {
         name: "AppLoggedIn",
         components: {
@@ -141,6 +144,32 @@
                 window.history.replaceState({}, document.title, '/metaparams');
             }
             this.loadingSharingLink = false;
+        },
+        methods: {
+            onGoToHit: function (i, panelKey) {
+                const otherPanelKey = panelKey === 'leftPanel' ? 'rightPanel': 'leftPanel';
+                const appId = this.$store.state.panels[panelKey].appId;
+                const indexName = this.$store.state.panels[panelKey].indexName;
+                const otherAppId = this.$store.state.panels[otherPanelKey].appId;
+                const otherIndexName = this.$store.state.panels[otherPanelKey].indexName;
+                const isSameIndexOnBothPanels = appId === otherAppId && indexName === otherIndexName;
+                const searchConfigKey = isSameIndexOnBothPanels && panelKey === 'rightPanel' ? 'searchParams2' : 'searchParams';
+                const searchParamsRaw = this.$store.state.apps[appId][indexName][searchConfigKey];
+                const hitsPerPage = searchParamsRaw.hitsPerPage && searchParamsRaw.hitsPerPage.enabled ? searchParamsRaw.hitsPerPage.value : 8;
+                const page = searchParamsRaw.page && searchParamsRaw.page.enabled ? searchParamsRaw.page.value : 0;
+                const pageSize = hitsPerPage || 1;
+                const goToPage = Math.floor((i - 1) / pageSize);
+                const anchor = `#${panelKey}-${i}`;
+
+                if (page !== goToPage) {
+                    this.$store.commit(`apps/${appId}/${indexName}/setParamValue`, {configKey: searchConfigKey, key: 'page', value: goToPage});
+                    this.$root.$emit('wantsToGoToAnchorAtNext', anchor);
+                } else {
+                    this.$nextTick(() => {
+                        goToAnchor(anchor);
+                    });
+                }
+            },
         }
     };
 </script>
