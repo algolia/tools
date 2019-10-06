@@ -96,10 +96,11 @@ export default function (rule) {
     this.description = ruleCopy.description;
     this.validity = ruleCopy.validity;
 
-    this.hasCondition = ruleCopy.condition !== undefined;
-    this.pattern = ruleCopy.condition.pattern;
-    this.anchoring = ruleCopy.condition.anchoring;
-    this.context = ruleCopy.condition.context || '';
+    this.hasPatternAndAnchoring = ruleCopy.condition !== undefined && ruleCopy.condition.pattern !== undefined && ruleCopy.condition.anchoring !== undefined;
+    this.pattern = this.hasPatternAndAnchoring ? ruleCopy.condition.pattern : '';
+    this.anchoring = this.hasPatternAndAnchoring ? ruleCopy.condition.anchoring : 'is';
+    this.context = ruleCopy.condition && ruleCopy.condition.context ? ruleCopy.condition.context : '';
+    this.alternatives = ruleCopy.condition && ruleCopy.condition.alternatives ? ruleCopy.condition.alternatives : false;
 
     this.promote = ruleCopy.consequence.promote || [];
     this.hide = ruleCopy.consequence.hide || [];
@@ -136,15 +137,18 @@ export default function (rule) {
 
         if (this.validity) rule.validity = this.validity;
 
-        rule.condition = {
-            pattern: this.pattern,
-            anchoring: this.anchoring,
-        };
+        rule.condition = {};
+        if (this.hasPatternAndAnchoring) {
+             rule.condition.pattern = this.pattern;
+             rule.condition.anchoring = this.anchoring;
+        }
+
         if (this.context.length > 0) rule.condition.context = this.context;
+        if (this.alternatives) rule.condition.alternatives = true;
 
         rule.consequence = {};
 
-        if (this.hasPromote && this.promote.length > 0) rule.consequence.promote = JSON.parse(JSON.stringify(this.promote));
+        if (this.hasPatternAndAnchoring && this.hasPromote && this.promote.length > 0) rule.consequence.promote = JSON.parse(JSON.stringify(this.promote));
         if (this.hasHide && this.hide.length > 0) rule.consequence.hide = JSON.parse(JSON.stringify(this.hide));
 
         if (this.hasParams && Object.keys(this.editableParams).length > 0) {
@@ -159,7 +163,7 @@ export default function (rule) {
         if (this.hasReplacedQuery) {
             if (!rule.consequence.params) rule.consequence.params = {};
             rule.consequence.params.query = this.replacedQuery;
-        } else {
+        } else if (this.hasPatternAndAnchoring) {
             const replacedWordsFromQuery = this.replacedWordsFromQuery.filter((word) => {
                 return word[0].length > 0 && word[1].length > 0;
             });
@@ -192,22 +196,24 @@ export default function (rule) {
             }
         }
 
-        // Needs to be after params
-        const automaticFacetFilters = this.automaticFacetFilters.filter((filter) => {
-            return this.pattern.indexOf(`{facet:${filter.facet}`) !== -1;
-        });
-        if (this.hasAutomaticFilters && automaticFacetFilters.length > 0) {
-            if (!rule.consequence.params) rule.consequence.params = {};
-            rule.consequence.params.automaticFacetFilters = JSON.parse(JSON.stringify(automaticFacetFilters));
-        }
+        if (this.hasPatternAndAnchoring) {
+            // Needs to be after params
+            const automaticFacetFilters = this.automaticFacetFilters.filter((filter) => {
+                return this.pattern.indexOf(`{facet:${filter.facet}`) !== -1;
+            });
+            if (this.hasAutomaticFilters && automaticFacetFilters.length > 0) {
+                if (!rule.consequence.params) rule.consequence.params = {};
+                rule.consequence.params.automaticFacetFilters = JSON.parse(JSON.stringify(automaticFacetFilters));
+            }
 
-        // Needs to be after params
-        const automaticOptionalFacetFilters = this.automaticOptionalFacetFilters.filter((filter) => {
-            return this.pattern.indexOf(`{facet:${filter.facet}`) !== -1;
-        });
-        if (this.hasAutomaticOptionalFilters && automaticOptionalFacetFilters.length > 0) {
-            if (!rule.consequence.params) rule.consequence.params = {};
-            rule.consequence.params.automaticOptionalFacetFilters = JSON.parse(JSON.stringify(automaticOptionalFacetFilters));
+            // Needs to be after params
+            const automaticOptionalFacetFilters = this.automaticOptionalFacetFilters.filter((filter) => {
+                return this.pattern.indexOf(`{facet:${filter.facet}`) !== -1;
+            });
+            if (this.hasAutomaticOptionalFilters && automaticOptionalFacetFilters.length > 0) {
+                if (!rule.consequence.params) rule.consequence.params = {};
+                rule.consequence.params.automaticOptionalFacetFilters = JSON.parse(JSON.stringify(automaticOptionalFacetFilters));
+            }
         }
 
         if (this.hasUserData) rule.consequence.userData = this.userData;

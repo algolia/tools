@@ -22,21 +22,32 @@
                 </div>
             </div>
             <div class="w-full p-8">
-                <div v-if="intermediateRule.hasCondition">
+                <div>
                     <div class="py-8 flex flex-wrap items-center tracking-wide text-xs uppercase text-cosmos-black-opacity-70">
                         Condition
                     </div>
-                    <div class="py-8 flex flex-wrap border-t border-proton-grey-opacity-20">
-                        <div v-if="intermediateRule.anchoring" class="w-188">
-                            if query <span v-html="properHighlight(intermediateRule.anchoring)"></span>
+                    <div v-if="intermediateRule.hasPatternAndAnchoring || intermediateRule.context">
+                        <div
+                            v-if="intermediateRule.hasPatternAndAnchoring"
+                            class="py-8 flex flex-wrap border-t border-proton-grey-opacity-20"
+                        >
+                            <div class="w-188">
+                                if query <span v-html="properHighlight(intermediateRule.anchoring)"></span>
+                            </div>
+                            <div class="ml-4 text-cosmos-black-opacity-70">
+                                "<span v-html="properHighlight(intermediateRule.pattern)"></span>"
+                            </div>
                         </div>
-                        <div v-if="intermediateRule.pattern" class="ml-4 text-cosmos-black-opacity-70">
-                            "<span v-html="properHighlight(intermediateRule.pattern)"></span>"
+                        <div v-if="intermediateRule.alternatives">
+                            <div class="w-188">match with alternatives</div>
+                        </div>
+                        <div v-if="intermediateRule.context" class="py-8 flex flex-wrap border-t border-proton-grey-opacity-20">
+                            <div class="w-188">in context</div>
+                            <div class="ml-4 text-cosmos-black-opacity-70">"{{intermediateRule.context}}"</div>
                         </div>
                     </div>
-                    <div v-if="intermediateRule.context" class="py-8 flex flex-wrap border-t border-proton-grey-opacity-20">
-                        <div class="w-188">in context</div>
-                        <div class="ml-4 text-cosmos-black-opacity-70">"{{intermediateRule.context}}"</div>
+                    <div v-else class="py-8 border-t border-proton-grey-opacity-20">
+                        No condition - Always active
                     </div>
                     <div v-if="intermediateRule.validity && intermediateRule.validity.length > 0" class="py-8 flex flex-wrap border-t border-proton-grey-opacity-20">
                         <div class="w-188">validity periods</div>
@@ -44,12 +55,12 @@
                             <div v-for="validityPeriod in intermediateRule.validity">
                                 from
                                 <span class="text-cosmos-black-opacity-70">
-                                {{new Date(validityPeriod.from * 1000).toLocaleDateString('en-US', {day: 'numeric', month: 'short', year: 'numeric'})}}
-                            </span>
+                            {{new Date(validityPeriod.from * 1000).toLocaleDateString('en-US', {day: 'numeric', month: 'short', year: 'numeric'})}}
+                        </span>
                                 to
                                 <span class="text-cosmos-black-opacity-70">
-                                {{new Date(validityPeriod.until * 1000).toLocaleDateString('en-US', {day: 'numeric', month: 'short', year: 'numeric'})}}
-                            </span>
+                            {{new Date(validityPeriod.until * 1000).toLocaleDateString('en-US', {day: 'numeric', month: 'short', year: 'numeric'})}}
+                        </span>
                             </div>
                         </div>
                     </div>
