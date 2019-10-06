@@ -78,6 +78,7 @@
             if (this.appIds.length > 0 && !this.apps[this.appIds[0]].__app_owner) {
                 this.fetchAppsInfo();
             }
+            this.$root.$on('onFetchAppsInfo', () => this.fetchAppsInfo());
         },
         computed: {
             apps: function () {

@@ -1,21 +1,21 @@
 <template>
-    <div class="overflow-hidden flex flex-col" v-if="!loadingSharingLink">
+    <div class="overflow-hidden flex flex-col">
         <app-header app-name="Metaparams">
             <display-config class="mx-16 mt-0"/>
         </app-header>
         <share-view
-            v-if="$store.state.panels.shareStatePanel"
+            v-if="!loadingSharingLink && $store.state.panels.shareStatePanel"
             @onShouldClose="$store.commit('panels/setShareStatePanel', false)"
         />
         <app-management />
-        <div class="w-full">
+        <div class="w-full" v-if="!loadingSharingLink">
             <search-box
                 class="mt-16 mx-16 lg:mx-auto xl:mx-auto lg:max-w-half xl:max-w-half"
                 v-if="$store.state.panels.splitMode && !$store.state.panels.twoInputs && Object.keys($store.state.apps).length > 0"
             />
         </div>
         <div
-            v-if="Object.keys($store.state.apps).length"
+            v-if="!loadingSharingLink && Object.keys($store.state.apps).length"
             class="w-full flex flex-1 items-start"
         >
             <div class="min-w-0 flex-1">
@@ -139,6 +139,7 @@
                             this.$store.commit(`apps/${appId}/${indexName}/replaceIndexData`, state.apps[appId][indexName]);
                         }
                     }
+                    this.$root.$emit('onFetchAppsInfo');
                 }
 
                 window.history.replaceState({}, document.title, '/metaparams');
