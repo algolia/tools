@@ -392,8 +392,8 @@
                 return potentialFilters;
             },
             canBeSaved: function () {
-                if (this.newRule.hasCondition) {
-                    if (this.newRule.objectID.length <= 0) return false;
+                if (this.newRule.objectID.length <= 0) return false;
+                if (this.newRule.hasPatternAndAnchoring) {
                     if (this.newRule.pattern && this.newRule.pattern.length === 0 && this.newRule.anchoring !== 'is') return false;
                 }
 
