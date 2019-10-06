@@ -27,7 +27,7 @@
             />
             <div v-if="configKey === 'indexSettings'">
                 <div class="mt-24 border-t border-proton-grey-opacity-20"></div>
-                <save-or-copy-settings :panel-key="panelKey"/>
+                <save-or-copy-settings :panel-key="panelKey" :read-only="readOnly" />
             </div>
         </div>
     </div>
@@ -43,7 +43,7 @@
     export default {
         name: 'ParamsPanel',
         components: {SaveOrCopySettings, Params, ParamsHeader},
-        props: ['panelKey', 'configKey'],
+        props: ['panelKey', 'configKey', 'readOnly'],
         mixins: [indexInfoMixin, panelsMixin],
         data: function () {
             return {

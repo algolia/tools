@@ -63,7 +63,7 @@
                 :search-params="searchParams"
                 :index-settings="refIndexSettings"
                 :analyse-max-nb-points="analyseMaxNbPoints"
-                :read-only="isReadOnly"
+                :read-only="readOnly || isReplica"
                 :app-id="panelAppId"
                 :api-key="panelAdminAPIKey"
                 :index-name="panelIndexName"
@@ -113,6 +113,7 @@
                 :image-suffix-url="indexImageSuffixUrl"
                 :title-attribute-name="indexTitleAttribute"
                 :auto-title-attribute-name="indexAutoTitleAttributeName"
+                :read-only="readOnly || isReplica"
                 :can-jump-synonyms="canJumpSynonyms"
                 :jump-to="otherPanelKey"
             />
@@ -131,7 +132,7 @@
                 :image-suffix-url="indexImageSuffixUrl"
                 :title-attribute-name="indexTitleAttribute"
                 :auto-title-attribute-name="indexAutoTitleAttributeName"
-                :read-only="isReadOnly"
+                :read-only="readOnly || isReplica"
                 :can-jump-rules="canJumpRules"
                 :jump-to="otherPanelKey"
             />
@@ -159,7 +160,7 @@
     export default {
         name: 'Explorer',
         components: {Checks, Fetcher, Results, PerformSearch, ErrorMessage},
-        props: ['panelKey'],
+        props: ['panelKey', 'readOnly'],
         mixins: [indexInfoMixin, panelsMixin],
         data: function () {
             return {

@@ -33,7 +33,7 @@
     export default {
         name: 'AppSelector',
         components: {CustomSelect, BoxIcon},
-        props: ['value'],
+        props: ['value', 'onlyAlgolia'],
         data: function () {
             return {
                 query: '',
@@ -44,7 +44,10 @@
                 return this.$store.state.apps;
             },
             appIds: function () {
-                const appIds = Object.keys(this.apps);
+                const appIds = Object.keys(this.apps).filter((appId) => {
+                    if (this.onlyAlgolia) return this.ownedByAlgolia(appId);
+                    return true;
+                });
 
                 if (this.query.length === 0) return appIds;
 
@@ -59,9 +62,18 @@
             }
         },
         created: function () {
-            if (this.value) this.$store.commit("apps/addAppId", {appId: this.value});
+            if (this.value) {
+                this.$store.commit("apps/addAppId", {appId: this.value});
+            } else if (this.appIds.length > 0) {
+                this.$emit('input', this.appIds[0]);
+                this.$store.commit("apps/addAppId", {appId: this.appIds[0]});
+            }
         },
         methods: {
+            ownedByAlgolia(appId) {
+                const app = this.$store.state.apps[appId];
+                return appId === 'MySuperApp' || (app && app.__app_owner && app.__app_owner.length > 0 && app.__app_owner.endsWith('@algolia.com'));
+            },
             refine: function (query) {
                 this.query = query;
             },

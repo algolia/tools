@@ -5,12 +5,20 @@
             :panel-key="panelKey"
         />
         <div class="mt-16 rounded bg-white border border-solid border-proton-grey-opacity-60">
-            <div class="px-8 py-8 pb-12 bg-proton-grey-opacity-80 border-b border-nova-grey-opacity-20">
+            <div
+                class="px-8 py-8 pb-12 border-b border-nova-grey-opacity-20"
+                :class="{
+                    'bg-proton-grey-opacity-80': isOwnedByAlgolia,
+                    'bg-saturn-5': !isOwnedByAlgolia && !forceWrite,
+                    'bg-mars-1-opacity-50': !isOwnedByAlgolia && forceWrite,
+                }"
+            >
                 <div class="flex flex-wrap justify-start items-center">
                     <app-selector v-model="appId" class="mb-12" />
                     <index-selector v-model="indexName" :app-id="appId" class="ml-12 mb-12" />
-                    <index-new class="mb-12 pb-4" :panel-key="panelKey" />
-                    <index-delete v-if="!isReadOnly" class="mb-12 pb-4" :panel-key="panelKey" />
+
+                    <index-new v-if="canWrite" class="mb-12 pb-4" :panel-key="panelKey" />
+                    <index-delete v-if="canWrite && !isReplica" class="mb-12 pb-4" :panel-key="panelKey" />
                     <button v-if="$store.state.panels.splitMode && !sameIndexOnEachPanel && panelKey === 'leftPanel'"
                             @click="$store.commit('panels/rightFromLeft')"
                             class="block ml-8 mb-12 pb-4 relative group"
@@ -46,13 +54,18 @@
                         <tooltip>{{$store.state.panels.expandLeftPanel ? 'Shrink the panel' : 'Expand the panel'}}</tooltip>
                     </button>
                 </div>
-                <index-info v-if="indexData" :panel-key="panelKey"/>
+                <div class="flex flex-wrap">
+                    <div v-if="!isOwnedByAlgolia" class="text-sm text-solstice-blue-opacity-80 mr-24">
+                        Read-Only <input type="checkbox" :checked="!forceWrite" @input="forceWrite = !$event.target.checked">
+                    </div>
+                    <index-info v-if="indexData" :panel-key="panelKey"/>
+                </div>
             </div>
             <div v-if="indexData">
                 <div class="flex">
                     <div v-if="panelKey === 'leftPanel'" class="w-300 max-w-300 min-w-300">
                         <queries :panel-key="panelKey"/>
-                        <dashboard-config :panel-key="panelKey"/>
+                        <dashboard-config :panel-key="panelKey" :read-only="!canWrite"/>
                     </div>
                     <div
                         style="width: calc(100% - 300px)"
@@ -62,6 +75,7 @@
                         <explorer
                             v-if="panelIndexName"
                             :panel-key="panelKey"
+                            :read-only="!canWrite"
                             class="bg-white flex-1 min-w-0"
                         />
                         <facets
@@ -78,7 +92,7 @@
                     </div>
                     <div v-if="panelKey !== 'leftPanel'" class="w-300 max-w-300 min-w-300">
                         <queries :panel-key="panelKey"/>
-                        <dashboard-config :panel-key="panelKey"/>
+                        <dashboard-config :panel-key="panelKey" :read-only="!canWrite"/>
                     </div>
                 </div>
             </div>
@@ -132,6 +146,11 @@
             MinimizeIcon,
             Facets
         },
+        data: function () {
+            return {
+                forceWrite: false,
+            }
+        },
         computed: {
             appId: { // Needed for indexInfoMixin
                 get () {
@@ -148,6 +167,14 @@
                 set (indexName) {
                     this.$store.commit(`panels/${this.panelKey}/setPanelConfig`, {appId: this.appId, indexName: indexName});
                 }
+            },
+            isOwnedByAlgolia: function () {
+                const app = this.$store.state.apps[this.appId];
+                return this.appId === 'MySuperApp' ||
+                    (app && app.__app_owner && app.__app_owner.length > 0 && app.__app_owner.endsWith('@algolia.com'));
+            },
+            canWrite: function () {
+                return this.forceWrite || this.isOwnedByAlgolia;
             },
         },
     }

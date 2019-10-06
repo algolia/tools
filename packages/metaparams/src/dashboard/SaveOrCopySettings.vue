@@ -2,7 +2,7 @@
     <div class="mt-24">
         <div v-if="!tasksGroup && !displayCopyOption" class="flex">
             <button
-                v-if="isIndexSettingsDirty"
+                v-if="!readOnly && isIndexSettingsDirty"
                 @click="saveSettings()"
                 class="block bg-white rounded border border-saturn-2 text-saturn-1 shadow-sm hover:shadow transition-fast-out mr-8 px-16 p-8 text-sm relative group"
             >
@@ -22,7 +22,7 @@
                 {{ isIndexSettingsDirty ? 'Copy and save in' : 'Copy to' }}
             </h4>
             <div class="flex text-solstice-blue">
-                <app-selector v-model="dstAppId" class="mr-16" />
+                <app-selector v-model="dstAppId" class="mr-16" :only-algolia="readOnly" />
                 <input v-model="dstIndexName" class="input-custom mr-8 w-124">
             </div>
             <div v-if="indexName.length > 0" class="mt-16">
@@ -97,7 +97,7 @@
     export default {
         name: 'SaveOrCopySettings',
         components: {Tooltip, AppSelector, TaskGroupView},
-        props: ['panelKey'],
+        props: ['panelKey', 'readOnly'],
         mixins: [indexInfoMixin, panelsMixin],
         data: function () {
             return {
@@ -117,7 +117,7 @@
             }
         },
         created: function () {
-            this.dstAppId = this.panelAppId;
+            this.dstAppId = !this.readOnly ? this.panelAppId : null;
             this.dstIndexName = `${this.panelIndexName}_test`;
         },
         computed: {

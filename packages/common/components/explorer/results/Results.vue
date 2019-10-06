@@ -21,6 +21,9 @@
                 </button>
             </div>
         </div>
+        <div v-if="jumpedToReadOnly" class="my-12 bg-saturn-5 rounded text-solstice-blue-opacity-80 p-8">
+            This panel is in readonly mode
+        </div>
         <hit-edit
             v-if="isAddingRecord"
             :allow-save-without-edit="jumpedHit !== null"
@@ -101,12 +104,6 @@
             PerformSearch,
             Tooltip,
             HitEdit, ExportParams, RawResponse, RankingCharts, ResultsList, PlusCircleIcon},
-        created: function () {
-            this.$root.$on(`${this.panelKey}HitJumping`, (record) => {
-                this.isAddingRecord = true;
-                this.jumpedHit = record;
-            });
-        },
         data: function () {
             return {
                 isAddingRecord: false,
@@ -115,7 +112,21 @@
                 GridIcon: GridIcon,
                 CodeIcon: CodeIcon,
                 BarChartIcon: BarChartIcon,
+                jumpedToReadOnly: false,
             }
+        },
+        created: function () {
+            this.$root.$on(`${this.panelKey}HitJumping`, (record) => {
+                if (!this.readOnly) {
+                    this.isAddingRecord = true;
+                    this.jumpedHit = record;
+                } else {
+                    this.jumpedToReadOnly = true;
+                    window.setTimeout(() => {
+                        this.jumpedToReadOnly = false;
+                    }, 10000);
+                }
+            });
         },
     }
 </script>

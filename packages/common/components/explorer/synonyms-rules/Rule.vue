@@ -160,14 +160,14 @@
                         />
                         <tooltip>Copy this synonym in the right panel index.<br>Will ask for confirmation</tooltip>
                     </button>
-                    <button class="relative group">
+                    <button v-if="!readOnly" class="relative group">
                         <edit-icon
                             class="ml-8 text-nova-grey-opacity-60 hover:text-telluric-blue w-16 h-16 cursor-pointer"
                             @click="editMode = true"
                         />
                         <tooltip>Edit rule. Will ask for confirmation</tooltip>
                     </button>
-                    <button class="relative group">
+                    <button v-if="!readOnly" class="relative group">
                         <trash-icon
                             class="ml-8 text-nova-grey-opacity-60 hover:text-telluric-blue w-16 h-16 cursor-pointer"
                             @click="confirmDelete = true"

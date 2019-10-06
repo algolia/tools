@@ -24,6 +24,9 @@
                 </button>
             </div>
         </div>
+        <div v-if="jumpedToReadOnly" class="my-12 bg-saturn-5 rounded text-solstice-blue-opacity-80 p-8">
+            This panel is in readonly mode
+        </div>
         <div
             v-if="isAdding && !isRule"
             class="my-12"
@@ -109,6 +112,7 @@
                 jumpedElt: null,
                 isRule: this.methodName === 'searchRules',
                 rulesStatus: 'all',
+                jumpedToReadOnly: false,
             };
         },
         computed: {
@@ -142,16 +146,30 @@
             });
 
             this.$root.$on(`${this.panelKey}SynonymJumping`, (record) => {
-                if (!this.isRule) {
-                    this.isAdding = true;
-                    this.jumpedElt = record;
+                if (!this.readOnly) {
+                    if (!this.isRule) {
+                        this.isAdding = true;
+                        this.jumpedElt = record;
+                    }
+                } else {
+                    this.jumpedToReadOnly = true;
+                    window.setTimeout(() => {
+                        this.jumpedToReadOnly = false;
+                    }, 10000)
                 }
             });
 
             this.$root.$on(`${this.panelKey}RuleJumping`, (record) => {
-                if (this.isRule) {
-                    this.isAdding = true;
-                    this.jumpedElt = record;
+                if (!this.readOnly) {
+                    if (this.isRule) {
+                        this.isAdding = true;
+                        this.jumpedElt = record;
+                    }
+                } else {
+                    this.jumpedToReadOnly = true;
+                    window.setTimeout(() => {
+                        this.jumpedToReadOnly = false;
+                    }, 10000)
                 }
             });
         },

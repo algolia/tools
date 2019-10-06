@@ -91,7 +91,7 @@ export default {
         isIndexSettingsDirty: function () {
             return JSON.stringify(this.indexSettings) !== JSON.stringify(this.refIndexSettings);
         },
-        isReadOnly: function () {
+        isReplica: function () {
             return this.indexData && this.refIndexSettings && this.refIndexSettings.primary && this.refIndexSettings.primary.length > 0;
         },
     }
