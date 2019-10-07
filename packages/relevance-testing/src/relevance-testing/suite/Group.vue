@@ -67,8 +67,11 @@
         components: {TestStatus, GroupStatus, EditTest, EditGroup},
         data: function () {
             return {
-                collapse: (this.suite.groups.length > 1 && this.filteredTests.length > 0) && !this.forceOpen,
+                collapse: true,
             }
+        },
+        created: function () {
+            this.collapse = (this.suite.groups.length > 1 && this.filteredTests.length > 0) && !this.forceOpen;
         },
         computed: {
             filteredTests: function () {
