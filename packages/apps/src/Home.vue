@@ -34,19 +34,26 @@
             return {
                 appsGroups: [
                     {
-                        name: 'Ready',
-                        description: 'Feature complete. Used by several people on real use case already.',
+                        name: 'Relevance tools',
+                        description: 'Bootstrap, iterate, and fine tune relevance',
                         apps: [
                             {name: 'Metaparams', url: '/metaparams'},
-                            {name: 'Logs', url: '/logs'},
+                            {name: 'Index Differ', url: '/index-differ'},
                         ],
                     },
                     {
-                        name: 'Beta',
-                        description: 'Ready in terms of feature set. Not enough people tried it yet to consider it ready',
+                        name: 'Management tools',
+                        description: 'Manage your apps and indices',
                         apps: [
-                            {name: 'Index Differ', url: '/index-differ'},
-                        ],
+                            {name: 'Logs', url: '/logs'},
+                        ]
+                    },
+                    {
+                        name: 'Info tools',
+                        description: 'Get information on engine features',
+                        apps: [
+                            {name: 'Dictionaries', url: '/dictionaries'},
+                        ]
                     },
                     /*{
                         name: 'In development',
