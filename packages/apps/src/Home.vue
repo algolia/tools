@@ -38,6 +38,7 @@
                         description: 'Bootstrap, iterate, and fine tune relevance',
                         apps: [
                             {name: 'Metaparams', url: '/metaparams'},
+                            {name: 'Relevance Testing', url: '/relevance-testing'},
                             {name: 'Index Differ', url: '/index-differ'},
                         ],
                     },
