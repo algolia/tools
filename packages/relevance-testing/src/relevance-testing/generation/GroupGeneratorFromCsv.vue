@@ -42,8 +42,12 @@
                                        <option value="description">description</option>
                                    </optgroup>
                                    <optgroup label="Basic requirement">
-                                        <option value="objectID">has objectID</option>
+                                       <option value="objectID">has objectID</option>
                                        <option value="position">is at position</option>
+                                   </optgroup>
+                                   <optgroup label="nbHits requirement">
+                                       <option value="nbhitsCount">N hits</option>
+                                       <option value="nbHitsOperator">is at position</option>
                                    </optgroup>
                                    <optgroup label="Attribute requirement">
                                        <option value="contains">contains N</option>
@@ -139,7 +143,14 @@
                             },
                         ],
                     };
+                    let nbHitsRequirement = {
+                        test: "nbHits",
+                        operator: "=",
+                        value: 1,
+                        recordsMatching: []
+                    };
                     let addRequirement = false;
+                    let addNbHitsRequirement = false;
 
                     this.columnTypes.forEach((columnType, i) => {
                         if (columnType === 'query') {
@@ -150,6 +161,12 @@
                             } catch (e) {
                                 searchParams = {};
                             }
+                        } else if (columnType === 'nbhitsCount') {
+                            addNbHitsRequirement = true;
+                            nbHitsRequirement.value = row[i];
+                        } else if (columnType === 'nbhitsOperator') {
+                            addNbHitsRequirement = true;
+                            requirement.operator = row[i];
                         } else if (columnType === 'contains') {
                             addRequirement = true;
                             requirement.value = parseInt(row[i]);
@@ -201,6 +218,7 @@
                     });
 
                     if (addRequirement) then.push(requirement);
+                    if (addNbHitsRequirement) then.push(nbHitsRequirement);
 
                     if (query.length > 0 && queries[query]) {
                         queries[query].then.push(...then);
