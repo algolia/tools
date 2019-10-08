@@ -28,11 +28,9 @@
     import AppManagement from "common/components/configuration/AppManagement";
     import DisplayConfig from "@/DisplayConfig";
 
-    import RefreshCw from 'common/icons/refresh-cw.svg';
-
     export default {
         name: 'Home',
-        components: {InternalApp, DisplayConfig, AppHeader, AppManagement, RefreshCw},
+        components: {InternalApp, DisplayConfig, AppHeader, AppManagement},
         data: function () {
             return {
                 appsGroups: [
@@ -64,3 +62,8 @@
         },
     }
 </script>
+
+<style lang="scss">
+    @import url("https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700|Hind:400,600");
+    @import "./src/assets/css/main";
+</style>
