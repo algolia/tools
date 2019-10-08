@@ -1,40 +1,119 @@
 <template>
-    <div id="app" class="bg-moon-grey text-base font-sans-alt min-h-screen">
-        <algolia-proxy :enabled="isProduction || true">
-            <index-differ slot="loggedIn" />
-            <div slot="loggedOut" class="h-screen flex justify-center items-center">
-                <div class="flex flex-col justify-center items-center">
-                    <loader-icon class="w-48 h-48 infinte-rotate" />
-                    <div class="mt-20">
-                        Connecting to your Algolia account
+    <internal-app>
+        <div class="pb-24">
+            <app-header app-name="Index Differ">
+                <display-config class="mx-16 mt-0 ml-auto"/>
+            </app-header>
+            <app-management />
+            <div class="max-w-960 mx-auto">
+                <div class="rounded border border-proton-grey-opacity-60 mt-24">
+                    <div class="flex p-8 bg-proton-grey-opacity-40 text-telluric-blue">
+                        <div class="flex w-full justify-between">
+                            <div class="flex">
+                                <app-selector v-model="leftAppId" class="mb-4" />
+                                <index-selector v-model="leftIndexName" :app-id="leftAppId" class="ml-12 mb-4" />
+                            </div>
+                            <div
+                                v-if="leftAppId === rightAppId && leftIndexName === rightIndexName"
+                                class="flex items-center border border-saturn-2 border-saturn-2 text-saturn-1 px-8 rounded"
+                            >
+                                <div>
+                                    Diffing the same index
+                                </div>
+                            </div>
+                            <div v-else class="flex items-center justify-center">
+                                <swap-icon
+                                    @click="swapIndex"
+                                    class="w-24 h-24 cursor-pointer"
+                                />
+                            </div>
+                            <div class="flex">
+                                <app-selector v-model="rightAppId" class="mb-4" />
+                                <index-selector v-model="rightIndexName" :app-id="rightAppId" class="ml-12 mb-4" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white">
+                        <diffs
+                            :left-app-id="leftAppId"
+                            :left-index-name="leftIndexName"
+                            :right-app-id="rightAppId"
+                            :right-index-name="rightIndexName"
+                        />
                     </div>
                 </div>
             </div>
-            <div slot="unauthorized">
-                This an internal algolia app.
-            </div>
-        </algolia-proxy>
-    </div>
-
+        </div>
+    </internal-app>
 </template>
 
 <script>
-    import LoaderIcon from "common/icons/loader.svg";
-    import AlgoliaProxy from "common/components/AlgoliaProxy";
-    import IndexDiffer from "./index-differ/IndexDiffer";
-
-    const isProduction = process.env.NODE_ENV === 'production';
+    import InternalApp from "common/components/app/InternalApp";
+    import AppHeader from "common/components/header/AppHeader";
+    import DisplayConfig from "@/index-differ/DisplayConfig";
+    import AppManagement from "common/components/configuration/AppManagement";
+    import AppSelector from "common/components/selectors/AppSelector";
+    import IndexSelector from "common/components/selectors/IndexSelector";
+    import SwapIcon from "common/icons/swap.svg";
+    import Diffs from "@/index-differ/Diffs";
 
     export default {
-        name: 'App',
-        components: {IndexDiffer, AlgoliaProxy, LoaderIcon},
-        data: function () {
-            return {isProduction};
+        name: 'IndexDiffer',
+        components: {InternalApp, SwapIcon, Diffs, DisplayConfig, AppHeader, AppManagement, AppSelector, IndexSelector},
+        created: function () {
+            if (!this.leftAppId && Object.keys(this.$store.state.apps).length > 0) {
+                this.leftAppId = Object.keys(this.$store.state.apps)[0];
+            }
+            if (!this.rightAppId && Object.keys(this.$store.state.apps).length > 0) {
+                this.rightAppId = Object.keys(this.$store.state.apps)[0];
+            }
+        },
+        computed: {
+            leftAppId: {
+                get () {
+                    return this.$store.state.indexdiffer.leftAppId;
+                },
+                set (appId) {
+                    this.leftIndexName = null;
+                    this.$store.commit(`indexdiffer/setLeftAppId`, appId);
+                }
+            },
+            leftIndexName: {
+                get () {
+                    return this.$store.state.indexdiffer.leftIndexName;
+                },
+                set (indexName) {
+                    this.$store.commit('indexdiffer/setLeftIndexName', indexName);
+                }
+            },
+            rightAppId: {
+                get () {
+                    return this.$store.state.indexdiffer.rightAppId;
+                },
+                set (appId) {
+                    this.rightIndexName = null;
+                    this.$store.commit(`indexdiffer/setRightAppId`, appId);
+                }
+            },
+            rightIndexName: {
+                get () {
+                    return this.$store.state.indexdiffer.rightIndexName;
+                },
+                set (indexName) {
+                    this.$store.commit('indexdiffer/setRightIndexName', indexName);
+                }
+            },
+        },
+        methods: {
+            swapIndex: function () {
+                const tmpAppId = this.leftAppId;
+                const tmpIndexName = this.leftIndexName;
+
+                this.leftAppId = this.rightAppId;
+                this.leftIndexName = this.rightIndexName;
+                this.rightAppId = tmpAppId;
+                this.rightIndexName = tmpIndexName;
+            },
         }
     }
 </script>
-
-<style lang="scss">
-    @import url("https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700|Hind:400,600");
-    @import "./src/assets/css/main";
-</style>

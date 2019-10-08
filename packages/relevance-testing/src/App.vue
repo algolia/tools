@@ -1,39 +1,25 @@
 <template>
-    <div id="app" class="bg-moon-grey text-base font-sans-alt min-h-screen">
-        <algolia-proxy :enabled="isProduction || true">
-            <relevance-testing slot="loggedIn" />
-            <div slot="loggedOut" class="h-screen flex justify-center items-center">
-                <div class="flex flex-col justify-center items-center">
-                    <loader-icon class="w-48 h-48 infinte-rotate" />
-                    <div class="mt-20">
-                        Connecting to your Algolia account
-                    </div>
-                </div>
+    <internal-app>
+        <div class="min-h-screen pb-24">
+            <app-header app-name="Relevance Testing" class="fixed left-0 top-0 w-full z-20">
+                <display-config class="mx-16 mt-0 ml-auto" />
+            </app-header>
+            <div class="pt-112">
+                <app-management />
+                <router-view />
             </div>
-            <div slot="unauthorized">
-                This an internal algolia app.
-            </div>
-        </algolia-proxy>
-    </div>
+        </div>
+    </internal-app>
 </template>
 
 <script>
-    import LoaderIcon from "common/icons/loader.svg";
-    import AlgoliaProxy from "common/components/AlgoliaProxy";
-    import RelevanceTesting from "@/relevance-testing/RelevanceTesting";
-
-    const isProduction = process.env.NODE_ENV === 'production';
+    import InternalApp from "common/components/app/InternalApp";
+    import AppHeader from "common/components/header/AppHeader";
+    import AppManagement from "common/components/configuration/AppManagement";
+    import DisplayConfig from "@/relevance-testing/common/DisplayConfig";
 
     export default {
-        name: 'App',
-        components: {RelevanceTesting, AlgoliaProxy, LoaderIcon},
-        data: function () {
-            return {isProduction};
-        }
+        name: 'RelevanceTesting',
+        components: {InternalApp, DisplayConfig, AppHeader, AppManagement},
     }
 </script>
-
-<style lang="scss">
-    @import url("https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700|Hind:400,600");
-    @import "./src/assets/css/main";
-</style>

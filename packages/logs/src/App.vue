@@ -1,40 +1,244 @@
 <template>
-    <div id="app" class="bg-moon-grey text-base font-sans-alt min-h-screen">
-        <algolia-proxy :enabled="isProduction || true">
-            <api-logs slot="loggedIn" />
-            <div slot="loggedOut" class="h-screen flex justify-center items-center">
-                <div class="flex flex-col justify-center items-center">
-                    <loader-icon class="w-48 h-48 infinte-rotate" />
-                    <div class="mt-20">
-                        Connecting to your Algolia account
+    <internal-app>
+        <div class="min-h-screen pb-24">
+            <app-header app-name="Logs">
+                <display-config class="mx-16 mt-0 ml-auto"/>
+            </app-header>
+            <app-management />
+            <div class="max-w-960 mx-auto mt-24" v-if="appId">
+                <div class="flex items-center px-16 bg-white rounded border border-proton-grey-opacity-80">
+                    <search-icon class="block w-16 h-16 mr-16 text-telluric-blue fill-current"/>
+                    <input
+                        class="flex-1 block h-full py-8 bg-transparent text-telluric-blue leading-normal"
+                        placeholder="Search logs below"
+                        v-model="query"
+                    >
+                </div>
+                <div class="flex mt-8 text-telluric-blue">
+                    <span class="mr-8">Search in:</span>
+
+                    <input type="checkbox" id="all" name="all" class="mr-4" v-model="allFieldsChecked" checked>
+                    <label for="all" class="mr-8">all</label>
+
+                    <span v-for="key in Object.keys(searchFields)">
+                        <input type="checkbox" :id="key" :name="key" class="mr-4" v-model="searchFields[key]" :disabled="allFieldsChecked" checked>
+                        <label :for="key" class="mr-8">{{key}}</label>
+                    </span>
+                </div>
+                <div class="rounded border border-proton-grey-opacity-60 mt-24">
+                    <div class="flex bg-white p-8 pb-12 bg-proton-grey-opacity-40 text-telluric-blue">
+                        <app-selector v-model="appId" class="mr-16" />
+                        <index-selector
+                            v-model="indexName"
+                            :app-id="appId"
+                            :forced-indices="[{name: 'All Indices'}]"
+                            class="mr-16"
+                        />
+                        <custom-select
+                            v-model="logsType"
+                            :options="Object.keys(logsTypes)"
+                            class="text-solstice-blue text-sm border-b border-telluric-blue-opacity-60 pb-4 min-w-140"
+                        >
+                            <template v-slot:default="{option}">{{logsTypes[option]}}</template>
+                        </custom-select>
+                        <div class="ml-auto flex items-center">
+                            <refresh-cw class="w-16 h-16" :class="{'infinte-rotate': interval}" />
+                            <button class="mx-12 border border-telluric-blue-opacity-60 p-4 rounded" @click="interval ? stopInterval() : startInterval()">
+                                {{interval ? 'Stop Refreshing' : 'Start Refreshing'}}
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bg-white text-nova-grey">
+                        <log
+                            v-for="(log, index) in filteredLogs"
+                            :key="log.sha1"
+                            :log-item="log"
+                            class="border-t border-b border-proton-grey-opacity-20"
+                        />
+                        <div v-if="filteredLogs.length <= 0" class="p-8">
+                            No logs found
+                        </div>
+                        <div v-if="filteredLogs.length <= 0 && query.length > 0" class="p-8">
+                            Stop Refreshing when found <input type="checkbox" v-model="stopIfFound"/>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div slot="unauthorized">
-                This an internal algolia app.
-            </div>
-        </algolia-proxy>
-    </div>
-
+        </div>
+    </internal-app>
 </template>
 
 <script>
-    import LoaderIcon from "common/icons/loader.svg";
-    import AlgoliaProxy from "common/components/AlgoliaProxy";
-    import ApiLogs from "@/api-logs/ApiLogs";
+    import InternalApp from "common/components/app/InternalApp";
+    import algoliasearch from 'algoliasearch';
+    import LogItem from "@/api-logs/LogItem";
+    import Log from "@/api-logs/Log";
+    import AppHeader from "common/components/header/AppHeader";
+    import AppSelector from "common/components/selectors/AppSelector";
+    import IndexSelector from "common/components/selectors/IndexSelector";
+    import CustomSelect from "common/components/selectors/CustomSelect";
+    import AppManagement from "common/components/configuration/AppManagement";
+    import DisplayConfig from "@/api-logs/DisplayConfig";
 
-    const isProduction = process.env.NODE_ENV === 'production';
+    import RefreshCw from 'common/icons/refresh-cw.svg';
+    import SearchIcon from 'common/icons/search.svg';
 
     export default {
-        name: 'App',
-        components: {ApiLogs, AlgoliaProxy, LoaderIcon},
+        name: 'ApiLogs',
+        components: {InternalApp, DisplayConfig, AppHeader, AppSelector, Log, AppManagement, RefreshCw, SearchIcon, IndexSelector, CustomSelect},
         data: function () {
-            return {isProduction};
+            return {
+                query: '',
+                logs: [],
+                logsType: 'all',
+                logsTypes: {
+                    'all': 'All logs',
+                    'query': 'Query logs',
+                    'build': 'Build logs',
+                    'error': 'Error logs',
+                },
+                interval: null,
+                stopIfFound: false,
+                searchFields: {
+                  query: true,
+                  body: true,
+                  response: true,
+                  userAgent: true,
+                  apiKey: true,
+                  url: true,
+                  ip: true,
+                },
+            };
+        },
+        watch: {
+            client: function (n, o) { if (n === o) return; this.fetchLogs() },
+            logsType: function (n, o) { if (n === o) return; this.fetchLogs() },
+            allIndices: function (n, o) { if (n === o) return; this.fetchLogs() },
+            indexName: function (n, o) { if (n === o) return; this.fetchLogs() },
+            logs: function (val) {
+                if (this.stopIfFound && val.length > 0 && this.filteredLogs.length > 0) {
+                    this.stopInterval();
+                    this.stopIfFound = false;
+                }
+            },
+
+        },
+        created: function () {
+            if (!this.appId && Object.keys(this.$store.state.apps).length > 0) {
+                this.appId = Object.keys(this.$store.state.apps)[0];
+            }
+
+            this.fetchLogs();
+            this.startInterval();
+        },
+        computed: {
+            allIndices: function () {
+                return !this.indexName || this.indexName === 'All Indices';
+            },
+            appId: {
+                get () {
+                    return this.$store.state.apilogs.appId;
+                },
+                set (val) {
+                    this.indexName = 'All Indices';
+                    this.$store.commit('apilogs/setAppId', val);
+                },
+            },
+            indexName: {
+                get () {
+                    return this.$store.state.apilogs.indexName || null;
+                },
+                set (val) {
+                    this.$store.commit('apilogs/setIndexName', val);
+                }
+            },
+            allFieldsChecked: {
+                get () {
+                    return Object.keys(this.searchFields).every(field => this.searchFields[field]);
+                },
+                set (isChecked) {
+                    if (isChecked) {
+                        Object.keys(this.searchFields).forEach(field => this.searchFields[field] = true);
+                    }
+                    else {
+                        Object.keys(this.searchFields).forEach(field => this.searchFields[field] = false);
+                    }
+                }
+            },
+            apiKey: function () {
+                return this.$store.state.apps[this.appId].key;
+            },
+            client: function () {
+                if (!this.appId) return null;
+                return algoliasearch(this.appId, this.apiKey);
+            },
+            filteredLogs: function () {
+                if (this.query.length === 0) return this.logs.slice(0, 100);
+
+                const allFieldsChecked = this.allFieldsChecked; // caching computation
+
+                return this.logs.filter(log => {
+                    if (allFieldsChecked) {
+                        return log.rawLogString.includes(this.query);
+                    }
+                    else if (this.searchFields.query && log.getQueries().some(query => query.includes(this.query))) {
+                        return true;
+                    }
+                    else if (this.searchFields.body && log.params.rawBody.includes(this.query)) {
+                        return true;
+                    }
+                    else if (this.searchFields.response && log.response.includes(this.query)) {
+                        return true;
+                    }
+                    else if (this.searchFields.userAgent && log.params.all['x-algolia-agent'] && log.params.all['x-algolia-agent'].includes(this.query)) {
+                        return true;
+                    }
+                    else if (this.searchFields.userAgent && log.params.all['user-agent'] && log.params.all['user-agent'].includes(this.query)) {
+                        return true;
+                    }
+                    else if (this.searchFields.apiKey && log.params.headers['X-Algolia-Api-Key'] && log.params.headers['X-Algolia-Api-Key'].includes(this.query)) {
+                        return true;
+                    }
+                    else if (this.searchFields.apiKey && log.params.all['x-algolia-api-key'] && log.params.all['x-algolia-api-key'].includes(this.query)) {
+                        return true;
+                    }
+                    else if (this.searchFields.url && log.url.includes(this.query)) {
+                        return true;
+                    }
+                    else {
+                        return this.searchFields.ip && log.ip.includes(this.query);
+                    }
+                }).slice(0, 100);
+            },
+        },
+        methods: {
+            startInterval: function () {
+                this.interval = window.setInterval(async () => {
+                    this.fetchLogs();
+                }, 5000);
+            },
+            stopInterval: function () {
+                window.clearInterval(this.interval);
+                this.interval = null;
+            },
+            fetchLogs: async function () {
+                const client = this.client;
+                if (!client) return;
+
+                const options = {
+                    offset: 0,
+                    length: 1000,
+                    type: this.logsType,
+                };
+
+                if (!this.allIndices) {
+                    options.indexName = this.indexName;
+                }
+
+                const res = await client.getLogs(options);
+
+                this.logs = res.logs.map(logItem => new LogItem(logItem));
+            }
         }
     }
 </script>
-
-<style lang="scss">
-    @import url("https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700|Hind:400,600");
-    @import "./src/assets/css/main";
-</style>

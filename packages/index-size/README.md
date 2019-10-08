@@ -1,4 +1,4 @@
-# index-manager
+# Index size
 
 ## Project setup
 ```
