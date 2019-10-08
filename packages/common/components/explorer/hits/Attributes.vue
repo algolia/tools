@@ -22,7 +22,8 @@
         components: {Attribute},
         props: [
             'topAttributes', 'searchableAttributes', 'item',
-            ...props.attributes
+            ...props.attributes,
+            ...props.paramsAndSettings,
         ],
         data: function () {
             return {
@@ -43,7 +44,9 @@
                 return this.topAttributes.length > 0;
             },
             uncollapsedAttributes: function () {
-                if (this.showSearchableAttributes && this.showOnlyMatchingAttributes) {
+                const hasAttributesToRetrieve = this.searchParams && this.searchParams.attributesToRetrieve;
+
+                if (!hasAttributesToRetrieve && this.showSearchableAttributes && this.showOnlyMatchingAttributes) {
                     return this.keys.filter((key) => {
                         if (this.searchableAttributes.indexOf(key) !== -1) return this.item[key]._b_;
                         return true;
