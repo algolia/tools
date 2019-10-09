@@ -75,7 +75,7 @@
                                 <input
                                     class="flex-1 block h-full bg-transparent text-telluric-blue leading-normal"
                                     placeholder="Search words"
-                                    v-model="currentRefinement"
+                                    value="currentRefinement"
                                     @input="refine($event.currentTarget.value)"
                                 >
                             </div>
@@ -106,16 +106,16 @@
                                 </template>
                             </ais-state-results>
 
-                            <ais-state-results class="flex justify-center">
-                                <ais-pagination slot-scope="{ _rawResults }">
+                            <div class="flex justify-center">
+                                <ais-pagination>
                                     <pagination
-                                        slot-scope="{refine}"
-                                        :page="_rawResults[0].page"
-                                        :nb-pages="_rawResults[0].nbPages"
-                                        @onSetParamValue="(_, page) => refine(page)"
+                                        slot-scope="{refine, currentRefinement, nbPages}"
+                                        :page="currentRefinement"
+                                        :nb-pages="nbPages"
+                                        @onUpdatePage="refine"
                                     />
                                 </ais-pagination>
-                            </ais-state-results>
+                            </div>
                         </div>
                     </div>
                 </div>
