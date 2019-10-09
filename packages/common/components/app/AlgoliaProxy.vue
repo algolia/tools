@@ -27,7 +27,8 @@
             connect: async function () {
                 if (!this.enabled) return;
 
-                const res = await fetch(`${process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT}/user/info?redirect_to=${window.location.href}`, {
+                const backendEndpoint = process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT || 'https://algolia-apps-backend.herokuapp.com';
+                const res = await fetch(`${backendEndpoint}/user/info?redirect_to=${window.location.href}`, {
                     credentials: 'include',
                     headers: {
                         "Content-Type": "application/json",
