@@ -3,7 +3,7 @@ const express = require('express');
 const serveStatic = require('serve-static');
 const history = require('./customHistory');
 
-app = express();
+const app = express();
 
 app.use((req, res, next) => {
     if (process.env.NODE_ENV === 'production' && req.headers['x-forwarded-proto'] !== 'https') {
@@ -34,4 +34,4 @@ app.use((req, res) => {
 
 var port = process.env.PORT || 80;
 app.listen(port);
-console.log('server started '+ port);
+console.log('server started http://localhost:'+ port);

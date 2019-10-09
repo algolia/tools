@@ -14,6 +14,7 @@
             </template>
             <li
                 v-for="p in pages"
+                :key="p"
                 :class="p === page ? 'border border-telluric-blue-opacity-80' : ''"
                 class="flex items-center mx-4 px-8 py-4 text-nova-grey rounded cursor-pointer bg-moon-grey"
                 @click="setPage(p)"
