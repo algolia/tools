@@ -28,13 +28,21 @@
                 </div>
             </div>
         </div>
-        <div class="flex py-12 items-center justify-around">
+        <div class="flex py-12 items-center justify-center">
             <div :class="{invisible: differ.isComplete || loading}" v-if="resourceName === 'records'">
                 <button
                     @click="loadMore"
                     class="block bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out mr-8 px-16 p-8 text-sm relative group"
                 >
-                    Load more records
+                    Load 1000 more records
+                </button>
+            </div>
+            <div :class="{invisible: differ.isComplete || loading}" v-if="resourceName === 'records'">
+                <button
+                    @click="loadAll"
+                    class="block bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out mr-8 px-16 p-8 text-sm relative group"
+                >
+                    Load all records
                 </button>
             </div>
         </div>
@@ -50,15 +58,24 @@
                 <div v-if="resourceName === 'records'">/{{differ.B.nbHits[resourceName]}}</div>
             </div>
         </div>
-        <object-diff :diff="diff" v-for="diff in diffs" />
+        <object-diff :diff="diff" v-for="diff in filteredDiff" />
+        <div class="flex justify-center">
+            <pagination
+                @onUpdatePage="page = $event"
+                :page="page"
+                :nb-pages="Math.floor(Math.max(differ.A.ids[resourceName].length, differ.B.ids[resourceName].length) / hitsPerPage)"
+            />
+        </div>
     </div>
 </template>
 
 <script>
     import ObjectDiff from "@/index-differ/ObjectDiff";
+    import Pagination from "common/components/explorer/results/Pagination";
+
     export default {
-        name: 'RecordsDiff',
-        components: {ObjectDiff},
+        name: 'ObjectsDiff',
+        components: {ObjectDiff, Pagination},
         props: ['differ', 'resourceName'],
         data: function () {
             return {
@@ -67,9 +84,14 @@
                 filterModified: true,
                 filterUntouched: true,
                 loading: false,
+                hitsPerPage: 100,
+                page: 0,
             }
         },
         computed: {
+            filteredDiff: function () {
+                return this.diffs.slice(this.page * this.hitsPerPage, (this.page + 1) * this.hitsPerPage);
+            },
             diffs: function () {
                 if (this.filterAdded && this.filterRemoved && this.filterModified && this.filterUntouched) {
                     return this.differ.diffs[this.resourceName].sort((a, b) => {
@@ -96,8 +118,18 @@
         methods: {
             loadMore: function () {
                 this.loading = true;
+                this.page = 0;
                 if (this.resourceName === 'records') {
                     this.differ.records().then(() => {
+                        this.loading = false;
+                    });
+                }
+            },
+            loadAll: function () {
+                this.loading = true;
+                this.page = 0;
+                if (this.resourceName === 'records') {
+                    this.differ.allRecords().then(() => {
                         this.loading = false;
                     });
                 }

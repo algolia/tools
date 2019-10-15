@@ -146,6 +146,13 @@ class DiffGenerator {
         this.postProcess(ResourceName.RECORDS);
     }
 
+    async allRecords(): Promise<void> {
+        while (!this.A.complete || !this.B.complete) {
+            await this.records();
+        }
+    }
+
+
     async synonyms(): Promise<void> {
         await Promise.all([
             this.getSynonyms(Version.A, this.indexA),
