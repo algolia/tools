@@ -37,12 +37,28 @@
                     Load 1000 more records
                 </button>
             </div>
-            <div :class="{invisible: differ.isComplete || loading}" v-if="resourceName === 'records'">
+            <div class="mr-16" :class="{invisible: differ.isComplete || loading}" v-if="resourceName === 'records'">
                 <button
                     @click="loadAll"
                     class="block bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out mr-8 px-16 p-8 text-sm relative group"
                 >
                     Load all records
+                </button>
+            </div>
+            <div class="ml-16" :class="{invisible: differ.isComplete || loading}" v-if="resourceName !== 'settings'">
+                <button
+                    @click="$root.$emit('onForceExpandAll')"
+                    class="block bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out mr-8 px-16 p-8 text-sm relative group"
+                >
+                    Expand all diffs
+                </button>
+            </div>
+            <div :class="{invisible: differ.isComplete || loading}" v-if="resourceName !== 'settings'">
+                <button
+                    @click="$root.$emit('onForceCollapseAll')"
+                    class="block bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out mr-8 px-16 p-8 text-sm relative group"
+                >
+                    Collapse all diffs
                 </button>
             </div>
         </div>
@@ -58,7 +74,7 @@
                 <div v-if="resourceName === 'records'">/{{differ.B.nbHits[resourceName]}}</div>
             </div>
         </div>
-        <object-diff :diff="diff" v-for="diff in filteredDiff" />
+        <object-diff :key="Math.max(diff.lineNumberA, diff.lineNumberB)" :diff="diff" v-for="diff in filteredDiff" />
         <div class="flex justify-center">
             <pagination
                 @onUpdatePage="page = $event"

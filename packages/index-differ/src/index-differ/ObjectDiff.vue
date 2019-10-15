@@ -57,6 +57,14 @@
             return {
                 collapsed: true,
             }
+        },
+        created: function () {
+            this.$root.$on('onForceCollapseAll', () => {
+                this.collapsed = true;
+            });
+            this.$root.$on('onForceExpandAll', () => {
+                if (!this.diff.untouched) this.collapsed = false;
+            });
         }
     }
 </script>
