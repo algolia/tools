@@ -63,7 +63,7 @@
             <pagination
                 @onUpdatePage="page = $event"
                 :page="page"
-                :nb-pages="Math.floor(Math.max(differ.A.ids[resourceName].length, differ.B.ids[resourceName].length) / hitsPerPage)"
+                :nb-pages="Math.floor(diffs.length / hitsPerPage)"
             />
         </div>
     </div>
