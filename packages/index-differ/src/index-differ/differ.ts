@@ -147,8 +147,18 @@ class DiffGenerator {
     }
 
     async allRecords(): Promise<void> {
+        let toCompute;
         while (!this.A.complete || !this.B.complete) {
-            await this.records();
+            toCompute = [];
+            if (!this.A.complete) {
+                toCompute.push(this.getRecords(Version.A, this.indexA));
+            }
+            if (!this.B.complete) {
+                toCompute.push(this.getRecords(Version.B, this.indexB));
+            }
+
+            await Promise.all(toCompute);
+            this.postProcess(ResourceName.RECORDS);
         }
     }
 
@@ -267,12 +277,9 @@ class DiffGenerator {
         // @ts-ignore
         Diff.diffArrays(this.A.ids[resourceName], this.B.ids[resourceName]).forEach((group: any) => {
             group.value.forEach((value: any) => {
-                const rawDiffs = createDiffObject(
-                    this.A.objects[resourceName][value] ? JSON.stringify(this.A.objects[resourceName][value], null, 2) : '',
-                    this.B.objects[resourceName][value] ? JSON.stringify(this.B.objects[resourceName][value], null, 2) : '',
-                );
-
-                const isModified = !group.added && !group.removed && Array.isArray(rawDiffs) && rawDiffs.length > 1;
+                const stringA = this.A.objects[resourceName][value] ? JSON.stringify(this.A.objects[resourceName][value], null, 2) : '';
+                const stringB = this.B.objects[resourceName][value] ? JSON.stringify(this.B.objects[resourceName][value], null, 2) : '';
+                const isModified = !group.added && !group.removed && stringA !== stringB;
 
                 if (group.added) { added++ } else { lineNumberA++ }
                 if (group.removed) { removed++ } else { lineNumberB++ }
@@ -286,8 +293,9 @@ class DiffGenerator {
                     untouched: (!group.added && !group.removed && !isModified),
                     lineNumberA,
                     lineNumberB,
+                    stringA,
+                    stringB,
                     value: value,
-                    patch: createPatchFromDiffs(rawDiffs),
                 })
             });
         });
@@ -296,13 +304,13 @@ class DiffGenerator {
 
         this.stats[resourceName] = {
             added,
-            addedPercentage: Math.round((added / biggest) * 100),
+            addedPercentage: biggest > 0 ? Math.round((added / biggest) * 100): 0,
             untouched,
-            untouchedPercentage: Math.round((untouched / biggest) * 100),
+            untouchedPercentage: biggest > 0 ? Math.round((untouched / biggest) * 100): 0,
             removed,
-            removedPercentage: Math.round((removed / biggest) * 100),
+            removedPercentage: biggest > 0 ? Math.round((removed / biggest) * 100): 0,
             modified,
-            modifiedPercentage: Math.round((modified / biggest) * 100),
+            modifiedPercentage: biggest > 0 ? Math.round((modified / biggest) * 100): 0,
         };
     }
 }

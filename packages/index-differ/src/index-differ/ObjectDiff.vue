@@ -39,7 +39,8 @@
                 </div>
                 <compare-strings
                     class="nested-compare p-16"
-                    :patch="diff.patch"
+                    :string-a="diff.stringA"
+                    :string-b="diff.stringB"
                 />
             </div>
         </div>
