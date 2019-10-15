@@ -196,6 +196,12 @@
                     else if (this.searchFields.userAgent && log.params.all['user-agent'] && log.params.all['user-agent'].includes(this.query)) {
                         return true;
                     }
+                    else if (this.searchFields.userAgent && log.params.all['X-Algolia-Agent'] && log.params.all['X-Algolia-Agent'].includes(this.query)) {
+                        return true;
+                    }
+                    else if (this.searchFields.userAgent && log.params.all['User-Agent'] && log.params.all['User-Agent'].includes(this.query)) {
+                        return true;
+                    }
                     else if (this.searchFields.apiKey && log.params.headers['X-Algolia-Api-Key'] && log.params.headers['X-Algolia-Api-Key'].includes(this.query)) {
                         return true;
                     }
