@@ -45,7 +45,7 @@
                     Load all records
                 </button>
             </div>
-            <div class="ml-16" :class="{invisible: differ.isComplete || loading}" v-if="resourceName !== 'settings'">
+            <div class="ml-16" :class="{invisible: loading}" v-if="resourceName !== 'settings'">
                 <button
                     @click="$root.$emit('onForceExpandAll')"
                     class="block bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out mr-8 px-16 p-8 text-sm relative group"
@@ -53,7 +53,7 @@
                     Expand all diffs
                 </button>
             </div>
-            <div :class="{invisible: differ.isComplete || loading}" v-if="resourceName !== 'settings'">
+            <div :class="{invisible: loading}" v-if="resourceName !== 'settings'">
                 <button
                     @click="$root.$emit('onForceCollapseAll')"
                     class="block bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out mr-8 px-16 p-8 text-sm relative group"
