@@ -193,7 +193,7 @@
                                     {
                                         type: "attribute",
                                         key: "objectID",
-                                        operator: "=",
+                                        operator: "is",
                                         value: row[i],
                                     },
                                 ],
