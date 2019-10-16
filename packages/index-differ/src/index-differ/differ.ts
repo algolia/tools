@@ -83,9 +83,9 @@ class DiffGenerator {
     B: IndexDiff;
 
     diffs: {
-        records: any[],
-        rules: any[],
-        synonyms: any[],
+        records: readonly any[],
+        rules: readonly any[],
+        synonyms: readonly any[],
     };
 
     stats: {
@@ -158,8 +158,8 @@ class DiffGenerator {
             }
 
             await Promise.all(toCompute);
-            this.postProcess(ResourceName.RECORDS);
         }
+        this.postProcess(ResourceName.RECORDS);
     }
 
 
@@ -269,40 +269,70 @@ class DiffGenerator {
         let removed = 0;
         let modified = 0;
 
-        this.diffs[resourceName] = [];
+        const diffs: any[] = [];
 
-        let lineNumberA = 0;
-        let lineNumberB = 0;
+        const max = Math.max(this.A.ids[resourceName].length, this.B.ids[resourceName].length);
+        let aCounter = 0;
+        let bCounter = 0;
 
-        // @ts-ignore
-        Diff.diffArrays(this.A.ids[resourceName], this.B.ids[resourceName]).forEach((group: any) => {
-            group.value.forEach((value: any) => {
-                const stringA = this.A.objects[resourceName][value] ? JSON.stringify(this.A.objects[resourceName][value], null, 2) : '';
-                const stringB = this.B.objects[resourceName][value] ? JSON.stringify(this.B.objects[resourceName][value], null, 2) : '';
-                const isModified = !group.added && !group.removed && stringA !== stringB;
+        while (aCounter < max && bCounter < max) {
+            if (this.A.ids[resourceName][aCounter] === this.B.ids[resourceName][bCounter]) {
+                const stringA = JSON.stringify(this.A.objects[resourceName][this.A.ids[resourceName][aCounter]], null, 2);
+                const stringB = JSON.stringify(this.B.objects[resourceName][this.B.ids[resourceName][bCounter]], null, 2);
+                const isModified = stringA !== stringB;
 
-                if (group.added) { added++ } else { lineNumberA++ }
-                if (group.removed) { removed++ } else { lineNumberB++ }
-                if (isModified) modified++;
-                if (!group.added && !group.removed && !isModified) untouched++;
-
-                this.diffs[resourceName].push({
-                    added: group.added,
-                    removed: group.removed,
-                    modified: isModified,
-                    untouched: (!group.added && !group.removed && !isModified),
-                    lineNumberA,
-                    lineNumberB,
+                diffs.push({
+                    added: false,
+                    removed: false,
+                    modified: isModified    ,
+                    untouched: !isModified,
+                    lineNumberA: aCounter + 1,
+                    lineNumberB: bCounter + 1,
                     stringA,
                     stringB,
-                    value: value,
-                })
-            });
-        });
+                    value: this.A.ids[resourceName][aCounter],
+                });
+
+                if (isModified) modified++; else untouched++;
+
+                aCounter++;
+                bCounter++;
+            } else if (this.A.ids[resourceName][aCounter] < this.B.ids[resourceName][bCounter]) {
+                diffs.push({
+                    added: false,
+                    removed: true,
+                    modified: false,
+                    untouched: false,
+                    lineNumberA: aCounter + 1,
+                    lineNumberB: bCounter + 1,
+                    stringA: JSON.stringify(this.A.objects[resourceName][this.A.ids[resourceName][aCounter]], null, 2),
+                    stringB: '',
+                    value: this.A.ids[resourceName][aCounter],
+                });
+                removed++;
+                aCounter++;
+            } else {
+                diffs.push({
+                    added: true,
+                    removed: false,
+                    modified: false,
+                    untouched: false,
+                    lineNumberA: aCounter + 1,
+                    lineNumberB: bCounter + 1,
+                    stringA: '',
+                    stringB: JSON.stringify(this.B.objects[resourceName][this.B.ids[resourceName][bCounter]], null, 2),
+                    value: this.B.ids[resourceName][bCounter],
+                });
+                added++;
+                bCounter++;
+            }
+        }
+
+        this.diffs[resourceName] = Object.freeze(diffs);
 
         const biggest = Object.keys(this.B.objects[resourceName]).length + removed;
 
-        this.stats[resourceName] = {
+        this.stats[resourceName] = Object.freeze({
             added,
             addedPercentage: biggest > 0 ? Math.round((added / biggest) * 100): 0,
             untouched,
@@ -311,7 +341,7 @@ class DiffGenerator {
             removedPercentage: biggest > 0 ? Math.round((removed / biggest) * 100): 0,
             modified,
             modifiedPercentage: biggest > 0 ? Math.round((modified / biggest) * 100): 0,
-        };
+        });
     }
 }
 

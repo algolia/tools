@@ -74,7 +74,7 @@
                 <div v-if="resourceName === 'records'">/{{differ.B.nbHits[resourceName]}}</div>
             </div>
         </div>
-        <object-diff :key="Math.max(diff.lineNumberA, diff.lineNumberB)" :diff="diff" v-for="diff in filteredDiff" />
+        <object-diff :key="diff.value" :diff="diff" v-for="diff in filteredDiff" />
         <div class="flex justify-center">
             <pagination
                 @onUpdatePage="page = $event"
@@ -110,7 +110,7 @@
             },
             diffs: function () {
                 if (this.filterAdded && this.filterRemoved && this.filterModified && this.filterUntouched) {
-                    return this.differ.diffs[this.resourceName].sort((a, b) => {
+                    return this.differ.diffs[this.resourceName].slice().sort((a, b) => {
                         if (a.added > b.added) return -1;
                         if (a.removed > b.removed) return -1;
                         if (a.modified > b.modified) return -1;
