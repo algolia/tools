@@ -89,7 +89,7 @@ export class GroupTest {
             return test.run();
         });
         await Promise.all(promises);
-        this.runs.forEach((run, i) => this.updateReport(i));
+        this.runs.forEach((run, i) => this.updateReport(i, true));
     }
 
     async runRun(runData, i) {
