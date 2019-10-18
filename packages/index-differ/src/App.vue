@@ -61,12 +61,27 @@
         name: 'IndexDiffer',
         components: {InternalApp, SwapIcon, Diffs, DisplayConfig, AppHeader, AppManagement, AppSelector, IndexSelector},
         created: function () {
-            if (!this.leftAppId && Object.keys(this.$store.state.apps).length > 0) {
+            const url = new URL(window.location.href);
+            const leftAppId = url.searchParams.get("left-app-id");
+            const leftIndexName = url.searchParams.get("left-index-name");
+            const rightAppId = url.searchParams.get("right-app-id");
+            const rightIndexName = url.searchParams.get("right-index-name");
+
+            if (leftAppId && leftIndexName) {
+                this.leftAppId = leftAppId;
+                this.leftIndexName = leftIndexName
+            } else if (!this.leftAppId && Object.keys(this.$store.state.apps).length > 0) {
                 this.leftAppId = Object.keys(this.$store.state.apps)[0];
             }
-            if (!this.rightAppId && Object.keys(this.$store.state.apps).length > 0) {
+
+            if (rightAppId && rightIndexName) {
+                this.rightAppId = rightAppId;
+                this.rightIndexName = rightIndexName
+            } else if (!this.rightAppId && Object.keys(this.$store.state.apps).length > 0) {
                 this.rightAppId = Object.keys(this.$store.state.apps)[0];
             }
+
+            this.updateUrl();
         },
         computed: {
             leftAppId: {
@@ -76,6 +91,7 @@
                 set (appId) {
                     this.leftIndexName = null;
                     this.$store.commit(`indexdiffer/setLeftAppId`, appId);
+                    this.updateUrl();
                 }
             },
             leftIndexName: {
@@ -84,6 +100,7 @@
                 },
                 set (indexName) {
                     this.$store.commit('indexdiffer/setLeftIndexName', indexName);
+                    this.updateUrl();
                 }
             },
             rightAppId: {
@@ -93,6 +110,7 @@
                 set (appId) {
                     this.rightIndexName = null;
                     this.$store.commit(`indexdiffer/setRightAppId`, appId);
+                    this.updateUrl();
                 }
             },
             rightIndexName: {
@@ -101,6 +119,7 @@
                 },
                 set (indexName) {
                     this.$store.commit('indexdiffer/setRightIndexName', indexName);
+                    this.updateUrl();
                 }
             },
         },
@@ -113,6 +132,10 @@
                 this.leftIndexName = this.rightIndexName;
                 this.rightAppId = tmpAppId;
                 this.rightIndexName = tmpIndexName;
+            },
+            updateUrl: function () {
+                const url = `${window.location.origin}${window.location.pathname}?left-app-id=${this.leftAppId}&left-index-name=${this.leftIndexName}&right-app-id=${this.rightAppId}&right-index-name=${this.rightIndexName}`;
+                window.history.replaceState(null, null, url);
             },
         }
     }
