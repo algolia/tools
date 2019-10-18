@@ -58,6 +58,15 @@
                                 Limit to current query
                             </label>
                         </div>
+                        <div>
+                            <label>
+                                <input v-model="overwriteDefaultTimeout" type="checkbox" class="mr-2" />
+                                Force write timeout
+                                <span v-if="overwriteDefaultTimeout">
+                                    : <input v-model="writeTimeout" class="input-custom inline w-72" type="number" min="30" max="1000" step="10" /> secs
+                                </span>
+                            </label>
+                        </div>
                     </div>
                 </div>
                 <div class="flex mt-16">
@@ -112,6 +121,8 @@
                     currentQueryOnly: false,
                 },
                 batchSize: 1000,
+                overwriteDefaultTimeout: false,
+                writeTimeout: 30,
                 tasksGroup: null,
                 displayCopyOption: false,
             }
@@ -161,6 +172,12 @@
                 config['indexSettings'] = Object.assign({}, this.indexSettings);
                 config['srcIndex'] = config.srcClient.initIndex(this.panelIndexName);
                 config['dstIndex'] = config.dstClient.initIndex(this.dstIndexName);
+                config.timeoutBackup = config.dstClient._timeouts;
+                config.dstClient.setTimeouts({
+                    connect: Math.ceil(this.writeTimeout / 30 * 1000),
+                    read: Math.ceil(this.writeTimeout / 15 * 1000),
+                    write: Math.ceil(this.writeTimeout * 1000)
+                });
 
                 return config;
             },
@@ -180,6 +197,7 @@
                 try {
                     this.errorMessage = '';
                     await this.tasksGroup.run();
+                    config.dstClient.setTimeouts(config.timeoutBackup);
                 } catch (e) {
                     this.errorMessage = e.message;
                     this.tasksGroup = null;
