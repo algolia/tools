@@ -86,7 +86,7 @@
                 const index = await getSearchIndex(this.appId, this.apiKey, this.indexName, this.server);
                 const hit = JSON.parse(this.newHit);
                 const hits = Array.isArray(hit) ? hit : [hit];
-                const task = await index.addObjects(hits);
+                const task = await index.saveObjects(hits, {autoGenerateObjectIDIfNotExist: true});
                 this.saving = true;
                 await index.waitTask(task['taskID']);
                 this.saving = false;

@@ -8,7 +8,7 @@
     import paramsSpecs from 'common/params-specs';
     import RankingInfoAnalyser from "common/components/explorer/hits/rankingInfoAnalyser"
     import {cleanAttributeName} from 'common/utils/formatters';
-    import {getClient, getSearchIndex} from 'common/utils/algoliaHelpers';
+    import {getSearchIndex} from 'common/utils/algoliaHelpers';
 
     import {goToAnchor} from "common/utils/domHelpers";
 
@@ -146,7 +146,7 @@
                 const requestNumber = this.requestNumber++;
                 const index = await getSearchIndex(this.appId, this.apiKey, this.indexName, this.server);
 
-                index[method](this.searchParamsWithDefaults).then(async (res) => {
+                index[method](this.searchParamsWithDefaults.query || '', this.searchParamsWithDefaults).then(async (res) => {
                     if (this.requestNumberReceived > requestNumber) return;
                     this.requestNumberReceived = requestNumber;
 
@@ -182,7 +182,7 @@
                 const index = await getSearchIndex(this.appId, this.apiKey, this.indexName, this.server);
                 const requestNumberAnalysis = this.requestNumberAnalysis++;
 
-                index[method](this.searchParamsForAnalysis).then((res) => {
+                index[method](this.searchParamsForAnalysis.query || '', this.searchParamsForAnalysis).then((res) => {
                     if (this.requestNumberAnalysisReceived > requestNumberAnalysis) return;
                     this.requestNumberAnalysisReceived = requestNumberAnalysis;
 

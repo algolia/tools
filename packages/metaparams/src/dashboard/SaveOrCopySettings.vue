@@ -172,12 +172,12 @@
                 config['indexSettings'] = Object.assign({}, this.indexSettings);
                 config['srcIndex'] = config.srcClient.initIndex(this.panelIndexName);
                 config['dstIndex'] = config.dstClient.initIndex(this.dstIndexName);
-                config.timeoutBackup = config.dstClient._timeouts;
-                config.dstClient.setTimeouts({
+                config.timeoutBackup = config.dstClient.transporter.timeouts;
+                config.dstClient.transporter.timeouts = {
                     connect: Math.ceil(this.writeTimeout / 30 * 1000),
                     read: Math.ceil(this.writeTimeout / 15 * 1000),
                     write: Math.ceil(this.writeTimeout * 1000)
-                });
+                };
 
                 return config;
             },
@@ -197,7 +197,7 @@
                 try {
                     this.errorMessage = '';
                     await this.tasksGroup.run();
-                    config.dstClient.setTimeouts(config.timeoutBackup);
+                    config.dstClient.transporter.timeouts = config.timeoutBackup;
                 } catch (e) {
                     this.errorMessage = e.message;
                     this.tasksGroup = null;
@@ -224,7 +224,9 @@
                 }));
 
                 tasksGroup.addTask(new Task('Copy rules and synonyms', async () => {
-                    const res = await config.srcClient.copyIndex(config.srcIndexName, config.dstIndexName, ['rules', 'synonyms']);
+                    const res = await config.srcClient.copyIndex(config.srcIndexName, config.dstIndexName, {
+                        scope: ['rules', 'synonyms'],
+                    });
                     await config.dstIndex.waitTask(res.taskID);
                 }));
 
@@ -260,14 +262,14 @@
                 }));
 
                 tasksGroup.addTask(new Task('Copy synonyms', async () => {
-                    await config.srcIndex.exportSynonyms(1000, (synonyms) => {
-                        config.dstIndex.batchSynonyms(synonyms, {replaceExistingSynonyms: true});
+                    await config.srcIndex.browseSynonyms(1000, (synonyms) => {
+                        config.dstIndex.saveSynonyms(synonyms, {replaceExistingSynonyms: true});
                     });
                 }));
 
                 tasksGroup.addTask(new Task('Copy rules', async () => {
-                    await config.srcIndex.exportRules(1000, (rules) => {
-                        config.dstIndex.batchRules(rules, {clearExistingRules: true});
+                    await config.srcIndex.browseRules(1000, (rules) => {
+                        config.dstIndex.saveRules(rules, {clearExistingRules: true});
                     });
                 }));
 
@@ -281,14 +283,14 @@
                         nbCopied += res.hits.length;
                         browseTask.setNth(0);
                         browseTask.setOutOf(Math.ceil(nbToCopy / config.hitsPerPage));
-                        let resAdd = await config.dstIndex.addObjects(res.hits);
+                        let resAdd = await config.dstIndex.saveObjects(res.hits, {autoGenerateObjectIDIfNotExist: true});
                         tasksGroup.addAlgoliaTaskId(resAdd.taskID);
                         browseTask.setNth(res.page + 1);
 
                         while (res.cursor && (!this.limitCopy.enabled || nbCopied < this.limitCopy.nbHits)) {
                             res = await config.srcIndex.browseFrom(res.cursor);
                             nbCopied += res.hits.length;
-                            resAdd = await config.dstIndex.addObjects(res.hits);
+                            resAdd = await config.dstIndex.saveObjects(res.hits, {autoGenerateObjectIDIfNotExist: true});
                             tasksGroup.addAlgoliaTaskId(resAdd.taskID);
                             browseTask.setNth(res.page + 1);
                         }
@@ -304,11 +306,11 @@
                         });
                         let res = await config.srcIndex.customSearch(params);
 
-                        let resAdd = await config.dstIndex.addObjects(res.hits.map((hit) => {
+                        let resAdd = await config.dstIndex.saveObjects(res.hits.map((hit) => {
                             delete(hit._highlightResult);
                             delete(hit._snippetResult);
                             return hit;
-                        }));
+                        }), {autoGenerateObjectIDIfNotExist: true});
                         tasksGroup.addAlgoliaTaskId(resAdd.taskID);
                     }));
                 }

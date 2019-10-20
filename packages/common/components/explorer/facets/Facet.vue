@@ -112,9 +112,7 @@
 
                 const index = await getSearchIndex(this.appId, this.$store.state.apps[this.appId].key, this.indexName);
 
-                const res = await index.customSearchForFacetValues({
-                    facetName: this.facetName,
-                    facetQuery: this.searchQuery,
+                const res = await index.customSearchForFacetValues(this.facetName, this.searchQuery, {
                     ...this.searchParams,
                     facetFilters: index.buildFacetFilters(this.facetFilters, `${this.facetName}:`),
                     query: this.query,

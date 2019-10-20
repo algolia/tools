@@ -21,6 +21,7 @@ const getNewParams = function (params) {
         newQuery.optionalWords = params.query;
     }
     delete(newQuery['optionalWords=query']);
+    delete(newQuery['query']);
 
     return newQuery;
 };
@@ -69,7 +70,7 @@ indexPrototype.getDisjunctiveRequests = function (disjunctiveFacets, refinedFace
     return requests;
 };
 
-indexPrototype.disjunctiveSearch = function (params, callback) {
+indexPrototype.disjunctiveSearch = function (params) {
     const {disjunctiveFacets, ...paramsWithoutDisjunctiveFacets} = params;
 
     const facetFilters = paramsWithoutDisjunctiveFacets.facetFilters || [];
@@ -92,7 +93,7 @@ indexPrototype.disjunctiveSearch = function (params, callback) {
     const requests = this.getDisjunctiveRequests(disjunctiveFacets, refinedFacets, paramsWithoutDisjunctiveFacets);
     const $this = this;
 
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
         $this.transporter.write({
             method: 'POST',
             path: '1/indexes/*/queries',
@@ -113,42 +114,33 @@ indexPrototype.disjunctiveSearch = function (params, callback) {
                 });
             });
 
-            if (callback) {
-                return callback(err, newRes);
-            } else {
-                resolve(newRes);
-            }
+            resolve(newRes);
         });
     });
 };
 
-indexPrototype.customSearch = function (query, args, callback) {
-    let params = {};
-    if (query && typeof query === 'object' && query.constructor === Object) params = query;
-    if (args && typeof args === 'object' && args.constructor === Object) params = {...args, query};
+indexPrototype.customSearch = function (query, requestOptions) {
+    const params = getNewParams({
+        query,
+        ...requestOptions,
+    });
 
-    params = getNewParams(params);
-
-    if (params.disjunctiveFacets && params.disjunctiveFacets.length > 0) return this.disjunctiveSearch(params, callback);
+    if (params.disjunctiveFacets && params.disjunctiveFacets.length > 0) return this.disjunctiveSearch(params);
     delete (params.disjunctiveFacets);
 
-    return this.search(params, callback);
+    return this.search(query, params);
 };
 
-indexPrototype.customBrowse = function (query, args, callback) {
-    let params = {};
-    if (query && typeof query === 'object' && query.constructor === Object) params = query;
-    if (args && typeof args === 'object' && args.constructor === Object) params = {...args, query};
-
-    params = getNewParams(params);
+indexPrototype.customBrowse = function (requestOptions) {
+    let params = getNewParams(requestOptions);
     delete (params.disjunctiveFacets);
 
-    return this.browse(params, callback);
+    return this.browseObjects(requestOptions);
 };
 
-indexPrototype.customSearchForFacetValues = function(args, callback) {
-    const params = getNewParams(args);
-    return this.searchForFacetValues(args, callback);
+indexPrototype.customSearchForFacetValues = function(facetName, facetValue, args) {
+    const params = getNewParams(args || {});
+    return this.searchForFacetValues(facetName, facetValue, {...params, query: args && args.query ? args.query : ''});
 };
 
 const clientCache = {};
