@@ -139,7 +139,7 @@
                     return elt.name === indexInfo.name;
                 });
 
-                if (firstSelectedPos !== -1) {
+                if (firstSelectedPos !== -1 && lastSelectedPos !== -1) {
                     const firstLast = [firstSelectedPos, lastSelectedPos].sort((a, b) => a - b);
                     for (let i = firstLast[0]; i <= firstLast[1]; i++) {
                         this.onSelected(this.sortedIndices[i], true);

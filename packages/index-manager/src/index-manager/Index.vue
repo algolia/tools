@@ -34,12 +34,6 @@
                     {{formatHumanNumber(indexInfo.nbRules)}}
                 </div>
             </div>
-
-            <!--<div class="ml-20 mt-8">
-                <div v-for="resource in resources" :key="resource.id" class="flex">
-                    <div>{{resource.name}}</div>
-                </div>
-            </div>-->
         </div>
         <div
             v-for="replica in indexInfo.replicas"
@@ -75,18 +69,13 @@
             return {
                 index: null,
                 mouseDown: false,
-                /*resources: [
-                    {name: 'Settings', id: `${this.index.name}-Settings`},
-                    {name: 'Synonyms', id: `${this.index.name}-Synonyms`},
-                    {name: 'Rules', id: `${this.index.name}-Rules`},
-                ]*/
             }
         },
-        watch: {
-            parentSelected: function (val, oldVal) {
+        /*watch: {
+            parentSelected: function (val) {
                 this.$emit('onSelected', this.indexInfo, val);
             },
-        },
+        },*/
         created: async function () {
             const index = this.client.initIndex(this.indexInfo.name);
 
@@ -108,12 +97,12 @@
             };
             this.$emit('onAggregation', this.indexInfo, aggregatedInfo);
         },
-        computed: {
+        /*computed: {
             parentSelected: function () {
                 if (!this.parentIndexInfo) return false;
                 return !!this.selected[this.parentIndexInfo.name];
             },
-        },
+        },*/
         methods: {
             formatHumanNumber,
             timeFromNow,

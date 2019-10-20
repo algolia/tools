@@ -23,8 +23,16 @@
 
 <script>
     import {Task, TasksGroup} from 'common/utils/tasks';
-    import TaskGroupView from 'common/components/TasksGroup'
-    import {clearIndex, deleteIndex, detachReplicaIndex, renameIndex} from "@/index-manager/indexOperations";
+    import TaskGroupView from 'common/components/TasksGroup';
+
+    import {
+        attachReplicaIndex,
+        clearIndex,
+        deleteIndex,
+        detachReplicaIndex,
+        renameIndex,
+        resetSettings,
+    } from "@/index-manager/indexOperations";
 
     export default {
         name: 'Action',
@@ -56,17 +64,11 @@
                 }
 
                 if (actionName === 'attach') {
-                    const primaryIndex = client.initIndex(indexInfo.name);
-                    const primarySettings = await primaryIndex.getSettings();
-                    const replicas = primarySettings.replicas || [];
-                    const newReplicas = [...new Set([...replicas, this.userIndexName])];
-
-                    const res = await primaryIndex.setSettings({ replicas: newReplicas });
-                    await client.initIndex(indexInfo.primary).waitTask(res.taskID);
+                    await attachReplicaIndex(client, indexInfo, this.userIndexName);
                 }
 
                 if (actionName === 'resetSettings') {
-                    //
+                    await resetSettings(client, indexInfo);
                 }
 
                 if (actionName === 'copy') {
