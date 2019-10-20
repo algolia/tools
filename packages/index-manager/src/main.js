@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import store from 'common/store/store'
 import App from '@/App.vue'
 import algoliasearch from 'algoliasearch';
 import VueInputAutowidth from 'vue-input-autowidth'
@@ -20,4 +21,5 @@ Vue.mixin({
 
 new Vue({
     render: h => h(App),
+    store,
 }).$mount('#app');
