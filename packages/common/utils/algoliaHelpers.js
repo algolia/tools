@@ -1,9 +1,19 @@
-import algoliasearch from 'algoliasearch';
+import algoliasearch from '@nunomaduro/lightsearch';
 import getSignature from "./signature";
 
 const client = algoliasearch('A', 'B');
 const index = client.initIndex('AB');
 const indexPrototype = Object.getPrototypeOf(index);
+
+function encode(format, ...args) {
+    let i = 0;
+    return format.replace(/%s/g, () => encodeURIComponent(args[i++]));
+}
+
+function encodeQueryParameters(parameters) {
+    const parametersKeys = Object.keys(parameters);
+    return `${parametersKeys.map(key => encode('%s=%s', key, parameters[key])).join('&')}`;
+}
 
 const getNewParams = function (params) {
     const newQuery = {...params};
@@ -29,10 +39,10 @@ indexPrototype.getDisjunctiveRequests = function (disjunctiveFacets, refinedFace
 
     requests.push({
         indexName: this.indexName,
-        params: this.as._getSearchParams({
+        params: encodeQueryParameters({
             ...paramsWithoutDisjunctiveFacets,
             facets: disjunctiveFacets,
-        }, ''),
+        }),
     });
 
     refinedFacets.forEach((facetName) => {
@@ -52,7 +62,7 @@ indexPrototype.getDisjunctiveRequests = function (disjunctiveFacets, refinedFace
 
         requests.push({
             indexName: this.indexName,
-            params: this.as._getSearchParams(Object.assign({}, paramsWithoutDisjunctiveFacets, forcedParams), ''),
+            params: encodeQueryParameters(Object.assign({}, paramsWithoutDisjunctiveFacets, forcedParams), ''),
         });
     });
 
@@ -80,39 +90,34 @@ indexPrototype.disjunctiveSearch = function (params, callback) {
     });
 
     const requests = this.getDisjunctiveRequests(disjunctiveFacets, refinedFacets, paramsWithoutDisjunctiveFacets);
+    const $this = this;
 
     return new Promise((resolve, reject) => {
-        this.as._jsonRequest({
+        $this.transporter.write({
             method: 'POST',
-            url: '/1/indexes/*/queries',
-            body: {
+            path: '1/indexes/*/queries',
+            data: {
                 requests: requests,
                 strategy: 'none'
             },
-            hostType: 'read',
-            callback: (err, res) => {
-                const newRes = res.results[0];
-                newRes.disjunctiveFacets = JSON.parse(JSON.stringify(newRes.facets));
+        }).then((res) => {
+            const newRes = res.results[0];
+            newRes.disjunctiveFacets = JSON.parse(JSON.stringify(newRes.facets));
 
-                refinedFacets.forEach((facetName, i) => {
-                    newRes.disjunctiveFacets[facetName] = res.results[i + 1].facets[facetName];
-                    facetRefinements[facetName].forEach((value) => {
-                        if (newRes.disjunctiveFacets[facetName][value] === undefined) {
-                            newRes.disjunctiveFacets[facetName][value] = null;
-                        }
-                    });
-                });
-
-                if (callback) {
-                    return callback(err, newRes);
-                } else {
-                    if (err) {
-                        reject(err)
-                    } else {
-                        resolve(newRes);
+            refinedFacets.forEach((facetName, i) => {
+                newRes.disjunctiveFacets[facetName] = res.results[i + 1].facets[facetName];
+                facetRefinements[facetName].forEach((value) => {
+                    if (newRes.disjunctiveFacets[facetName][value] === undefined) {
+                        newRes.disjunctiveFacets[facetName][value] = null;
                     }
-                }
-            },
+                });
+            });
+
+            if (callback) {
+                return callback(err, newRes);
+            } else {
+                resolve(newRes);
+            }
         });
     });
 };
@@ -193,7 +198,10 @@ export async function getClient(appId, apiKey) {
     });
     if (apiKey) {
         const signature = await getSignature(appId);
-        client.setExtraHeader('X-Algolia-Signature', signature);
+        client.transporter.headers = {
+            ...client.transporter.headers,
+            'X-Algolia-Signature': signature,
+        };
     }
     clientCache[cacheKey] = client;
     return client;
@@ -205,7 +213,10 @@ export async function getSearchClient(appId, apiKey, server) {
     const client = searchClient(appId, apiKey, server);
     if (apiKey && appId !== 'MySuperApp') {
         const signature = await getSignature(appId);
-        client.setExtraHeader('X-Algolia-Signature', signature);
+        client.transporter.headers = {
+            ...client.transporter.headers,
+            'X-Algolia-Signature': signature,
+        };
     }
     clientCache[cacheKey] = client;
     return client;
@@ -217,6 +228,13 @@ export async function getSearchIndex(appId, apiKey, indexName, server) {
     if (indexCache[cacheKey]) return indexCache[cacheKey];
     const client = await getSearchClient(appId, apiKey, server);
     const index = client.initIndex(indexName);
+
+    index.__proto__.buildFacetFilters = indexPrototype.buildFacetFilters;
+    index.__proto__.getDisjunctiveRequests = indexPrototype.getDisjunctiveRequests;
+    index.__proto__.disjunctiveSearch = indexPrototype.disjunctiveSearch;
+    index.__proto__.customSearch = indexPrototype.customSearch;
+    index.__proto__.customBrowse = indexPrototype.customBrowse;
+    index.__proto__.customSearchForFacetValues = indexPrototype.customSearchForFacetValues;
 
     indexCache[cacheKey] = index;
     return index;

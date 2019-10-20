@@ -10,8 +10,8 @@
     "css": "tailwind build src/assets/css/main.scss -c ../common/tailwind/index.js -o src/assets/css/all.css"
   },
   "dependencies": {
+    "@nunomaduro/lightsearch": "^4.0.0-alpha.13",
     "algolia-filters-js-syntax-validator": "^1.0.1",
-    "algoliasearch": "^3.32.0",
     "chart.js": "^2.8.0",
     "common": "^0.0.0",
     "css-loader": "^2.1.0",

@@ -70,7 +70,7 @@
                 await index.waitTask(res.taskID);
                 this.pendingDeletion = false;
                 this.deletingIndex = false;
-                const indexes = await client.listIndexes(0);
+                const indexes = await client.listIndices({page: 0});
                 let newCurrentIndexName = indexes.items.length > 0 ? indexes.items[0].name : null;
 
                 const otherPanelKey = this.panelKey === 'leftPanel' ? 'rightPanel': 'leftPanel';

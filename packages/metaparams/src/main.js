@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import store from 'common/store/store'
 import App from '@/App.vue'
-import algoliasearch from 'algoliasearch';
+import algoliasearch from '@nunomaduro/lightsearch';
 import VueInputAutowidth from 'vue-input-autowidth'
 
 Vue.config.productionTip = false;

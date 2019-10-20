@@ -198,11 +198,11 @@
             },
             fetchIndices: async function () {
                 if (this.query.length === 0) {
-                    let data = await this.client.listIndexes(0);
+                    let data = await this.client.listIndices({page: 0});
                     this.nbPages = data.nbPages;
 
                     if (this.nbPages > 1 && this.nbPages <= this.maxNbPagesInMemory) {
-                        data = await this.client.listIndexes();
+                        data = await this.client.listIndices();
                     }
 
                     this.allIndices = this.replaceByReplicas(data.items);
@@ -211,7 +211,7 @@
 
                 if (this.query.length > 0) {
                     if (this.nbPages > this.maxNbPagesInMemory) {
-                        const data = await this.client.listIndexes('0&prefix=' + encodeURIComponent(this.query));
+                        const data = await this.client.listIndices({page: 0, prefix: encodeURIComponent(this.query)});
                         this.indices = this.replaceByReplicas(data.items);
                     } else {
                         const words = this.query.split(' ');

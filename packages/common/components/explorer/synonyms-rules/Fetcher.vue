@@ -190,8 +190,7 @@
 
                 const index = await getSearchIndex(this.appId, this.apiKey, this.indexName);
                 const hitsPerPage = loadAll ? 1000 : 20;
-                const res = await index[this.methodName]({
-                    query: this.query,
+                const res = await index[this.methodName](this.query, {
                     page: page,
                     hitsPerPage: hitsPerPage,
                     ...this.extraParams,

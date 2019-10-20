@@ -191,41 +191,38 @@
                 });
             },
             loadIndexSettings: async function () {
-                const client = await getClient(this.appId, this.apiKey);
-                client._jsonRequest({
-                    method: 'GET',
-                    url: '/1/indexes/' + encodeURIComponent(this.indexName) + '/settings?getVersion=2&advanced=1',
-                    body: {},
-                    hostType: 'read',
-                    callback: (err, indexSettings) => {
-                        const settings = {};
-                        const advancedSettings = {};
-                        let key;
-                        for (key in indexSettings) {
-                            if (key === 'version') continue;
-                            if (key === 'userData') continue;
-                            if (this.advancedIndexSettingsNames.indexOf(key) !== -1) {
-                                advancedSettings[key] = indexSettings[key];
-                                continue;
-                            }
-
-                            if (paramsSpecs[key] === undefined
-                                || paramsSpecs[key].settings_default === undefined
-                                || JSON.stringify(indexSettings[key]) !== JSON.stringify(paramsSpecs[key].settings_default)
-                            ) {
-                                if (paramsSpecs[key] === undefined || paramsSpecs[key].ignore_value === undefined
-                                    || JSON.stringify(indexSettings[key]) !== JSON.stringify(paramsSpecs[key].ignore_value)
-                                ) {
-                                    settings[key] = indexSettings[key];
-                                }
-                            }
-                        }
-
-                        this.indexSettings = settings;
-                        this.$store.commit(`apps/${this.appId}/${this.indexName}/replaceIndexSettings`, settings);
-                        this.$store.commit(`apps/${this.appId}/${this.indexName}/setAdvancedIndexSettings`, advancedSettings);
-                    }
+                const index = await getSearchIndex(this.appId, this.apiKey, this.indexName, this.server);
+                const indexSettings = await index.getSettings({
+                    getVersion: 2,
+                    advanced: 1
                 });
+
+                const settings = {};
+                const advancedSettings = {};
+                let key;
+                for (key in indexSettings) {
+                    if (key === 'version') continue;
+                    if (key === 'userData') continue;
+                    if (this.advancedIndexSettingsNames.indexOf(key) !== -1) {
+                        advancedSettings[key] = indexSettings[key];
+                        continue;
+                    }
+
+                    if (paramsSpecs[key] === undefined
+                        || paramsSpecs[key].settings_default === undefined
+                        || JSON.stringify(indexSettings[key]) !== JSON.stringify(paramsSpecs[key].settings_default)
+                    ) {
+                        if (paramsSpecs[key] === undefined || paramsSpecs[key].ignore_value === undefined
+                            || JSON.stringify(indexSettings[key]) !== JSON.stringify(paramsSpecs[key].ignore_value)
+                        ) {
+                            settings[key] = indexSettings[key];
+                        }
+                    }
+                }
+
+                this.indexSettings = settings;
+                this.$store.commit(`apps/${this.appId}/${this.indexName}/replaceIndexSettings`, settings);
+                this.$store.commit(`apps/${this.appId}/${this.indexName}/setAdvancedIndexSettings`, advancedSettings);
             },
             loadKeysIndexer: async function () {
                 if (!this.appId || !this.apiKey);
