@@ -132,21 +132,60 @@
                 }
             },
             onSelectedRange: function (indexInfo) {
-                const firstSelectedPos = this.sortedIndices.findIndex((elt) => {
-                    return this.selected[elt.name];
-                });
-                const lastSelectedPos = this.sortedIndices.findIndex((elt) => {
-                    return elt.name === indexInfo.name;
+                const firstLast = [[-1, -1], [-1, -1]];
+
+                this.sortedIndices.forEach((elt, i) => {
+                    if (this.selected[elt.name]) {
+                        firstLast[0][0] = i;
+                    }
+
+                    if (elt.name === indexInfo.name) {
+                        firstLast[1][0] = i;
+                    }
+
+                    if (elt.replicas && elt.replicas.length > 0) {
+                        elt.replicas.forEach((elt2, j) => {
+                            if (firstLast[0][0] === -1 && this.selected[elt2.name]) {
+                                firstLast[0][0] = i;
+                                firstLast[0][1] = j;
+                            }
+
+                            if (elt2.name === indexInfo.name) {
+                                firstLast[1][0] = i;
+                                firstLast[1][1] = j;
+                            }
+                        });
+                    }
                 });
 
-                if (firstSelectedPos !== -1 && lastSelectedPos !== -1) {
+                firstLast.sort((a, b) => {
+                    if (a[0] !== b[0]) return a[0] - b[0];
+                    return a[1] - b[1];
+                });
+
+                for (let i = firstLast[0][0]; i <= firstLast[1][0]; i++) {
+                    if (i > firstLast[0][0] || firstLast[0][1] === -1) {
+                        this.onSelected(this.sortedIndices[i], true);
+                    }
+                    if (this.sortedIndices[i].replicas && this.sortedIndices[i].replicas.length > 0) {
+                        for (let j = 0; j < this.sortedIndices[i].replicas.length; j++) {
+                            if (i > firstLast[0][0] || (i === firstLast[0][0] && j >= firstLast[0][1])) {
+                                if (i < firstLast[1][0] || (i === firstLast[1][0] && j <= firstLast[1][1])) {
+                                    this.onSelected(this.sortedIndices[i].replicas[j], true);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                /*if (firstSelectedPos !== -1 && lastSelectedPos !== -1) {
                     const firstLast = [firstSelectedPos, lastSelectedPos].sort((a, b) => a - b);
                     for (let i = firstLast[0]; i <= firstLast[1]; i++) {
                         this.onSelected(this.sortedIndices[i], true);
                     }
                 } else {
                     this.onSelected(indexInfo, true);
-                }
+                }*/
 
             },
             selectAll: function () {

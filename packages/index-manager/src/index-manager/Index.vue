@@ -71,11 +71,6 @@
                 mouseDown: false,
             }
         },
-        /*watch: {
-            parentSelected: function (val) {
-                this.$emit('onSelected', this.indexInfo, val);
-            },
-        },*/
         created: async function () {
             const index = this.client.initIndex(this.indexInfo.name);
 
@@ -97,12 +92,6 @@
             };
             this.$emit('onAggregation', this.indexInfo, aggregatedInfo);
         },
-        /*computed: {
-            parentSelected: function () {
-                if (!this.parentIndexInfo) return false;
-                return !!this.selected[this.parentIndexInfo.name];
-            },
-        },*/
         methods: {
             formatHumanNumber,
             timeFromNow,
