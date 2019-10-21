@@ -8,9 +8,9 @@
             <div
                 class="px-8 py-8 pb-12 border-b border-nova-grey-opacity-20"
                 :class="{
-                    'bg-proton-grey-opacity-80': isOwnedByAlgolia,
-                    'bg-saturn-5': !isOwnedByAlgolia && !forceWrite,
-                    'bg-mars-1-opacity-50': !isOwnedByAlgolia && forceWrite,
+                    'bg-proton-grey-opacity-80': ownedByAlgolia,
+                    'bg-saturn-5': !ownedByAlgolia && !forceWrite,
+                    'bg-mars-1-opacity-50': !ownedByAlgolia && forceWrite,
                 }"
             >
                 <div class="flex flex-wrap justify-start items-center">
@@ -55,7 +55,7 @@
                     </button>
                 </div>
                 <div class="flex flex-wrap">
-                    <div v-if="!isOwnedByAlgolia" class="text-sm text-solstice-blue-opacity-80 mr-24">
+                    <div v-if="!ownedByAlgolia" class="text-sm text-solstice-blue-opacity-80 mr-24">
                         Read-Only <input type="checkbox" :checked="!forceWrite" @input="forceWrite = !$event.target.checked">
                     </div>
                     <index-info v-if="indexData" :panel-key="panelKey"/>
@@ -122,11 +122,12 @@
     import indexInfoMixin from "common/mixins/indexInfoMixin";
     import panelsMixin from "common/mixins/panelsMixin";
 
+    import ownedByAlgoliaMixin from "common/mixins/ownedByAlgolia";
 
     export default {
         name: 'Dashboard',
         props: ['panelKey'],
-        mixins: [indexInfoMixin, panelsMixin],
+        mixins: [indexInfoMixin, panelsMixin, ownedByAlgoliaMixin],
         components: {
             SearchBox,
             Tooltip,
@@ -168,13 +169,8 @@
                     this.$store.commit(`panels/${this.panelKey}/setPanelConfig`, {appId: this.appId, indexName: indexName});
                 }
             },
-            isOwnedByAlgolia: function () {
-                const app = this.$store.state.apps[this.appId];
-                return this.appId === 'MySuperApp' ||
-                    (app && app.__app_owner && app.__app_owner.length > 0 && app.__app_owner.endsWith('@algolia.com'));
-            },
             canWrite: function () {
-                return this.forceWrite || this.isOwnedByAlgolia;
+                return this.forceWrite || this.ownedByAlgolia;
             },
         },
     }

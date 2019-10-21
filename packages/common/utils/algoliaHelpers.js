@@ -5,6 +5,10 @@ const client = algoliasearch('A', 'B');
 const index = client.initIndex('AB');
 const indexPrototype = Object.getPrototypeOf(index);
 
+const isLocalAppId = function (appId) {
+    return appId === 'MySuperApp' || appId.endsWith('.local') || appId.endsWith('.test');
+};
+
 const getNewParams = function (params) {
     const newQuery = {...params};
     if (params['optionalWords=query'] && params.query) {
@@ -151,7 +155,7 @@ const searchClientCache = {};
 const indexCache = {};
 
 function searchClient(appId, apiKey, server) {
-    if (appId === 'MySuperApp') {
+    if (isLocalAppId(appId)) {
       return algoliasearch(appId, apiKey || ' ', {
         _useCache: false,
         hosts: ['localhost-1.algolia.io:8080'],
@@ -180,7 +184,7 @@ export async function getClient(appId, apiKey) {
     const cacheKey = `${appId}-${apiKey}`;
     if (clientCache[cacheKey]) return clientCache[cacheKey];
 
-    if (appId === 'MySuperApp') {
+    if (isLocalAppId(appId)) {
       return algoliasearch(appId, apiKey || ' ', {
         _useCache: false,
         hosts: ['localhost-1.algolia.io:8080'],
@@ -203,7 +207,7 @@ export async function getSearchClient(appId, apiKey, server) {
     const cacheKey = `${appId}-${apiKey}-${server}`;
     if (searchClientCache[cacheKey]) return searchClientCache[cacheKey];
     const client = searchClient(appId, apiKey, server);
-    if (apiKey && appId !== 'MySuperApp') {
+    if (apiKey && !isLocalAppId(appId)) {
         const signature = await getSignature(appId);
         client.setExtraHeader('X-Algolia-Signature', signature);
     }
