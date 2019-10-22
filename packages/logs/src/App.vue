@@ -50,16 +50,26 @@
                     </div>
                     <div class="bg-white text-nova-grey">
                         <log
-                            v-for="(log, index) in filteredLogs"
+                            v-for="(log, index) in paginatedLogs"
                             :key="log.sha1"
                             :log-item="log"
                             class="border-t border-b border-proton-grey-opacity-20"
                         />
-                        <div v-if="filteredLogs.length <= 0" class="p-8">
+                        <div v-if="paginatedLogs.length <= 0" class="p-8">
                             No logs found
                         </div>
-                        <div v-if="filteredLogs.length <= 0 && query.length > 0" class="p-8">
-                            Stop Refreshing when found <input type="checkbox" v-model="stopIfFound"/>
+                        <div v-if="paginatedLogs.length <= 0 && query.length > 0" class="p-8 flex items-center">
+                            <input type="checkbox" v-model="stopIfFound"/>
+                            <div class="ml-4">Stop Refreshing when found</div>
+                            <input class="ml-4 input-custom inline" type="number" min="1" max="1000" v-model.number="shouldFoundN"/>
+                            <div class="ml-4">hits</div>
+                        </div>
+                        <div class="flex justify-center pb-12" v-if="filteredLogs.length > 0">
+                            <pagination
+                                @onUpdatePage="page = $event"
+                                :page="page"
+                                :nb-pages="Math.ceil(filteredLogs.length / hitsPerPage)"
+                            />
                         </div>
                     </div>
                 </div>
@@ -78,6 +88,7 @@
     import IndexSelector from "common/components/selectors/IndexSelector";
     import CustomSelect from "common/components/selectors/CustomSelect";
     import AppManagement from "common/components/configuration/AppManagement";
+    import Pagination from "common/components/explorer/results/Pagination";
     import DisplayConfig from "@/api-logs/DisplayConfig";
 
     import RefreshCw from 'common/icons/refresh-cw.svg';
@@ -85,7 +96,7 @@
 
     export default {
         name: 'ApiLogs',
-        components: {InternalApp, DisplayConfig, AppHeader, AppSelector, Log, AppManagement, RefreshCw, SearchIcon, IndexSelector, CustomSelect},
+        components: {InternalApp, DisplayConfig, AppHeader, AppSelector, Log, AppManagement, RefreshCw, SearchIcon, IndexSelector, CustomSelect, Pagination},
         data: function () {
             return {
                 query: '',
@@ -99,6 +110,9 @@
                 },
                 interval: null,
                 stopIfFound: false,
+                shouldFoundN: 1,
+                page: 0,
+                hitsPerPage: 100,
                 searchFields: {
                   query: true,
                   body: true,
@@ -116,12 +130,17 @@
             allIndices: function (n, o) { if (n === o) return; this.fetchLogs() },
             indexName: function (n, o) { if (n === o) return; this.fetchLogs() },
             logs: function (val) {
-                if (this.stopIfFound && val.length > 0 && this.filteredLogs.length > 0) {
+                if (this.stopIfFound && val.length > 0 && this.filteredLogs.length >= Math.min(1000, this.shouldFoundN)) {
                     this.stopInterval();
                     this.stopIfFound = false;
                 }
             },
-
+            filteredLogs: function () {
+                this.page = 0;
+            },
+            page: function () {
+                if (this.page > 0) this.stopInterval();
+            },
         },
         created: function () {
             if (!this.appId && Object.keys(this.$store.state.apps).length > 0) {
@@ -172,8 +191,12 @@
                 if (!this.appId) return null;
                 return algoliasearch(this.appId, this.apiKey);
             },
+            paginatedLogs: function () {
+                console.log(this.page);
+                return this.filteredLogs.slice(this.page * this.hitsPerPage, (this.page + 1) * this.hitsPerPage);
+            },
             filteredLogs: function () {
-                if (this.query.length === 0) return this.logs.slice(0, 100);
+                if (this.query.length === 0) return this.logs;
 
                 const allFieldsChecked = this.allFieldsChecked; // caching computation
 
@@ -214,7 +237,7 @@
                     else {
                         return this.searchFields.ip && log.ip.includes(this.query);
                     }
-                }).slice(0, 100);
+                });
             },
         },
         methods: {
