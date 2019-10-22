@@ -81,11 +81,12 @@
                 if (!persoProfileQuery.ok) {
                     if (this.region !== 'eu') {
                         this.region = 'eu';
-                        this.fetchPersoProfil();
-                        return;
+                        const valid = await this.fetchPersoProfil();
+                        if (!valid) this.region = 'us';
+                        return valid;
                     }
                     this.userPersoFilters = false;
-                    return;
+                    return false;
                 }
 
                 const fetchedProfile = await persoProfileQuery.json();
@@ -101,6 +102,7 @@
                 }).map((profile) => {
                     return `${profile[0]}<score=${profile[1]}>`;
                 });
+                return true;
             }
         },
     }
