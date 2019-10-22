@@ -104,13 +104,6 @@
                 return Object.assign(nonForcedparams, this.searchParams, forcedParams);
             },
             searchParamsForAnalysis: function () {
-                const attributesToRetrieve = this.criteria.map((criterion) => {
-                    return cleanAttributeName(criterion)
-                });
-                const attributesForFaceting = this.indexSettings && this.indexSettings.attributesForFaceting ? this.indexSettings.attributesForFaceting : [];
-                attributesToRetrieve.push('_geoloc');
-                attributesToRetrieve.push(...attributesForFaceting.map(cleanAttributeName));
-
                 return Object.assign(
                     {
                         query: this.query,
@@ -124,7 +117,7 @@
                         hitsPerPage: this.analyseHitsPerPage,
                         attributesToSnippet: [],
                         attributesToHighlight: [],
-                        attributesToRetrieve: attributesToRetrieve,
+                        attributesToRetrieve: ['*'],
                     },
                 )
             },
