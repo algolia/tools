@@ -61,6 +61,9 @@
             <div class="ml-8 w-64 text-right cursor-pointer">
                 Rules
             </div>
+            <div class="ml-8 w-64 text-right cursor-pointer">
+                Index size
+            </div>
         </div>
         <div class="overflow-y-auto mx-16 min-h-0">
             <div class="p-8" v-if="sortedIndices.length <= 0">No index found</div>
@@ -177,16 +180,6 @@
                         }
                     }
                 }
-
-                /*if (firstSelectedPos !== -1 && lastSelectedPos !== -1) {
-                    const firstLast = [firstSelectedPos, lastSelectedPos].sort((a, b) => a - b);
-                    for (let i = firstLast[0]; i <= firstLast[1]; i++) {
-                        this.onSelected(this.sortedIndices[i], true);
-                    }
-                } else {
-                    this.onSelected(indexInfo, true);
-                }*/
-
             },
             selectAll: function () {
                 this.sortedIndices.forEach((elt) => {

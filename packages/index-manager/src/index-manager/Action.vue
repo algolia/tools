@@ -49,29 +49,17 @@
             doAction: async function (client, indexInfo, actionName) {
                 if (actionName === 'delete') {
                     await deleteIndex(client, indexInfo);
-                }
-
-                if (actionName === 'clear') {
+                } else if (actionName === 'clear') {
                     await clearIndex(client, indexInfo);
-                }
-
-                if (actionName === 'rename') {
+                } else if (actionName === 'rename') {
                     await renameIndex(client, indexInfo, this.userIndexName);
-                }
-
-                if (actionName === 'detach') {
+                } else if (actionName === 'detach') {
                     await detachReplicaIndex(client, indexInfo);
-                }
-
-                if (actionName === 'attach') {
+                } else if (actionName === 'attach') {
                     await attachReplicaIndex(client, indexInfo, this.userIndexName);
-                }
-
-                if (actionName === 'resetSettings') {
+                } else if (actionName === 'resetSettings') {
                     await resetSettings(client, indexInfo);
-                }
-
-                if (actionName === 'copy') {
+                } else if (actionName === 'copy') {
                     const sleep = function (ms) {
                         return new Promise(resolve => setTimeout(resolve, ms));
                     };

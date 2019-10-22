@@ -34,6 +34,11 @@
                     {{formatHumanNumber(indexInfo.nbRules)}}
                 </div>
             </div>
+            <div class="ml-8 w-64 text-right">
+                <div v-if="indexInfo.dataSize !== undefined">
+                    {{formatHumanNumber(indexInfo.dataSize, 0, ['B', 'KB', 'MB', 'GB'], 1000)}}
+                </div>
+            </div>
         </div>
         <div
             v-for="replica in indexInfo.replicas"
@@ -71,26 +76,8 @@
                 mouseDown: false,
             }
         },
-        created: async function () {
-            const index = this.client.initIndex(this.indexInfo.name);
-
-            let indexInfo = {...this.indexInfo};
-            if (this.indexInfo.updatedAt === undefined) {
-                const data = await this.client.listIndexes('0&prefix=' + encodeURIComponent(this.indexInfo.name));
-                indexInfo = data.items[0];
-            }
-
-            const settings = await index.getSettings();
-            const rules = await index.searchRules();
-            const synonyms = await index.searchSynonyms();
-
-            const aggregatedInfo = {
-                ...indexInfo,
-                settings: settings,
-                nbRules: rules.nbHits,
-                nbSynonyms: synonyms.nbHits,
-            };
-            this.$emit('onAggregation', this.indexInfo, aggregatedInfo);
+        created: function () {
+            this.aggregate();
         },
         methods: {
             formatHumanNumber,
@@ -103,6 +90,27 @@
                 } else {
                     this.$emit('onSelected', this.indexInfo, selected);
                 }
+            },
+            aggregate: async function () {
+                const index = this.client.initIndex(this.indexInfo.name);
+
+                let indexInfo = {...this.indexInfo};
+                if (this.indexInfo.updatedAt === undefined) {
+                    const data = await this.client.listIndexes('0&prefix=' + encodeURIComponent(this.indexInfo.name));
+                    indexInfo = data.items[0];
+                }
+
+                const settings = await index.getSettings();
+                const rules = await index.searchRules();
+                const synonyms = await index.searchSynonyms();
+
+                const aggregatedInfo = {
+                    ...indexInfo,
+                    settings: settings,
+                    nbRules: rules.nbHits,
+                    nbSynonyms: synonyms.nbHits,
+                };
+                this.$emit('onAggregation', this.indexInfo, aggregatedInfo);
             },
         }
     }

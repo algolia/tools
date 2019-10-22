@@ -30,7 +30,8 @@ export async function deleteIndex(client, indexInfo) {
         const newReplicas = replicas.filter((replica) => { return replica !== indexInfo.name; });
 
         const res1 = await primaryIndex.setSettings({ replicas: newReplicas });
-        await client.initIndex(indexInfo.primary).waitTask(res1.taskID);
+        await primaryIndex.waitTask(res1.taskID);
+
 
         const res2 = await client.deleteIndex(indexInfo.name);
         await client.initIndex(indexInfo.name).waitTask(res2.taskID);
