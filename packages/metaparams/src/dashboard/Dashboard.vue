@@ -8,9 +8,9 @@
             <div
                 class="px-8 py-8 pb-12 border-b border-nova-grey-opacity-20"
                 :class="{
-                    'bg-proton-grey-opacity-80': ownedByAlgolia,
-                    'bg-saturn-5': !ownedByAlgolia && !forceWrite,
-                    'bg-mars-1-opacity-50': !ownedByAlgolia && forceWrite,
+                    'bg-proton-grey-opacity-80': ownedByAlgolia(appId),
+                    'bg-saturn-5': !ownedByAlgolia(appId) && !forceWrite,
+                    'bg-mars-1-opacity-50': !ownedByAlgolia(appId) && forceWrite,
                 }"
             >
                 <div class="flex flex-wrap justify-start items-center">
@@ -55,7 +55,7 @@
                     </button>
                 </div>
                 <div class="flex flex-wrap">
-                    <div v-if="!ownedByAlgolia" class="text-sm text-solstice-blue-opacity-80 mr-24">
+                    <div v-if="!ownedByAlgolia(appId)" class="text-sm text-solstice-blue-opacity-80 mr-24">
                         Read-Only <input type="checkbox" :checked="!forceWrite" @input="forceWrite = !$event.target.checked">
                     </div>
                     <index-info v-if="indexData" :panel-key="panelKey"/>
@@ -170,7 +170,7 @@
                 }
             },
             canWrite: function () {
-                return this.forceWrite || this.ownedByAlgolia;
+                return this.forceWrite || this.ownedByAlgolia(this.appId);
             },
         },
     }
