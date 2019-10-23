@@ -111,10 +111,10 @@
             diffs: function () {
                 if (this.filterAdded && this.filterRemoved && this.filterModified && this.filterUntouched) {
                     return this.differ.diffs[this.resourceName].slice().sort((a, b) => {
-                        if (a.added > b.added) return -1;
-                        if (a.removed > b.removed) return -1;
-                        if (a.modified > b.modified) return -1;
-                        return a.untouched - b.untouched;
+                        if (a.added !== b.added) return b.added - a.added;
+                        if (a.removed !== b.removed) return b.removed - a.removed;
+                        if (a.modified !== b.modified) return b.modified - a.modified;
+                        return b.untouched - a.untouched;
                     });
                 } else {
                     return this.differ.diffs[this.resourceName].filter((diff) => {
@@ -123,10 +123,10 @@
                             || (diff.modified && this.filterModified)
                             || (diff.untouched && this.filterUntouched);
                     }).sort((a, b) => {
-                        if (a.added > b.added) return 1;
-                        if (a.removed > b.removed) return 1;
-                        if (a.modified > b.modified) return 1;
-                        return a.untouched - b.untouched;
+                        if (a.added !== b.added) return b.added - a.added;
+                        if (a.removed !== b.removed) return b.removed - a.removed;
+                        if (a.modified !== b.modified) return b.modified - a.modified;
+                        return b.untouched - a.untouched;
                     });
                 }
             },
