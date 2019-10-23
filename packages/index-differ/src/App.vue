@@ -33,28 +33,34 @@
                             </div>
                         </div>
                     </div>
-                    <div class="flex flex-col items-center bg-proton-grey-opacity-40 py-16">
-                        <small-tabs
-                            v-model="currentTab"
-                            :tabs="[
+                    <div class="bg-proton-grey-opacity-40 py-16">
+                        <div class="flex justify-center">
+                            <small-tabs
+                                v-model="currentTab"
+                                :tabs="[
                                 {value: 'settings', name: 'Settings'},
                                 {value: 'synonyms', name: 'Synonyms'},
                                 {value: 'rules', name: 'Rules'},
                                 {value: 'records', name: 'Records'},
                             ]"
-                        />
-                        <loaded-info
-                            class="px-16 pt-16 text-telluric-blue"
-                            :differ="differ"
-                            :current-tab="currentTab"
-                        />
+                            />
+                        </div>
+                        <div class="flex justify-center">
+                            <loaded-info
+                                class="px-16 pt-16 text-telluric-blue"
+                                :differ="differ"
+                                :current-tab="currentTab"
+                            />
+                        </div>
                     </div>
-                    <div class="bg-white">
-                        <diffs
-                            :differ="differ"
-                            :current-tab="currentTab"
-                        />
-                    </div>
+                    <template v-if="differ && (currentTab === 'settings' || Math.max(differ.A.ids[currentTab].length, differ.B.ids[currentTab].length) > 0)">
+                        <div class="bg-white">
+                            <diffs
+                                :differ="differ"
+                                :current-tab="currentTab"
+                            />
+                        </div>
+                    </template>
                 </div>
             </div>
         </div>
