@@ -5,7 +5,7 @@
             <div class="ml-4">
                 {{Math.max(differ.A.ids[currentTab].length, differ.B.ids[currentTab].length)}}
             </div>
-            <div v-if="currentTab === 'records'">
+            <div>
                 /{{Math.max(differ.A.nbHits[currentTab], differ.B.nbHits[currentTab])}}
             </div>
             <div

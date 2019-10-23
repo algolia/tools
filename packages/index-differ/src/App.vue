@@ -33,9 +33,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="flex flex-col items-center bg-proton-grey-opacity-40">
+                    <div class="flex flex-col items-center bg-proton-grey-opacity-40 py-16">
                         <small-tabs
-                            class="pt-16"
                             v-model="currentTab"
                             :tabs="[
                                 {value: 'settings', name: 'Settings'},
@@ -45,7 +44,7 @@
                             ]"
                         />
                         <loaded-info
-                            class="px-16 py-16 text-telluric-blue"
+                            class="px-16 pt-16 text-telluric-blue"
                             :differ="differ"
                             :current-tab="currentTab"
                         />
@@ -116,10 +115,6 @@
             this.loadDiffer();
         },
         computed: {
-            differ: function () {
-                if (!this.leftIndex || !this.rightIndex) return null;
-                return new Differ(this.leftIndex, this.rightIndex);
-            },
             leftAppId: {
                 get () {
                     return this.$store.state.indexdiffer.leftAppId;

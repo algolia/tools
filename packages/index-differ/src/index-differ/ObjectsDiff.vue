@@ -49,7 +49,7 @@
             </div>
         </div>
         <div class="flex py-12 items-center justify-end">
-            <div class="ml-16" :class="{invisible: loading}" v-if="resourceName !== 'settings'">
+            <div class="ml-16" v-if="resourceName !== 'settings'">
                 <button
                     @click="$root.$emit('onForceExpandAll')"
                     class="block bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out mr-8 px-16 p-8 text-sm relative group"
@@ -57,7 +57,7 @@
                     <div>Expand all diffs</div>
                 </button>
             </div>
-            <div :class="{invisible: loading}" v-if="resourceName !== 'settings'">
+            <div v-if="resourceName !== 'settings'">
                 <button
                     @click="$root.$emit('onForceCollapseAll')"
                     class="block bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out mr-8 px-16 p-8 text-sm relative group"
