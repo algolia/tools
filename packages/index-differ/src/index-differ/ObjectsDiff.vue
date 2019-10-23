@@ -1,56 +1,60 @@
 <template>
     <div class="text-telluric-blue">
         <div class="flex justify-center">
-            <div class="text-nova-grey bg-moon-grey-opacity-50 border border-proton-grey-opacity-20 px-16 py-8">
-                <div>
+            <div class="flex w-full text-nova-grey bg-moon-grey-opacity-50 border-b border-proton-grey-opacity-20 px-16 py-8">
+                <div class="mr-8">
                     <label>
-                        <input type="checkbox" v-model="filterUntouched">
-                        Untouched: {{differ.stats[resourceName].untouched}} ({{differ.stats[resourceName].untouchedPercentage}}%)
+                        <div class="flex">
+                            <input class="mr-8" type="checkbox" v-model="filterUntouched">
+                            <div>
+                                Untouched
+                                {{differ.stats[resourceName].untouched}} ({{differ.stats[resourceName].untouchedPercentage}}%)
+                            </div>
+                        </div>
                     </label>
                 </div>
-                <div class="mt-16">
+                <div class="mx-8">
                     <label>
-                        <input type="checkbox" v-model="filterAdded">
-                        Added: {{differ.stats[resourceName].added}} ({{differ.stats[resourceName].addedPercentage}}%)
+                        <div class="flex">
+                            <input class="mr-8" type="checkbox" v-model="filterAdded">
+                            <div>
+                                Added
+                                {{differ.stats[resourceName].added}} ({{differ.stats[resourceName].addedPercentage}}%)
+                            </div>
+                        </div>
                     </label>
                 </div>
-                <div>
+                <div class="mx-8">
                     <label>
-                        <input type="checkbox" v-model="filterRemoved">
-                        Deleted: {{differ.stats[resourceName].removed}} ({{differ.stats[resourceName].removedPercentage}}%)
+                        <div class="flex">
+                            <input class="mr-8" type="checkbox" v-model="filterRemoved">
+                            <div>
+                                Deleted
+                                {{differ.stats[resourceName].removed}} ({{differ.stats[resourceName].removedPercentage}}%)
+                            </div>
+                        </div>
                     </label>
                 </div>
-                <div>
+                <div class="mx-8">
                     <label>
-                        <input type="checkbox" v-model="filterModified">
-                        Modified: {{differ.stats[resourceName].modified}} ({{differ.stats[resourceName].modifiedPercentage}}%)
+                        <div class="flex">
+                            <input class="mr-8" type="checkbox" v-model="filterModified">
+                            <div>
+                                Modified
+                                {{differ.stats[resourceName].modified}} ({{differ.stats[resourceName].modifiedPercentage}}%)
+                            </div>
+                        </div>
                     </label>
                 </div>
             </div>
         </div>
-        <div class="flex py-12 items-center justify-center">
-            <div :class="{invisible: differ.isComplete || loading}" v-if="resourceName === 'records'">
-                <button
-                    @click="loadMore"
-                    class="block bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out mr-8 px-16 p-8 text-sm relative group"
-                >
-                    Load 1000 more records
-                </button>
-            </div>
-            <div class="mr-16" :class="{invisible: differ.isComplete || loading}" v-if="resourceName === 'records'">
-                <button
-                    @click="loadAll"
-                    class="block bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out mr-8 px-16 p-8 text-sm relative group"
-                >
-                    Load all records
-                </button>
-            </div>
+        <div class="flex py-12 items-center justify-end">
             <div class="ml-16" :class="{invisible: loading}" v-if="resourceName !== 'settings'">
                 <button
                     @click="$root.$emit('onForceExpandAll')"
                     class="block bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out mr-8 px-16 p-8 text-sm relative group"
                 >
-                    Expand all diffs
+                    <div>Expand all diffs</div>
                 </button>
             </div>
             <div :class="{invisible: loading}" v-if="resourceName !== 'settings'">
@@ -60,18 +64,6 @@
                 >
                     Collapse all diffs
                 </button>
-            </div>
-        </div>
-        <div class="flex py-12">
-            <div class="flex w-half ml-32">
-                <div><span class="capitalize">{{resourceName}}</span> loaded:</div>
-                <div class="ml-4">{{differ.A.ids[resourceName].length}}</div>
-                <div v-if="resourceName === 'records'">/{{differ.A.nbHits[resourceName]}}</div>
-            </div>
-            <div class="flex w-half ml-32">
-                <div><span class="capitalize">{{resourceName}}</span> loaded:</div>
-                <div class="ml-4">{{differ.B.ids[resourceName].length}}</div>
-                <div v-if="resourceName === 'records'">/{{differ.B.nbHits[resourceName]}}</div>
             </div>
         </div>
         <object-diff :key="diff.value" :diff="diff" v-for="diff in filteredDiff" />
@@ -99,10 +91,12 @@
                 filterRemoved: true,
                 filterModified: true,
                 filterUntouched: true,
-                loading: false,
                 hitsPerPage: 100,
                 page: 0,
             }
+        },
+        created: function () {
+            this.$root.$on('resetPage', () => this.page = 0);
         },
         computed: {
             filteredDiff: function () {
@@ -131,26 +125,6 @@
                 }
             },
         },
-        methods: {
-            loadMore: function () {
-                this.loading = true;
-                this.page = 0;
-                if (this.resourceName === 'records') {
-                    this.differ.records().then(() => {
-                        this.loading = false;
-                    });
-                }
-            },
-            loadAll: function () {
-                this.loading = true;
-                this.page = 0;
-                if (this.resourceName === 'records') {
-                    this.differ.allRecords().then(() => {
-                        this.loading = false;
-                    });
-                }
-            }
-        }
     }
 </script>
 

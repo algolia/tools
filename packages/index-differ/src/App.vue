@@ -7,7 +7,7 @@
             <app-management />
             <div class="max-w-960 mx-auto">
                 <div class="rounded border border-proton-grey-opacity-60 mt-24">
-                    <div class="flex p-8 bg-proton-grey-opacity-40 text-telluric-blue">
+                    <div class="p-8 border-b border-nova-grey-opacity-20 bg-proton-grey-opacity-80">
                         <div class="flex w-full justify-between">
                             <div class="flex">
                                 <app-selector v-model="leftAppId" class="mb-4" />
@@ -33,12 +33,27 @@
                             </div>
                         </div>
                     </div>
+                    <div class="flex flex-col items-center bg-proton-grey-opacity-40">
+                        <small-tabs
+                            class="pt-16"
+                            v-model="currentTab"
+                            :tabs="[
+                                {value: 'settings', name: 'Settings'},
+                                {value: 'synonyms', name: 'Synonyms'},
+                                {value: 'rules', name: 'Rules'},
+                                {value: 'records', name: 'Records'},
+                            ]"
+                        />
+                        <loaded-info
+                            class="px-16 py-16 text-telluric-blue"
+                            :differ="differ"
+                            :current-tab="currentTab"
+                        />
+                    </div>
                     <div class="bg-white">
                         <diffs
-                            :left-app-id="leftAppId"
-                            :left-index-name="leftIndexName"
-                            :right-app-id="rightAppId"
-                            :right-index-name="rightIndexName"
+                            :differ="differ"
+                            :current-tab="currentTab"
                         />
                     </div>
                 </div>
@@ -54,13 +69,27 @@
     import AppManagement from "common/components/configuration/AppManagement";
     import AppSelector from "common/components/selectors/AppSelector";
     import IndexSelector from "common/components/selectors/IndexSelector";
+    import SmallTabs from "common/components/tabs/SmallTabs";
     import SwapIcon from "common/icons/swap.svg";
     import Diffs from "@/index-differ/Diffs";
 
+    import Differ from "@/index-differ/differ";
+    import {getSearchClient} from 'common/utils/algoliaHelpers';
+    import LoadedInfo from "@/index-differ/LoadedInfo";
+
     export default {
         name: 'IndexDiffer',
-        components: {InternalApp, SwapIcon, Diffs, DisplayConfig, AppHeader, AppManagement, AppSelector, IndexSelector},
-        created: function () {
+        components: {
+            LoadedInfo,
+            InternalApp, SwapIcon, Diffs, DisplayConfig, AppHeader, AppManagement, AppSelector, IndexSelector, SmallTabs},
+        data: function () {
+            return {
+                leftIndex: null,
+                rightIndex: null,
+                differ: null,
+            };
+        },
+        created: async function () {
             const url = new URL(window.location.href);
             const leftAppId = url.searchParams.get("left-app-id");
             const leftIndexName = url.searchParams.get("left-index-name");
@@ -82,8 +111,15 @@
             }
 
             this.updateUrl();
+            await this.getLeftIndex();
+            await this.getRightIndex();
+            this.loadDiffer();
         },
         computed: {
+            differ: function () {
+                if (!this.leftIndex || !this.rightIndex) return null;
+                return new Differ(this.leftIndex, this.rightIndex);
+            },
             leftAppId: {
                 get () {
                     return this.$store.state.indexdiffer.leftAppId;
@@ -91,7 +127,9 @@
                 set (appId) {
                     this.leftIndexName = null;
                     this.$store.commit(`indexdiffer/setLeftAppId`, appId);
+                    this.getLeftIndex();
                     this.updateUrl();
+                    this.loadDiffer();
                 }
             },
             leftIndexName: {
@@ -100,7 +138,9 @@
                 },
                 set (indexName) {
                     this.$store.commit('indexdiffer/setLeftIndexName', indexName);
+                    this.getLeftIndex();
                     this.updateUrl();
+                    this.loadDiffer();
                 }
             },
             rightAppId: {
@@ -110,7 +150,9 @@
                 set (appId) {
                     this.rightIndexName = null;
                     this.$store.commit(`indexdiffer/setRightAppId`, appId);
+                    this.getRightIndex();
                     this.updateUrl();
+                    this.loadDiffer();
                 }
             },
             rightIndexName: {
@@ -119,11 +161,25 @@
                 },
                 set (indexName) {
                     this.$store.commit('indexdiffer/setRightIndexName', indexName);
+                    this.getRightIndex();
                     this.updateUrl();
+                    this.loadDiffer();
+                }
+            },
+            currentTab: {
+                get () {
+                    return this.$store.state.indexdiffer.currentTab || 'settings';
+                },
+                set (tabName) {
+                    this.$store.commit(`indexdiffer/setCurrentTab`, tabName);
                 }
             },
         },
         methods: {
+            loadDiffer: function () {
+                if (!this.leftIndex || !this.rightIndex) return;
+                this.differ = new Differ(this.leftIndex, this.rightIndex);
+            },
             swapIndex: function () {
                 const tmpAppId = this.leftAppId;
                 const tmpIndexName = this.leftIndexName;
@@ -136,6 +192,19 @@
             updateUrl: function () {
                 const url = `${window.location.origin}${window.location.pathname}?left-app-id=${this.leftAppId}&left-index-name=${this.leftIndexName}&right-app-id=${this.rightAppId}&right-index-name=${this.rightIndexName}`;
                 window.history.replaceState(null, null, url);
+            },
+            getLeftIndex: async function () {
+                if (!this.leftAppId || !this.leftIndexName) return;
+                const client = await getSearchClient(this.leftAppId, this.adminAPIKey(this.leftAppId));
+                this.leftIndex = client.initIndex(this.leftIndexName);
+            },
+            getRightIndex: async function () {
+                if (!this.rightAppId || !this.rightIndexName) return;
+                const client = await getSearchClient(this.rightAppId, this.adminAPIKey(this.rightAppId));
+                this.rightIndex = client.initIndex(this.rightIndexName);
+            },
+            adminAPIKey: function (appId) {
+                return this.$store.state.apps[appId].key;
             },
         }
     }

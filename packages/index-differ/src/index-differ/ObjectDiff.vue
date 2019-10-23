@@ -1,18 +1,18 @@
 <template>
     <div
         class="my-4"
-        :class="{
-            'd2h-del': diff.removed,
-            'd2h-mod': diff.modified,
-            'd2h-ins': diff.added
-        }"
     >
         <div
             class="flex cursor-pointer"
             @click="collapsed = !collapsed"
         >
             <div
-                class="w-half flex py-4"
+                class="w-half flex py-4 mr-2"
+                :class="{
+                    'mr-2': collapsed,
+                    'd2h-del': diff.removed,
+                    'd2h-mod': diff.modified,
+                }"
             >
                 <div class="w-52 truncate text-right" style="color: rgba(0, 0, 0, 0.3)">
                     <span v-if="!diff.added">{{diff.lineNumberA}}</span>
@@ -22,7 +22,12 @@
                 </div>
             </div>
             <div
-                class="w-half flex py-4"
+                class="w-half flex py-4 ml-2"
+                :class="{
+                    'ml-2': collapsed,
+                    'd2h-mod': diff.modified,
+                    'd2h-ins': diff.added
+                }"
             >
                 <div class="w-52 truncate text-right" style="color: rgba(0, 0, 0, 0.3)">
                     <span v-if="!diff.removed">{{diff.lineNumberB}}</span>
