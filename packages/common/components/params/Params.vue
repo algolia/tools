@@ -46,6 +46,7 @@
             setParamValue: function (key, value) {
                 if (this.mutate) {
                     this.$set(this.params, key, {value: JSON.parse(JSON.stringify(value)), enabled: true});
+                    this.$emit('onMutate');
                 } else {
                     this.$emit('onSetParamValue', key, value);
                 }
@@ -53,6 +54,7 @@
             setParamEnabled: function (key, value) {
                 if (this.mutate) {
                     this.$set(this.params[key], 'enabled', value);
+                    this.$emit('onMutate');
                 } else {
                     this.$emit('onSetParamEnabled', key, value);
                 }
@@ -71,6 +73,7 @@
             deleteArrayElement: function (inputKey, positionKey) {
                 if (this.mutate) {
                     this.$delete(this.params[inputKey].value, positionKey);
+                    this.$emit('onMutate');
                 } else {
                     this.$emit('onDeleteArrayElement', inputKey, positionKey);
                 }
@@ -78,6 +81,7 @@
             deleteKey: function (inputKey) {
                 if (this.mutate) {
                     this.$delete(this.params, inputKey);
+                    this.$emit('onMutate');
                 } else {
                     this.$emit('onDeleteKey', inputKey);
                 }
@@ -85,6 +89,7 @@
             restoreKey: function (inputKey) {
                 if (this.mutate) {
                     this.$set(this.params, inputKey, {value: JSON.parse(JSON.stringify(this.refParams[inputKey])), enabled: true});
+                    this.$emit('onMutate');
                 } else {
                     this.$emit('onRestoreKey', inputKey);
                 }

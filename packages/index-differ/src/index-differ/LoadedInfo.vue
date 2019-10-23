@@ -6,7 +6,7 @@
                 {{Math.max(differ.A.ids[currentTab].length, differ.B.ids[currentTab].length)}}
             </div>
             <div>
-                /{{Math.max(differ.A.nbHits[currentTab], differ.B.nbHits[currentTab])}}
+                /{{isNaN(differ.A.nbHits[currentTab]) ? 'unknown' : Math.max(differ.A.nbHits[currentTab], differ.B.nbHits[currentTab])}}
             </div>
             <div
                 class="ml-16 cursor-pointer text-nebula-blue hover:underline"

@@ -88,6 +88,8 @@ class DiffGenerator {
         synonyms: readonly any[],
     };
 
+    browseObjectsParams: any;
+
     stats: {
         records: Stat,
         rules: Stat,
@@ -110,6 +112,8 @@ class DiffGenerator {
             synonyms: [],
         };
 
+        this.browseObjectsParams = {};
+
         this.stats = {
             records: getDefaultStat(),
             synonyms: getDefaultStat(),
@@ -120,6 +124,21 @@ class DiffGenerator {
         this.records();
         this.synonyms();
         this.rules();
+    }
+
+    setBrowseObjectsParams(params: any): void {
+        this.browseObjectsParams = params;
+        this.A.ids.records = [];
+        this.A.objects.records = {};
+        this.A.nbHits.records = 0;
+        this.A.cursor = null;
+        this.B.ids.records = [];
+        this.B.objects.records = {};
+        this.B.nbHits.records = 0;
+        this.B.cursor = null;
+        this.diffs.records = [];
+        this.stats.records = getDefaultStat();
+        this.records();
     }
 
     get isComplete(): boolean {
@@ -256,7 +275,7 @@ class DiffGenerator {
             };
 
             if (!this[name].cursor) {
-                index.browse('', fn);
+                index.browse('', this.browseObjectsParams, fn);
             } else {
                 index.browseFrom(this[name].cursor as string, fn);
             }

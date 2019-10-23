@@ -38,14 +38,28 @@
                             <small-tabs
                                 v-model="currentTab"
                                 :tabs="[
-                                {value: 'settings', name: 'Settings'},
-                                {value: 'synonyms', name: 'Synonyms'},
-                                {value: 'rules', name: 'Rules'},
-                                {value: 'records', name: 'Records'},
-                            ]"
+                                    {value: 'settings', name: 'Settings'},
+                                    {value: 'synonyms', name: 'Synonyms'},
+                                    {value: 'rules', name: 'Rules'},
+                                    {value: 'records', name: 'Records'},
+                                ]"
                             />
                         </div>
-                        <div class="flex justify-center">
+                        <div v-if="currentTab === 'records'" class="flex justify-start pt-16 px-16">
+                            <params
+                                class="w-300"
+                                :id="`${leftAppId}-${leftIndexName}`"
+                                config-key="searchParams"
+                                :params="editableParams"
+                                :ref-params="editableParams"
+                                :raw-params="editableParams"
+                                :keys="Object.keys(editableParams)"
+                                :keys-indexer="null"
+                                :mutate="true"
+                                @onMutate="onMutate"
+                            />
+                        </div>
+                        <div class="flex justify-start">
                             <loaded-info
                                 class="px-16 pt-16 text-telluric-blue"
                                 :differ="differ"
@@ -74,6 +88,7 @@
     import AppManagement from "common/components/configuration/AppManagement";
     import AppSelector from "common/components/selectors/AppSelector";
     import IndexSelector from "common/components/selectors/IndexSelector";
+    import Params from "common/components/params/Params";
     import SmallTabs from "common/components/tabs/SmallTabs";
     import SwapIcon from "common/icons/swap.svg";
     import Diffs from "@/index-differ/Diffs";
@@ -86,12 +101,13 @@
         name: 'IndexDiffer',
         components: {
             LoadedInfo,
-            InternalApp, SwapIcon, Diffs, DisplayConfig, AppHeader, AppManagement, AppSelector, IndexSelector, SmallTabs},
+            InternalApp, SwapIcon, Diffs, DisplayConfig, AppHeader, AppManagement, AppSelector, IndexSelector, SmallTabs, Params},
         data: function () {
             return {
                 leftIndex: null,
                 rightIndex: null,
                 differ: null,
+                editableParams: {},
             };
         },
         created: async function () {
@@ -206,6 +222,14 @@
             },
             adminAPIKey: function (appId) {
                 return this.$store.state.apps[appId].key;
+            },
+            onMutate: function () {
+                const params = {};
+                Object.keys(this.editableParams).forEach((key) =>  {
+                    params[key] = JSON.parse(JSON.stringify(this.editableParams[key].value));
+                });
+
+                this.differ.setBrowseObjectsParams(params);
             },
         }
     }
