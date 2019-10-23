@@ -51,8 +51,9 @@
                     <div class="bg-white text-nova-grey">
                         <log
                             v-for="(log, index) in paginatedLogs"
-                            :key="log.sha1"
+                            :key="log.id"
                             :log-item="log"
+                            :now-date="nowDate"
                             class="border-t border-b border-proton-grey-opacity-20"
                         />
                         <div v-if="paginatedLogs.length <= 0" class="p-8">
@@ -64,11 +65,11 @@
                             <input class="ml-4 input-custom inline" type="number" min="1" max="1000" v-model.number="shouldFoundN"/>
                             <div class="ml-4">hits</div>
                         </div>
-                        <div class="flex justify-center pb-12" v-if="filteredLogs.length > 0">
+                        <div class="flex justify-center pb-12" v-if="logs.length > 0">
                             <pagination
                                 @onUpdatePage="page = $event"
                                 :page="page"
-                                :nb-pages="Math.ceil(filteredLogs.length / hitsPerPage)"
+                                :nb-pages="Math.ceil(logs.length / hitsPerPage)"
                             />
                         </div>
                     </div>
@@ -101,6 +102,7 @@
             return {
                 query: '',
                 logs: [],
+                last1000Logs: [],
                 logsType: 'all',
                 logsTypes: {
                     'all': 'All logs',
@@ -113,6 +115,7 @@
                 shouldFoundN: 1,
                 page: 0,
                 hitsPerPage: 100,
+                nowDate: new Date(),
                 searchFields: {
                   query: true,
                   body: true,
@@ -125,22 +128,30 @@
             };
         },
         watch: {
-            client: function (n, o) { if (n === o) return; this.fetchLogs() },
-            logsType: function (n, o) { if (n === o) return; this.fetchLogs() },
-            allIndices: function (n, o) { if (n === o) return; this.fetchLogs() },
-            indexName: function (n, o) { if (n === o) return; this.fetchLogs() },
+            client: function (n, o) { if (n === o) return; this.fetchLogs(true) },
+            logsType: function (n, o) { if (n === o) return; this.fetchLogs(true) },
+            allIndices: function (n, o) { if (n === o) return; this.fetchLogs(true) },
             logs: function (val) {
-                if (this.stopIfFound && val.length > 0 && this.filteredLogs.length >= Math.min(1000, this.shouldFoundN)) {
+                if (this.stopIfFound && val.length > 0 && this.logs.length >= Math.min(1000, this.shouldFoundN)) {
                     this.stopInterval();
                     this.stopIfFound = false;
                 }
             },
-            filteredLogs: function () {
-                this.page = 0;
-            },
             page: function () {
                 if (this.page > 0) this.stopInterval();
             },
+            query: function () {
+                this.logs = this.filterLogs(this.last1000Logs);
+            },
+            searchFields: {
+                deep: true,
+                handler: function () {
+                    this.logs = this.filterLogs(this.last1000Logs);
+                }
+            },
+            allFieldsChecked: function () {
+                this.logs = this.filterLogs(this.last1000Logs);
+            }
         },
         created: function () {
             if (!this.appId && Object.keys(this.$store.state.apps).length > 0) {
@@ -161,6 +172,7 @@
                 set (val) {
                     this.indexName = 'All Indices';
                     this.$store.commit('apilogs/setAppId', val);
+                    this.fetchLogs(true);
                 },
             },
             indexName: {
@@ -169,6 +181,7 @@
                 },
                 set (val) {
                     this.$store.commit('apilogs/setIndexName', val);
+                    this.fetchLogs(true);
                 }
             },
             allFieldsChecked: {
@@ -192,15 +205,57 @@
                 return algoliasearch(this.appId, this.apiKey);
             },
             paginatedLogs: function () {
-                console.log(this.page);
-                return this.filteredLogs.slice(this.page * this.hitsPerPage, (this.page + 1) * this.hitsPerPage);
+                return this.logs.slice(this.page * this.hitsPerPage, (this.page + 1) * this.hitsPerPage);
             },
-            filteredLogs: function () {
-                if (this.query.length === 0) return this.logs;
+        },
+        methods: {
+            startInterval: function () {
+                this.interval = window.setInterval(async () => {
+                    this.fetchLogs();
+                }, 3000);
+            },
+            stopInterval: function () {
+                window.clearInterval(this.interval);
+                this.interval = null;
+            },
+            fetchLogs: async function (resetLogs) {
+                if (resetLogs) this.logs = [];
+
+                const client = this.client;
+                if (!client) return;
+
+                const options = {
+                    offset: 0,
+                    length: 1000,
+                    type: this.logsType,
+                };
+
+                if (!this.allIndices) {
+                    options.indexName = this.indexName;
+                }
+
+                const res = await client.getLogs(options);
+                const logs = res.logs.map(logItem => new LogItem(logItem));
+
+                this.last1000Logs = Object.freeze(logs);
+                this.nowDate = new Date();
+
+                const filteredLogs = this.filterLogs(logs);
+
+                if (filteredLogs.length > 0) {
+                    const lastLog = filteredLogs[filteredLogs.length - 1];
+                    const lastLogPos = this.logs.findIndex((log) => log.id === lastLog.id);
+
+                    this.logs.splice(0, lastLogPos + 1, ...filteredLogs);
+                    this.logs.splice(1000);
+                }
+            },
+            filterLogs: function (logs) {
+                if (this.query.length === 0) return logs;
 
                 const allFieldsChecked = this.allFieldsChecked; // caching computation
 
-                return this.logs.filter(log => {
+                return logs.filter(log => {
                     if (allFieldsChecked) {
                         return log.rawLogString.includes(this.query);
                     }
@@ -239,35 +294,6 @@
                     }
                 });
             },
-        },
-        methods: {
-            startInterval: function () {
-                this.interval = window.setInterval(async () => {
-                    this.fetchLogs();
-                }, 5000);
-            },
-            stopInterval: function () {
-                window.clearInterval(this.interval);
-                this.interval = null;
-            },
-            fetchLogs: async function () {
-                const client = this.client;
-                if (!client) return;
-
-                const options = {
-                    offset: 0,
-                    length: 1000,
-                    type: this.logsType,
-                };
-
-                if (!this.allIndices) {
-                    options.indexName = this.indexName;
-                }
-
-                const res = await client.getLogs(options);
-
-                this.logs = res.logs.map(logItem => new LogItem(logItem));
-            }
         }
     }
 </script>

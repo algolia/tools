@@ -96,7 +96,7 @@
 <script>
     export default {
         name: 'Log',
-        props: ['logItem'],
+        props: ['logItem', 'nowDate'],
         data: function () {
             return {
                 isOpen: false,
@@ -104,7 +104,7 @@
         },
         computed: {
             timeDiff: function () {
-                const secondDiff = Math.max(0, new Date().getTime() / 1000 - new Date(this.logItem.timestamp).getTime() / 1000);
+                const secondDiff = Math.max(0, this.nowDate.getTime() / 1000 - new Date(this.logItem.timestamp).getTime() / 1000);
                 if (secondDiff < 60) {
                     return `${Math.floor(secondDiff)} sec ago`;
                 }
