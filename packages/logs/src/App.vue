@@ -211,9 +211,9 @@
         },
         methods: {
             startInterval: function () {
-                /*this.interval = window.setInterval(async () => {
+                this.interval = window.setInterval(async () => {
                     this.fetchLogs();
-                }, 3000);*/
+                }, 3000);
             },
             stopInterval: function () {
                 window.clearInterval(this.interval);
