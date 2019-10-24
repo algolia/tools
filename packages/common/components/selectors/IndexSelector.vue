@@ -76,7 +76,9 @@
                 this.updateIndices(true);
             },
             indexName: function () {
-                this.$emit('input', this.indexInfo.name);
+                if (this.indexInfo.name !== this.value) {
+                    this.$emit('input', this.indexInfo.name);
+                }
                 this.registerIndex();
                 this.updateIndices(false);
             },
@@ -149,7 +151,7 @@
 
                 if (this.indices.length <= 0) return;
 
-                if (shouldSetIndex || this.value === null) {
+                if ((shouldSetIndex && this.indexInfo.name !== this.value) || this.value === null) {
                     this.indexInfo.name = this.value ? this.value : (this.$store.state.apps[this.appId].lastIndexName || this.indices[0].name);
                     this.$emit('input', this.indexInfo.name);
                 }

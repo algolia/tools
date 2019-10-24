@@ -81,7 +81,6 @@
 
 <script>
     import InternalApp from "common/components/app/InternalApp";
-    import algoliasearch from 'algoliasearch';
     import LogItem from "@/api-logs/LogItem";
     import Log from "@/api-logs/Log";
     import AppHeader from "common/components/header/AppHeader";
@@ -91,6 +90,8 @@
     import AppManagement from "common/components/configuration/AppManagement";
     import Pagination from "common/components/explorer/results/Pagination";
     import DisplayConfig from "@/api-logs/DisplayConfig";
+
+    import {getSearchClient} from "common/utils/algoliaHelpers";
 
     import RefreshCw from 'common/icons/refresh-cw.svg';
     import SearchIcon from 'common/icons/search.svg';
@@ -116,6 +117,7 @@
                 page: 0,
                 hitsPerPage: 100,
                 nowDate: new Date(),
+                fetchIsOn: true,
                 searchFields: {
                   query: true,
                   body: true,
@@ -128,9 +130,7 @@
             };
         },
         watch: {
-            client: function (n, o) { if (n === o) return; this.fetchLogs(true) },
             logsType: function (n, o) { if (n === o) return; this.fetchLogs(true) },
-            allIndices: function (n, o) { if (n === o) return; this.fetchLogs(true) },
             logs: function (val) {
                 if (this.stopIfFound && val.length > 0 && this.logs.length >= Math.min(1000, this.shouldFoundN)) {
                     this.stopInterval();
@@ -170,9 +170,12 @@
                     return this.$store.state.apilogs.appId;
                 },
                 set (val) {
-                    this.indexName = 'All Indices';
+                    this.fetchIsOn = false;
                     this.$store.commit('apilogs/setAppId', val);
-                    this.fetchLogs(true);
+                    this.$nextTick(() => {
+                        this.fetchIsOn = true;
+                        this.indexName = 'All Indices';
+                    });
                 },
             },
             indexName: {
@@ -181,7 +184,9 @@
                 },
                 set (val) {
                     this.$store.commit('apilogs/setIndexName', val);
-                    this.fetchLogs(true);
+                    if (this.fetchIsOn) {
+                        this.fetchLogs(true);
+                    }
                 }
             },
             allFieldsChecked: {
@@ -200,19 +205,15 @@
             apiKey: function () {
                 return this.$store.state.apps[this.appId].key;
             },
-            client: function () {
-                if (!this.appId) return null;
-                return algoliasearch(this.appId, this.apiKey);
-            },
             paginatedLogs: function () {
                 return this.logs.slice(this.page * this.hitsPerPage, (this.page + 1) * this.hitsPerPage);
             },
         },
         methods: {
             startInterval: function () {
-                this.interval = window.setInterval(async () => {
+                /*this.interval = window.setInterval(async () => {
                     this.fetchLogs();
-                }, 3000);
+                }, 3000);*/
             },
             stopInterval: function () {
                 window.clearInterval(this.interval);
@@ -221,8 +222,8 @@
             fetchLogs: async function (resetLogs) {
                 if (resetLogs) this.logs = [];
 
-                const client = this.client;
-                if (!client) return;
+                if (!this.appId) return;
+                const client = await getSearchClient(this.appId, this.apiKey);
 
                 const options = {
                     offset: 0,
