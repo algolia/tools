@@ -75,7 +75,7 @@
                                 <input
                                     class="flex-1 block h-full bg-transparent text-telluric-blue leading-normal"
                                     placeholder="Search words"
-                                    value="currentRefinement"
+                                    value=""
                                     @input="refine($event.currentTarget.value)"
                                 >
                             </div>
