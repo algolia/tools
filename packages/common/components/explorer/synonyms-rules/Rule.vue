@@ -92,18 +92,18 @@
                         "<span v-html="properHighlight(intermediateRule.replacedQuery)"></span>"
                     </div>
                 </div>
+                <div v-if="intermediateRule.removedWordsFromQuery.length > 0" class="py-8 flex flex-wrap border-t border-proton-grey-opacity-20">
+                    <div class="w-188">remove from query</div>
+                    <div class="ml-4 mr-8 text-cosmos-black-opacity-70" v-for="word in intermediateRule.removedWordsFromQuery">
+                        "<span v-html="properHighlight(word)"></span>"
+                    </div>
+                </div>
                 <div v-if="intermediateRule.replacedWordsFromQuery.length > 0" class="py-8 flex flex-wrap border-t border-proton-grey-opacity-20">
                     <div class="w-188">replace in query</div>
                     <div class="ml-4">
                         <div class="mr-4 text-cosmos-black-opacity-70" v-for="word in intermediateRule.replacedWordsFromQuery">
                             "<span v-html="properHighlight(word[0])"></span>" => "<span v-html="properHighlight(word[1])"></span>"
                         </div>
-                    </div>
-                </div>
-                <div v-if="intermediateRule.removedWordsFromQuery.length > 0" class="py-8 flex flex-wrap border-t border-proton-grey-opacity-20">
-                    <div class="w-188">remove from query</div>
-                    <div class="mr-8 text-cosmos-black-opacity-70" v-for="word in intermediateRule.removedWordsFromQuery">
-                        "<span v-html="properHighlight(word)"></span>"
                     </div>
                 </div>
                 <div v-if="intermediateRule.promote.length > 0" class="py-8 flex border-t border-proton-grey-opacity-20">

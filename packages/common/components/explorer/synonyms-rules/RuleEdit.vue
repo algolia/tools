@@ -146,6 +146,24 @@
                 </div>
                 <div v-if="newRule.hasPatternAndAnchoring" class="py-8 flex flex-wrap items-center border-t border-proton-grey-opacity-20">
                     <div class="w-212" :class="newRule.hasReplacedQuery ? 'text-cosmos-black-opacity-30' : ''">
+                        <input :disabled="newRule.hasReplacedQuery" type="checkbox" v-model="newRule.hasRemovedWordsFromQuery"/>
+                        remove from query
+                    </div>
+                    <div v-if="!newRule.hasReplacedQuery && newRule.hasRemovedWordsFromQuery">
+                        <span v-for="(word, i) in newRule.removedWordsFromQuery">
+                            <input
+                                :ref="`remove-${i}-0`"
+                                v-model="newRule.removedWordsFromQuery[i]"
+                                @keydown="onKeyDown($event, newRule.removedWordsFromQuery, i, '', 0, 'remove')"
+                                v-autowidth="{comfortZone: 10, maxWidth: '100%'}"
+                                placeholder="removed word"
+                                class="mr-4 input-custom inline "
+                            />
+                        </span>
+                    </div>
+                </div>
+                <div v-if="newRule.hasPatternAndAnchoring" class="py-8 flex flex-wrap items-center border-t border-proton-grey-opacity-20">
+                    <div class="w-212" :class="newRule.hasReplacedQuery ? 'text-cosmos-black-opacity-30' : ''">
                         <input :disabled="newRule.hasReplacedQuery" type="checkbox" v-model="newRule.hasReplacedWordsFromQuery"/>
                         replace in query
                     </div>
@@ -169,24 +187,6 @@
                                 class="input-custom inline "
                             />
                         </div>
-                    </div>
-                </div>
-                <div v-if="newRule.hasPatternAndAnchoring" class="py-8 flex flex-wrap items-center border-t border-proton-grey-opacity-20">
-                    <div class="w-212" :class="newRule.hasReplacedQuery ? 'text-cosmos-black-opacity-30' : ''">
-                        <input :disabled="newRule.hasReplacedQuery" type="checkbox" v-model="newRule.hasRemovedWordsFromQuery"/>
-                        remove from query
-                    </div>
-                    <div v-if="!newRule.hasReplacedQuery && newRule.hasRemovedWordsFromQuery">
-                        <span v-for="(word, i) in newRule.removedWordsFromQuery">
-                            <input
-                                :ref="`remove-${i}-0`"
-                                v-model="newRule.removedWordsFromQuery[i]"
-                                @keydown="onKeyDown($event, newRule.removedWordsFromQuery, i, '', 0, 'remove')"
-                                v-autowidth="{comfortZone: 10, maxWidth: '100%'}"
-                                placeholder="removed word"
-                                class="mr-4 input-custom inline "
-                            />
-                        </span>
                     </div>
                 </div>
                 <div v-if="newRule.hasPatternAndAnchoring" class="py-8 flex border-t border-proton-grey-opacity-20">
