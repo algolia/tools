@@ -39,7 +39,7 @@ export default {
     },
     methods: {
         refine: async function (query) {
-            const data = await this.algoliaIndex.customSearch(query, this.searchParams || {});
+            const data = await this.algoliaIndex.search({query, ...(this.searchParams || {})} );
             this.items = data.hits;
         }
     },

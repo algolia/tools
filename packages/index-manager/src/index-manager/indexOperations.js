@@ -10,7 +10,7 @@ export function getDefaultSettings() {
     });
 
     return defaultSettings;
-};
+}
 
 export async function clearIndex(client, indexInfo) {
     const index = client.initIndex(indexInfo.name);
@@ -73,18 +73,18 @@ export async function detachReplicaIndex(client, indexInfo) {
     await client.initIndex(indexInfo.primary).waitTask(res.taskID);
 }
 
-export async function attachReplicaIndex(client, indexInfo, newReplicaIndexName) {
+export async function setReplicas(client, indexInfo, replicas) {
     const primaryIndex = client.initIndex(indexInfo.name);
-    const primarySettings = await primaryIndex.getSettings();
-    const replicas = primarySettings.replicas || [];
-    const newReplicas = [...new Set([...replicas, newReplicaIndexName])];
-
-    const res = await primaryIndex.setSettings({ replicas: newReplicas });
+    const res = await primaryIndex.setSettings({ replicas: replicas });
     await primaryIndex.waitTask(res.taskID);
 }
 
 export async function resetSettings(client, indexInfo) {
+    await setSettings(client, indexInfo, getDefaultSettings());
+}
+
+export async function setSettings(client, indexInfo, settings) {
     const index = client.initIndex(indexInfo.name);
-    const res = await index.setSettings(getDefaultSettings());
+    const res = await index.setSettings(settings);
     await index.waitTask(res.taskID);
 }

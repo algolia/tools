@@ -1,6 +1,6 @@
 <template>
     <div class="flex">
-        <div class="flex rounded overflow-hidden text-nova-grey">
+        <div class="flex flex-wrap rounded overflow-hidden text-nova-grey">
             <div v-for="tab in tabs"
                 class="bg-moon-grey p-4 h-28 px-12 flex items-center self-start cursor-pointer border-b-2 border-transparent"
                 :class="tab.value === value ? 'text-nebula-blue border-b-2 border-nebula-blue-opacity-80' : ''"

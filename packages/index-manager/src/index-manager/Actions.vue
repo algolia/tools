@@ -1,85 +1,108 @@
 <template>
-    <div class="p-16">
-        <div>
-            <div>Selected {{indices.length}} indices:</div>
-            <ul>
-                <li v-for="index in indices">
-                    {{index.name}}
-                </li>
-            </ul>
-        </div>
-        <div class="flex">
-            <div
-                v-for="action in validActions"
-                class="bg-white rounded border border-b-0 border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out mr-8 px-16 p-8 text-sm mr-12 cursor-pointer"
-                :class="currentAction === action ? 'bg-mars-1 text-white' : ''"
-                @click="currentAction = action"
-            >
-                {{action.name}}
+    <div class="flex min-h-full rounded bg-white border border-solid border-proton-grey-opacity-60">
+        <div class="w-200 max-w-200 min-w-200">
+            <div class="text-telluric-blue text-xs uppercase tracking-wide flex items-center border-b border-proton-grey-opacity-60 bg-white p-8 bg-proton-grey-opacity-40">
+                <div class="mr-auto">
+                    {{indices.length}} indices selected
+                </div>
+            </div>
+            <div class="bg-white p-16">
+                <ul>
+                    <li v-for="index in indices">
+                        {{index.name}}
+                    </li>
+                </ul>
             </div>
         </div>
-        <action
-            v-if="currentAction"
-            :indices="indices"
-            :client="client"
-            :action="currentAction"
-            class="p-16"
-        />
+        <div class="border-l border-proton-grey-opacity-60" style="width: calc(100% - 200px);">
+            <div class="text-telluric-blue text-xs uppercase tracking-wide flex items-center border-b border-proton-grey-opacity-60 bg-white p-8 bg-proton-grey-opacity-40">
+                <div class="mr-auto">
+                    Actions
+                </div>
+            </div>
+            <div class="p-16">
+                <small-tabs
+                    :tabs="validActions.map((action) => {
+                    return { value: action, name: action.name };
+                })"
+                    v-model="currentAction"
+                />
+                <action
+                    v-if="currentAction"
+                    :indices="indices"
+                    :client="client"
+                    :action="currentAction"
+                    class="mt-24"
+                />
+            </div>
+        </div>
     </div>
 </template>
 
 <script>
     import Action from '@/index-manager/Action';
+    import SmallTabs from 'common/components/tabs/SmallTabs';
 
     export default {
         name: 'Actions',
-        components: {Action},
+        components: {Action, SmallTabs},
         props: ['client'],
         data: function () {
             return {
                 selected: {},
                 currentAction: null,
+                currentTab: 'Rename',
                 actions: [
                     {
-                        name: 'delete',
+                        name: 'Rename',
+                        description: 'Rename index',
+                        confirmText: 'RENAME',
+                        condition: (indices) => indices.length === 1,
+                    },
+                    {
+                        name: 'Clear',
+                        actionName: 'clear',
+                        description: 'Clear indices',
+                        confirmText: 'CLEAR',
+                        condition: (indices) => indices.length > 0 && indices.every((index) => index.primary === undefined),
+                    },
+                    {
+                        name: 'Delete',
+                        actionName: 'delete',
                         description: 'Delete indices',
                         confirmText: 'DELETE',
                         condition: (indices) => indices.length > 0,
                     },
                     {
-                        name: 'clear',
-                        description: 'Clear indices',
-                        confirmText: 'CLEAR',
-                        condition: (indices) => indices.length > 0,
-                    },
-                    {
-                        name: 'rename',
-                        description: 'Rename index',
-                        confirmText: 'RENAME',
-                        condition: (indices) => indices.length > 0,
-                    },
-                    {
-                        name: 'attach',
-                        description: 'Attach replica',
-                        confirmText: 'ATTACH',
-                        condition: (indices) => indices.length > 0,
-                    },
-                    {
-                        name: 'detach',
-                        description: 'Delete replica',
-                        confirmText: 'DETACH',
-                        condition: (indices) => indices.length > 0,
-                    },
-                    {
-                        name: 'copy',
+                        name: 'Copy',
                         description: 'Copy index',
                         confirmText: 'COPY',
+                        condition: (indices) => indices.length === 1,
+                    },
+                    {
+                        name: 'Replicas',
+                        description: 'Update replicas',
+                        confirmText: 'REPLICAS',
+                        condition: (indices) => indices.length === 1 && indices[0].primary === undefined,
+                    },
+                    {
+                        name: 'Detach',
+                        actionName: 'detach',
+                        description: 'Detach replicas',
+                        confirmText: 'DETACH',
+                        condition: (indices) => indices.length > 0 && indices.every((index) => index.primary !== undefined),
+                    },
+                    {
+                        name: 'Reset settings',
+                        actionName: 'reset settings',
+                        description: 'Reset settings',
+                        confirmText: 'RESET',
                         condition: (indices) => indices.length > 0,
                     },
                     {
-                        name: 'resetSettings',
-                        description: 'Reset settings',
-                        confirmText: 'RESET',
+                        name: 'Apply settings',
+                        description: 'Apply settings',
+                        confirmText: 'APPLY',
                         condition: (indices) => indices.length > 0,
                     },
                 ]

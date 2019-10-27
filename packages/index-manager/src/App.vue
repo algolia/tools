@@ -5,16 +5,10 @@
         </app-header>
         <app-management />
         <div class="flex" style="height: calc(100vh - 94px);">
-            <div class="m-24 w-half flex flex-col min-h-0">
-                <div class="bg-proton-grey-opacity-80 p-8 text-center">
-                    Src Index
-                </div>
+            <div class="mt-24 w-half flex flex-col min-h-0">
                 <app :client="client" />
             </div>
             <div class="m-24 w-half flex flex-col min-h-0">
-                <div class="bg-proton-grey-opacity-80 p-8 text-center">
-                    Actions
-                </div>
                 <actions :client="client" />
             </div>
         </div>
