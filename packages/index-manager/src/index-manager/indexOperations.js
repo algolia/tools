@@ -88,3 +88,16 @@ export async function setSettings(client, indexInfo, settings) {
     const res = await index.setSettings(settings);
     await index.waitTask(res.taskID);
 }
+
+export async function copyIndex(client, indexInfo, options) {
+    const {records, synonyms, rules, settings, ignoredSettings, indexList} = options;
+
+    for (let i = 0; i < indexList.length; i++) {
+        const sameAppId = client.applicationID === indexList[i].appId;
+
+        if (sameAppId && records && synonyms && rules && settings && Object.keys(ignoredSettings).length === 0) {
+            const res = await client.copyIndex(indexInfo.name, indexList[i].indexName);
+            await client.initIndex(indexList[i].indexName).waitTask(res.taskID);
+        }
+    }
+}

@@ -14,13 +14,13 @@
                 </ul>
             </div>
         </div>
-        <div class="border-l border-proton-grey-opacity-60" style="width: calc(100% - 200px);">
+        <div class="border-l border-proton-grey-opacity-60 flex flex-col" style="width: calc(100% - 200px);">
             <div class="text-telluric-blue text-xs uppercase tracking-wide flex items-center border-b border-proton-grey-opacity-60 bg-white p-8 bg-proton-grey-opacity-40">
                 <div class="mr-auto">
                     Actions
                 </div>
             </div>
-            <div class="p-16">
+            <div class="p-16 overflow-y-auto">
                 <small-tabs
                     :tabs="validActions.map((action) => {
                     return { value: action, name: action.name };

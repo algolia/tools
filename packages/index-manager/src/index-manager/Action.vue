@@ -24,6 +24,32 @@
                 </button>
             </div>
         </div>
+        <div v-if="action.name === 'Copy'">
+            <div><label><input type="checkbox" v-model="copy.records"> Records</label></div>
+            <div><label><input type="checkbox" v-model="copy.synonyms"> Synonyms</label></div>
+            <div><label><input type="checkbox" v-model="copy.rules"> Rules</label></div>
+            <div><label><input type="checkbox" v-model="copy.settings"> Settings</label></div>
+            <div class="ml-16">
+                <div v-for="(value, key) in settings">
+                    <label>
+                        <input
+                            type="checkbox"
+                            :checked="copy.ignoredSettings[key] === undefined || copy.ignoredSettings[key] === false"
+                            @input="$set(copy.ignoredSettings, key, !$event.target.checked)"
+                        />
+                        "{{key}}": {{JSON.stringify(value)}}
+                    </label>
+                </div>
+            </div>
+            <div class="mt-24 mb-8 text-sm uppercase tracking-wide">Copy To</div>
+            <index-list :list="copy.indexList" />
+            <div class="flex mt-24">
+                <button v-if="copyable" @click="copy.indexList = [{appId: null, indexName: ''}]" :class="whiteClasses">Cancel</button>
+                <button v-if="copyable" @click="apply" :class="orangeClasses">
+                    Make {{copy.indexList.length}} copy of "{{indices[0].name}}"
+                </button>
+            </div>
+        </div>
         <div v-if="action.name === 'Apply settings'">
             <params
                 id="apply-settings"
@@ -75,11 +101,12 @@
         resetSettings,
         copyIndex
     } from "@/index-manager/indexOperations";
+    import IndexList from "@/index-manager/IndexList";
 
     export default {
         name: 'Action',
         props: ['indices', 'client', 'action'],
-        components: {TaskGroupView, TrashIcon, Params},
+        components: {IndexList, TaskGroupView, TrashIcon, Params},
         data: function () {
             return {
                 whiteClasses: 'white rounded border border-b-0 border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out px-16 p-8 mr-16',
@@ -92,17 +119,46 @@
                 newStringList: [],
                 settings: {},
                 newSettings: {},
+                copy: {
+                    records: true,
+                    synonyms: true,
+                    rules: true,
+                    settings: true,
+                    ignoredSettings: {},
+                    indexList: [{appId: null, indexName: ''}],
+                }
+            }
+        },
+        watch: {
+            copySetting: function (val) {
+                if (!val) {
+                    Object.keys(this.settings).forEach((key) => {
+                        this.$set(this.copy.ignoredSettings, key, true);
+                    });
+                } else {
+                    this.$set(this.copy, 'ignoredSettings', {});
+                }
             }
         },
         created: async function () {
-            if (this.action.name === 'Replicas') {
+            if (['Replicas', 'Copy'].includes(this.action.name)) {
                 const index = this.client.initIndex(this.indices[0].name);
                 this.settings = await index.getSettings();
-                this.stringList = this.settings.slaves || this.settings.replicas || [];
-                this.newStringList = JSON.parse(JSON.stringify(this.stringList));
+
+                if (this.action.name === 'Replicas') {
+                    this.stringList = this.settings.slaves || this.settings.replicas || [];
+                    this.newStringList = JSON.parse(JSON.stringify(this.stringList));
+                }
             }
         },
         computed: {
+            copyable: function () {
+                return (this.copy.records || this.copy.synonyms || this.copy.rules || this.copy.settings) &&
+                    this.copy.indexList.filter((index) => index.indexName.length > 0).length > 0;
+            },
+            copySetting: function () {
+                return this.copy.settings;
+            },
             renamable: function () {
                 return this.newIndexName.length > 0 && this.newIndexName !== this.indices[0].name;
             },
@@ -142,17 +198,9 @@
                         settings[key] = JSON.parse(JSON.stringify(this.newSettings[key].value));
                     });
                     await setSettings(client, indexInfo, settings);
-
-                } else if (actionName === 'copy') {
-                    await copyIndex(client, indexInfo, {
-                        to: [
-                            {appId: 'AJ0P3S7DWQ', indexName: this.userIndexName},
-                        ],
-                        records: true,
-                        synonyms: true,
-                        rules: true,
-                        settings: true,
-                    });
+                } else if (actionName === 'Copy') {
+                    this.copy.indexList = this.copy.indexList.filter((index) => index.indexName.length > 0);
+                    await copyIndex(client, indexInfo, JSON.parse(JSON.stringify(this.copy)));
                 }
             },
             apply: async function () {
