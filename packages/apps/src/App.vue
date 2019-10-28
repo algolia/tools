@@ -47,7 +47,8 @@
                         name: 'Management tools',
                         description: 'Manage your apps and indices',
                         apps: [
-                            {name: 'Logs', url: '/logs'},
+                            {name: 'Realtime Logs', url: '/logs'},
+                            {name: 'Analyse Logs', url: 'https://logger.algolia.com/'},
                         ]
                     },
                     {
