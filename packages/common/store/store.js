@@ -6,6 +6,7 @@ import apps from './modules/apps/apps';
 import panels from './modules/panels/panels';
 import apilogs from './modules/apilogs';
 import indexdiffer from "./modules/indexdiffer";
+import indexmanager from "./modules/indexmanager";
 import relevancetesting from "./modules/relevancetesting";
 import stateReducer from "./stateReducer";
 
@@ -18,6 +19,7 @@ export default new Vuex.Store({
         apilogs,
         indexdiffer,
         relevancetesting,
+        indexmanager,
     },
     plugins: [createPersistedState({
         reducer: stateReducer

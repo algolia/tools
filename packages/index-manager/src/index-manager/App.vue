@@ -1,14 +1,14 @@
 <template>
     <div class="flex flex-col min-h-0">
-        <div class="p-16 flex">
+        <div class="py-16 flex">
             <input
                 v-model="query"
                 @input="fetchIndices"
-                class="input-custom flex-1 p-8 text-base mr-16"
+                class="input-custom flex-1 p-8 text-base"
                 placeholder="Filter by index name"
             />
         </div>
-        <div class="mx-16 flex mb-16">
+        <div class="flex mb-16">
             <button
                 @click="selectAll"
                 class="bg-white rounded border border-b-0 border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out mr-8 px-16 p-8 text-sm mr-12"
@@ -21,7 +21,7 @@
                 Unselect all
             </button>
         </div>
-        <div class="mx-16 flex mr-36">
+        <div class="flex mr-16">
             <div
                 class="ml-8 flex-grow cursor-pointer"
                 @click="sort = (sort === 'name_desc' ? 'name_asc' : 'name_desc')"
@@ -65,7 +65,7 @@
                 Index size
             </div>
         </div>
-        <div class="overflow-y-auto mx-16 min-h-0">
+        <div class="overflow-y-auto min-h-0">
             <div class="p-8" v-if="sortedIndices.length <= 0">No index found</div>
             <div class="min-h-0 pr-16">
                 <index

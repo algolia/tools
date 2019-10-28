@@ -5,7 +5,8 @@
         </app-header>
         <app-management />
         <div class="flex" style="height: calc(100vh - 94px);">
-            <div class="mt-24 w-half flex flex-col min-h-0">
+            <div class="m-24 w-half flex flex-col min-h-0">
+                <app-selector v-model="appId" />
                 <app :client="client" />
             </div>
             <div class="m-24 w-half flex flex-col min-h-0">
@@ -22,19 +23,33 @@
     import DisplayConfig from "@/index-manager/DisplayConfig";
     import AppManagement from "common/components/configuration/AppManagement";
     import Actions from "@/index-manager/Actions";
-    import * as algoliasearch from "algoliasearch";
+    import AppSelector from "common/components/selectors/AppSelector";
+    import IndexSelector from "common/components/selectors/IndexSelector";
+    import {getClient} from 'common/utils/algoliaHelpers';
 
     export default {
         name: "IndexManager",
-        components: {InternalApp, Actions, App, AppHeader, DisplayConfig, AppManagement},
+        components: {InternalApp, Actions, App, AppHeader, DisplayConfig, AppManagement, AppSelector, IndexSelector},
         data: function () {
             return {
-                appId: 'AJ0P3S7DWQ',
-            };
+                client: null,
+            }
+        },
+        created: async function () {
+            if (this.appId) {
+                this.client = await getClient(this.appId, this.adminAPIKey);
+            }
         },
         computed: {
-            client: function () {
-                return algoliasearch(this.appId, this.adminAPIKey);
+            appId: {
+                get () {
+                    return this.$store.state.indexmanager.appId;
+                },
+                async set (val) {
+                    this.$store.commit('indexmanager/setAppId', val);
+                    this.client = await getClient(this.appId, this.adminAPIKey);
+
+                },
             },
             adminAPIKey: function () {
                 if (!this.$store.state.apps[this.appId]) return null;
