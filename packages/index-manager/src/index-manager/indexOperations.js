@@ -12,6 +12,20 @@ export function getDefaultSettings() {
     return defaultSettings;
 }
 
+export function getNonDefaultSettings(settings) {
+    const nonDefaultSettings = {};
+
+    Object.keys(settings).forEach((paramName) => {
+        if (paramName === 'replicas' || paramName === 'slaves') return;
+
+        if (paramsSpecs[paramName] && JSON.stringify(paramsSpecs[paramName].settings_default) !== JSON.stringify(settings[paramName])) {
+            nonDefaultSettings[paramName] = settings[paramName];
+        }
+    });
+
+    return nonDefaultSettings;
+}
+
 export async function clearIndex(client, indexInfo) {
     const index = client.initIndex(indexInfo.name);
 
@@ -94,10 +108,67 @@ export async function copyIndex(client, indexInfo, options) {
 
     for (let i = 0; i < indexList.length; i++) {
         const sameAppId = client.applicationID === indexList[i].appId;
+        const dstIndex = indexList[i].client.initIndex(indexList[i].indexName);
 
-        if (sameAppId && records && synonyms && rules && settings && Object.keys(ignoredSettings).length === 0) {
-            const res = await client.copyIndex(indexInfo.name, indexList[i].indexName);
-            await client.initIndex(indexList[i].indexName).waitTask(res.taskID);
+        if (sameAppId && options.fullSettingsCopy) {
+            if (records && synonyms && rules && settings) {
+                const res = await client.copyIndex(indexInfo.name, indexList[i].indexName);
+                await dstIndex.waitTask(res.taskID);
+                return;
+            } else if (!records) {
+                const scope = [];
+                if (synonyms) scope.push('synonyms');
+                if (rules) scope.push('rules');
+                if (settings) scope.push('settings');
+                const res = await client.copyIndex(indexInfo.name, indexList[i].indexName, scope);
+                await dstIndex.setSettings({}); // In case the index did not exists before
+                await dstIndex.waitTask(res.taskID);
+                return;
+            }
+        }
+
+        // Fallback on different app copy
+
+        const srcIndex = client.initIndex(indexInfo.name);
+
+        if (settings) {
+            const newSettings = JSON.parse(JSON.stringify(options.newSettings));
+
+            delete(newSettings.replicas);
+            delete(newSettings.slaves);
+
+            const resSettings = await dstIndex.setSettings(newSettings);
+            await dstIndex.waitTask(resSettings.taskID);
+        }
+
+        if (synonyms) {
+            await srcIndex.exportSynonyms(1000, (synonyms) => {
+                dstIndex.batchSynonyms(synonyms, {replaceExistingSynonyms: false});
+            });
+        }
+
+        if (rules) {
+            await srcIndex.exportRules(1000, (rules) => {
+                dstIndex.batchRules(rules, {clearExistingRules: false});
+            });
+        }
+
+        if (records) {
+            const tasks = [];
+            let res = await srcIndex.customBrowse('', {attributesToRetrieve: ['*']});
+            let resAdd = await dstIndex.addObjects(res.hits);
+
+            while (res.cursor) {
+                res = await srcIndex.browseFrom(res.cursor);
+                resAdd = await dstIndex.addObjects(res.hits);
+                tasks.push(resAdd.taskID);
+            }
+
+            let taskId;
+            while (tasks.length > 0) {
+                taskId = tasks.shift();
+                await dstIndex.waitTask(taskId);
+            }
         }
     }
 }
