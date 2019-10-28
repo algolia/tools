@@ -105,7 +105,8 @@
             },
             fetchAppsInfo: async function () {
                 const apps = Object.keys(this.apps);
-                const res = await fetch(`${process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT}/apps/${apps.join(',')}`, {
+                const backendEnpoint = process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT || 'https://algolia-apps-backend.herokuapp.com';
+                const res = await fetch(`${backendEnpoint}/apps/${apps.join(',')}`, {
                     credentials: 'include',
                     headers: {
                         "Content-Type": "application/json",
