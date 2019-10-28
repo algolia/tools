@@ -263,13 +263,13 @@
 
                 tasksGroup.addTask(new Task('Copy synonyms', async () => {
                     await config.srcIndex.exportSynonyms(1000, (synonyms) => {
-                        config.dstIndex.batchSynonyms(synonyms, {replaceExistingSynonyms: true});
+                        config.dstIndex.batchSynonyms(synonyms, {replaceExistingSynonyms: false});
                     });
                 }));
 
                 tasksGroup.addTask(new Task('Copy rules', async () => {
                     await config.srcIndex.exportRules(1000, (rules) => {
-                        config.dstIndex.batchRules(rules, {clearExistingRules: true});
+                        config.dstIndex.batchRules(rules, {clearExistingRules: false});
                     });
                 }));
 
