@@ -175,7 +175,7 @@
                 return this.searchResponse.hitsPerPage * this.searchResponse.page + this.hitPosition + 1;
             },
             title: function () {
-                if (this.hit._highlightResult[this.titleAttribute] && this.hit._highlightResult[this.titleAttribute].value) {
+                if (this.hit._highlightResult && this.hit._highlightResult[this.titleAttribute] && this.hit._highlightResult[this.titleAttribute].value) {
                     return this.hit._highlightResult[this.titleAttribute].value;
                 }
 
