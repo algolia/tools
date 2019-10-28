@@ -18,6 +18,7 @@ attributesToIndex:
   value_type: attributes_list
   default: []
   ignore_value: null
+  settings_default: null
 
 attributesForFaceting:
   scope: settings
