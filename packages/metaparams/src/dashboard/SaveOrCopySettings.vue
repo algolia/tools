@@ -159,7 +159,7 @@
                     panelKey: this.panelKey,
                     otherPanelKey: this.panelKey === 'leftPanel' ? 'rightPanel': 'leftPanel',
                     srcClient: await getSearchClient(this.panelAppId, this.adminAPIKey(this.panelAppId), this.panelServer),
-                    dstClient: await getSearchClient(this.dstAppId, this.adminAPIKey(this.dstAppId), this.panelServer),
+                    dstClient: this.dstAppId ? await getSearchClient(this.dstAppId, this.adminAPIKey(this.dstAppId), this.panelServer) : null,
                     query: this.$store.state.panels.query,
                     hitsPerPage: !this.limitCopy.enabled ? batchSize : Math.min(batchSize, this.limitCopy.nbHits),
                     inReplicaCopy: this.inReplicaCopy,
@@ -171,13 +171,15 @@
                 config['searchParams'] = Object.assign(this.searchParams, {hitsPerPage: config.hitsPerPage, query: config.query});
                 config['indexSettings'] = Object.assign({}, this.indexSettings);
                 config['srcIndex'] = config.srcClient.initIndex(this.panelIndexName);
-                config['dstIndex'] = config.dstClient.initIndex(this.dstIndexName);
-                config.timeoutBackup = config.dstClient._timeouts;
-                config.dstClient.setTimeouts({
-                    connect: Math.ceil(this.writeTimeout / 30 * 1000),
-                    read: Math.ceil(this.writeTimeout / 15 * 1000),
-                    write: Math.ceil(this.writeTimeout * 1000)
-                });
+                if (config.dstClient) {
+                    config['dstIndex'] = config.dstClient.initIndex(this.dstIndexName);
+                    config.timeoutBackup = config.dstClient._timeouts;
+                    config.dstClient.setTimeouts({
+                        connect: Math.ceil(this.writeTimeout / 30 * 1000),
+                        read: Math.ceil(this.writeTimeout / 15 * 1000),
+                        write: Math.ceil(this.writeTimeout * 1000)
+                    });
+                }
 
                 return config;
             },
