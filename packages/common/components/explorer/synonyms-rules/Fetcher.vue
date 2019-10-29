@@ -14,7 +14,7 @@
                     <option value="disabled">Disabled</option>
                 </select>
             </div>
-            <div class="ml-auto flex items-center">
+            <div class="ml-auto flex items-center" v-if="!readOnly">
                 <button class="relative group">
                     <plus-circle-icon
                         @click="isAdding = true"

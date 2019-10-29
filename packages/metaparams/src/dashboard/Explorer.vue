@@ -63,7 +63,7 @@
                 :search-params="searchParams"
                 :index-settings="refIndexSettings"
                 :analyse-max-nb-points="analyseMaxNbPoints"
-                :read-only="readOnly || isReplica"
+                :read-only="readOnly"
                 :app-id="panelAppId"
                 :api-key="panelAdminAPIKey"
                 :index-name="panelIndexName"
@@ -113,7 +113,7 @@
                 :image-suffix-url="indexImageSuffixUrl"
                 :title-attribute-name="indexTitleAttribute"
                 :auto-title-attribute-name="indexAutoTitleAttributeName"
-                :read-only="readOnly || isReplica"
+                :read-only="readOnly"
                 :can-jump-synonyms="canJumpSynonyms"
                 :jump-to="otherPanelKey"
             />
@@ -132,7 +132,7 @@
                 :image-suffix-url="indexImageSuffixUrl"
                 :title-attribute-name="indexTitleAttribute"
                 :auto-title-attribute-name="indexAutoTitleAttributeName"
-                :read-only="readOnly || isReplica"
+                :read-only="readOnly"
                 :can-jump-rules="canJumpRules"
                 :jump-to="otherPanelKey"
             />

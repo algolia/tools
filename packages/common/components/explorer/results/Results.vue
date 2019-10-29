@@ -11,7 +11,7 @@
                     {value: 'charts', name: 'Charts', icon: BarChartIcon},
                 ]"
             />
-            <div v-if="!readOnly && displayMode === 'list'" class="ml-auto flex items-center">
+            <div v-if="!readOnly && !isReplica && displayMode === 'list'" class="ml-auto flex items-center">
                 <button class="relative group">
                     <plus-circle-icon
                         @click="isAddingRecord = true"
@@ -84,6 +84,7 @@
     import ResultsInfo from "./ResultsInfo";
     import props from '../props';
     import SmallTabs from "../../tabs/SmallTabs";
+    import indexInfoMixin from "../../../mixins/indexInfoMixin";
 
     export default {
         name: 'Results',
@@ -98,6 +99,7 @@
             ...props.display,
             ...props.actions,
         ],
+        mixins: [indexInfoMixin],
         components: {
             SmallTabs,
             ResultsInfo,
@@ -117,7 +119,7 @@
         },
         created: function () {
             this.$root.$on(`${this.panelKey}HitJumping`, (record) => {
-                if (!this.readOnly) {
+                if (!this.readOnly && !this.isReplica) {
                     this.isAddingRecord = true;
                     this.jumpedHit = record;
                 } else {
