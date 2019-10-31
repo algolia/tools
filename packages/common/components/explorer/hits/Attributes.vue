@@ -48,6 +48,7 @@
 
                 if (!hasAttributesToRetrieve && this.showSearchableAttributes && this.showOnlyMatchingAttributes) {
                     return this.keys.filter((key) => {
+                        if (key === 'objectID') return true;
                         if (this.searchableAttributes.indexOf(key) !== -1) return this.item[key]._b_;
                         return true;
                     });

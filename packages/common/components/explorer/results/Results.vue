@@ -84,7 +84,6 @@
     import ResultsInfo from "./ResultsInfo";
     import props from '../props';
     import SmallTabs from "../../tabs/SmallTabs";
-    import indexInfoMixin from "../../../mixins/indexInfoMixin";
 
     export default {
         name: 'Results',
@@ -99,7 +98,6 @@
             ...props.display,
             ...props.actions,
         ],
-        mixins: [indexInfoMixin],
         components: {
             SmallTabs,
             ResultsInfo,

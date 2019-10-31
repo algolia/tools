@@ -64,6 +64,7 @@
                 :index-settings="refIndexSettings"
                 :analyse-max-nb-points="analyseMaxNbPoints"
                 :read-only="readOnly"
+                :is-replica="isReplica"
                 :app-id="panelAppId"
                 :api-key="panelAdminAPIKey"
                 :index-name="panelIndexName"

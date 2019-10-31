@@ -5,5 +5,5 @@ export default {
     paramsAndSettings: ['query', 'searchParams', 'indexSettings', 'keysIndexer'],
     response: ['analyseResponse', 'searchResponse'],
     display: ['analyseMaxNbPoints', 'displayMode', 'displayRankingInfo'],
-    actions: ['readOnly', 'canJumpRules', 'canJumpSynonyms', 'canJumpRecords', 'jumpTo'],
+    actions: ['readOnly', 'isReplica', 'canJumpRules', 'canJumpSynonyms', 'canJumpRecords', 'jumpTo'],
 }

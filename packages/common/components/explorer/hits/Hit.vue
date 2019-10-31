@@ -184,9 +184,6 @@
             transformedItem: function () {
                 return Object.freeze(hitsTransformer.transformObj(this.hit)._v_);
             },
-            isReplica: function () {
-                return this.indexSettings && this.indexSettings.primary && this.indexSettings.primary.length > 0;
-            }
         },
         methods: {
             jumpRecord: function () {

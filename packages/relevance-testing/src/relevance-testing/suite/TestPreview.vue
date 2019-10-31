@@ -29,6 +29,7 @@
             :analyse-max-nb-points="maxNbPoints"
             panel-key="leftPanel"
             :read-only="true"
+            :is-replica="false"
             :app-id="appId"
             :api-key="apiKey"
             :index-name="indexName"
