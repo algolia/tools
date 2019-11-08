@@ -353,13 +353,13 @@ class DiffGenerator {
 
         this.stats[resourceName] = Object.freeze({
             added,
-            addedPercentage: biggest > 0 ? Math.round((added / biggest) * 100): 0,
+            addedPercentage: biggest > 0 ? Number((added / biggest * 100).toFixed(2)): 0,
             untouched,
-            untouchedPercentage: biggest > 0 ? Math.round((untouched / biggest) * 100): 0,
+            untouchedPercentage: biggest > 0 ? Number((untouched / biggest * 100).toFixed(2)): 0,
             removed,
-            removedPercentage: biggest > 0 ? Math.round((removed / biggest) * 100): 0,
+            removedPercentage: biggest > 0 ? Number((removed / biggest * 100).toFixed(2)): 0,
             modified,
-            modifiedPercentage: biggest > 0 ? Math.round((modified / biggest) * 100): 0,
+            modifiedPercentage: biggest > 0 ? Number((modified / biggest * 100).toFixed(2)): 0,
         });
     }
 }
