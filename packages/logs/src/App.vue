@@ -247,8 +247,10 @@
                     const lastLog = filteredLogs[filteredLogs.length - 1];
                     const lastLogPos = this.logs.findIndex((log) => log.id === lastLog.id);
 
-                    this.logs.splice(0, lastLogPos + 1, ...filteredLogs);
-                    this.logs.splice(1000);
+                    const logsCopy = this.logs.slice();
+                    logsCopy.splice(0, lastLogPos + 1, ...filteredLogs);
+                    logsCopy.splice(1000);
+                    this.logs = Object.freeze(logsCopy);
                 }
             },
             filterLogs: function (logs) {
