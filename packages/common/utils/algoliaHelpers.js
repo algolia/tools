@@ -162,17 +162,17 @@ function searchClient(appId, apiKey, server) {
       });
     }
 
-    if (server === undefined || server === 'dsn') {
+    const hosts = [];
+
+    if (server === undefined || server === 'dsn' || server === '-dsn') { // BC
         return algoliasearch(appId, apiKey || ' ', {
             _useCache: false,
             hosts: [appId + '-1.algolianet.com', appId + '-2.algolianet.com', appId + '-3.algolianet.com']
         });
-    }
-
-    const hosts = [];
-    if (server === '1') hosts.push(appId + '-1.algolianet.com');
-    if (server === '2') hosts.push(appId + '-2.algolianet.com');
-    if (server === '3') hosts.push(appId + '-3.algolianet.com');
+    } else if (server === '-1') hosts.push(`${appId}-1.algolianet.com`);
+    else if (server === '-2') hosts.push(`${appId}-2.algolianet.com`);
+    else if (server === '-3') hosts.push(`${appId}-3.algolianet.com`);
+    else hosts.push(`${server}-1.algolia.net`);
 
     return algoliasearch(appId, apiKey || ' ', {
         hosts: hosts,

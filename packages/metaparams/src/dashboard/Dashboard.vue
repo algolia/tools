@@ -33,16 +33,11 @@
                         <flip-left-icon class="block w-16 h-16 text-solstice-blue fill-current"/>
                         <tooltip>Open this index in the left panel</tooltip>
                     </button>
-                    <custom-select
+                    <server-selector
                         v-model="panelServer"
-                        :options="['dsn', '1', '2', '3']"
-                        class="mb-12 ml-auto text-solstice-blue text-sm border-b border-telluric-blue-opacity-60 pb-4"
-                    >
-                        <template slot="icon">
-                            <server-icon class="block -mt-1 mr-8 w-12 h-12"/>
-                        </template>
-                        <template v-slot:default="{option}">-{{option}}</template>
-                    </custom-select>
+                        :appId="appId"
+                        :display-main-cluster-machines="true"
+                    />
                     <button v-if="!$store.state.panels.splitMode && panelKey === 'leftPanel'"
                             @click="$store.commit('panels/setExpandLeftPanel', !$store.state.panels.expandLeftPanel)"
                             class="mb-12 block px-8 ml-8 py-4 border border-telluric-blue-opacity-60 rounded relative group"
@@ -105,17 +100,16 @@
     import DashboardConfig from "./DashboardConfig";
     import Queries from "@/queries/queries";
     import IndexInfo from "@/dashboard/IndexInfo";
-    import CustomSelect from "common/components/selectors/CustomSelect";
     import IndexNew from "@/dashboard/IndexNew";
     import AppSelector from "common/components/selectors/AppSelector";
     import IndexSelector from "common/components/selectors/IndexSelector";
+    import ServerSelector from "common/components/selectors/ServerSelector";
     import Facets from "common/components/explorer/facets/Facets";
 
     import FlipLeftIcon from "common/icons/flip-left.svg";
     import FlipRightIcon from "common/icons/flip-right.svg";
     import MaximizeIcon from "common/icons/maximize.svg";
     import MinimizeIcon from "common/icons/minimize.svg";
-    import ServerIcon from "common/icons/server.svg";
     import IndexDelete from "@/dashboard/IndexDelete";
     import Tooltip from "common/components/Tooltip";
     import SearchBox from "@/dashboard/SearchBox";
@@ -133,7 +127,6 @@
             Tooltip,
             IndexDelete,
             IndexNew,
-            CustomSelect,
             IndexInfo,
             AppSelector,
             IndexSelector,
@@ -142,7 +135,7 @@
             Explorer,
             FlipLeftIcon,
             FlipRightIcon,
-            ServerIcon,
+            ServerSelector,
             MaximizeIcon,
             MinimizeIcon,
             Facets
@@ -170,7 +163,8 @@
                 }
             },
             canWrite: function () {
-                return this.forceWrite || this.ownedByAlgolia(this.appId);
+                const isTargetingMainCluster = ['-dsn', '-1', '-2', '-3'].includes(this.panelServer);
+                return isTargetingMainCluster && (this.forceWrite || this.ownedByAlgolia(this.appId));
             },
         },
     }
