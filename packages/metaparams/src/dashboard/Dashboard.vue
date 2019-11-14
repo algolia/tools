@@ -34,6 +34,7 @@
                         <tooltip>Open this index in the left panel</tooltip>
                     </button>
                     <server-selector
+                        class="mb-12 ml-auto"
                         v-model="panelServer"
                         :appId="appId"
                         :display-main-cluster-machines="true"

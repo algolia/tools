@@ -28,6 +28,7 @@
                 <div class="rounded border border-proton-grey-opacity-60 mt-24">
                     <div class="flex bg-white p-8 pb-12 bg-proton-grey-opacity-40 text-telluric-blue">
                         <app-selector v-model="appId" class="mr-16" />
+                        <server-selector :app-id="appId" v-model="server" class="mr-16" />
                         <index-selector
                             v-model="indexName"
                             :app-id="appId"
@@ -86,6 +87,7 @@
     import AppHeader from "common/components/header/AppHeader";
     import AppSelector from "common/components/selectors/AppSelector";
     import IndexSelector from "common/components/selectors/IndexSelector";
+    import ServerSelector from "common/components/selectors/ServerSelector";
     import CustomSelect from "common/components/selectors/CustomSelect";
     import AppManagement from "common/components/configuration/AppManagement";
     import Pagination from "common/components/explorer/results/Pagination";
@@ -98,7 +100,7 @@
 
     export default {
         name: 'ApiLogs',
-        components: {InternalApp, DisplayConfig, AppHeader, AppSelector, Log, AppManagement, RefreshCw, SearchIcon, IndexSelector, CustomSelect, Pagination},
+        components: {InternalApp, DisplayConfig, AppHeader, AppSelector, Log, AppManagement, RefreshCw, SearchIcon, IndexSelector, ServerSelector, CustomSelect, Pagination},
         data: function () {
             return {
                 query: '',
@@ -189,6 +191,18 @@
                     }
                 }
             },
+            server: {
+                get () {
+                    return this.$store.state.apilogs.server || '-dsn';
+                },
+                set (val) {
+                    this.fetchIsOn = false;
+                    this.$store.commit('apilogs/setServer', val);
+                    if (this.fetchIsOn) {
+                        this.fetchLogs(true);
+                    }
+                },
+            },
             allFieldsChecked: {
                 get () {
                     return Object.keys(this.searchFields).every(field => this.searchFields[field]);
@@ -223,7 +237,8 @@
                 if (resetLogs) this.logs = [];
 
                 if (!this.appId) return;
-                const client = await getSearchClient(this.appId, this.apiKey);
+
+                const client = await getSearchClient(this.appId, this.apiKey, this.server);
 
                 const options = {
                     offset: 0,

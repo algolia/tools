@@ -3,7 +3,7 @@
         :value="value"
         @input="$emit('input', $event)"
         :options="options"
-        class="mb-12 ml-auto text-solstice-blue text-sm border-b border-telluric-blue-opacity-60 pb-4"
+        class="text-solstice-blue text-sm border-b border-telluric-blue-opacity-60 pb-4"
     >
         <template slot="icon">
             <server-icon class="block -mt-1 mr-8 w-12 h-12"/>
