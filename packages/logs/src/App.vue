@@ -28,7 +28,7 @@
                 <div class="rounded border border-proton-grey-opacity-60 mt-24">
                     <div class="flex bg-white p-8 pb-12 bg-proton-grey-opacity-40 text-telluric-blue">
                         <app-selector v-model="appId" class="mr-16" />
-                        <server-selector :app-id="appId" v-model="server" class="mr-16" />
+                        <server-selector :app-id="appId" v-model="server" :display-all-option="true" :display-main-cluster="true" class="mr-16" />
                         <index-selector
                             v-model="indexName"
                             :app-id="appId"
@@ -97,6 +97,7 @@
 
     import RefreshCw from 'common/icons/refresh-cw.svg';
     import SearchIcon from 'common/icons/search.svg';
+    import getClusterList from "common/components/selectors/getClusterList";
 
     export default {
         name: 'ApiLogs',
@@ -129,6 +130,7 @@
                   url: true,
                   ip: true,
                 },
+                servers: ['-1'],
             };
         },
         watch: {
@@ -155,10 +157,12 @@
                 this.logs = this.filterLogs(this.last1000Logs);
             }
         },
-        created: function () {
+        created: async function () {
             if (!this.appId && Object.keys(this.$store.state.apps).length > 0) {
                 this.appId = Object.keys(this.$store.state.apps)[0];
             }
+
+            await this.fetchServers();
 
             this.fetchLogs();
             this.startInterval();
@@ -191,12 +195,12 @@
                     }
                 }
             },
+
             server: {
                 get () {
-                    return this.$store.state.apilogs.server || '-dsn';
+                    return this.$store.state.apilogs.server || 'all';
                 },
                 set (val) {
-                    this.fetchIsOn = false;
                     this.$store.commit('apilogs/setServer', val);
                     if (this.fetchIsOn) {
                         this.fetchLogs(true);
@@ -233,12 +237,13 @@
                 window.clearInterval(this.interval);
                 this.interval = null;
             },
+            fetchServers: async function () {
+                this.servers = await getClusterList(this.appId, true);
+            },
             fetchLogs: async function (resetLogs) {
                 if (resetLogs) this.logs = [];
 
                 if (!this.appId) return;
-
-                const client = await getSearchClient(this.appId, this.apiKey, this.server);
 
                 const options = {
                     offset: 0,
@@ -250,8 +255,22 @@
                     options.indexName = this.indexName;
                 }
 
-                const res = await client.getLogs(options);
-                const logs = res.logs.map(logItem => new LogItem(logItem));
+                const logs = [];
+
+                if (this.server === 'all') {
+                    for (let i = 0; i < this.servers.length; i++) {
+                        const client = await getSearchClient(this.appId, this.apiKey, this.servers[i]);
+                        const res = await client.getLogs(options);
+                        logs.push(...res.logs.map(logItem => new LogItem(logItem, this.servers[i])));
+                    }
+                    logs.sort((a, b) => b.timestamp.localeCompare(a.timestamp));
+                } else {
+                    const mainCluster = this.servers.length > 0 ? this.servers[0] : -1;
+                    const server = this.server === 'main cluster' ? mainCluster : this.server;
+                    const client = await getSearchClient(this.appId, this.apiKey, server);
+                    const res = await client.getLogs(options);
+                    logs.push(...res.logs.map(logItem => new LogItem(logItem, server)));
+                }
 
                 this.last1000Logs = Object.freeze(logs);
                 this.nowDate = new Date();
@@ -262,9 +281,10 @@
                     const lastLog = filteredLogs[filteredLogs.length - 1];
                     const lastLogPos = this.logs.findIndex((log) => log.id === lastLog.id);
 
+                    const maxNbLogs = 1000 * this.servers.length;
                     const logsCopy = this.logs.slice();
                     logsCopy.splice(0, lastLogPos + 1, ...filteredLogs);
-                    logsCopy.splice(1000);
+                    logsCopy.splice(maxNbLogs);
                     this.logs = Object.freeze(logsCopy);
                 }
             },

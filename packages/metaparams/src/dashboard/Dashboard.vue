@@ -37,6 +37,8 @@
                         class="mb-12 ml-auto"
                         v-model="panelServer"
                         :appId="appId"
+                        :display-main-cluster="false"
+                        :display-dsn="true"
                         :display-main-cluster-machines="true"
                     />
                     <button v-if="!$store.state.panels.splitMode && panelKey === 'leftPanel'"

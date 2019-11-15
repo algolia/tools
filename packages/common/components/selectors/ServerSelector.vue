@@ -15,32 +15,24 @@
 <script>
     import ServerIcon from "common/icons/server.svg";
     import CustomSelect from "common/components/selectors/CustomSelect";
-    import algoliasearch from 'algoliasearch';
+    import getClusterList from "./getClusterList";
 
     export default {
         name: 'ServerSelector',
         components: {ServerIcon, CustomSelect},
-        props: ['appId', 'value', 'displayMainClusterMachines'],
+        props: ['appId', 'value', 'displayMainCluster', 'displayMainClusterMachines', 'displayAllOption', 'displayDsn'],
         data: function () {
-            const options = ['-dsn'];
-            if (this.displayMainClusterMachines) {
-                options.push('-1', '-2', '-3');
-            }
+            const options = [];
+            if (this.displayAllOption) options.push('all');
+            if (this.displayMainCluster) options.push('main cluster');
+            if (this.displayDsn) options.push('-dsn');
+            if (this.displayMainClusterMachines) options.push('-1', '-2', '-3');
 
-            return {
-                options,
-            }
+            return {options}
         },
         created: async function () {
-            const client = algoliasearch('X20GSLY1CL', 'd33103a8d72e75e752cd0e92455fa27c');
-            const index = client.initIndex('applications_production');
-
-            const res = await index.search('', {filters: `application_id:${this.appId}`});
-
-            if (res.hits.length > 0 && res.hits[0].clusters_and_replicas_names && res.hits[0].clusters_and_replicas_names.length > 1) {
-                const replicas = res.hits[0].clusters_and_replicas_names.slice(1);
-                this.options.push(...replicas);
-            }
+            const clusters = await getClusterList(this.appId);
+            this.options.push(...clusters.slice(1));
         },
     }
 </script>

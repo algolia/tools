@@ -7,7 +7,12 @@
                     class="w-70p"
                     v-html="logItem.operation.toStringFunc(logItem).replace(/<code>/g, '<span class=\'bg-proton-grey-opacity-50 px-4 rounded text-sm\'>').replace(/<\/code>/g, '</span>')"
                 ></div>
-                <div class="w-30p ml-auto break-all">{{logItem.verb}} {{logItem.path}}</div>
+                <div class="w-30p ml-auto break-all">
+                    <div>
+                        <span class="text-nova-grey-opacity-60">{{logItem.server}}</span>
+                        {{logItem.verb}} {{logItem.path}}
+                    </div>
+                </div>
             </div>
             <div class="ml-auto">
                 <div class="ml-12 py-2 px-4 rounded text-sm leading-none" :class="logItem.answer_code === '200' ? 'text-white bg-jupiter-6' : 'bg-mars-1 text-white'">
