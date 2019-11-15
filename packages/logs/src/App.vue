@@ -131,6 +131,7 @@
                   ip: true,
                 },
                 servers: ['-1'],
+                serversNeedsUpdates: false,
             };
         },
         watch: {
@@ -177,6 +178,7 @@
                 },
                 set (val) {
                     this.fetchIsOn = false;
+                    this.serversNeedsUpdates = true;
                     this.$store.commit('apilogs/setAppId', val);
                     this.$nextTick(() => {
                         this.fetchIsOn = true;
@@ -244,6 +246,8 @@
                 if (resetLogs) this.logs = [];
 
                 if (!this.appId) return;
+
+                await this.fetchServers();
 
                 const options = {
                     offset: 0,
