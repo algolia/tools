@@ -45,7 +45,7 @@
                         Show {{userPersoFiltersV2.length - nbShowFilters}} {{ showAllFiltersV2 ? 'less' : 'more' }}
                     </div>
                     <button
-                        @click="$emit('onSetParamValue', 'personalizationFilters', userPersoFilters)"
+                        @click="$emit('onSetParamValue', 'personalizationFilters', userPersoFiltersV2)"
                         class="mt-8 block bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out mr-8 px-16 p-8 text-sm relative group"
                     >
                         Set perso profile as personalizationFilters
