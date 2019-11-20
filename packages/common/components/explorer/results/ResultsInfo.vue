@@ -12,15 +12,16 @@
                 <div>Server Used: {{searchResponse.serverUsed}}</div>
             </div>
         </div>
-        <div v-if="userToken" class="mt-16">
-            <div>user perso profile:</div>
-            <div v-if="userPersoFilters">
+        <div v-if="userToken" class="mt-24">
+            <div class="mb-8 text-sm tracking-wide uppercase">User perso profile:</div>
+            <div v-if="shownFilters">
                 <div>
-                    <template v-for="persoFilter in userPersoFilters">
+                    <div v-for="persoFilter in shownFilters">
                         {{persoFilter}}
-                    </template>
-                </div>
-                <div>
+                    </div>
+                    <div class="text-nebula-blue cursor-pointer" @click="showAllFilters = !showAllFilters">
+                        Show {{userPersoFilters.length - nbShowFilters}} {{ showAllFilters ? 'less' : 'more' }}
+                    </div>
                     <button
                         @click="$emit('onSetParamValue', 'personalizationFilters', userPersoFilters)"
                         class="mt-8 block bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out mr-8 px-16 p-8 text-sm relative group"
@@ -34,24 +35,22 @@
             </div>
         </div>
         <div v-if="userToken && userPersoFiltersV2" class="mt-16">
-            <div>user perso profile v2:</div>
-            <div v-if="userPersoFiltersV2">
+            <div class="mb-8 text-sm tracking-wide uppercase">User perso profile v2:</div>
+            <div v-if="shownFiltersV2">
                 <div>
-                    <template v-for="persoFilter in userPersoFiltersV2">
+                    <div v-for="persoFilter in shownFiltersV2">
                         {{persoFilter}}
-                    </template>
-                </div>
-                <div>
+                    </div>
+                    <div class="text-nebula-blue cursor-pointer" @click="showAllFiltersV2 = !showAllFiltersV2">
+                        Show {{userPersoFiltersV2.length - nbShowFilters}} {{ showAllFiltersV2 ? 'less' : 'more' }}
+                    </div>
                     <button
-                        @click="$emit('onSetParamValue', 'personalizationFilters', userPersoFiltersV2)"
+                        @click="$emit('onSetParamValue', 'personalizationFilters', userPersoFilters)"
                         class="mt-8 block bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out mr-8 px-16 p-8 text-sm relative group"
                     >
                         Set perso profile as personalizationFilters
                     </button>
                 </div>
-            </div>
-            <div v-else>
-                Profile for userToken "{{userToken}}" was not found
             </div>
         </div>
     </div>
@@ -68,6 +67,9 @@
                 region: 'us',
                 userPersoFilters: false,
                 userPersoFiltersV2: false,
+                showAllFilters: false,
+                showAllFiltersV2: false,
+                nbShowFilters: 5,
             }
         },
         watch: {
@@ -79,6 +81,16 @@
             this.fetchPersoProfilV2();
         },
         computed: {
+            shownFilters: function () {
+                const filters = this.userPersoFilters || [];
+                if (this.showAllFilters) return filters;
+                return filters.slice(0, this.nbShowFilters);
+            },
+            shownFiltersV2: function () {
+                const filters = this.userPersoFiltersV2 || [];
+                if (this.showAllFiltersV2) return filters;
+                return filters.slice(0, this.nbShowFilters);
+            },
             userToken: function () {
                 return this.searchParams.userToken;
             },
