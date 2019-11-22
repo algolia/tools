@@ -19,7 +19,11 @@
                     <div v-for="persoFilter in shownFilters">
                         {{persoFilter}}
                     </div>
-                    <div class="text-nebula-blue cursor-pointer" @click="showAllFilters = !showAllFilters">
+                    <div
+                        v-if="userPersoFilters.length > nbShowFilters"
+                        class="text-nebula-blue cursor-pointer"
+                        @click="showAllFilters = !showAllFilters"
+                    >
                         Show {{userPersoFilters.length - nbShowFilters}} {{ showAllFilters ? 'less' : 'more' }}
                     </div>
                     <button

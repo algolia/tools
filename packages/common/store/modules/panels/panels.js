@@ -18,8 +18,12 @@ export default {
         expandLeftPanel: false,
         analyseMaxNbPoints: 100,
         shareStatePanel: false,
+        trackedObjects: [],
     },
     mutations: {
+        setTrackedObjects: function (state, payload) {
+            Vue.set(state, 'trackedObjects', payload);
+        },
         setTwoInputs: function (state, payload) {
             Vue.set(state, 'twoInputs', payload);
         },

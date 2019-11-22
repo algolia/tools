@@ -8,7 +8,8 @@
                 Tracked objectIDs/facetFilters:
             </div>
             <tracked-elements
-                v-model="trackedObjectIDs"
+                :forced-tracked="forcedTracked"
+                v-model="trackedObjects"
                 :left-positions="leftTrackedPositions"
                 :right-positions="rightTrackedPositions"
                 @onClickLeft="goToHit($event + 1, 'leftPanel')"
@@ -87,7 +88,6 @@
 </template>
 
 <script>
-    import Vue from 'vue';
     import panelsMixin from "common/mixins/panelsMixin";
     import TrackedElements from "./TrackedElements";
 
@@ -106,7 +106,6 @@
                 circleFilledColor: '#8d97e3',
                 circleStrokeColorPerso: '#e34340',
                 circleFilledColorTransparent: 'rgba(166, 176, 249, 0.8)',
-                trackedObjectIDs: [...(this.forcedTracked || []), ''],
                 leftResponse: null,
                 rightResponse: null,
                 leftTrackedPositions: [],
@@ -118,6 +117,9 @@
             }
         },
         created: function () {
+            if (!this.trackedObjects || this.trackedObjects.length === 0) {
+                this.trackedObjects = [''];
+            }
             this.$root.$on('leftPanelUpdateAnalyseResponse', (response) => {
                 this.leftResponse = response;
                 this.compute();
@@ -128,11 +130,11 @@
             });
         },
         watch: {
-            trackedObjectIDs: function () {
+            trackedObjects: function () {
                 this.compute();
             },
             forcedTracked: function () {
-                this.trackedObjectIDs = [...(this.forcedTracked || []), ''];
+                this.compute();
             },
         },
         computed: {
@@ -154,11 +156,12 @@
         },
         methods: {
             compute: function () {
+                const allTracked = [...(this.forcedTracked || []), ...this.trackedObjects];
                 const leftOnOther = this.leftHits.map(() => -1);
                 const rightOnOther = this.rightHits.map(() => -1);
 
                 ['left', 'right'].forEach((panel) => {
-                    const trackedPositions = this.trackedObjectIDs.map(() => -1);
+                    const trackedPositions = allTracked.map(() => -1);
                     const hits = panel === 'left' ? this.leftHits : this.rightHits;
                     const hitsTracked = hits.map(() => -1);
 
@@ -168,7 +171,7 @@
                             if (leftOnOther[i] !== -1) rightOnOther[leftOnOther[i]] = i;
                         }
 
-                        this.trackedObjectIDs.forEach((needle, needleIndex) => {
+                        allTracked.forEach((needle, needleIndex) => {
                             const parts = needle.split(':');
 
                             const facetName = parts[0];

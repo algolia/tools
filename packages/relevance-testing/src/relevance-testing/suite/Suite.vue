@@ -135,7 +135,7 @@
                         <div class="h-full min-w-two-third max-w-two-third bg-white">
                             <div class="overflow-y-scroll h-full pb-96">
                                 <div class="flex h-full">
-                                    <div class="flex-grow">
+                                    <div class="flex-grow max-w-full" :style="$store.state.panels.comparePanels ? 'max-width: calc(100% - 240px)' : ''">
                                         <div v-if="currentRun">
                                             <div class="flex">
                                                 <hits-config class="mt-12 mb-4 -ml-40" />
@@ -153,7 +153,7 @@
                                             No Runs configured
                                         </div>
                                     </div>
-                                    <div v-show="$store.state.panels.comparePanels" class="min-w-240 max-w-240 flex-1">
+                                    <div v-show="$store.state.panels.comparePanels" class="w-240 flex-1">
                                         <compare-hits
                                             class="pb-8 pl-8 pr-32"
                                             :enabled="$store.state.panels.comparePanels"

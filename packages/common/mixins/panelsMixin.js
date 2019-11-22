@@ -17,6 +17,14 @@ export default {
                 });
             }
         },
+        trackedObjects: {
+            get () {
+                return this.$store.state.panels.trackedObjects || [];
+            },
+            set (value) {
+                this.$store.commit(`panels/setTrackedObjects`, value);
+            }
+        },
         analyseMaxNbPoints: {
             get () {
                 return this.$store.state.panels.analyseMaxNbPoints;
