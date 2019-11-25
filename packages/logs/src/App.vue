@@ -262,11 +262,17 @@
                 const logs = [];
 
                 if (this.server === 'all') {
+                    const promises = [];
                     for (let i = 0; i < this.servers.length; i++) {
                         const client = await getSearchClient(this.appId, this.apiKey, this.servers[i]);
-                        const res = await client.getLogs(options);
-                        logs.push(...res.logs.map(logItem => new LogItem(logItem, this.servers[i])));
+                        promises.push(client.getLogs(options));
                     }
+                    const responses = await Promise.all(promises);
+                    
+                    responses.forEach((res, i) => {
+                        logs.push(...res.logs.map(logItem => new LogItem(logItem, this.servers[i])));
+                    });
+
                     logs.sort((a, b) => b.timestamp.localeCompare(a.timestamp));
                 } else {
                     const mainCluster = this.servers.length > 0 ? this.servers[0] : -1;
