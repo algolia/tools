@@ -166,7 +166,7 @@
                 }
             },
             canWrite: function () {
-                const isTargetingMainCluster = ['-dsn', '-1', '-2', '-3'].includes(this.panelServer);
+                const isTargetingMainCluster = ['dsn', '1', '2', '3'].includes(this.panelServer);
                 return isTargetingMainCluster && (this.forceWrite || this.ownedByAlgolia(this.appId));
             },
         },
