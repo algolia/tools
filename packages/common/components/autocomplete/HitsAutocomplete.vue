@@ -45,7 +45,10 @@
         methods: {
             refine: async function (query) {
                 const index = await getSearchIndex(this.appId, this.apiKey, this.indexName, this.server);
-                this.algoliaResponse = await index.customSearch(query, this.params || {});
+                this.algoliaResponse = await index.customSearch({
+                    query,
+                    ...(this.params || {}),
+                });
                 this.items = this.algoliaResponse.hits;
             },
         },

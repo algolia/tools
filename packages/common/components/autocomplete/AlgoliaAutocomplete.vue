@@ -22,6 +22,7 @@
 
 <script>
 import Autocomplete from "./Autocomplete";
+import algoliasearch from "algoliasearch";
 
 export default {
     name: 'AlgoliaAutocomplete',
@@ -34,12 +35,12 @@ export default {
     },
     computed: {
         algoliaIndex: function () {
-            return this.algoliasearch(this.appId, this.apiKey).initIndex(this.indexName)
+            return algoliasearch(this.appId, this.apiKey).initIndex(this.indexName)
         }
     },
     methods: {
         refine: async function (query) {
-            const data = await this.algoliaIndex.search({query, ...(this.searchParams || {})} );
+            const data = await this.algoliaIndex.search(query, this.searchParams || {});
             this.items = data.hits;
         }
     },

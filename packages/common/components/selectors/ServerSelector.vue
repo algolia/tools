@@ -22,17 +22,28 @@
         components: {ServerIcon, CustomSelect},
         props: ['appId', 'value', 'displayMainCluster', 'displayMainClusterMachines', 'displayAllOption', 'displayDsn'],
         data: function () {
-            const options = [];
-            if (this.displayAllOption) options.push('all');
-            if (this.displayMainCluster) options.push('main cluster');
-            if (this.displayDsn) options.push('-dsn');
-            if (this.displayMainClusterMachines) options.push('-1', '-2', '-3');
+            return {options: []};
+        },
+        created: function () {
+            this.loadClusterList();
+        },
+        watch: {
+            appId: function () {
+                this.loadClusterList();
+            },
+        },
+        methods: {
+            loadClusterList: async function () {
+                const options = [];
 
-            return {options}
-        },
-        created: async function () {
-            const clusters = await getClusterList(this.appId);
-            this.options.push(...clusters.slice(1));
-        },
+                if (this.displayAllOption) options.push('all');
+                if (this.displayMainCluster) options.push('main cluster');
+                if (this.displayDsn) options.push('-dsn');
+                if (this.displayMainClusterMachines) options.push('-1', '-2', '-3');
+
+                const clusters = await getClusterList(this.appId);
+                this.options = [...options, ...clusters.slice(1)];
+            }
+        }
     }
 </script>

@@ -83,7 +83,7 @@
                 this.updateIndices(false);
             },
             adminAPIKey: function () {
-                return this.$store.state.apps[this.appId].key;
+                this.updateIndices(true);
             }
         },
         methods: {
@@ -111,8 +111,10 @@
                 if (this.nbPages > this.maxNbPagesInMemory) {
                     const client = await getClient(this.appId, this.adminAPIKey);
                     const data = await client.listIndices({
-                        page: 0,
-                        prefix: encodeURIComponent(query),
+                        queryParameters: {
+                            page: 0,
+                            prefix: encodeURIComponent(query),
+                        }
                     });
                     this.indices = data.items.sort((a, b) => {
                         if (a.updatedAt < b.updatedAt) return 1;
@@ -138,7 +140,11 @@
 
                 const client = await getClient(this.appId, this.adminAPIKey);
 
-                let data = await client.listIndices({page: 0});
+                let data = await client.listIndices({
+                    queryParameters: {
+                        page: 0
+                    }
+                });
                 this.nbPages = data.nbPages;
 
                 if (this.nbPages > 1 && this.nbPages <= this.maxNbPagesInMemory) {

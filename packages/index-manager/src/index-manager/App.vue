@@ -191,7 +191,11 @@
             },
             fetchIndices: async function () {
                 if (this.query.length === 0) {
-                    let data = await this.client.listIndices({page: 0});
+                    let data = await this.client.listIndices({
+                        queryParameters: {
+                            page: 0
+                        }
+                    });
                     this.nbPages = data.nbPages;
 
                     if (this.nbPages > 1 && this.nbPages <= this.maxNbPagesInMemory) {
@@ -204,7 +208,11 @@
 
                 if (this.query.length > 0) {
                     if (this.nbPages > this.maxNbPagesInMemory) {
-                        const data = await this.client.listIndices({page: 0, prefix: this.query});
+                        const data = await this.client.listIndices({
+                            queryParameters: {
+                                page: 0, prefix: this.query
+                            }
+                        });
                         this.indices = this.replaceByReplicas(data.items);
                     } else {
                         const words = this.query.split(' ');
@@ -226,7 +234,7 @@
                     if (index.replicas) {
                         return {
                             ...index,
-                            replicas: index.replicas.map((replica) => { return {name: replica}; })
+                            replicas: index.replicas.map((replica) => { return {name: replica, primary: index.name}; })
                         }
                     }
                     if (index.primary === undefined) {

@@ -93,7 +93,7 @@
     import Pagination from "common/components/explorer/results/Pagination";
     import DisplayConfig from "@/api-logs/DisplayConfig";
 
-    import {getSearchClient} from "common/utils/algoliaHelpers";
+    import {getClient} from "common/utils/algoliaHelpers";
 
     import RefreshCw from 'common/icons/refresh-cw.svg';
     import SearchIcon from 'common/icons/search.svg';
@@ -264,11 +264,11 @@
                 if (this.server === 'all') {
                     const promises = [];
                     for (let i = 0; i < this.servers.length; i++) {
-                        const client = await getSearchClient(this.appId, this.apiKey, this.servers[i]);
+                        const client = await getClient(this.appId, this.apiKey, this.servers[i]);
                         promises.push(client.getLogs(options));
                     }
                     const responses = await Promise.all(promises);
-                    
+
                     responses.forEach((res, i) => {
                         logs.push(...res.logs.map(logItem => new LogItem(logItem, this.servers[i])));
                     });
@@ -277,7 +277,7 @@
                 } else {
                     const mainCluster = this.servers.length > 0 ? this.servers[0] : -1;
                     const server = this.server === 'main cluster' ? mainCluster : this.server;
-                    const client = await getSearchClient(this.appId, this.apiKey, server);
+                    const client = await getClient(this.appId, this.apiKey, server);
                     const res = await client.getLogs(options);
                     logs.push(...res.logs.map(logItem => new LogItem(logItem, server)));
                 }

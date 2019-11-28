@@ -132,7 +132,8 @@
                     when: params,
                 });
 
-                await fetch(`${process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT}/relevance-testing/suites/${this.suite.id}/groups/${this.test.group.id}/tests/${this.test.id}`, {
+                const endpoint = process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT || 'https://algolia-apps-backend.herokuapp.com';
+                await fetch(`${endpoint}/relevance-testing/suites/${this.suite.id}/groups/${this.test.group.id}/tests/${this.test.id}`, {
                     method: 'PUT',
                     credentials: 'include',
                     headers: {

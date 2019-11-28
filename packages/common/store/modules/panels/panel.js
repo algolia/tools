@@ -6,7 +6,7 @@ export default function (appId, indexName) {
         state: {
             appId: appId,
             indexName: indexName,
-            server: 'dsn',
+            server: '-dsn',
             displayMode: 'list',
             currentTab: 'hits',
             method: 'search',
@@ -15,7 +15,7 @@ export default function (appId, indexName) {
             setPanelConfig(state, payload) {
                 Vue.set(state, 'appId', payload.appId);
                 Vue.set(state, 'indexName', payload.indexName);
-                Vue.set(state, 'server', 'dsn');
+                Vue.set(state, 'server', '-dsn');
 
                 if (state.indexName) {
                     Vue.set(this.state.apps[payload.appId], 'lastIndexName', state.indexName);

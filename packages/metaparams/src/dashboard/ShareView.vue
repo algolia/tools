@@ -102,7 +102,8 @@
                 this.copied = true;
             },
             createShortLink: async function () {
-                const res = await fetch(`${process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT}/state`, {
+                const endpoint = process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT || 'https://algolia-apps-backend.herokuapp.com';
+                const res = await fetch(`${endpoint}/state`, {
                     credentials: 'include',
                     method: 'POST',
                     body: JSON.stringify({

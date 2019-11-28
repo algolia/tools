@@ -990,6 +990,7 @@ minProximity:
   min: 1
   max: 8
   default: 1
+  settings_default: null
 
 maxFacetHits:
   scope:

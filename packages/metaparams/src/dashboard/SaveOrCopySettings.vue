@@ -100,7 +100,7 @@
     import TaskGroupView from "common/components/TasksGroup";
     import {Task, TasksGroup} from "common/utils/tasks";
     import paramsSpecs from 'common/params-specs';
-    import {getSearchClient} from 'common/utils/algoliaHelpers';
+    import {getClient} from 'common/utils/algoliaHelpers';
     import panelsMixin from "common/mixins/panelsMixin";
 
     export default {
@@ -158,27 +158,24 @@
                     srcIndexName: this.panelIndexName,
                     panelKey: this.panelKey,
                     otherPanelKey: this.panelKey === 'leftPanel' ? 'rightPanel': 'leftPanel',
-                    srcClient: await getSearchClient(this.panelAppId, this.adminAPIKey(this.panelAppId), this.panelServer),
-                    dstClient: this.dstAppId ? await getSearchClient(this.dstAppId, this.adminAPIKey(this.dstAppId), this.panelServer) : null,
+                    srcClient: await getClient(this.panelAppId, this.adminAPIKey(this.panelAppId), this.panelServer),
+                    dstClient: this.dstAppId ? await getClient(this.dstAppId, this.adminAPIKey(this.dstAppId), this.panelServer) : null,
                     query: this.$store.state.panels.query,
                     hitsPerPage: !this.limitCopy.enabled ? batchSize : Math.min(batchSize, this.limitCopy.nbHits),
                     inReplicaCopy: this.inReplicaCopy,
                     applyUnsavedSettings: this.isIndexSettingsDirty,
                 };
 
-                config.panelIndex = config.srcClient.initIndex(config.srcIndexName);
+                config.panelIndex = config.srcClient.customInitIndex(config.srcIndexName);
 
                 config['searchParams'] = Object.assign(this.searchParams, {hitsPerPage: config.hitsPerPage, query: config.query});
                 config['indexSettings'] = Object.assign({}, this.indexSettings);
-                config['srcIndex'] = config.srcClient.initIndex(this.panelIndexName);
+                config['srcIndex'] = config.srcClient.customInitIndex(this.panelIndexName);
                 if (config.dstClient) {
-                    config['dstIndex'] = config.dstClient.initIndex(this.dstIndexName);
-                    config.timeoutBackup = config.dstClient._timeouts;
-                    config.dstClient.setTimeouts({
-                        connect: Math.ceil(this.writeTimeout / 30 * 1000),
-                        read: Math.ceil(this.writeTimeout / 15 * 1000),
-                        write: Math.ceil(this.writeTimeout * 1000)
-                    });
+                    config['dstIndex'] = config.dstClient.customInitIndex(this.dstIndexName);
+                    config.timeoutBackup = config.dstClient.transporter.timeouts;
+                    config.dstClient.transporter.timeouts.read = Math.ceil(this.writeTimeout / 15 * 1000);
+                    config.dstClient.transporter.timeouts.write = Math.ceil(this.writeTimeout * 1000);
                 }
 
                 return config;
@@ -199,7 +196,7 @@
                 try {
                     this.errorMessage = '';
                     await this.tasksGroup.run();
-                    config.dstClient.setTimeouts(config.timeoutBackup);
+                    config.dstClient.transporter.timeouts = config.timeoutBackup;
                 } catch (e) {
                     this.errorMessage = e.message;
                     this.tasksGroup = null;
@@ -220,14 +217,11 @@
 
                 tasksGroup.addTask(new Task('Setting settings on copy', async () => {
                     delete(newSettings.replicas);
-
-                    const res = await config.dstIndex.setSettings(newSettings);
-                    await config.dstIndex.waitTask(res.taskID);
+                    await config.dstIndex.setSettings(newSettings).wait();
                 }));
 
                 tasksGroup.addTask(new Task('Copy rules and synonyms', async () => {
-                    const res = await config.srcClient.copyIndex(config.srcIndexName, config.dstIndexName, ['rules', 'synonyms']);
-                    await config.dstIndex.waitTask(res.taskID);
+                    await config.srcClient.copyIndex(config.srcIndexName, config.dstIndexName, {scope: ['rules', 'synonyms']}).wait();
                 }));
 
                 tasksGroup.addTask(new Task('Copy records', async () => {
@@ -235,14 +229,12 @@
                         replicas.push(config.dstIndexName);
                     }
                     srcSettings[replicasKey] = replicas;
-                    const res = await config.panelIndex.setSettings(srcSettings);
-                    await config.panelIndex.waitTask(res.taskID);
+                    await config.panelIndex.setSettings(srcSettings).wait();
 
                     if (!config.inReplicaCopy) {
                         replicas.splice(replicas.indexOf(config.dstIndexName), 1);
                         srcSettings[replicasKey] = replicas;
-                        const res2 = await config.panelIndex.setSettings(srcSettings);
-                        await config.panelIndex.waitTask(res2.taskID);
+                        await config.panelIndex.setSettings(srcSettings).wait();
                     }
                     this.$root.$emit('shouldTriggerSearch', config.srcIndexName);
                 }));
@@ -256,20 +248,24 @@
 
                 tasksGroup.addTask(new Task('Copy settings + unsaved', async () => {
                     delete(newSettings.replicas);
-
-                    const res = await config.dstIndex.setSettings(newSettings);
-                    await config.dstIndex.waitTask(res.taskID);
+                    await config.dstIndex.setSettings(newSettings).wait();
                 }));
 
                 tasksGroup.addTask(new Task('Copy synonyms', async () => {
-                    await config.srcIndex.exportSynonyms(1000, (synonyms) => {
-                        config.dstIndex.batchSynonyms(synonyms, {replaceExistingSynonyms: false});
+                    await config.srcIndex.browseSynonyms({
+                        hitsPerPage: 1000,
+                        batch: (synonyms) => {
+                            config.dstIndex.saveSynonyms(synonyms, {replaceExistingSynonyms: false});
+                        }
                     });
                 }));
 
                 tasksGroup.addTask(new Task('Copy rules', async () => {
-                    await config.srcIndex.exportRules(1000, (rules) => {
-                        config.dstIndex.batchRules(rules, {clearExistingRules: false});
+                    await config.srcIndex.browseRules({
+                        hitsPerPage: 1000,
+                        batch: (rules) => {
+                            config.dstIndex.saveRules(rules, {clearExistingRules: false});
+                        }
                     });
                 }));
 
@@ -278,20 +274,20 @@
 
                     browseTask.setCallback(async () => {
                         let nbCopied = 0;
-                        let res = await config.srcIndex.customBrowse('', {hitsPerPage: config.hitsPerPage, attributesToRetrieve: ['*']});
+                        let res = await config.srcIndex.customBrowse({query: '', hitsPerPage: config.hitsPerPage, attributesToRetrieve: ['*']});
                         let nbToCopy = this.limitCopy.enabled ? Math.min(res.nbHits, this.limitCopy.nbHits) : res.nbHits;
                         nbCopied += res.hits.length;
                         browseTask.setNth(0);
                         browseTask.setOutOf(Math.ceil(nbToCopy / config.hitsPerPage));
-                        let resAdd = await config.dstIndex.addObjects(res.hits);
-                        tasksGroup.addAlgoliaTaskId(resAdd.taskID);
+                        let resAdd = await config.dstIndex.saveObjects(res.hits);
+                        resAdd.forEach((resAddN) => tasksGroup.addAlgoliaTaskId(resAddN.taskID));
                         browseTask.setNth(res.page + 1);
 
                         while (res.cursor && (!this.limitCopy.enabled || nbCopied < this.limitCopy.nbHits)) {
-                            res = await config.srcIndex.browseFrom(res.cursor);
+                            res = await config.srcIndex.customBrowse({cursor: res.cursor});
                             nbCopied += res.hits.length;
-                            resAdd = await config.dstIndex.addObjects(res.hits);
-                            tasksGroup.addAlgoliaTaskId(resAdd.taskID);
+                            resAdd = await config.dstIndex.saveObjects(res.hits);
+                            resAdd.forEach((resAddN) => tasksGroup.addAlgoliaTaskId(resAddN.taskID));
                             browseTask.setNth(res.page + 1);
                         }
                     });
@@ -306,12 +302,12 @@
                         });
                         let res = await config.srcIndex.customSearch(params);
 
-                        let resAdd = await config.dstIndex.addObjects(res.hits.map((hit) => {
+                        let resAdd = await config.dstIndex.saveObjects(res.hits.map((hit) => {
                             delete(hit._highlightResult);
                             delete(hit._snippetResult);
                             return hit;
                         }));
-                        tasksGroup.addAlgoliaTaskId(resAdd.taskID);
+                        resAdd.forEach((resAddN) => tasksGroup.addAlgoliaTaskId(resAddN.taskID));
                     }));
                 }
 

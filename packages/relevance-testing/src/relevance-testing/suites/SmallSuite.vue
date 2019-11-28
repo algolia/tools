@@ -144,8 +144,9 @@
                     return permission.email.length > 0;
                 });
 
+                const endpoint = process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT || 'https://algolia-apps-backend.herokuapp.com';
                 const method = this.testSuite.newSuite ? 'POST' : 'PUT';
-                const url = this.testSuite.newSuite ? `${process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT}/relevance-testing/suites` : `${process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT}/relevance-testing/suites/${this.testSuite.id}`;
+                const url = this.testSuite.newSuite ? `${endpoint}/relevance-testing/suites` : `${process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT}/relevance-testing/suites/${this.testSuite.id}`;
                 await fetch(url, {
                     method,
                     credentials: 'include',
@@ -160,7 +161,8 @@
             },
             deleteTestSuite: async function () {
                 if (this.testSuite.id) {
-                    await fetch(`${process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT}/relevance-testing/suites/${this.testSuite.id}`, {
+                    const endpoint = process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT || 'https://algolia-apps-backend.herokuapp.com';
+                    await fetch(`${endpoint}/relevance-testing/suites/${this.testSuite.id}`, {
                         method: 'DELETE',
                         credentials: 'include',
                         headers: {
