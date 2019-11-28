@@ -1,9 +1,6 @@
 import algoliasearch from 'algoliasearch';
+import {createNullCache} from '@algolia/cache-common';
 import getSignature from "./signature";
-
-const client = algoliasearch('A', 'B');
-const index = client.initIndex('AB');
-const indexPrototype = Object.getPrototypeOf(index);
 
 const isLocalAppId = function (appId) {
     return appId === 'MySuperApp' || appId.endsWith('.local') || appId.endsWith('.test');
@@ -19,7 +16,8 @@ const getNewParams = function (params) {
     return newQuery;
 };
 
-indexPrototype.buildFacetFilters = function (facetFilters, needle) {
+const methods = {};
+methods.buildFacetFilters = function (facetFilters, needle) {
     return facetFilters.map((facetFilter) => {
         const refinements = Array.isArray(facetFilter) ? facetFilter : [facetFilter];
         return refinements.filter((refinement) => {
@@ -28,7 +26,7 @@ indexPrototype.buildFacetFilters = function (facetFilters, needle) {
     }).filter((facetFilter) => facetFilter.length > 0);
 };
 
-indexPrototype.getDisjunctiveRequests = function (disjunctiveFacets, refinedFacets, paramsWithoutDisjunctiveFacets) {
+methods.getDisjunctiveRequests = function (disjunctiveFacets, refinedFacets, paramsWithoutDisjunctiveFacets) {
     const requests = [];
 
     requests.push({
@@ -63,7 +61,7 @@ indexPrototype.getDisjunctiveRequests = function (disjunctiveFacets, refinedFace
     return requests;
 };
 
-indexPrototype.disjunctiveSearch = function (params, callback) {
+methods.disjunctiveSearch = function (params, callback) {
     const {disjunctiveFacets, ...paramsWithoutDisjunctiveFacets} = params;
 
     const facetFilters = paramsWithoutDisjunctiveFacets.facetFilters || [];
@@ -121,7 +119,7 @@ indexPrototype.disjunctiveSearch = function (params, callback) {
     });
 };
 
-indexPrototype.customSearch = function (query, args, callback) {
+methods.customSearch = function (query, args, callback) {
     let params = {};
     if (query && typeof query === 'object' && query.constructor === Object) params = query;
     if (args && typeof args === 'object' && args.constructor === Object) params = {...args, query};
@@ -134,7 +132,7 @@ indexPrototype.customSearch = function (query, args, callback) {
     return this.search(params, callback);
 };
 
-indexPrototype.customBrowse = function (query, args, callback) {
+methods.customBrowse = function (query, args, callback) {
     let params = {};
     if (query && typeof query === 'object' && query.constructor === Object) params = query;
     if (args && typeof args === 'object' && args.constructor === Object) params = {...args, query};
@@ -145,7 +143,7 @@ indexPrototype.customBrowse = function (query, args, callback) {
     return this.browse(params, callback);
 };
 
-indexPrototype.customSearchForFacetValues = function(args, callback) {
+methods.customSearchForFacetValues = function(args, callback) {
     const params = getNewParams(args);
     return this.searchForFacetValues(args, callback);
 };
@@ -156,28 +154,48 @@ const indexCache = {};
 
 function searchClient(appId, apiKey, server) {
     if (isLocalAppId(appId)) {
-      return algoliasearch(appId, apiKey || ' ', {
-        _useCache: false,
-        hosts: ['localhost-1.algolia.io:8080'],
+      const client = algoliasearch(appId, apiKey || ' ', {
+        methods: methods,
       });
+
+      client.transporter.requestsCache = createNullCache();
+      client.transporter.responsesCache = createNullCache();
+      client.transporter.timeouts.read = 10;
+      client.transporter.setHosts([{url: 'localhost-1.algolia.io:8080', accept: 3}]);
+      return client;
     }
 
     const hosts = [];
 
     if (server === undefined || server === 'dsn' || server === '-dsn') { // BC
-        return algoliasearch(appId, apiKey || ' ', {
-            _useCache: false,
-            hosts: [appId + '-1.algolianet.com', appId + '-2.algolianet.com', appId + '-3.algolianet.com']
-        });
-    } else if (server === '-1') hosts.push(`${appId}-1.algolianet.com`);
-    else if (server === '-2') hosts.push(`${appId}-2.algolianet.com`);
-    else if (server === '-3') hosts.push(`${appId}-3.algolianet.com`);
-    else hosts.push(`${server}-1.algolia.net`);
+        const client = algoliasearch(appId, apiKey || ' ');
 
-    return algoliasearch(appId, apiKey || ' ', {
-        hosts: hosts,
-        _useCache: false,
+        client.transporter.requestsCache = createNullCache();
+        client.transporter.responsesCache = createNullCache();
+        client.transporter.timeouts.read = 10;
+
+        client.transporter.setHosts([
+            {url: appId + '-1.algolianet.com', accept: 3},
+            {url: appId + '-2.algolianet.com', accept: 3},
+            {url: appId + '-3.algolianet.com', accept: 3},
+        ]);
+
+        return client;
+    } else if (server === '-1') hosts.push({url: `${appId}-1.algolianet.com`, accept: 3});
+    else if (server === '-2') hosts.push({url: `${appId}-2.algolianet.com`, accept: 3});
+    else if (server === '-3') hosts.push({url: `${appId}-3.algolianet.com`, accept: 3});
+    else hosts.push({url: `${server}-1.algolia.net`, accept: 3});
+
+    const client = algoliasearch(appId, apiKey || ' ', {
+        methods: methods,
     });
+
+    client.transporter.requestsCache = createNullCache();
+    client.transporter.responsesCache = createNullCache();
+    client.transporter.timeouts.read = 10;
+    client.transporter.setHosts(hosts);
+
+    return client;
 }
 
 export async function getClient(appId, apiKey) {
@@ -185,20 +203,32 @@ export async function getClient(appId, apiKey) {
     if (clientCache[cacheKey]) return clientCache[cacheKey];
 
     if (isLocalAppId(appId)) {
-      return algoliasearch(appId, apiKey || ' ', {
-        _useCache: false,
-        hosts: ['localhost-1.algolia.io:8080'],
-      });
+      const client = algoliasearch(appId, apiKey || ' ');
+
+      client.transporter.requestsCache = createNullCache();
+      client.transporter.responsesCache = createNullCache();
+      client.transporter.timeouts.read = 10;
+      client.transporter.setHosts([{url: 'localhost-1.algolia.io:8080', accept: 3}]);
+
+      return client;
     }
 
-    const client = algoliasearch(appId, apiKey || ' ', {
-        _useCache: false,
-        hosts: [appId + '-1.algolianet.com', appId + '-2.algolianet.com', appId + '-3.algolianet.com']
-    });
+    const client = algoliasearch(appId, apiKey || ' ');
+
+    client.transporter.requestsCache = createNullCache();
+    client.transporter.responsesCache = createNullCache();
+    client.transporter.timeouts.read = 10;
+    client.transporter.setHosts([
+        {url: appId + '-1.algolianet.com', accept: 3},
+        {url: appId + '-2.algolianet.com', accept: 3},
+        {url: appId + '-3.algolianet.com', accept: 3},
+    ]);
+
     if (apiKey) {
         const signature = await getSignature(appId);
-        client.setExtraHeader('X-Algolia-Signature', signature);
+        client.transporter.addHeaders({'X-Algolia-Signature': signature});
     }
+
     clientCache[cacheKey] = client;
     return client;
 }
@@ -209,7 +239,7 @@ export async function getSearchClient(appId, apiKey, server) {
     const client = searchClient(appId, apiKey, server);
     if (apiKey && !isLocalAppId(appId)) {
         const signature = await getSignature(appId);
-        client.setExtraHeader('X-Algolia-Signature', signature);
+        client.transporter.addHeaders({'X-Algolia-Signature': signature});
     }
     clientCache[cacheKey] = client;
     return client;

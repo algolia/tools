@@ -110,7 +110,10 @@
 
                 if (this.nbPages > this.maxNbPagesInMemory) {
                     const client = await getClient(this.appId, this.adminAPIKey);
-                    const data = await client.listIndexes('0&prefix=' + encodeURIComponent(query));
+                    const data = await client.listIndices({
+                        page: 0,
+                        prefix: encodeURIComponent(query),
+                    });
                     this.indices = data.items.sort((a, b) => {
                         if (a.updatedAt < b.updatedAt) return 1;
                         if (a.updatedAt > b.updatedAt) return -1;
@@ -135,11 +138,11 @@
 
                 const client = await getClient(this.appId, this.adminAPIKey);
 
-                let data = await client.listIndexes(0);
+                let data = await client.listIndices({page: 0});
                 this.nbPages = data.nbPages;
 
                 if (this.nbPages > 1 && this.nbPages <= this.maxNbPagesInMemory) {
-                    data = await client.listIndexes();
+                    data = await client.listIndices();
                 }
 
                 this.allIndices = data.items.sort((a, b) => {

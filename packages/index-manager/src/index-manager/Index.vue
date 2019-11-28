@@ -96,7 +96,7 @@
 
                 let indexInfo = {...this.indexInfo};
                 if (this.indexInfo.updatedAt === undefined) {
-                    const data = await this.client.listIndexes('0&prefix=' + encodeURIComponent(this.indexInfo.name));
+                    const data = await this.client.listIndices({page: 0, prefix: this.indexInfo.name});
                     indexInfo = data.items[0];
                 }
 
