@@ -1,6 +1,11 @@
-import greenlet from 'greenlet'
+import greenlet from 'greenlet';
 
 export default greenlet((appId, apiKey, indexName) => new Promise(function (resolve, reject) {
+    if (appId === 'MySuperApp' || appId.endsWith('.local') || appId.endsWith('.test')) {
+        resolve([], {}, []);
+        return;
+    }
+    
     const isObject = function (obj) {
         return Object.prototype.toString.call(obj) === '[object Object]';
     };
