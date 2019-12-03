@@ -26,18 +26,18 @@
                 <g v-for="(hit, i) in leftHits">
                     <line v-if="leftNewRelevanceBucket[i]"
                         :x1="10"
-                        :y1="spaceBetweenCircle * i + 43"
+                        :y1="spaceBetweenCircle * i + 28"
                         :x2="circleX - 4"
-                        :y2="spaceBetweenCircle * i + 43"
+                        :y2="spaceBetweenCircle * i + 28"
                         stroke="gray"
                         stroke-width="1"
                         stroke-dasharray="4"
                     />
                     <line v-if="splitMode && rightNewRelevanceBucket[i]"
                         :x1="width - 10"
-                        :y1="spaceBetweenCircle * i + 43"
+                        :y1="spaceBetweenCircle * i + 28"
                         :x2="width - circleX + 4"
-                        :y2="spaceBetweenCircle * i + 43"
+                        :y2="spaceBetweenCircle * i + 28"
                         stroke="gray"
                         stroke-width="1"
                         stroke-dasharray="4"
@@ -209,7 +209,7 @@
                         const relevanceSignature = JSON.stringify(criteriaValues);
                         if (currentRelevanceSignature !== relevanceSignature) {
                             currentRelevanceSignature = relevanceSignature;
-                            newRelevanceBucket[i] = true;
+                            newRelevanceBucket[i] = i > 0 && true;
                         }
 
                         if (panel === 'left') {
