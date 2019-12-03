@@ -24,8 +24,26 @@
                     </marker>
                 </defs>
                 <g v-for="(hit, i) in leftHits">
+                    <line v-if="leftNewRelevanceBucket[i]"
+                        :x1="10"
+                        :y1="spaceBetweenCircle * i + 43"
+                        :x2="circleX - 4"
+                        :y2="spaceBetweenCircle * i + 43"
+                        stroke="gray"
+                        stroke-width="1"
+                        stroke-dasharray="4"
+                    />
+                    <line v-if="splitMode && rightNewRelevanceBucket[i]"
+                        :x1="width - 10"
+                        :y1="spaceBetweenCircle * i + 43"
+                        :x2="width - circleX + 4"
+                        :y2="spaceBetweenCircle * i + 43"
+                        stroke="gray"
+                        stroke-width="1"
+                        stroke-dasharray="4"
+                    />
                     <line
-                        v-if="leftInOther[i] !== -1 && splitMode"
+                        v-if="splitMode && leftInOther[i] !== -1"
                         :x1="circleX"
                         :y1="spaceBetweenCircle * i + 36"
                         :x2="width - circleX"
@@ -90,6 +108,7 @@
 <script>
     import panelsMixin from "common/mixins/panelsMixin";
     import TrackedElements from "./TrackedElements";
+    import RankingInfoAnalyser from "common/components/explorer/hits/rankingInfoAnalyser"
 
     export default {
         name: 'CompareHits',
@@ -114,17 +133,31 @@
                 rightHitsTracked: [],
                 leftInOther: [],
                 rightInOther: [],
+                leftNewRelevanceBucket: [],
+                rightNewRelevanceBucket: [],
+                leftCriteria: null,
+                rightCriteria: null,
+                leftRankingAnalyzer: null,
+                rightRankingAnalyzer: null,
             }
         },
         created: function () {
             if (!this.trackedObjects || this.trackedObjects.length === 0) {
                 this.trackedObjects = [''];
             }
-            this.$root.$on('leftPanelUpdateAnalyseResponse', (response) => {
+            this.$root.$on('leftPanelUpdateAnalyseResponse', (response, searchParams, indexSettings) => {
+                this.leftRankingInfoAnalyzer = new RankingInfoAnalyser(indexSettings);
+                this.leftCriteria = this.leftRankingInfoAnalyzer.getActualCriteria(searchParams, true).filter((criterion) => {
+                    return !['perso', 'perso.filtersScore', 'perso.rankingScore'].includes(criterion);
+                });
                 this.leftResponse = response;
                 this.compute();
             });
-            this.$root.$on('rightPanelUpdateAnalyseResponse', (response) => {
+            this.$root.$on('rightPanelUpdateAnalyseResponse', (response, searchParams, indexSettings) => {
+                this.rightRankingInfoAnalyzer = new RankingInfoAnalyser(indexSettings);
+                this.rightCriteria = this.rightRankingInfoAnalyzer.getActualCriteria(searchParams, true).filter((criterion) => {
+                    return !['perso', 'perso.filtersScore', 'perso.rankingScore'].includes(criterion);
+                });
                 this.rightResponse = response;
                 this.compute();
             });
@@ -159,13 +192,26 @@
                 const allTracked = [...(this.forcedTracked || []), ...this.trackedObjects];
                 const leftOnOther = this.leftHits.map(() => -1);
                 const rightOnOther = this.rightHits.map(() => -1);
+                const leftNewRelevanceBucket = this.leftHits.map(() => false);
+                const rightNewRelevanceBucket = this.rightHits.map(() => false);
 
                 ['left', 'right'].forEach((panel) => {
                     const trackedPositions = allTracked.map(() => -1);
                     const hits = panel === 'left' ? this.leftHits : this.rightHits;
+                    const newRelevanceBucket = panel === 'left' ? leftNewRelevanceBucket : rightNewRelevanceBucket;
                     const hitsTracked = hits.map(() => -1);
+                    let currentRelevanceSignature = '';
 
                     for (let i = 0; i < hits.length; i++) {
+                        const criteriaValues = this[`${panel}Criteria`].map((criterion) => {
+                            return this[`${panel}RankingInfoAnalyzer`].getCriterionValue(hits[i], criterion);
+                        });
+                        const relevanceSignature = JSON.stringify(criteriaValues);
+                        if (currentRelevanceSignature !== relevanceSignature) {
+                            currentRelevanceSignature = relevanceSignature;
+                            newRelevanceBucket[i] = true;
+                        }
+
                         if (panel === 'left') {
                             leftOnOther[i] = this.rightHits.findIndex((hit) => hit.objectID === hits[i].objectID);
                             if (leftOnOther[i] !== -1) rightOnOther[leftOnOther[i]] = i;
@@ -184,6 +230,7 @@
                         });
                     }
 
+                    this[`${panel}NewRelevanceBucket`] = Object.freeze(newRelevanceBucket);
                     this[`${panel}TrackedPositions`] = Object.freeze(trackedPositions);
                     this[`${panel}HitsTracked`] = Object.freeze(hitsTracked);
                 });

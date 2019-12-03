@@ -13,7 +13,7 @@ export default function (indexSettings) {
         return ['strict', 'min'].indexOf(this.indexSettings.typoTolerance) !== -1;
     };
 
-    this.getActualCriteria = function (searchParams) {
+    this.getActualCriteria = function (searchParams, withoutCustom) {
         const actualCriteria = [];
 
         const ranking = [...this.ranking];
@@ -26,6 +26,7 @@ export default function (indexSettings) {
 
         ranking.forEach((item) => {
             if (item === 'custom') {
+                if (withoutCustom) return;
                 foundCustom = true;
                 actualCriteria.push('perso');
                 actualCriteria.push('perso.rankingScore');
