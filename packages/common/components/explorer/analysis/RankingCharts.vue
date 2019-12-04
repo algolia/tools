@@ -113,6 +113,27 @@
 
                 return charts;
             },
+            annotation: function () {
+                const annotations = [];
+
+                this.hits.forEach((hit, i) => {
+                    if (hit._rankingInfo.startsRelevanceBucket) {
+                        annotations.push({
+                            drawTime: 'beforeDatasetsDraw',
+                            type: "line",
+                            mode: "vertical",
+                            scaleID: "x-axis-0",
+                            value: i + 1,
+                            borderColor: "rgba(0,0,0,0.1)",
+                            borderWidth: 1,
+                        });
+                    }
+                });
+
+                return {
+                    annotations: annotations,
+                }
+            },
         },
         methods: {
             setAllCriteria: function (val) {
@@ -187,15 +208,19 @@
                                 fontSize: 10,
                             },
                             afterFit: function(scale) {
-                                scale.width = 120  //<-- set value as you wish
+                                scale.width = 120;
                             },
                         }],
                         xAxes: [{
                             ticks: {
                                 fontSize: 10,
+                            },
+                            gridLines: {
+                                display: false
                             }
                         }],
-                    }
+                    },
+                    annotation: this.annotation,
                 }
             },
             chartData: function (criterion) {

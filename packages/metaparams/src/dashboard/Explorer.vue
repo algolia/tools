@@ -242,7 +242,7 @@
                 this.$emit('onFetchHits', algoliaResponse);
             },
             onFetchAnalyseHits: function (algoliaResponse) {
-                this.$root.$emit(`${this.panelKey}UpdateAnalyseResponse`, algoliaResponse, this.searchParams, this.refIndexSettings);
+                this.$root.$emit(`${this.panelKey}UpdateAnalyseResponse`, algoliaResponse);
                 this.analyseAlgoliaResponse = algoliaResponse;
                 this.$emit('onFetchAnalyseHits', algoliaResponse);
             },

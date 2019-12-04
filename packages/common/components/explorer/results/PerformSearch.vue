@@ -71,6 +71,11 @@
             criteria: function () {
                 return this.rankingInfoAnalyzer.getActualCriteria();
             },
+            textualCriteria: function () {
+                return this.rankingInfoAnalyzer.getActualCriteria(this.searchParamsWithDefaults, true).filter((criterion) => {
+                    return !['perso', 'perso.filtersScore', 'perso.rankingScore'].includes(criterion);
+                });
+            },
             searchParamsWithDefaults: function () {
                 const nonForcedparams = {
                     hitsPerPage: 8,
@@ -148,6 +153,7 @@
                             res.object = await index.getObject(this.searchParamsWithDefaults.query);
                         } catch (e) {}
                     }
+
                     this.$emit('onFetchHits', Object.freeze(res));
                     this.$emit('onUpdateError', '');
 
@@ -178,6 +184,17 @@
                 index[method](this.searchParamsForAnalysis).then((res) => {
                     if (this.requestNumberAnalysisReceived > requestNumberAnalysis) return;
                     this.requestNumberAnalysisReceived = requestNumberAnalysis;
+
+                    if (res.hits.length > 1) {
+                        let currentRelevanceSignature = JSON.stringify(this.textualCriteria.map((criterion) => this.rankingInfoAnalyzer.getCriterionValue(res.hits[0], criterion)));
+                        for (let i = 1; i < res.hits.length; i++) {
+                            const relevanceSignature = JSON.stringify(this.textualCriteria.map((criterion) => this.rankingInfoAnalyzer.getCriterionValue(res.hits[i], criterion)));
+                            if (currentRelevanceSignature !== relevanceSignature) {
+                                currentRelevanceSignature = relevanceSignature;
+                                res.hits[i]._rankingInfo.startsRelevanceBucket = true;
+                            }
+                        }
+                    }
 
                     this.$emit('onFetchAnalyseHits', Object.freeze(res));
                 }).catch(() => {

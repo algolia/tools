@@ -117,7 +117,7 @@
         methods: {
             onFetchAnalyticsHits: function (algoliaResponse) {
                 this.analyseResponse = algoliaResponse;
-                this.$root.$emit(`leftPanelUpdateAnalyseResponse`, algoliaResponse, this.params, this.refIndexSettings);
+                this.$root.$emit(`leftPanelUpdateAnalyseResponse`, algoliaResponse);
             },
             onUpdateApiKey: function (apiKey) {
                 this.$store.commit('apps/addAppId', { appId: this.appId, apiKey: apiKey });
