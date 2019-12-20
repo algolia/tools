@@ -241,7 +241,8 @@
         },
         methods: {
             createGroupWithTests: async function () {
-                const res = await fetch(`${process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT}/relevance-testing/suites/${this.suite.id}/groups`, {
+                const endpoint = process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT || 'https://algolia-apps-backend.herokuapp.com';
+                const res = await fetch(`${endpoint}/relevance-testing/suites/${this.suite.id}/groups`, {
                     method: 'POST',
                     credentials: 'include',
                     headers: {
@@ -259,7 +260,7 @@
                 let i, j, testsChunk, chunk = 1000;
                 for (i = 0 , j = this.tests.length; i < j; i += chunk) {
                     testsChunk = this.tests.slice(i,i+chunk);
-                    const res2 = await fetch(`${process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT}/relevance-testing/suites/${this.suite.id}/groups/${groupData.id}/tests/batch`, {
+                    const res2 = await fetch(`${endpoint}/relevance-testing/suites/${this.suite.id}/groups/${groupData.id}/tests/batch`, {
                         method: 'POST',
                         credentials: 'include',
                         headers: {

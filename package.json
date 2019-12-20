@@ -20,8 +20,5 @@
   "scripts": {
     "build": "yarn lerna run build",
     "start": "node server.js"
-  },
-  "dependencies": {
-    "@types/algoliasearch": "^3.34.1"
   }
 }

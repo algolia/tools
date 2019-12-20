@@ -135,7 +135,7 @@
         },
         created: async function () {
             if (['Replicas', 'Copy'].includes(this.action.name)) {
-                const index = this.client.initIndex(this.indices[0].name);
+                const index = this.client.customInitIndex(this.indices[0].name);
                 const settings = await index.getSettings();
                 this.settings = getNonDefaultSettings(settings);
 

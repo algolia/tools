@@ -11,8 +11,8 @@
         </div>
         <algolia-autocomplete
             v-if="isEditable"
-            :app-id="algoliaAppID"
-            :api-key="algoliaApiKey"
+            app-id="AJ0P3S7DWQ"
+            api-key="90dfaaf5755e694f341fe68f6e41a6d4"
             index-name="metaparams"
             @onSelected="onSelected"
             @onBlur="inputState.setInput('none')"

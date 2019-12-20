@@ -27,70 +27,51 @@ export function getNonDefaultSettings(settings) {
 }
 
 export async function clearIndex(client, indexInfo) {
-    const index = client.initIndex(indexInfo.name);
-
-    const res = await index.clearIndex();
-    await client.initIndex(indexInfo.name).waitTask(res.taskID);
+    await client.customInitIndex(indexInfo.name).clearObjects().wait();
 }
 
 export async function deleteIndex(client, indexInfo) {
-    if (indexInfo.primary === undefined) {
-        const res = await client.deleteIndex(indexInfo.name);
-        await client.initIndex(indexInfo.name).waitTask(res.taskID);
-    } else {
-        const primaryIndex = client.initIndex(indexInfo.primary);
+    if (indexInfo.primary !== undefined) { // If it's a replica first detach
+        const primaryIndex = client.customInitIndex(indexInfo.primary);
         const primarySettings = await primaryIndex.getSettings();
         const replicas = primarySettings.replicas || [];
         const newReplicas = replicas.filter((replica) => { return replica !== indexInfo.name; });
 
-        const res1 = await primaryIndex.setSettings({ replicas: newReplicas });
-        await primaryIndex.waitTask(res1.taskID);
-
-
-        const res2 = await client.deleteIndex(indexInfo.name);
-        await client.initIndex(indexInfo.name).waitTask(res2.taskID);
+        await primaryIndex.setSettings({ replicas: newReplicas }).wait();
     }
+    await client.customInitIndex(indexInfo.name).delete().wait();
 }
 
 export async function renameIndex(client, indexInfo, newIndexName) {
     if (indexInfo.primary === undefined) {
-        const res = await client.moveIndex(indexInfo.name, newIndexName);
-        await client.initIndex(newIndexName).waitTask(res.taskID);
+        await client.moveIndex(indexInfo.name, newIndexName).wait();
     } else {
-        const primaryIndex = client.initIndex(indexInfo.primary);
+        const primaryIndex = client.customInitIndex(indexInfo.primary);
         const primarySettings = await primaryIndex.getSettings();
         const replicas = primarySettings.replicas || [];
         const newReplicas = [...new Set([...replicas, newIndexName])];
 
-        const res = await primaryIndex.setSettings({ replicas: newReplicas });
-        await primaryIndex.waitTask(res.taskID);
-
-        const res1 = await client.copyIndex(indexInfo.name, newIndexName, ['settings', 'synonyms', 'rules']);
-        await client.initIndex(newIndexName).waitTask(res1.taskID);
+        await primaryIndex.setSettings({ replicas: newReplicas }).wait();
+        await client.copyIndex(indexInfo.name, newIndexName, { scope: ['settings', 'synonyms', 'rules'] }).wait();
 
         const newReplicas2 = replicas.filter((replica) => { return replica !== indexInfo.name; });
-        const res2 = await primaryIndex.setSettings({ replicas: [...new Set([...newReplicas2, newIndexName])] });
-        await primaryIndex.waitTask(res2.taskID);
+        await primaryIndex.setSettings({ replicas: [...new Set([...newReplicas2, newIndexName])] }).wait();
 
-        const res3 = await client.deleteIndex(indexInfo.name);
-        await client.initIndex(indexInfo.name).waitTask(res3.taskID);
+        await client.customInitIndex(indexInfo.name).delete().wait();
     }
 }
 
 export async function detachReplicaIndex(client, indexInfo) {
-    const primaryIndex = client.initIndex(indexInfo.primary);
+    const primaryIndex = client.customInitIndex(indexInfo.primary);
     const primarySettings = await primaryIndex.getSettings();
     const replicas = primarySettings.replicas || [];
     const newReplicas = replicas.filter((replica) => { return replica !== indexInfo.name; });
 
-    const res = await primaryIndex.setSettings({ replicas: newReplicas });
-    await client.initIndex(indexInfo.primary).waitTask(res.taskID);
+    await primaryIndex.setSettings({ replicas: newReplicas }).wait();
 }
 
 export async function setReplicas(client, indexInfo, replicas) {
-    const primaryIndex = client.initIndex(indexInfo.name);
-    const res = await primaryIndex.setSettings({ replicas: replicas });
-    await primaryIndex.waitTask(res.taskID);
+    await client.customInitIndex(indexInfo.name).setSettings({ replicas: replicas }).wait();
 }
 
 export async function resetSettings(client, indexInfo) {
@@ -98,9 +79,7 @@ export async function resetSettings(client, indexInfo) {
 }
 
 export async function setSettings(client, indexInfo, settings) {
-    const index = client.initIndex(indexInfo.name);
-    const res = await index.setSettings(settings);
-    await index.waitTask(res.taskID);
+    await client.customInitIndex(indexInfo.name).setSettings(settings).wait();
 }
 
 export async function copyIndex(client, indexInfo, options) {
@@ -108,28 +87,26 @@ export async function copyIndex(client, indexInfo, options) {
 
     for (let i = 0; i < indexList.length; i++) {
         const sameAppId = client.applicationID === indexList[i].appId;
-        const dstIndex = indexList[i].client.initIndex(indexList[i].indexName);
+        const dstIndex = indexList[i].client.customInitIndex(indexList[i].indexName);
 
         if (sameAppId && options.fullSettingsCopy) {
             if (records && synonyms && rules && settings) {
-                const res = await client.copyIndex(indexInfo.name, indexList[i].indexName);
-                await dstIndex.waitTask(res.taskID);
+                await client.copyIndex(indexInfo.name, indexList[i].indexName).wait();
                 return;
             } else if (!records) {
                 const scope = [];
                 if (synonyms) scope.push('synonyms');
                 if (rules) scope.push('rules');
                 if (settings) scope.push('settings');
-                const res = await client.copyIndex(indexInfo.name, indexList[i].indexName, scope);
-                await dstIndex.setSettings({}); // In case the index did not exists before
-                await dstIndex.waitTask(res.taskID);
+                await client.copyIndex(indexInfo.name, indexList[i].indexName, {scope: scope}).wait();
+                await dstIndex.setSettings({}).wait(); // In case the index did not exists before
                 return;
             }
         }
 
         // Fallback on different app copy
 
-        const srcIndex = client.initIndex(indexInfo.name);
+        const srcIndex = client.customInitIndex(indexInfo.name);
 
         if (settings) {
             const newSettings = JSON.parse(JSON.stringify(options.newSettings));
@@ -137,30 +114,35 @@ export async function copyIndex(client, indexInfo, options) {
             delete(newSettings.replicas);
             delete(newSettings.slaves);
 
-            const resSettings = await dstIndex.setSettings(newSettings);
-            await dstIndex.waitTask(resSettings.taskID);
+            await dstIndex.setSettings(newSettings).wait();
         }
 
         if (synonyms) {
-            await srcIndex.exportSynonyms(1000, (synonyms) => {
-                dstIndex.batchSynonyms(synonyms, {replaceExistingSynonyms: false});
+            await srcIndex.browseSynonyms({
+                hitsPerPage: 1000,
+                batch: (synonyms) => {
+                    dstIndex.saveSynonyms(synonyms, {replaceExistingSynonyms: false});
+                }
             });
         }
 
         if (rules) {
-            await srcIndex.exportRules(1000, (rules) => {
-                dstIndex.batchRules(rules, {clearExistingRules: false});
+            await srcIndex.browseRules({
+                hitsPerPage: 1000,
+                batch: (rules) => {
+                    dstIndex.saveRules(rules, {clearExistingRules: false});
+                }
             });
         }
 
         if (records) {
             const tasks = [];
-            let res = await srcIndex.customBrowse('', {attributesToRetrieve: ['*']});
-            let resAdd = await dstIndex.addObjects(res.hits);
+            let res = await srcIndex.customBrowse({query: '', attributesToRetrieve: ['*']});
+            let resAdd = await dstIndex.saveObjects(res.hits);
 
             while (res.cursor) {
-                res = await srcIndex.browseFrom(res.cursor);
-                resAdd = await dstIndex.addObjects(res.hits);
+                res = await srcIndex.customBrowse({cursor: res.cursor});
+                resAdd = await dstIndex.saveObjects(res.hits);
                 tasks.push(resAdd.taskID);
             }
 

@@ -18,7 +18,8 @@
                 const apps = Object.keys(this.$store.state.apps);
                 const appId = apps.length > 0 ? apps[0] : null;
 
-                const res = await fetch(`${process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT}/relevance-testing/suites/${this.suite.id}/runs`, {
+                const endpoint = process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT || 'https://algolia-apps-backend.herokuapp.com';
+                const res = await fetch(`${endpoint}/relevance-testing/suites/${this.suite.id}/runs`, {
                     method: 'POST',
                     credentials: 'include',
                     headers: {

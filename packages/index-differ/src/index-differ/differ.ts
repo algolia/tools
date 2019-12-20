@@ -1,4 +1,6 @@
-import algoliasearch from 'algoliasearch';
+import { encode } from '@algolia/client-common';
+import { serializeQueryParameters } from '@algolia/transporter';
+import { SearchIndex } from 'algoliasearch';
 import * as Diff from 'diff';
 
 enum Version {
@@ -76,8 +78,8 @@ export function createPatch(a:string, b:string) {
 }
 
 class DiffGenerator {
-    indexA: algoliasearch.Index;
-    indexB: algoliasearch.Index;
+    indexA: SearchIndex;
+    indexB: SearchIndex;
 
     A: IndexDiff;
     B: IndexDiff;
@@ -97,8 +99,8 @@ class DiffGenerator {
     };
 
     constructor(
-        indexA: algoliasearch.Index,
-        indexB: algoliasearch.Index,
+        indexA: SearchIndex,
+        indexB: SearchIndex,
     ) {
         this.indexA = indexA;
         this.indexB = indexB;
@@ -198,27 +200,24 @@ class DiffGenerator {
         this.postProcess(ResourceName.RULES);
     }
 
-    private getSettings(name: Version, index: algoliasearch.Index): Promise<undefined> {
-        return new Promise((resolve, reject) => {
-            index.getSettings((err, content) => {
-                if (err) {
-                    reject(err);
-                    return;
-                }
-
-                this[name].settings = content;
-                resolve();
-            });
+    private getSettings(name: Version, index: SearchIndex): Promise<undefined> {
+        return new Promise(async (resolve, reject) => {
+            this[name].settings = await index.getSettings();
+            resolve();
         });
     }
 
-    private async getSynonyms(name: Version, index: algoliasearch.Index): Promise<void> {
+    private async getSynonyms(name: Version, index: SearchIndex): Promise<void> {
         const synonyms: any[] = [];
 
-        // @ts-ignore: exportSynonyms is not in @types/algolia
-        await index.exportSynonyms(1000, (fetchedSynonyms: any) => {
-            synonyms.push(...fetchedSynonyms);
+        await index.browseSynonyms({
+            hitsPerPage: 1000,
+            batch: (fetchedSynonyms: any) => {
+                synonyms.push(...fetchedSynonyms);
+            }
         });
+
+        synonyms.sort((a, b) => a.objectID.localeCompare(b.objectID));
 
         this[name].ids.synonyms = synonyms.map((synonym) => synonym.objectID);
         this[name].nbHits.synonyms = synonyms.length;
@@ -228,13 +227,17 @@ class DiffGenerator {
         }, {});
     }
 
-    private async getRules(name: Version, index: algoliasearch.Index): Promise<void> {
+    private async getRules(name: Version, index: SearchIndex): Promise<void> {
         const rules: any[] = [];
 
-        // @ts-ignore: exportRules is not in @types/algolia
-        await index.exportRules(1000, (fetchedRules: any) => {
-            rules.push(...fetchedRules);
+        await index.browseRules({
+            hitsPerPage: 1000,
+            batch: (fetchedRules: any) => {
+                rules.push(...fetchedRules);
+            }
         });
+
+        rules.sort((a, b) => a.objectID.localeCompare(b.objectID));
 
         this[name].ids.rules = rules.map((rule) => rule.objectID);
         this[name].nbHits.rules = rules.length;
@@ -244,14 +247,9 @@ class DiffGenerator {
         }, {});
     }
 
-    private getRecords(name: Version, index: algoliasearch.Index) {
+    private getRecords(name: Version, index: SearchIndex) {
         return new Promise((resolve, reject) => {
-            const fn = (err: any, content: any) => {
-                if (err) {
-                    reject();
-                    return;
-                }
-
+            const fn = (content: any) => {
                 content.hits.forEach((hit: any) => {
                     this[name].objects.records[hit.objectID] = hit;
                 });
@@ -275,9 +273,22 @@ class DiffGenerator {
             };
 
             if (!this[name].cursor) {
-                index.browse('', this.browseObjectsParams, fn);
+                index.transporter.read({
+                    method: 'POST',
+                    path: encode('/1/indexes/%s/browse', index.indexName),
+                    data: {
+                        params: serializeQueryParameters(this.browseObjectsParams),
+                    },
+                }).then(fn);
             } else {
-                index.browseFrom(this[name].cursor as string, fn);
+                index.transporter.read({
+                    method: 'POST',
+                    path: encode('/1/indexes/%s/browse', index.indexName),
+                    data: {
+                        params: serializeQueryParameters(this.browseObjectsParams),
+                        cursor: this[name].cursor,
+                    },
+                }).then(fn);
             }
         });
     }
@@ -316,7 +327,7 @@ class DiffGenerator {
 
                 aCounter++;
                 bCounter++;
-            } else if (this.A.ids[resourceName][aCounter] < this.B.ids[resourceName][bCounter]) {
+            } else if (bCounter >= this.B.ids[resourceName].length || this.A.ids[resourceName][aCounter] < this.B.ids[resourceName][bCounter]) {
                 diffs.push({
                     added: false,
                     removed: true,

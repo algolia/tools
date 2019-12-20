@@ -66,11 +66,11 @@
                 try {
                     let task;
                     if (this.action === 'enableAllRules') {
-                        task = await index.batchRules(this.getRulesEnabled(), { forwardToReplicas: this.forwardToReplicas });
+                        task = await index.saveRules(this.getRulesEnabled(), { forwardToReplicas: this.forwardToReplicas });
                     }
 
                     if (this.action === 'disableAllRules') {
-                        task = await index.batchRules(this.getRulesDisabled(), { forwardToReplicas: this.forwardToReplicas });
+                        task = await index.saveRules(this.getRulesDisabled(), { forwardToReplicas: this.forwardToReplicas });
                     }
 
                     if (this.action === 'deleteAllRules') {

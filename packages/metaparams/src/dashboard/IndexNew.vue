@@ -64,10 +64,9 @@
         methods: {
             createIndex: async function () {
                 const client = await getClient(this.panelAppId, this.panelAdminAPIKey);
-                const index = client.initIndex(this.newIndexName);
-                const res = await index.setSettings({});
+                const res = client.customInitIndex(this.newIndexName).setSettings({});
                 this.pendingCreation = true;
-                await index.waitTask(res.taskID);
+                await res.wait();
                 this.pendingCreation = false;
                 this.creatingNewIndex = false;
                 this.$store.commit(`panels/${this.panelKey}/setPanelConfig`, {

@@ -276,7 +276,8 @@
                 }
             },
             fetchSuite: async function () {
-                const res = await fetch(`${process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT}/relevance-testing/suites/${this.suiteId}`, {
+                const endpoint = process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT || 'https://algolia-apps-backend.herokuapp.com';
+                const res = await fetch(`${endpoint}/relevance-testing/suites/${this.suiteId}`, {
                     credentials: 'include',
                     headers: {
                         "Content-Type": "application/json",
@@ -317,7 +318,8 @@
                 this.setCurrentRun(run);
             },
             addGroup: async function () {
-                const res = await fetch(`${process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT}/relevance-testing/suites/${this.suite.id}/groups`, {
+                const endpoint = process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT || 'https://algolia-apps-backend.herokuapp.com';
+                const res = await fetch(`${endpoint}/relevance-testing/suites/${this.suite.id}/groups`, {
                     method: 'POST',
                     credentials: 'include',
                     headers: {

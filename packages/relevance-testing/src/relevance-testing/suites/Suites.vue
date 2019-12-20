@@ -38,7 +38,8 @@
         },
         methods: {
             fetchSuites: async function () {
-                const res = await fetch(`${process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT}/relevance-testing/suites`, {
+                const endpoint = process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT || 'https://algolia-apps-backend.herokuapp.com';
+                const res = await fetch(`${endpoint}/relevance-testing/suites`, {
                     credentials: 'include',
                     headers: {
                         "Content-Type": "application/json",

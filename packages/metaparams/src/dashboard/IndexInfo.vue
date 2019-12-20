@@ -106,7 +106,11 @@
                 if (!this.indexData) return;
 
                 const client = await getClient(this.panelAppId, this.panelAdminAPIKey);
-                const res = await client.listIndexes('0&prefix=' + encodeURIComponent(indexName));
+                const res = await client.listIndices({
+                    queryParameters: {
+                        page: 0, prefix: indexName
+                    }
+                });
 
                 res.items.forEach((indexInfo) => {
                     if (indexInfo.name === indexName) {
@@ -120,17 +124,12 @@
                 if (!this.indexData) return;
 
                 const client = await getClient(this.panelAppId, this.panelAdminAPIKey);
-                client._jsonRequest({
+                const data = await client.transporter.write({
                     method: 'GET',
-                    url: '/1/indexes/*/stats',
-                    body: {},
-                    hostType: 'write',
-                    callback: (err, data) => {
-                        if (!err) {
-                            this.buildingIndices = data.building;
-                        }
-                    }
+                    path: '1/indexes/*/stats',
                 });
+
+                this.buildingIndices = data.building;
             }
         }
     }

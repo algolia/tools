@@ -82,7 +82,9 @@
         },
         methods: {
             updateGroup: async function () {
-                await fetch(`${process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT}/relevance-testing/suites/${this.group.suite.id}/groups/${this.group.id}`, {
+                const endpoint = process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT || 'https://algolia-apps-backend.herokuapp.com';
+
+                await fetch(`${endpoint}/relevance-testing/suites/${this.group.suite.id}/groups/${this.group.id}`, {
                     method: 'PUT',
                     credentials: 'include',
                     headers: {
@@ -97,7 +99,8 @@
                 this.confirmEdit = false;
             },
             deleteGroup: async function () {
-                await fetch(`${process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT}/relevance-testing/suites/${this.suite.id}/groups/${this.group.id}`, {
+                const endpoint = process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT || 'https://algolia-apps-backend.herokuapp.com';
+                await fetch(`${endpoint}/relevance-testing/suites/${this.suite.id}/groups/${this.group.id}`, {
                     method: 'DELETE',
                     credentials: 'include',
                     headers: {
@@ -108,7 +111,8 @@
                 this.$delete(this.suite.groups, this.groupPos);
             },
             addTest: async function () {
-                const res = await fetch(`${process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT}/relevance-testing/suites/${this.suite.id}/groups/${this.group.id}/tests`, {
+                const endpoint = process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT || 'https://algolia-apps-backend.herokuapp.com';
+                const res = await fetch(`${endpoint}/relevance-testing/suites/${this.suite.id}/groups/${this.group.id}/tests`, {
                     method: 'POST',
                     credentials: 'include',
                     headers: {

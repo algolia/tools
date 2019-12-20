@@ -85,7 +85,8 @@
         },
         methods: {
             updateRun: async function () {
-                await fetch(`${process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT}/relevance-testing/suites/${this.suite.id}/runs/${this.run.id}`, {
+                const endpoint = process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT || 'https://algolia-apps-backend.herokuapp.com';
+                await fetch(`${endpoint}/relevance-testing/suites/${this.suite.id}/runs/${this.run.id}`, {
                     method: 'PUT',
                     credentials: 'include',
                     headers: {
@@ -100,7 +101,8 @@
                 });
             },
             deleteRun: async function () {
-                await fetch(`${process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT}/relevance-testing/suites/${this.suite.id}/runs/${this.run.id}`, {
+                const endpoint = process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT || 'https://algolia-apps-backend.herokuapp.com';
+                await fetch(`${endpoint}/relevance-testing/suites/${this.suite.id}/runs/${this.run.id}`, {
                     method: 'DELETE',
                     credentials: 'include',
                     headers: {

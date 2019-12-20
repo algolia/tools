@@ -64,13 +64,16 @@
                 if (this.panelIndexName !== this.indexNameToDelete) return;
 
                 const client = await getClient(this.panelAppId, this.panelAdminAPIKey);
-                const index = client.initIndex(this.indexNameToDelete);
-                const res = await client.deleteIndex(this.indexNameToDelete);
+                const res = client.customInitIndex(this.indexNameToDelete).delete();
                 this.pendingDeletion = true;
-                await index.waitTask(res.taskID);
+                await res.wait();
                 this.pendingDeletion = false;
                 this.deletingIndex = false;
-                const indexes = await client.listIndexes(0);
+                const indexes = await client.listIndices({
+                    queryParameters: {
+                        page: 0
+                    }
+                });
                 let newCurrentIndexName = indexes.items.length > 0 ? indexes.items[0].name : null;
 
                 const otherPanelKey = this.panelKey === 'leftPanel' ? 'rightPanel': 'leftPanel';

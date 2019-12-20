@@ -94,7 +94,7 @@
     import Diffs from "@/index-differ/Diffs";
 
     import Differ from "@/index-differ/differ";
-    import {getSearchClient} from 'common/utils/algoliaHelpers';
+    import {getClient} from 'common/utils/algoliaHelpers';
     import LoadedInfo from "@/index-differ/LoadedInfo";
 
     export default {
@@ -134,6 +134,7 @@
             this.updateUrl();
             await this.getLeftIndex();
             await this.getRightIndex();
+
             this.loadDiffer();
         },
         computed: {
@@ -141,10 +142,10 @@
                 get () {
                     return this.$store.state.indexdiffer.leftAppId;
                 },
-                set (appId) {
+                async set (appId) {
                     this.leftIndexName = null;
                     this.$store.commit(`indexdiffer/setLeftAppId`, appId);
-                    this.getLeftIndex();
+                    await this.getLeftIndex();
                     this.updateUrl();
                     this.loadDiffer();
                 }
@@ -153,9 +154,9 @@
                 get () {
                     return this.$store.state.indexdiffer.leftIndexName;
                 },
-                set (indexName) {
+                async set (indexName) {
                     this.$store.commit('indexdiffer/setLeftIndexName', indexName);
-                    this.getLeftIndex();
+                    await this.getLeftIndex();
                     this.updateUrl();
                     this.loadDiffer();
                 }
@@ -164,10 +165,10 @@
                 get () {
                     return this.$store.state.indexdiffer.rightAppId;
                 },
-                set (appId) {
+                async set (appId) {
                     this.rightIndexName = null;
                     this.$store.commit(`indexdiffer/setRightAppId`, appId);
-                    this.getRightIndex();
+                    await this.getRightIndex();
                     this.updateUrl();
                     this.loadDiffer();
                 }
@@ -176,9 +177,9 @@
                 get () {
                     return this.$store.state.indexdiffer.rightIndexName;
                 },
-                set (indexName) {
+                async set (indexName) {
                     this.$store.commit('indexdiffer/setRightIndexName', indexName);
-                    this.getRightIndex();
+                    await this.getRightIndex();
                     this.updateUrl();
                     this.loadDiffer();
                 }
@@ -201,6 +202,7 @@
                 const tmpAppId = this.leftAppId;
                 const tmpIndexName = this.leftIndexName;
 
+
                 this.leftAppId = this.rightAppId;
                 this.leftIndexName = this.rightIndexName;
                 this.rightAppId = tmpAppId;
@@ -212,13 +214,13 @@
             },
             getLeftIndex: async function () {
                 if (!this.leftAppId || !this.leftIndexName) return;
-                const client = await getSearchClient(this.leftAppId, this.adminAPIKey(this.leftAppId));
-                this.leftIndex = client.initIndex(this.leftIndexName);
+                const client = await getClient(this.leftAppId, this.adminAPIKey(this.leftAppId));
+                this.leftIndex = client.customInitIndex(this.leftIndexName);
             },
             getRightIndex: async function () {
                 if (!this.rightAppId || !this.rightIndexName) return;
-                const client = await getSearchClient(this.rightAppId, this.adminAPIKey(this.rightAppId));
-                this.rightIndex = client.initIndex(this.rightIndexName);
+                const client = await getClient(this.rightAppId, this.adminAPIKey(this.rightAppId));
+                this.rightIndex = client.customInitIndex(this.rightIndexName);
             },
             adminAPIKey: function (appId) {
                 return this.$store.state.apps[appId].key;
