@@ -65,12 +65,6 @@ const operations = [
     new Operation('GET', '/1/indexes/:idx/settings', (logItem, idx) => `<code>Get settings</code> for index <code>${idx}</code>`),
     new Operation('PUT', '/1/indexes/:idx/settings', (logItem, idx) => `<code>Set settings</code> for index <code>${idx}</code>`),
 
-    new Operation('POST', '/1/indexes/*/objects', () => 'Multiple Get objects'),
-    new Operation('POST', '/1/indexes/:idx/clear', (logItem, idx) => `<code>Clear objects</code> for index <code>${idx}</code>`),
-    new Operation('POST', '/1/indexes/:idx/batch', (logItem, idx) => `<code>Batch</code> ${logItem.nb_operations} objects in index <code>${idx}</code>`),
-    new Operation('POST', '/1/indexes/:idx/deleteByQuery', (logItem, idx) => `<code>Delete by query</code> for index <code>${idx}</code>`),
-    new Operation('POST', '/1/indexes/:idx/:id/partial', (logItem, idx, id) => `<code>Partial update object</code> ${id} for index <code>${idx}</code>`),
-
     new Operation('POST', '/1/indexes/:idx/operation', (logItem, idx) => `<code>Copy/Move index</code> ${idx}`),
     new Operation('GET', '/1/indexes', () => 'List indices'),
 
@@ -87,6 +81,13 @@ const operations = [
     new Operation('POST', '/1/indexes/:idx/rules/search', (logItem, idx) => `Search rules in index <code>${idx}</code>`),
     new Operation('GET', '/1/indexes/:idx/rules/:id', (logItem, idx, id) => `<code>Get rule</code> ${id} for index <code>${idx}</code>`),
     new Operation('PUT', '/1/indexes/:idx/rules/:id', (logItem, idx, id) => `<code>Add/Update rule</code> ${id} for index <code>${idx}</code>`),
+
+    new Operation('POST', '/1/indexes/*/objects', () => 'Multiple Get objects'),
+    new Operation('POST', '/1/indexes/:idx/clear', (logItem, idx) => `<code>Clear objects</code> for index <code>${idx}</code>`),
+    new Operation('POST', '/1/indexes/:idx/batch', (logItem, idx) => `<code>Batch</code> ${logItem.nb_operations} objects in index <code>${idx}</code>`),
+    new Operation('POST', '/1/indexes/:idx/deleteByQuery', (logItem, idx) => `<code>Delete by query</code> for index <code>${idx}</code>`),
+    new Operation('POST', '/1/indexes/:idx/:id/partial', (logItem, idx, id) => `<code>Partial update object</code> ${id} for index <code>${idx}</code>`),
+
 
     new Operation('POST', '/1/indexes/:idx/query', (logItem, idx) => {
         return `<code>Search</code> in index <code>${idx}</code> for objects containing <code>"${logItem.getQueries()[0]}"</code>`;

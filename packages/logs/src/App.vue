@@ -265,7 +265,7 @@
                     const promises = [];
                     for (let i = 0; i < this.servers.length; i++) {
                         const client = await getClient(this.appId, this.apiKey, this.servers[i]);
-                        promises.push(client.getLogs(options));
+                        promises.push(client.getLogs({queryParameters: options}));
                     }
                     const responses = await Promise.all(promises);
 
@@ -278,7 +278,7 @@
                     const mainCluster = this.servers.length > 0 ? this.servers[0] : -1;
                     const server = this.server === 'main cluster' ? mainCluster : this.server;
                     const client = await getClient(this.appId, this.apiKey, server);
-                    const res = await client.getLogs(options);
+                    const res = await client.getLogs({queryParameters: options});
                     logs.push(...res.logs.map(logItem => new LogItem(logItem, server)));
                 }
 
