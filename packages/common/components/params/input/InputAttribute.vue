@@ -38,7 +38,7 @@
             onBlur: function () {
                 if (this.customOnBlur) return this.customOnBlur();
                 this.removeEmptyElementInArray();
-                inputState.setInput('none');
+                this.inputState.setInput('none');
             },
             onSelected(value, e) {
                 if (value !== null) this.value = value;
