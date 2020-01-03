@@ -28,6 +28,8 @@ app.use('/relevance-testing', serveStatic(__dirname + "/packages/relevance-testi
 app.use('/index-differ', serveStatic(__dirname + "/packages/index-differ/dist"));
 app.use('/dictionaries', serveStatic(__dirname + "/packages/dictionaries/dist"));
 app.use('/index-size', serveStatic(__dirname + "/packages/index-size/dist"));
+app.use('/mlock-alerts', serveStatic(__dirname + "/packages/mlock-alerts/dist"));
+
 app.use((req, res) => {
     res.redirect("https://algolia-experimental.herokuapp.com/apps");
 });
