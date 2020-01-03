@@ -1,0 +1,44 @@
+.filter {
+  &-message {
+    .error {
+      color: #d73a49;
+    }
+    .valid {
+      color: #22863a;
+    }
+  }
+  .unexpected {
+    border-bottom: solid 2px;
+    border-color: #d73a49;
+  }
+  .token.Token_Empty_Str,
+  .token.Token_Incomplete_Str,
+  .token.Token_String,
+  .token.Token_Term {
+    color: darkorange;
+  }
+  .token.Token_Error {
+    color: #d73a49;
+  }
+  .token.Token_Open_Backet,
+  .token.Token_Close_Bracket,
+  .token.Token_Open_Angled_Bracket,
+  .token.Token_Close_Angled_Bracket,
+  .token.Token_Coma,
+  .token.Token_Facet_Separator {
+    color: #0044dd;
+  }
+  .token.Token_Num {
+    color: #6f42c1;
+  }
+  .token.Token_OR,
+  .token.Token_AND,
+  .token.Token_NOT,
+  .token.Token_Operator,
+  .token.Token_Range {
+    color: #22863a;
+  }
+  .Token_EOF {
+    @apply text-transparent;
+  }
+}

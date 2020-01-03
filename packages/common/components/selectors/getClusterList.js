@@ -9,7 +9,7 @@ function sleep(ms) {
 
 let key = null;
 
-async function getKey() {
+export async function getKey() {
     const backendEndpoint = process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT || 'https://algolia-apps-backend.herokuapp.com';
 
     const res = await fetch(`${backendEndpoint}/applications-search-key`, {
