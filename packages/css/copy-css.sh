@@ -1,0 +1,9 @@
+cp ./dist/all.css ../apps/public/all.css;
+cp ./dist/all.css ../dictionaries/public/all.css;
+cp ./dist/all.css ../index-differ/public/all.css;
+cp ./dist/all.css ../index-manager/public/all.css;
+cp ./dist/all.css ../index-size/public/all.css;
+cp ./dist/all.css ../logs/public/all.css;
+cp ./dist/all.css ../metaparams/public/all.css;
+cp ./dist/all.css ../mlock-alerts/public/all.css;
+cp ./dist/all.css ../relevance-testing/public/all.css;

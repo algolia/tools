@@ -25,3 +25,6 @@ src/assets/css/all.css
 stopwords*
 venv
 packages/dictionaries/dictionaries
+
+**/public/all.css
+**/dist

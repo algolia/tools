@@ -6,17 +6,13 @@
         "serve": "vue-cli-service serve",
         "build": "vue-cli-service build",
         "start": "node server.js",
-        "lint": "vue-cli-service lint",
-        "css": "tailwind build src/assets/css/main.scss -c ../common/tailwind/index.js -o src/assets/css/all.css"
+        "lint": "vue-cli-service lint"
     },
     "dependencies": {
         "highlight.js": "^9.15.6",
         "vue-highlight.js": "^3.1.0",
         "algoliasearch": "beta",
         "common": "^0.0.0",
-        "css-loader": "^2.1.0",
-        "node-sass": "^4.11.0",
-        "sass-loader": "^7.1.0",
         "vue": "^2.6",
         "vuex": "^3.1.0"
     },

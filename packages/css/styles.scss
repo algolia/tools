@@ -1,0 +1,141 @@
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+html {
+    line-height: 1.15;
+}
+img, svg, video, canvas, audio, iframe, embed, object {
+    display: inline;
+    vertical-align: middle;
+}
+h1 {
+    font-size: 2em;
+    font-weight: bolder;
+}
+h2 {
+    font-size: 1.5em;
+    font-weight: bolder;
+}
+h3 {
+    font-size: 1.17em;
+    font-weight: bolder;
+}
+h4 {
+    font-size: 1em;
+    font-weight: bolder;
+}
+h5 {
+    font-size: .83em;
+    font-weight: bolder;
+}
+h6 {
+    font-size: .75em;
+    font-weight: bolder;
+}
+
+input, input:focus, button, button:focus {
+  outline:none;
+}
+
+.input-custom {
+  @apply flex items-center rounded text-sm bg-white shadow pl-8 outline-none;
+
+  &:hover {
+    @apply shadow-md;
+  }
+}
+
+.infinte-rotate {
+  -webkit-animation: infinte-rotate 4s infinite linear;
+  animation: infinte-rotate 4s infinite linear;
+}
+
+@-webkit-keyframes infinte-rotate {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg);
+  }
+}
+@keyframes infinte-rotate {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg);
+  }
+}
+
+.autosuggest__results_item-highlighted {
+  border: solid 1px red;
+}
+
+.dropdown em {
+  text-decoration: underline;
+  font-style: normal;
+}
+
+.hit em, .ais-Highlight mark {
+  background: rgba(84, 104, 255, 0.1);
+  color: #5468ff;
+  font-style: normal;
+}
+
+.json-token.key {
+}
+.json-token.string {
+  @apply text-cosmos-black-opacity-70;
+}
+.json-token.boolean {
+  @apply text-neptune-0;
+}
+.json-token.number {
+  word-break: break-word;
+  @apply text-neptune-0;
+}
+.json-token.null {
+  @apply text-neptune-0;
+}
+.json-token-wrapper {
+  color: rgb(128, 128, 128);
+}
+
+pre {
+  margin: 0;
+  font-family: Times, sans-serif;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.inset-x-auto {
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.inset-y-auto {
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.inset-y-full {
+  top: 0;
+  transform: translateY(-100%);
+}
+
+.inset-x-auto-y-full {
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -100%);
+}
