@@ -19,6 +19,7 @@ app.use(history({
 }));
 
 
+app.use('/css', serveStatic(__dirname + "/packages/css/dist"));
 app.use('/apps', serveStatic(__dirname + "/packages/apps/dist"));
 app.use('/logs', serveStatic(__dirname + "/packages/logs/dist"));
 app.use('/metaparams', serveStatic(__dirname + "/packages/metaparams/dist"));

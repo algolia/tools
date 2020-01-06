@@ -4,9 +4,14 @@
             <app-header app-name="Mlock Alerts" />
             <div class="max-w-960 mx-auto mt-24">
                 <div class="bg-white rounded border border-proton-grey-opacity-60 px-24">
-                    <failing-group :group="failing" group-name="Failing"/>
-                    <failing-group :group="newlyFailing" group-name="New Failing"/>
-                    <failing-group :group="recovered" group-name="Recovered"/>
+                    <template v-if="!isEmpty">
+                        <failing-group :group="failing" group-name="Failing"/>
+                        <failing-group :group="newlyFailing" group-name="New Failing"/>
+                        <failing-group :group="recovered" group-name="Recovered"/>
+                    </template>
+                    <div v-else class="p-8 text-center text-cosmos-black-opacity-70">
+                        No problem
+                    </div>
                 </div>
             </div>
         </div>
@@ -47,6 +52,11 @@
             this.failing = await this.extractClusters(json.failingSeries, index);
             this.newlyFailing = await this.extractClusters(json.newlyFailingSeries, index);
             this.recovered = await this.extractClusters(json.recoveredSeries, index);
+        },
+        computed: {
+            isEmpty: function () {
+                return this.failing.length === 0 && this.newlyFailing.length === 0 && this.recovered.length === 0;
+            }
         },
         methods: {
             extractClusters: async function (series, index) {
@@ -100,8 +110,3 @@
         }
     }
 </script>
-
-<style lang="scss">
-    @import url("https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700|Hind:400,600");
-    @import "./src/assets/css/main";
-</style>

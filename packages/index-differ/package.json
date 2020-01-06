@@ -6,15 +6,13 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "start": "node server.js",
-    "lint": "vue-cli-service lint",
-    "css": "tailwind build src/assets/css/main.scss -c ../common/tailwind/index.js -o src/assets/css/all.css"
+    "lint": "vue-cli-service lint"
   },
   "dependencies": {
     "algolia-filters-js-syntax-validator": "^1.0.1",
     "algoliasearch": "beta",
     "chart.js": "^2.8.0",
     "common": "^0.0.0",
-    "css-loader": "^2.1.0",
     "decode-uri-component": "^0.2.0",
     "dedent": "^0.7.0",
     "diff": "^4.0.1",
@@ -22,9 +20,7 @@
     "express": "^4.16.4",
     "js-yaml-loader": "^1.0.1",
     "moment": "^2.24.0",
-    "node-sass": "^4.11.0",
     "prismjs": "^1.15.0",
-    "sass-loader": "^7.1.0",
     "serve-static": "^1.13.2",
     "vue": "^2.6",
     "vue-chartjs": "^3.4.2",

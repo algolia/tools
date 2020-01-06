@@ -1,10 +1,7 @@
 <template>
     <internal-app>
         <div class="min-h-screen">
-            <app-header>
-                <display-config class="mx-16 mt-0 ml-auto"/>
-            </app-header>
-            <app-management />
+            <app-header />
             <div class="max-w-960 mx-auto mt-24" v-for="group in appsGroups">
                 <h2 class="text-solstice-blue-opacity-80">{{group.name}}</h2>
                 <p class="text-solstice-blue-opacity-80">{{group.description}}</p>
@@ -26,11 +23,10 @@
     import InternalApp from "common/components/app/InternalApp";
     import AppHeader from "common/components/header/AppHeader";
     import AppManagement from "common/components/configuration/AppManagement";
-    import DisplayConfig from "@/DisplayConfig";
 
     export default {
         name: 'Home',
-        components: {InternalApp, DisplayConfig, AppHeader, AppManagement},
+        components: {InternalApp, AppHeader, AppManagement},
         data: function () {
             return {
                 appsGroups: [
@@ -64,8 +60,3 @@
         },
     }
 </script>
-
-<style lang="scss">
-    @import url("https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700|Hind:400,600");
-    @import "./src/assets/css/main";
-</style>
