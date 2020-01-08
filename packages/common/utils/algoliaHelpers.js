@@ -41,30 +41,35 @@ export async function getClient(appId, apiKey, server) {
     const cacheKey = `${appId}-${apiKey}-${server}`;
     if (clientCache[cacheKey]) return clientCache[cacheKey];
 
-    const client = addMethods(
-        algoliasearch(appId, apiKey || ' ', {logLevel: 1}),
-        {
-            customInitIndex: function (base) {
-                return function (indexName) {
-                    const index = base.initIndex(indexName);
-                    return {
-                        ...index,
-                        ...customIndexMethods,
-                    }
-                };
-            }
-        }
-    );
-
-    client.transporter.requestsCache = createNullCache();
-    client.transporter.responsesCache = createNullCache();
-    client.transporter.hostsCache = createNullCache();
-    client.transporter.setHosts(getHosts(appId, apiKey, server));
+    let headers = {};
 
     if (apiKey) {
         const signature = await getSignature(appId);
-        client.transporter.addHeaders({'X-Algolia-Signature': signature});
+        headers['X-Algolia-Signature'] = signature;
     }
+
+    const logger = createConsoleLogger({ logLevel: 1});
+    const cache = createNullCache();
+    const baseClient = algoliasearch(appId, apiKey || ' ', {
+        requestsCache: cache,
+        responsesCache: cache,
+        hostsCache: cache, // no retry strategy at all.
+        logger: logger,
+        hosts: getHosts(appId, apiKey, server),
+        headers: headers,
+    });
+
+    const client = addMethods(baseClient, {
+        customInitIndex: function (base) {
+            return function (indexName) {
+                const index = base.initIndex(indexName);
+                return {
+                    ...index,
+                    ...customIndexMethods,
+                }
+            };
+        }
+    });
 
     clientCache[cacheKey] = client;
     return client;
