@@ -1,5 +1,6 @@
 import algoliasearch from 'algoliasearch';
 import {createNullCache} from '@algolia/cache-common';
+import {createConsoleLogger} from '@algolia/logger-console';
 import {addMethods} from '@algolia/client-common';
 import getSignature from "./signature";
 import customIndexMethods from "./customIndexMethods";
@@ -48,7 +49,7 @@ export async function getClient(appId, apiKey, server) {
         headers['X-Algolia-Signature'] = signature;
     }
 
-    const logger = createConsoleLogger({ logLevel: 1});
+    const logger = createConsoleLogger(1);
     const cache = createNullCache();
     const baseClient = algoliasearch(appId, apiKey || ' ', {
         requestsCache: cache,
