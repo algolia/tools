@@ -1,15 +1,12 @@
 import Vue from 'vue';
 import store from 'common/store/store';
 import VueRouter from 'vue-router';
-import VueInputAutowidth from 'vue-input-autowidth';
 import App from "@/App";
 import Suite from "@/relevance-testing/suite/Suite";
 import Suites from "@/relevance-testing/suites/Suites";
 
 Vue.config.productionTip = false;
 Vue.config.performance = true;
-
-Vue.use(VueInputAutowidth);
 
 Vue.use(VueRouter);
 const router = new VueRouter({

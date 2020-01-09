@@ -15,10 +15,14 @@
 </template>
 
 <script>
+    import VueInputAutowidth from 'vue-input-autowidth';
     import inputMixin from "../scripts/inputMixin";
-
+    
     export default {
         name: 'InputString',
         mixins: [inputMixin],
+        directives: {
+            autowidth: VueInputAutowidth,
+        },
     }
 </script>

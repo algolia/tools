@@ -31,6 +31,8 @@
     </div>
 </template>
 <script>
+    import VueInputAutowidth from 'vue-input-autowidth';
+
     export default {
         name: 'autocomplete',
         props: ['items', 'refine', 'value', 'displayEmptyQuery', 'placeholder'],
@@ -44,6 +46,9 @@
                 allowBlur: true,
                 focused: false,
             };
+        },
+        directives: {
+            autowidth: VueInputAutowidth,
         },
         mounted: function () {
             this.refine(this.currentQuery);

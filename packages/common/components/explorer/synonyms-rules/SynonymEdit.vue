@@ -70,6 +70,7 @@
 </template>
 
 <script>
+    import VueInputAutowidth from 'vue-input-autowidth';
     import LoaderIcon from 'common/icons/loader.svg'
     import synonymMixin from "./synonymMixin";
     import {getSearchIndex} from "../../../utils/algoliaHelpers";
@@ -83,6 +84,9 @@
             'synonym', 'allowSaveWithoutEdit',
             ...props.credentials,
         ],
+        directives: {
+            autowidth: VueInputAutowidth,
+        },
         data: function () {
             return {
                 saving: false,

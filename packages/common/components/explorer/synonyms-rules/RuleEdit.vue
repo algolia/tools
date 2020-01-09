@@ -326,6 +326,8 @@
 </template>
 
 <script>
+    import VueInputAutowidth from 'vue-input-autowidth';
+
     import AceEditor from "../../editor/AceEditor";
     import Params from "../../params/Params";
     import IntermediateRule from "./intermediateRule";
@@ -347,6 +349,9 @@
             ...props.paramsAndSettings,
         ],
         components: {PromotedHit, HitAutocomplete, Params, AceEditor, TrashIcon, LoaderIcon},
+        directives: {
+            autowidth: VueInputAutowidth,
+        },
         data: function () {
             const data = {
                 oldRule: new IntermediateRule(this.rule),
