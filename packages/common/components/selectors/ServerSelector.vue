@@ -20,7 +20,7 @@
     export default {
         name: 'ServerSelector',
         components: {ServerIcon, CustomSelect},
-        props: ['appId', 'value', 'displayMainCluster', 'displayMainClusterMachines', 'displayAllOption', 'displayDsn'],
+        props: ['appId', 'value', 'displayMainCluster', 'displayMainClusterMachines', 'displayAllOption', 'displayDsn', 'displayAllClusters', 'resetOnChangeAppId'],
         data: function () {
             return {options: []};
         },
@@ -28,8 +28,14 @@
             this.loadClusterList();
         },
         watch: {
-            appId: function () {
-                this.loadClusterList();
+            appId: async function () {
+                if (this.resetOnChangeAppId) {
+                    this.$emit('input', null);
+                }
+                await this.loadClusterList();
+                if (this.value === null && this.options.length > 0) {
+                    this.$emit('input', this.options[0]);
+                }
             },
         },
         methods: {
@@ -41,8 +47,12 @@
                 if (this.displayDsn) options.push('-dsn');
                 if (this.displayMainClusterMachines) options.push('-1', '-2', '-3');
 
-                const clusters = await getClusterList(this.appId);
-                this.options = [...options, ...clusters.slice(1)];
+                const clusters = await getClusterList(this.appId, true);
+                if (this.displayAllClusters) {
+                    this.options = [...options, ...clusters];
+                } else {
+                    this.options = [...options, ...clusters.slice(1)];
+                }
             }
         }
     }

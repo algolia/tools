@@ -40,7 +40,7 @@ export default async function (appId, getListWithoutDsn) {
 
     const res = await index.search('', {filters: `application_id:${appId}`});
 
-    if (res.hits.length > 0 && res.hits[0].clusters_and_replicas_names && res.hits[0].clusters_and_replicas_names.length >= 1) {
+    if (res.hits.length > 0 && res.hits[0].clusters_and_replicas_names && res.hits[0].clusters_and_replicas_names.length >= 0) {
         if (getListWithoutDsn) {
             cache[appId] = res.hits[0].clusters_and_replicas_names;
         } else {

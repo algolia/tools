@@ -5,6 +5,7 @@
         string-value-attribute="name"
         :options="indicesWithForced"
         :refine="refine"
+        :allow-free-text="allowFreeText"
     >
         <template slot="icon"><list-icon class="block w-12 h-12 mr-8 -mt-1 fill-current"/></template>
         <template v-slot:default="{option, inDropDown, isSelected, highlightString}">
@@ -32,7 +33,7 @@
     export default {
         name: "IndexSelector",
         components: {AppSelector, CustomSelect, BoxIcon, ListIcon},
-        props: ["appId", "value", "forcedIndices"],
+        props: ["appId", "value", "forcedIndices", "allowFreeText"],
         data: function () {
             return {
                 allIndices: [],

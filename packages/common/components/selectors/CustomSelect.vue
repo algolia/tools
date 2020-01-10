@@ -59,10 +59,10 @@
 
     export default {
         name: 'CustomSelect',
-        props: ['value', 'options', 'displayEmptyQuery', 'refine', 'stringValueAttribute'],
+        props: ['value', 'options', 'displayEmptyQuery', 'refine', 'stringValueAttribute', 'allowFreeText'],
         components: {ChevronDownIcon},
         data: function () {
-            const value = this.stringValueAttribute ? this.value[this.stringValueAttribute] : this.value;
+            const value = this.stringValueAttribute && this.value ? this.value[this.stringValueAttribute] : this.value;
             return {
                 allowBlur: true,
                 selectedIndex: -1,
@@ -86,7 +86,7 @@
         },
         computed: {
             stringValue: function () {
-                return this.stringValueAttribute ? this.value[this.stringValueAttribute] : (this.value || '');
+                return this.stringValueAttribute && this.value ? this.value[this.stringValueAttribute] : (this.value || '');
             }
         },
         methods: {
@@ -151,7 +151,11 @@
                 if (this.selectedIndex !== -1 && this.options.length > 0) {
                     this.$emit('input', this.options[this.selectedIndex]);
                 } else {
-                    this.$emit('onSelected', this.query, e);
+                    if (this.allowFreeText && this.query.length > 0) {
+                        this.$emit('input', {name: this.query});
+                    } else {
+                        this.$emit('onSelected', this.query, e);
+                    }
                 }
 
                 this.selectedIndex = this.query.length === 0 && !this.displayEmptyQuery ? -1 : 0;
