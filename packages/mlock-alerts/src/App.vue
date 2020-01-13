@@ -99,10 +99,17 @@
                                 email: hit.user_email,
                             };
                         }
-                        newClusters[mainCluster].users[hit.user_email].apps.push({
-                            appId: hit.application_id,
-                            adminUrl: `https://admin.algolia.com/admin/users/${hit.user_id}/applications/${hit.application_id}`,
-                        });
+
+                        const foundApp = newClusters[mainCluster].users[hit.user_email].apps.findIndex((e) => {
+                            return hit.application_id === e.appId;
+                        }) !== -1;
+
+                        if (!foundApp) {
+                            newClusters[mainCluster].users[hit.user_email].apps.push({
+                                appId: hit.application_id,
+                                adminUrl: `https://admin.algolia.com/admin/users/${hit.user_id}/applications/${hit.application_id}`,
+                            });
+                        }
                     });
                 });
 
