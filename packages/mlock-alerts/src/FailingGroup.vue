@@ -20,7 +20,7 @@
                         >{{dsn}}</a><span v-if="dsn !== group[cluster].dsns[group[cluster].dsns.length - 1]">,&nbsp;</span>
                     </span>&nbsp;|
                     <a
-                        :href="`https://metrics.wavefront.com/dashboards/cluster-analysis#_v01(p:(cluster:(l:'Cluster%20regex',v:'${cluster
+                        :href="`https://metrics.wavefront.com/dashboards/cluster-analysis#_v01(p:(cluster:(l:'Cluster%20regex',v:'${group[cluster]
                         .cluster}-*${group[cluster].dsns.map((dsn) => `%20or%20source=${dsn}-*`).join('')}'),cluster-name:${group[cluster].cluster}))`"
                         target="_blank"
                         class="text-nebula-blue cursor-pointer hover:underline"
