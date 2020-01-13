@@ -1,9 +1,9 @@
-cp ./dist/all.css ../apps/public/all.css;
-cp ./dist/all.css ../dictionaries/public/all.css;
-cp ./dist/all.css ../index-differ/public/all.css;
-cp ./dist/all.css ../index-manager/public/all.css;
-cp ./dist/all.css ../index-size/public/all.css;
-cp ./dist/all.css ../logs/public/all.css;
-cp ./dist/all.css ../metaparams/public/all.css;
-cp ./dist/all.css ../mlock-alerts/public/all.css;
-cp ./dist/all.css ../relevance-testing/public/all.css;
+cp ./dist/all.css ./favicon.ico ../apps/public/;
+cp ./dist/all.css ./favicon.ico ../dictionaries/public/;
+cp ./dist/all.css ./favicon.ico ../index-differ/public/;
+cp ./dist/all.css ./favicon.ico ../index-manager/public/;
+cp ./dist/all.css ./favicon.ico ../index-size/public/;
+cp ./dist/all.css ./favicon.ico ../logs/public/;
+cp ./dist/all.css ./favicon.ico ../metaparams/public/;
+cp ./dist/all.css ./favicon.ico ../mlock-alerts/public/;
+cp ./dist/all.css ./favicon.ico ../relevance-testing/public/;

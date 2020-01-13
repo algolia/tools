@@ -4,7 +4,7 @@
             <div class="flex px-16 py-12">
                 <div class="flex w-full">
                     <div class="flex items-center text-telluric-blue mr-16 text-lg">
-                        <algolia-logo class="w-20 h-20 mr-8"/>
+                        <algolia-logo-experimental class="w-20 h-20 mr-8"/>
                         <div class="mr-4 mt-2"><a href="/apps">{{appName ? 'Apps' : 'Experimental Apps'}}</a></div>
                         <chevron-left v-if="appName" class="w-12 h-12 rotate-180 mr-4" />
                         <div v-if="appName" class="mt-2 font-bold">{{appName}}</div>
@@ -17,12 +17,12 @@
 </template>
 
 <script>
-    import AlgoliaLogo from "../../icons/logo.svg";
+    import AlgoliaLogoExperimental from "../../icons/logo-experimental.svg";
     import ChevronLeft from "../../icons/chevron-left.svg";
 
     export default {
         name: 'AppHeader',
         props: ['appName'],
-        components: {AlgoliaLogo, ChevronLeft},
+        components: {AlgoliaLogoExperimental, ChevronLeft},
     }
 </script>
