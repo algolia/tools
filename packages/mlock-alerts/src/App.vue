@@ -62,50 +62,53 @@
             extractClusters: async function (series, index) {
                 const clusters = series.map((x) => {
                     return x[2][0].split('=')[1];
+                }).filter((clusterName) => {
+                    return clusterName.startsWith('v') || clusterName.startsWith('d') || clusterName.startsWith('t');
                 });
 
-                const promises = clusters.filter((clusterName) => {
-                    return clusterName.startsWith('v') || clusterName.startsWith('d') || clusterName.startsWith('t');
-                }).map(async (clusterName) => {
+                const newClusters = {};
+
+                const promises = clusters.map(async (clusterName) => {
                     const res = await index.search('', {
                         'filters': `clusters_and_replicas_names:${clusterName}`,
                         'hitsPerPage': 50,
                     });
 
-                    return {
-                        clusters: [clusterName],
-                        apps: res.hits.map((hit) => {
-                            return {
-                                appId: hit.application_id,
+                    res.hits.forEach((hit) => {
+                        const clustersFromMachine = hit.clusters_and_replicas_names.sort((a, b) => {
+                            if (a.startsWith('d')) return -1;
+                            return 1;
+                        });
+                        const mainCluster = clustersFromMachine[0];
+
+                        if (newClusters[mainCluster] === undefined) {
+                            newClusters[mainCluster] = {
+                                cluster: mainCluster,
+                                dsns: [],
+                                users: {},
+                            };
+                        }
+                        if (mainCluster !== clusterName) {
+                            newClusters[mainCluster].dsns.push(clusterName);
+                        }
+
+                        if (newClusters[mainCluster].users[hit.user_email] === undefined) {
+                            newClusters[mainCluster].users[hit.user_email] = {
+                                apps: [],
                                 company: hit.user_company,
                                 email: hit.user_email,
-                                clusters: hit.clusters_and_replicas_names,
-                                adminUrl: `https://admin.algolia.com/admin/users/${hit.user_id}/applications/${hit.application_id}`,
                             };
-                        })
-                    };
-                });
-
-                const clustersReformated = await Promise.all(promises);
-
-                const alreadySeenClusters = {};
-
-                return clustersReformated.filter((c) => {
-                    const keep = alreadySeenClusters[c.clusters[0]] === undefined;
-                    c.apps.forEach((app) => {
-                        app.clusters.forEach((appCluster) => {
-                            if (alreadySeenClusters[appCluster] === undefined) {
-                                alreadySeenClusters[appCluster] = c;
-                            }
+                        }
+                        newClusters[mainCluster].users[hit.user_email].apps.push({
+                            appId: hit.application_id,
+                            adminUrl: `https://admin.algolia.com/admin/users/${hit.user_id}/applications/${hit.application_id}`,
                         });
                     });
-
-                    if (!keep) {
-                        alreadySeenClusters[c.clusters[0]].clusters.push(c.clusters[0]);
-                    }
-
-                    return keep;
                 });
+
+                await Promise.all(promises);
+
+                return newClusters;
             }
         }
     }
