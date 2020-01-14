@@ -280,14 +280,14 @@
                         browseTask.setNth(0);
                         browseTask.setOutOf(Math.ceil(nbToCopy / config.hitsPerPage));
                         let resAdd = await config.dstIndex.saveObjects(res.hits);
-                        resAdd.forEach((resAddN) => tasksGroup.addAlgoliaTaskId(resAddN.taskID));
+                        resAdd.taskIDs.forEach((resAddN) => tasksGroup.addAlgoliaTaskId(resAddN));
                         browseTask.setNth(res.page + 1);
 
                         while (res.cursor && (!this.limitCopy.enabled || nbCopied < this.limitCopy.nbHits)) {
                             res = await config.srcIndex.customBrowse({cursor: res.cursor});
                             nbCopied += res.hits.length;
                             resAdd = await config.dstIndex.saveObjects(res.hits);
-                            resAdd.forEach((resAddN) => tasksGroup.addAlgoliaTaskId(resAddN.taskID));
+                            resAdd.taskIDs.forEach((resAddN) => tasksGroup.addAlgoliaTaskId(resAddN));
                             browseTask.setNth(res.page + 1);
                         }
                     });
@@ -307,7 +307,7 @@
                             delete(hit._snippetResult);
                             return hit;
                         }));
-                        resAdd.forEach((resAddN) => tasksGroup.addAlgoliaTaskId(resAddN.taskID));
+                        resAdd.taskIDs.forEach((resAddN) => tasksGroup.addAlgoliaTaskId(resAddN));
                     }));
                 }
 
