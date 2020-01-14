@@ -24,7 +24,7 @@
         <template v-if="!collapse">
             <template v-for="(test, testPos) in filteredTests">
                 <tr><td colspan="0" class="h-2 bg-moon-grey"></td></tr>
-                <tr :key="test.id">
+                <tr class="h-full" :key="test.id">
                     <td class="h-1 w-500 min-w-500">
                         <edit-test
                             :test="test"

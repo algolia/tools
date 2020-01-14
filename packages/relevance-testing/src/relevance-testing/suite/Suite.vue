@@ -3,7 +3,7 @@
         <div class="flex">
             <div>
                 <table class="w-full">
-                    <tr>
+                    <tr class="h-full">
                         <td class="w-500 min-w-500">
                             <div class="px-12">
                                 <h2 class="text-telluric-blue">

@@ -43,15 +43,18 @@
                                    </optgroup>
                                    <optgroup label="Basic requirement">
                                        <option value="objectID">has objectID</option>
-                                       <option value="position">is at position</option>
+                                   </optgroup>
+                                   <optgroup label="Position requirement">
+                                       <option value="position">position value</option>
+                                       <option value="positionOperator">position operator</option>
                                    </optgroup>
                                    <optgroup label="nbHits requirement">
-                                       <option value="nbhitsCount">N hits</option>
-                                       <option value="nbHitsOperator">is at position</option>
+                                       <option value="nbhitsCount">nbHits value</option>
+                                       <option value="nbHitsOperator">nbHits operator</option>
                                    </optgroup>
                                    <optgroup label="Attribute requirement">
                                        <option value="contains">contains N</option>
-                                       <option value="containsOperator">containsOperator</option>
+                                       <option value="containsOperator">contains operator</option>
                                        <option value="attributeName">attribute name</option>
                                        <option value="operator">attribute operator</option>
                                        <option value="attributeValue">attribute value</option>
@@ -149,8 +152,16 @@
                         value: 1,
                         recordsMatching: []
                     };
+                    let positionRequirement = {
+                        type: "position",
+                        key: "position",
+                        operator: "=",
+                        value: 0,
+                    };
+
                     let addRequirement = false;
                     let addNbHitsRequirement = false;
+                    let addPositionRequirement = false;
 
                     this.columnTypes.forEach((columnType, i) => {
                         if (columnType === 'query') {
@@ -199,25 +210,24 @@
                                 ],
                             })
                         } else if (columnType === 'position') {
-                            then.push({
-                                test: "contains",
-                                operator: "=",
-                                value: 1,
-                                recordsMatching: [
-                                    {
-                                        type: "position",
-                                        key: "position",
-                                        operator: "=",
-                                        value: row[i],
-                                    },
-                                ],
-                            })
+                            const value = parseFloat(row[i]);
+                            if (!isNaN(value)) {
+                                positionRequirement.value = value;
+                                addPositionRequirement = true;
+                            }
+                        } else if (columnType === 'positionOperator') {
+                            positionRequirement.operator = row[i];
                         } else if (columnType === 'description') {
                             description = row[i];
                         }
                     });
 
-                    if (addRequirement) then.push(requirement);
+                    if (addRequirement) {
+                        if (addPositionRequirement) {
+                            requirement.recordsMatching.push(positionRequirement);
+                        }
+                        then.push(requirement);
+                    }
                     if (addNbHitsRequirement) then.push(nbHitsRequirement);
 
                     if (query.length > 0 && queries[query]) {
