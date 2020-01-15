@@ -71,7 +71,7 @@
             <pagination
                 @onUpdatePage="page = $event"
                 :page="page"
-                :nb-pages="Math.floor(diffs.length / hitsPerPage)"
+                :nb-pages="Math.ceil(diffs.length / hitsPerPage)"
             />
         </div>
     </div>
@@ -94,6 +94,12 @@
                 hitsPerPage: 100,
                 page: 0,
             }
+        },
+        watch: {
+            filterAdded: function () { this.page = 0; },
+            filterRemoved: function () { this.page = 0; },
+            filterModified: function () { this.page = 0; },
+            filterUntouched: function () { this.page = 0; },
         },
         created: function () {
             this.$root.$on('resetPage', () => this.page = 0);

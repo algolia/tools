@@ -12,7 +12,14 @@
                 }"
             >
                 <div v-if="!diff.added" class="ml-8">
-                    <div>{{diff.value}}</div>
+                    <div>
+                        {{diff.value}}
+                        <span v-if="diff.value.startsWith('http')">
+                            <a @click.stop target="_blank" :href="diff.value" class="text-nebula-blue">
+                                <external-link class="w-12 h-12 -mt-2" />
+                            </a>
+                        </span>
+                    </div>
                 </div>
             </div>
             <div
@@ -23,7 +30,14 @@
                 }"
             >
                 <div class="ml-8" v-if="!diff.removed">
-                    <div>{{diff.value}}</div>
+                    <div>
+                        {{diff.value}}s
+                        <span v-if="diff.value.startsWith('http')">
+                            <a @click.stop target="_blank" :href="diff.value" class="text-nebula-blue">
+                                <external-link class="w-12 h-12 -mt-2" />
+                            </a>
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -39,9 +53,11 @@
 
 <script>
     import CompareStrings from "@/index-differ/CompareStrings";
+    import ExternalLink from "common/icons/external-link.svg";
+
     export default {
         name: 'RecordDiff',
-        components: {CompareStrings},
+        components: {CompareStrings, ExternalLink},
         props: ['diff'],
         data: function () {
             return {
