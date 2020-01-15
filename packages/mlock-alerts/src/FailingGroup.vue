@@ -3,7 +3,11 @@
         <h2 class="text-solstice-blue-opacity-80">
             {{groupName}}
         </h2>
-        <div v-for="cluster in Object.keys(group).sort((a, b) => { return a.localeCompare(b); })" class="mt-24 pb-12 border-b border-proton-grey-opacity-40">
+        <div
+            v-for="(cluster, i) in Object.keys(group).sort((a, b) => { return a.localeCompare(b); })"
+            class="mt-24 pb-12"
+            :class="Object.keys(group).length - 1 !== i ? 'border-b border-proton-grey-opacity-40' : ''"
+        >
             <div class="flex">
                 <div class="w-third">
                     <div v-for="(user, email) in group[cluster].users" class="mb-8">
