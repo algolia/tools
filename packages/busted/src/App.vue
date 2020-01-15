@@ -8,7 +8,15 @@
                         <tr v-for="bust in busted">
                             <td class="px-12">{{bust.name}}</td>
                             <td class="px-12">{{bust.email}}</td>
-                            <td class="px-12"><a :href="bust.adminUrl">{{bust.appId}}</a></td>
+                            <td class="px-12">
+                                <a
+                                    :href="bust.adminUrl"
+                                    class="text-nebula-blue cursor-pointer hover:underline"
+                                    target="_blank"
+                                >
+                                    {{bust.appId}}
+                                </a>
+                            </td>
                             <td class="px-12">{{bust.cluster}}</td>
                         </tr>
                     </table>
