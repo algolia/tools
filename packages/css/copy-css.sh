@@ -7,3 +7,4 @@ cp ./dist/all.css ./favicon.ico ../logs/public/;
 cp ./dist/all.css ./favicon.ico ../metaparams/public/;
 cp ./dist/all.css ./favicon.ico ../mlock-alerts/public/;
 cp ./dist/all.css ./favicon.ico ../relevance-testing/public/;
+cp ./dist/all.css ./favicon.ico ../busted/public/;
