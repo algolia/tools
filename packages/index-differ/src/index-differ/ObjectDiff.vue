@@ -31,7 +31,7 @@
             >
                 <div class="ml-8" v-if="!diff.removed">
                     <div>
-                        {{diff.value}}s
+                        {{diff.value}}
                         <span v-if="diff.value.startsWith('http')">
                             <a @click.stop target="_blank" :href="diff.value" class="text-nebula-blue">
                                 <external-link class="w-12 h-12 -mt-2" />
