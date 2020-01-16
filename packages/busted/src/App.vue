@@ -8,6 +8,9 @@
                         <tr v-for="bust in busted">
                             <td class="px-12">{{bust.name}}</td>
                             <td class="px-12">{{bust.email}}</td>
+                            <td>
+                                {{bust.appName}}
+                            </td>
                             <td class="px-12">
                                 <a
                                     :href="bust.adminUrl"
@@ -58,6 +61,7 @@
                                         name: application.user_full_name,
                                         email: application.user_email,
                                         appId: application.application_id,
+                                        appName: application.name,
                                         cluster: cluster,
                                         adminUrl: `https://admin.algolia.com/admin/users/${application.user_id}/applications/${application.application_id}`,
                                     });
