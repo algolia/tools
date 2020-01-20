@@ -6,7 +6,6 @@
                 <div class="bg-white rounded border border-proton-grey-opacity-60 px-24">
                     <template v-if="!isEmpty">
                         <failing-group :group="failing" group-name="Failing"/>
-                        <failing-group :group="newlyFailing" group-name="New Failing"/>
                         <failing-group :group="recovered" group-name="Recovered"/>
                     </template>
                     <div v-else class="p-8 text-center text-cosmos-black-opacity-70">
@@ -31,7 +30,6 @@
         data: function () {
             return {
                 failing: [],
-                newlyFailing: [],
                 recovered: [],
             };
         },
@@ -50,12 +48,11 @@
             const index = client.initIndex('applications_production');
 
             this.failing = await this.extractClusters(json.failingSeries, index);
-            this.newlyFailing = await this.extractClusters(json.newlyFailingSeries, index);
             this.recovered = await this.extractClusters(json.recoveredSeries, index);
         },
         computed: {
             isEmpty: function () {
-                return this.failing.length === 0 && this.newlyFailing.length === 0 && this.recovered.length === 0;
+                return this.failing.length === 0 && this.recovered.length === 0;
             }
         },
         methods: {
