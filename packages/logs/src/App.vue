@@ -258,6 +258,7 @@
                     await this.insightsFetcher.fetchLogs(this.allIndices),
                 ];
 
+
                 const [searchLogs, analyticsLogs] = await Promise.all(promises);
                 const mergedLogs = [...searchLogs, ...analyticsLogs];
 

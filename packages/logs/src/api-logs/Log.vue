@@ -87,7 +87,7 @@
                     </div>
                 </div>
             </div>
-            <div class="mt-24">
+            <div class="mt-24 mb-24">
                 <h3>Response</h3>
                 <div class="p-8">
                     <pre>{{logItem.response.trim()}}</pre>
