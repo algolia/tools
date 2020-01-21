@@ -72,7 +72,7 @@
                                 </tr>
                             </table>
                         </div>
-                        <div v-if="logItem.params.rawBody" class="p-8">
+                        <div v-if="logItem.params.bodies.length === 0 && logItem.params.rawBody" class="p-8">
                             <pre>{{logItem.params.rawBody}}</pre>
                         </div>
                     </div>

@@ -1,4 +1,4 @@
-class Operation {
+export class Operation {
     constructor(verb, path, toStringFunc) {
         this.verb = verb;
         this.path = path;

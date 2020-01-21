@@ -82,7 +82,6 @@
 
 <script>
     import InternalApp from "common/components/app/InternalApp";
-    import LogItem from "@/api-logs/LogItem";
     import Log from "@/api-logs/Log";
     import AppHeader from "common/components/header/AppHeader";
     import AppSelector from "common/components/selectors/AppSelector";
@@ -93,11 +92,12 @@
     import Pagination from "common/components/explorer/results/Pagination";
     import DisplayConfig from "@/api-logs/DisplayConfig";
 
-    import {getClient} from "common/utils/algoliaHelpers";
-
     import RefreshCw from 'common/icons/refresh-cw.svg';
     import SearchIcon from 'common/icons/search.svg';
-    import getClusterList from "common/components/selectors/getClusterList";
+    import InsightsFetcher from "./InsightsFetcher";
+    import SearchFetcher from "./SearchFetcher";
+
+    const aa = require('search-insights');
 
     export default {
         name: 'ApiLogs',
@@ -106,7 +106,7 @@
             return {
                 query: '',
                 logs: [],
-                last1000Logs: [],
+                mergedLogs: [],
                 logsType: 'all',
                 logsTypes: {
                     'all': 'All logs',
@@ -131,7 +131,6 @@
                   ip: true,
                 },
                 servers: ['-1'],
-                serversNeedsUpdates: false,
             };
         },
         watch: {
@@ -146,24 +145,22 @@
                 if (this.page > 0) this.stopInterval();
             },
             query: function () {
-                this.logs = this.filterLogs(this.last1000Logs);
+                this.logs = this.filterLogs(this.mergedLogs);
             },
             searchFields: {
                 deep: true,
                 handler: function () {
-                    this.logs = this.filterLogs(this.last1000Logs);
+                    this.logs = this.filterLogs(this.mergedLogs);
                 }
             },
             allFieldsChecked: function () {
-                this.logs = this.filterLogs(this.last1000Logs);
+                this.logs = this.filterLogs(this.mergedLogs);
             }
         },
         created: async function () {
             if (!this.appId && Object.keys(this.$store.state.apps).length > 0) {
                 this.appId = Object.keys(this.$store.state.apps)[0];
             }
-
-            await this.fetchServers();
 
             this.fetchLogs();
             this.startInterval();
@@ -178,7 +175,6 @@
                 },
                 set (val) {
                     this.fetchIsOn = false;
-                    this.serversNeedsUpdates = true;
                     this.$store.commit('apilogs/setAppId', val);
                     this.$nextTick(() => {
                         this.fetchIsOn = true;
@@ -197,7 +193,6 @@
                     }
                 }
             },
-
             server: {
                 get () {
                     return this.$store.state.apilogs.server || 'all';
@@ -225,30 +220,7 @@
             apiKey: function () {
                 return this.$store.state.apps[this.appId].key;
             },
-            paginatedLogs: function () {
-                return this.logs.slice(this.page * this.hitsPerPage, (this.page + 1) * this.hitsPerPage);
-            },
-        },
-        methods: {
-            startInterval: function () {
-                this.interval = window.setInterval(async () => {
-                    this.fetchLogs();
-                }, 3000);
-            },
-            stopInterval: function () {
-                window.clearInterval(this.interval);
-                this.interval = null;
-            },
-            fetchServers: async function () {
-                this.servers = await getClusterList(this.appId, true);
-            },
-            fetchLogs: async function (resetLogs) {
-                if (resetLogs) this.logs = [];
-
-                if (!this.appId) return;
-
-                await this.fetchServers();
-
+            searchLogsOption: function () {
                 const options = {
                     offset: 0,
                     length: 1000,
@@ -259,33 +231,45 @@
                     options.indexName = this.indexName;
                 }
 
-                const logs = [];
+                return options;
+            },
+            paginatedLogs: function () {
+                return this.logs.slice(this.page * this.hitsPerPage, (this.page + 1) * this.hitsPerPage);
+            },
+            insightsFetcher: function () {
+                return new InsightsFetcher(this.appId, this.apiKey, this.indexName);
+            },
+            searchFetcher: function () {
+                return new SearchFetcher(this.appId, this.apiKey);
+            }
+        },
+        methods: {
+            startInterval: function () {
+                this.interval = window.setInterval(async () => {
+                    this.nowDate = new Date();
+                    this.fetchLogs();
+                }, 3000);
+            },
+            stopInterval: function () {
+                window.clearInterval(this.interval);
+                this.interval = null;
+            },
+            fetchLogs: async function (resetLogs) {
+                const promises = [
+                    await this.searchFetcher.fetchLogs(this.searchLogsOption, resetLogs),
+                    await this.insightsFetcher.fetchLogs(this.allIndices),
+                ];
 
-                if (this.server === 'all') {
-                    const promises = [];
-                    for (let i = 0; i < this.servers.length; i++) {
-                        const client = await getClient(this.appId, this.apiKey, this.servers[i]);
-                        promises.push(client.getLogs({queryParameters: options}));
-                    }
-                    const responses = await Promise.all(promises);
+                const [searchLogs, analyticsLogs] = await Promise.all(promises);
+                const mergedLogs = [...searchLogs, ...analyticsLogs];
 
-                    responses.forEach((res, i) => {
-                        logs.push(...res.logs.map(logItem => new LogItem(logItem, this.servers[i])));
-                    });
+                mergedLogs.sort((logA, logB) => {
+                    return logB.date - logA.date;
+                });
 
-                    logs.sort((a, b) => b.timestamp.localeCompare(a.timestamp));
-                } else {
-                    const mainCluster = this.servers.length > 0 ? this.servers[0] : -1;
-                    const server = this.server === 'main cluster' ? mainCluster : this.server;
-                    const client = await getClient(this.appId, this.apiKey, server);
-                    const res = await client.getLogs({queryParameters: options});
-                    logs.push(...res.logs.map(logItem => new LogItem(logItem, server)));
-                }
+                this.mergedLogs = Object.freeze(mergedLogs);
 
-                this.last1000Logs = Object.freeze(logs);
-                this.nowDate = new Date();
-
-                const filteredLogs = this.filterLogs(logs);
+                const filteredLogs = this.filterLogs(mergedLogs);
 
                 if (filteredLogs.length > 0) {
                     const lastLog = filteredLogs[filteredLogs.length - 1];
@@ -310,10 +294,10 @@
                     else if (this.searchFields.query && log.getQueries().some(query => query.includes(this.query))) {
                         return true;
                     }
-                    else if (this.searchFields.body && log.params.rawBody.includes(this.query)) {
+                    else if (this.searchFields.body && log.params.rawBody && log.params.rawBody.includes(this.query)) {
                         return true;
                     }
-                    else if (this.searchFields.response && log.response.includes(this.query)) {
+                    else if (this.searchFields.response && log.response && log.response.includes(this.query)) {
                         return true;
                     }
                     else if (this.searchFields.userAgent && log.params.all['x-algolia-agent'] && log.params.all['x-algolia-agent'].includes(this.query)) {

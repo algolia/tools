@@ -31,7 +31,7 @@ const extractQueryParams = function (rawLog) {
                         const params2 = {};
                         body.params.split('&').forEach((e) => {
                             const parts = e.split('=');
-                            params2[parts[0]] = parts[1];
+                            params2[parts[0]] = parts[1]
                             params.all[parts[0]] = parts[1];
                         });
                         body.params = params2;
@@ -75,13 +75,13 @@ export default function (rawLog, server) {
     // timestamp, method, answer_code, query_body, answer, url, ip, query_headers, nb_api_calls, processing_time_ms, index, query_params, query_nb_hits
     this.server = server || '-dsn';
     this.rawLog = rawLog;
-    this.rawLogString = decodeUriComponent(`${rawLog.query_body} ${rawLog.answer} ${rawLog.url} ${rawLog.ip} ${rawLog.query_headers}`);
+    this.rawLogString = JSON.stringify(rawLog);
     this.id = rawLog.sha1;
     this.params = extractQueryParams(rawLog);
     this.verb = rawLog.method;
     this.path = rawLog.url.replace(/([^?]*)\??.*/, '$1');
     this.timestamp = rawLog.timestamp;
-    this.verb = rawLog.method;
+    this.date = new Date(rawLog.timestamp);
     this.url = rawLog.url;
     this.ip = rawLog.ip;
     this.answer_code = rawLog.answer_code;
