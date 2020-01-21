@@ -97,8 +97,6 @@
     import InsightsFetcher from "./InsightsFetcher";
     import SearchFetcher from "./SearchFetcher";
 
-    const aa = require('search-insights');
-
     export default {
         name: 'ApiLogs',
         components: {InternalApp, DisplayConfig, AppHeader, AppSelector, Log, AppManagement, RefreshCw, SearchIcon, IndexSelector, ServerSelector, CustomSelect, Pagination},
