@@ -7,7 +7,7 @@
                 v-if="configKey === 'indexSettings' && isIndexSettingsDirty"
                 class="ml-8 cursor-pointer text-solstice-blue"
                 @click="$store.commit(`${indexCommitPrefix}/resetIndexSettings`)"
-                :class="`flex-grow-0 w-12 h-12 flex-shrink-0 block ${open ? '' : 'rotate-180'}`"
+                :class="`flex-grow-0 w-12 h-12 flex-shrink-0 block`"
             />
             <tooltip :position="panelKey === 'leftPanel' ? 'center' : 'right'">
                 Cancel all changes
@@ -22,6 +22,16 @@
             />
             <tooltip :position="panelKey === 'leftPanel' ? 'center' : 'right'">
                 Apply all {{ configKey !== 'indexSettings' ? 'search params': 'index settings'}} in the right panel index.
+            </tooltip>
+        </button>
+        <button class="relative group">
+            <copy-icon
+                class="ml-8 cursor-pointer text-solstice-blue"
+                @click="copyToClipboard"
+                :class="`flex-grow-0 w-12 h-12 flex-shrink-0 block`"
+            />
+            <tooltip :position="panelKey === 'leftPanel' ? 'center' : 'right'">
+                Copy to clipboard
             </tooltip>
         </button>
         <button class="relative group">
@@ -61,18 +71,21 @@
 <script>
     import ChevronDownIcon from "common/icons/chevron-down.svg";
     import TrashIcon from "common/icons/trash.svg";
+    import CopyIcon from "common/icons/copy.svg";
     import HistoryIcon from "common/icons/history.svg";
     import FlipLeftIcon from "common/icons/flip-left.svg";
     import FlipRightIcon from "common/icons/flip-right.svg";
     import Tooltip from "common/components/Tooltip";
     import panelsMixin from "common/mixins/panelsMixin";
     import indexInfoMixin from "common/mixins/indexInfoMixin";
+    import {algoliaParams} from "common/utils/algoliaHelpers";
+    import copyToClipboard from 'copy-to-clipboard';
 
     export default {
         name: 'ParamsHeader',
         props: ['panelKey', 'configKey', 'keys', 'open'],
         mixins: [panelsMixin, indexInfoMixin],
-        components: {Tooltip, ChevronDownIcon, TrashIcon, FlipLeftIcon, FlipRightIcon, HistoryIcon},
+        components: {Tooltip, ChevronDownIcon, CopyIcon, TrashIcon, FlipLeftIcon, FlipRightIcon, HistoryIcon},
         computed: {
             appId: function () { // Needed for indexInfoMixin
                 return this.panelAppId;
@@ -84,6 +97,12 @@
                 return this.$store.state.panels.splitMode
                     && this.keys.length > 0
                     && (this.configKey !== 'indexSettings' || !this.sameIndexOnEachPanel);
+            }
+        },
+        methods: {
+            copyToClipboard: function () {
+                const params = algoliaParams(this.indexData[this.configKey]);
+                copyToClipboard(JSON.stringify(params, null, 2));
             }
         }
     }
