@@ -35,7 +35,7 @@ export default function (appId, apiKey, indexName) {
                 rawLog: rawLog,
                 rawLogString: JSON.stringify(rawLog),
                 id: rawLog.requestID,
-                params: {f
+                params: {
                     bodies: rawLog.event ? [rawLog.event] : [],
                     rawBody: JSON.stringify(rawLog.event),
                     url: {},
