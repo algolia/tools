@@ -52,7 +52,7 @@
         methods: {
             onSelected: function (selected, e) {
                 if (selected) {
-                    if (typeof selected === 'string' || selected instanceof String) {
+                    if ((typeof selected === 'string' || selected instanceof String) && selected.trim().startsWith('{')) {
                         try {
                             const params = JSON.parse(selected);
                             Object.keys(params).map((key) => {

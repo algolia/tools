@@ -3,7 +3,7 @@
         <search-icon class="block w-16 h-16 mr-16 text-telluric-blue fill-current"/>
         <input
             class="flex-1 block h-full bg-transparent text-telluric-blue leading-normal"
-            placeholder="Search for anything"
+            placeholder="Enter query, searchParams, curl command, ..."
             ref="search"
             v-model="query"
         >
@@ -43,6 +43,14 @@
                 },
                 set (value) {
                     if (this.$store.state.panels.splitMode) {
+                        try {
+                            const params = JSON.parse(selected);
+                            Object.keys(params).map((key) => {
+                                this.setParamValue(key, params[key]);
+                            });
+                            return this.inputState.setInput('none');
+                        } catch (e) {}
+
                         if (!value) {
                             this.$store.commit(`apps/${this.$store.state.panels.rightPanel.appId}/${this.$store.state.panels.rightPanel.indexName}/deleteParam`, {
                                 configKey: this.sameIndexOnEachPanel ? 'searchParams2' : 'searchParams',
@@ -73,6 +81,23 @@
                     let appId = this.panelAppId;
                     let indexName = this.panelIndexName;
 
+                    if (query.trim().startsWith('{')) {
+                        try {
+                            const params = JSON.parse(query);
+                            Object.keys(params).forEach((key) => {
+                                if (key === 'query') {
+                                    query = params.query;
+                                    this.$refs.search.value = query;
+                                }
+                                else {
+                                    this.$store.commit(`apps/${appId}/${indexName}/setParamValue`, {
+                                        configKey: this.searchConfigKey, key: key, value: params[key],
+                                    });
+                                }
+                            });
+                        } catch (e) {}
+                    }
+
                     if (value.startsWith('curl ')) {
                         const res = parseCurlCommand(value);
 
@@ -91,9 +116,7 @@
                             this.$store.commit('panels/clearParams', {panelKey: this.panelKey, configKey: this.searchConfigKey});
                             Object.keys(res.params).forEach((key) => {
                                 this.$store.commit(`apps/${res.appId}/${res.indexName}/setParamValue`, {
-                                    configKey: this.searchConfigKey,
-                                    key: key,
-                                    value: res.params[key],
+                                    configKey: this.searchConfigKey, key: key, value: res.params[key],
                                 });
                             });
                         }
