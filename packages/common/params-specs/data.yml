@@ -636,6 +636,17 @@ keepDiacriticsOnCharacters:
   value_type: string
   default: ''
 
+indexLanguages:
+  scope:
+      - settings
+  value_type: enum_list
+  values:
+    - name: ja
+      label: Japanese
+  default: ['ja']
+  settings_default: null
+
+
 queryLanguages:
   scope:
     - settings
@@ -1051,16 +1062,6 @@ enableABTest:
     - true
     - false
   default: true
-
-indexLanguages:
-  scope:
-    - settings
-  value_type: string_list
-  values:
-    - ja
-  default:
-    - ja
-  settings_default: null
 
 decompoundedAttributes:
   scope:
