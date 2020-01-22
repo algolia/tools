@@ -102,7 +102,7 @@
                 }
             },
             refine: async function (query) {
-                if (!this.appId) return; // onboarding
+                if (!this.appId || !this.adminAPIKey) return; // onboarding
 
                 if (query.length <= 0) {
                     this.indices = this.allIndices;
@@ -137,7 +137,7 @@
                 }
             },
             updateIndices: async function (shouldSetIndex) {
-                if (!this.appId) return; // onboarding
+                if (!this.appId || !this.adminAPIKey) return; // onboarding
 
                 const client = await getClient(this.appId, this.adminAPIKey);
 

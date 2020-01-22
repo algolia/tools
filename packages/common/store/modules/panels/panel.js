@@ -22,16 +22,16 @@ export default function (appId, indexName) {
                 }
             },
             setMethod(state, payload) {
-                state.method = payload;
+                Vue.set(state, 'method', payload);
             },
             setServer(state, payload) {
-                state.server = payload;
+                Vue.set(state, 'server', payload);
             },
             setDisplayMode(state, payload) {
-                state.displayMode = payload;
+                Vue.set(state, 'displayMode', payload);
             },
             setCurrentTab(state, payload) {
-                state.currentTab = payload;
+                Vue.set(state, 'currentTab', payload);
             }
         },
     }

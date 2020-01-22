@@ -4,6 +4,7 @@
         <input
             class="flex-1 block h-full bg-transparent text-telluric-blue leading-normal"
             placeholder="Search for anything"
+            ref="search"
             v-model="query"
         >
         <div class="text-telluric-blue-opacity-40" v-if="$store.state.panels.splitMode && (!panelKey || panelKey === 'leftPanel')">
@@ -23,6 +24,7 @@
     import SearchIcon from "common/icons/search.svg";
     import CustomSelect from "common/components/selectors/CustomSelect";
     import panelsMixin from "common/mixins/panelsMixin";
+    import {parseCurlCommand} from "common/utils/curlCommandExtractor";
 
     export default {
         name: 'SearchBox',
@@ -67,13 +69,44 @@
                     return this.$store.state.panels.query;
                 },
                 set(value) {
+                    let query = value;
+                    let appId = this.panelAppId;
+                    let indexName = this.panelIndexName;
+
+                    if (value.startsWith('curl ')) {
+                        const res = parseCurlCommand(value);
+
+                        if (res) {
+                            query = res.query;
+                            appId = res.appId;
+                            indexName = res.indexName;
+                            this.$store.commit("apps/addAppId", {appId: appId});
+                            this.$store.commit(`apps/${appId}/addIndex`, indexName);
+                            this.$store.commit(`panels/${this.panelKey}/setPanelConfig`, {appId: appId, indexName: indexName});
+                            this.$nextTick(() => {
+                                this.$store.commit(`panels/${this.panelKey}/setPanelConfig`, {appId: appId, indexName: indexName});
+                            }, 1); // We need to redo it again on next tick because the indexName will be set to null by the IndexSelector
+                            this.$store.commit(`panels/${this.panelKey}/setServer`, res.machine);
+
+                            this.$store.commit('panels/clearParams', {panelKey: this.panelKey, configKey: this.searchConfigKey});
+                            Object.keys(res.params).forEach((key) => {
+                                this.$store.commit(`apps/${res.appId}/${res.indexName}/setParamValue`, {
+                                    configKey: this.searchConfigKey,
+                                    key: key,
+                                    value: res.params[key],
+                                });
+                            });
+                        }
+                        this.$refs.search.value = query;
+                    }
+
                     if (this.panelKey === 'rightPanel') {
-                        return this.$store.commit(`apps/${this.panelAppId}/${this.panelIndexName}/setParamValue`, {
+                        return this.$store.commit(`apps/${appId}/${indexName}/setParamValue`, {
                             configKey: this.searchConfigKey,
-                            key: 'query', value: value,
+                            key: 'query', value: query,
                         });
                     }
-                    return this.$store.commit("panels/setQuery", value);
+                    return this.$store.commit("panels/setQuery", query);
                 }
             },
         },

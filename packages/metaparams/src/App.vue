@@ -13,6 +13,7 @@
                 <search-box
                     class="mt-16 mx-16 lg:mx-auto xl:mx-auto lg:max-w-half xl:max-w-half"
                     v-if="$store.state.panels.splitMode && !$store.state.panels.twoInputs && Object.keys($store.state.apps).length > 0"
+                    panel-key="leftPanel"
                 />
             </div>
             <div
