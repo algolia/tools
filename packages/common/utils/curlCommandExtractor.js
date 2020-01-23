@@ -37,7 +37,7 @@ const decode = function (data) {
 export function parseCurlCommand (command) {
     let ast = null;
     try {
-        ast = parse(command);
+        ast = parse(command.replace(/\\ /g, ' ')); // replace is to handle safari copy as curl
     } catch (e) {
         return null;
     }
