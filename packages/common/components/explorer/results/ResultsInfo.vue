@@ -8,7 +8,7 @@
             </div>
             <div>
                 <div>Index Used: {{searchResponse.indexUsed}}</div>
-                <div>Parsed query: "{{searchResponse.parsedQuery}}"</div>
+                <div>Parsed query: '{{searchResponse.parsedQuery}}'</div>
                 <div>Server Used: {{searchResponse.serverUsed}}</div>
             </div>
         </div>

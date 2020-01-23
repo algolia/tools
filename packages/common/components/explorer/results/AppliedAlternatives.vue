@@ -64,12 +64,6 @@
             },
             originals: function () {
                 return this.alternatives.filter((alternative) => {
-                    if (alternative.types.includes('original')) {
-                        if (this.alternatives.findIndex((a) => { return a.types.includes('optional') && a.offset === alternative.offset && a.length === alternative.length}) !== -1) {
-                            return false;
-                        }
-                    }
-
                     for (let i = 0; i < alternative.types.length; i++) {
                         if (this.originalTypes.includes(alternative.types[i])) {
                             return true;
