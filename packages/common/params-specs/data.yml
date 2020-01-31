@@ -815,7 +815,7 @@ enablePersonalization:
   values:
     - true
     - false
-  default: false
+  default: true
 
 queryType:
   scope:
