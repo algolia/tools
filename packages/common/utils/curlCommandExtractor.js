@@ -22,7 +22,7 @@ const decode = function (data) {
     return JSON.parse(removeEscapes(data), (key, val) => {
         if (key === "params") {
             return Object.fromEntries(
-                [...new URLSearchParams(decodeURIComponent(val))].map(([k, v]) => {
+                [...new URLSearchParams(val)].map(([k, v]) => {
                     if (isFakeArray(v)) {
                         return [k, JSON.parse(v)];
                     }
@@ -101,6 +101,7 @@ export function parseCurlCommand (command) {
             if (indexName) {
                 const query = params.query || '';
                 delete(params.query);
+
                 return {
                     appId,
                     indexName,
