@@ -53,13 +53,13 @@
 
                 if (this.query.length === 0) return appIds;
 
-                const query = this.query.toLowerCase();
+                const normalisedQuery = this.query.toLowerCase();
 
                 return appIds.filter((appId) => {
-                    if (this.apps[appId].__app_name && this.apps[appId].__app_name.toLowerCase().includes(query)) return true;
-                    if (this.apps[appId].__app_owner && this.apps[appId].__app_owner.includes(query)) return true;
+                    if (this.apps[appId].__app_name && this.apps[appId].__app_name.toLowerCase().includes(normalisedQuery)) return true;
+                    if (this.apps[appId].__app_owner && this.apps[appId].__app_owner.toLowerCase().includes(normalisedQuery)) return true;
 
-                    return appId.includes(this.query)
+                    return appId.toLowerCase().includes(normalisedQuery);
                 });
             }
         },
