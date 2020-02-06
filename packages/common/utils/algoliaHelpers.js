@@ -44,7 +44,7 @@ export async function getClient(appId, apiKey, server) {
 
     let headers = {};
 
-    if (apiKey) {
+    if (!isLocalAppId(appId) && apiKey) {
         const signature = await getSignature(appId);
         headers['X-Algolia-Signature'] = signature;
     }
