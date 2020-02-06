@@ -63,7 +63,9 @@
                 return this.allKeys.filter((key) => { return this.topAttributes.indexOf(key) !== -1 })
             },
             allKeys: function () {
-                return Object.keys(this.item).filter((key) => { return !this.reservedAttributes[key]; }).sort((a, b) => {
+                return Object.keys(this.item).filter((key) => {
+                    return !this.reservedAttributes[key] || (this.searchParams.getRankingInfo === true && key === '_rankingInfo');
+                }).sort((a, b) => {
                     const indexA = this.topAttributes.indexOf(a);
                     const indexB = this.topAttributes.indexOf(b);
 

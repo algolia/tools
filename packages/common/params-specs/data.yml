@@ -817,6 +817,15 @@ enablePersonalization:
     - false
   default: true
 
+enableExperimentalBlendPersonalization:
+  scope:
+    - search
+  value_type: boolean
+  values:
+    - true
+    - false
+  default: true
+
 queryType:
   scope:
     - settings

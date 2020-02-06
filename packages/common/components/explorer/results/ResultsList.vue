@@ -115,6 +115,7 @@
                     if (this.searchParams.attributesToRetrieve.indexOf('*') !== -1) return [];
                     topAttributes.push(...this.searchParams.attributesToRetrieve);
                 }
+                if (this.searchParams.getRankingInfo === true) topAttributes.push('_rankingInfo');
 
                 return [...new Set(topAttributes)].map(cleanAttributeName).map(cleanDeepAttributeName);
             },

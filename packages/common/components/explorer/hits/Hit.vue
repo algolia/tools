@@ -130,8 +130,6 @@
     import Tooltip from "../../Tooltip";
     import props from "../props";
 
-    const hitsTransformer = new HitsTransformer(['_highlightResult', '_snippetResult', '_rankingInfo', '_distinctSeqID']);
-
     export default {
         name: 'Hit',
         components: {
@@ -181,8 +179,17 @@
 
                 return this.flattenHit[this.titleAttribute];
             },
+            hitsTransformer: function () {
+                const excludedAttributes = ['_highlightResult', '_snippetResult', '_distinctSeqID'];
+
+                if (this.searchParams.getRankingInfo !== true) {
+                    excludedAttributes.push('_rankingInfo');
+                }
+
+                return new HitsTransformer(excludedAttributes);
+            },
             transformedItem: function () {
-                return Object.freeze(hitsTransformer.transformObj(this.hit)._v_);
+                return Object.freeze(this.hitsTransformer.transformObj(this.hit)._v_);
             },
         },
         methods: {
