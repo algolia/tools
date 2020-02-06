@@ -154,8 +154,8 @@
                         } catch (e) {}
                     }
 
-                    if (res.merge && res._rankingInfo) {
-                        res._rankingInfo.merge = res.merge;
+                    if (res.merge && res.hits.length > 0 && res.hits[0]._rankingInfo) {
+                        res.hits[0]._rankingInfo.merge = res.merge;
                     }
 
                     this.$emit('onFetchHits', Object.freeze(res));
