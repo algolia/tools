@@ -27,7 +27,7 @@
                 requestNumberReceived: 0,
                 requestNumberAnalysis: 0,
                 requestNumberAnalysisReceived: 0,
-                advancedIndexSettingsNames: ['indexingGeolocPrecision','maxNbHits','nbShards','nbShardsAuto','approxSubstIsBetter','maxApproxIVSizeForEachWord','maxApproxWords'],
+                advancedIndexSettingsNames: ['indexingGeolocPrecision','maxNbHits','nbShardsAuto','approxSubstIsBetter','maxApproxIVSizeForEachWord','maxApproxWords'],
             }
         },
         created: async function () {

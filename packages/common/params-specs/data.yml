@@ -1085,3 +1085,12 @@ decompoundedAttributes:
     value_type: attributes_list
   default: {'': []}
   settings_default: null
+
+nbShards:
+    scope:
+        - settings
+    value_type: integer
+    min: 1
+    max: 8
+    default: 1
+    settings_default: null
