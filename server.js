@@ -31,6 +31,7 @@ app.use('/dictionaries', serveStatic(__dirname + "/packages/dictionaries/dist"))
 app.use('/index-size', serveStatic(__dirname + "/packages/index-size/dist"));
 app.use('/mlock-alerts', serveStatic(__dirname + "/packages/mlock-alerts/dist"));
 app.use('/busted', serveStatic(__dirname + "/packages/busted/dist"));
+app.use('/insights-ui', serveStatic(__dirname + "/packages/insights-ui/dist"));
 
 app.use((req, res) => {
     res.redirect("https://algolia-experimental.herokuapp.com/apps");
