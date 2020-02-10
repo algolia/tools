@@ -9696,6 +9696,11 @@ schema-utils@^1.0.0:
     ajv-errors "^1.0.0"
     ajv-keywords "^3.1.0"
 
+search-insights@^1.3.1:
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/search-insights/-/search-insights-1.3.1.tgz#33d28d471da3bb5f4718348f24ad7b1cd1896a0d"
+  integrity sha512-/ymUsBuq/12yLNyKqOtGIY2c7/nMBt/aW35iFH0BrbEv/UBkyHYuVHT21+y687+yoZi2eM3BzCzHrSJ91r+cMg==
+
 select-hose@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/select-hose/-/select-hose-2.0.0.tgz#625d8658f865af43ec962bfc376a37359a4994ca"
