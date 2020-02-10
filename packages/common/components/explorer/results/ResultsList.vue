@@ -10,7 +10,7 @@
                 <div>
                     Extra attribute to display:
                     <input
-                        class="w-128 bg-oton-grey-opacity-20 text-xs p-4"
+                        class="w-128 bg-proton-grey-opacity-20 text-xs p-4"
                         :value="titleAttributeName"
                         @input="$emit('onUpdateTitleAttributeName', $event.target.value)"
                         placeholder="attribute_name"/>
@@ -25,7 +25,7 @@
                      :previous-hit="i > 0 ? searchResponse.hits[i - 1] : hit"
                      :top-attributes="topAttributes"
                      :searchable-attributes="searchableAttributes"
-                     :title-attribute="titleAttribute"
+                     :title-attribute="autoTitleAttributeName"
                      v-bind="$props"
                      v-on="$listeners"
                 />
@@ -52,7 +52,7 @@
                 :previous-hit="searchResponse.object"
                 :top-attributes="topAttributes"
                 :searchable-attributes="searchableAttributes"
-                :title-attribute="titleAttribute"
+                :title-attribute="autoTitleAttributeName"
                 v-bind="$props"
                 v-on="$listeners"
             />
@@ -61,7 +61,6 @@
 </template>
 
 <script>
-
     import AppliedRules from "./AppliedRules";
     import Pagination from "./Pagination";
     import ResultsInfo from "./ResultsInfo";
@@ -70,10 +69,6 @@
     import AppliedAlternatives from "./AppliedAlternatives";
     import props from "../props";
     import AppliedParams from "./AppliedParams";
-
-    const isString = function (s) {
-        return typeof s === 'string' || s instanceof String;
-    };
 
     export default {
         name: 'ResultsList',
@@ -89,14 +84,6 @@
             ...props.actions,
         ],
         components: {AppliedParams, AppliedAlternatives, Hit, ResultsInfo, Pagination, AppliedRules},
-        watch: {
-            titleAttribute: {
-                immediate: true,
-                handler: function () {
-                    this.$emit('onUpdateAutoTitleAttributeName', this.titleAttribute);
-                }
-            }
-        },
         computed: {
             attributesForFaceting: function () {
                 return this.indexSettings.attributesForFaceting || [];
@@ -106,7 +93,7 @@
                 return this.getAllSearchableAttributes(searchableAttributes).map(cleanAttributeName).map(cleanDeepAttributeName);
             },
             topAttributes: function () {
-                const topAttributes = ['objectID', this.titleAttribute];
+                const topAttributes = ['objectID', this.autoTitleAttributeName || 'objectID'];
 
                 if (this.showSearchableAttributes) topAttributes.push(...this.searchableAttributes);
                 if (this.showCustomRanking) topAttributes.push(...(this.indexSettings.customRanking || []));
@@ -118,26 +105,6 @@
                 if (this.searchParams.getRankingInfo === true) topAttributes.push('_rankingInfo');
 
                 return [...new Set(topAttributes)].map(cleanAttributeName).map(cleanDeepAttributeName);
-            },
-            titleAttribute: function () {
-                let titleAttribute = this.titleAttributeName;
-
-                if (!titleAttribute) {
-                    const searchableAttributes = this.indexSettings.searchableAttributes || this.indexSettings.attributesToIndex || [];
-                    const hit = this.searchResponse.hits.length > 0 ? this.searchResponse.hits[0] : {};
-
-                    for (let i in searchableAttributes) {
-                        const newTitleAttribute = cleanAttributeName(cleanDeepAttributeName(
-                            searchableAttributes[i].split(',')[0]
-                        ));
-                        if (isString(hit[newTitleAttribute])) {
-                            titleAttribute = newTitleAttribute;
-                            break;
-                        }
-                    }
-                }
-
-                return titleAttribute || 'objectID';
             },
             needTitleAttribute: function () {
                 return !this.showSearchableAttributes

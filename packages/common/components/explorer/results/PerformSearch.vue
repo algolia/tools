@@ -11,17 +11,22 @@
     import {getClient, getSearchIndex} from 'common/utils/algoliaHelpers';
 
     import {goToAnchor} from "common/utils/domHelpers";
+    import titleAttribute from "../../../mixins/titleAttribute";
 
     export default {
         props: [
             'appId', 'indexName', 'apiKey', 'server', 'query', 'method',
             'searchParams',
-            'fetchExplain', 'analyseHitsPerPage',
+            'titleAttributeName',
+            'fetchExplain',
+            'analyseHitsPerPage',
             'fetchFacets'
         ],
+        mixins: [titleAttribute],
         data: function () {
             return {
                 anchor: null,
+                searchResponse: null,
                 indexSettings: {},
                 requestNumber: 0,
                 requestNumberReceived: 0,
@@ -83,6 +88,8 @@
                     attributesToSnippet: ['*:10'],
                     snippetEllipsisText: '…',
                     attributesToRetrieve: ['*'],
+                    analytics: false,
+                    enableABTest: false,
                 };
 
                 if (this.fetchExplain) {
@@ -90,8 +97,6 @@
                 }
 
                 const forcedParams = {
-                    analytics: false,
-                    enableABTest: false,
                     getRankingInfo: true,
                     highlightPreTag: '<em>',
                     highlightPostTag: '</em>',
@@ -158,7 +163,9 @@
                         res.hits[0]._rankingInfo.merge = res.merge;
                     }
 
-                    this.$emit('onFetchHits', Object.freeze(res));
+                    const response = Object.freeze(res);
+                    this.searchResponse = response;
+                    this.$emit('onFetchHits', response);
                     this.$emit('onUpdateError', '');
 
                     if (this.anchor) {

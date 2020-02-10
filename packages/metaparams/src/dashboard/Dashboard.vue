@@ -17,7 +17,13 @@
                     <app-selector v-model="appId" class="mb-12" />
                     <index-selector v-model="indexName" :app-id="appId" class="ml-12 mb-12" />
 
-                    <index-new v-if="canWrite" class="mb-12 pb-4" :panel-key="panelKey" />
+                    <index-new
+                        v-if="canWrite"
+                        class="mb-12 pb-4"
+                        :app-id="panelAppId"
+                        :api-key="panelAdminAPIKey"
+                        @onIndexCreated="onIndexCreated"
+                    />
                     <index-delete v-if="canWrite && !isReplica" class="mb-12 pb-4" :panel-key="panelKey" />
                     <button v-if="$store.state.panels.splitMode && !sameIndexOnEachPanel && panelKey === 'leftPanel'"
                             @click="$store.commit('panels/rightFromLeft')"
@@ -103,7 +109,7 @@
     import DashboardConfig from "./DashboardConfig";
     import Queries from "@/queries/queries";
     import IndexInfo from "@/dashboard/IndexInfo";
-    import IndexNew from "@/dashboard/IndexNew";
+    import IndexNew from "common/components/index/IndexNew";
     import AppSelector from "common/components/selectors/AppSelector";
     import IndexSelector from "common/components/selectors/IndexSelector";
     import ServerSelector from "common/components/selectors/ServerSelector";
@@ -170,5 +176,13 @@
                 return isTargetingMainCluster && (this.forceWrite || this.ownedByAlgolia(this.appId));
             },
         },
+        methods: {
+            onIndexCreated: function (indexName) {
+                this.$store.commit(`panels/${this.panelKey}/setPanelConfig`, {
+                    appId: this.panelAppId,
+                    indexName: indexName,
+                });
+            }
+        }
     }
 </script>

@@ -53,7 +53,7 @@
         name: 'NewIndex',
         components: {Tooltip, PlusCircleIcon, LoaderIcon},
         mixins: [panelsMixin],
-        props: ['panelKey'],
+        props: ['appId', 'apiKey'],
         data: function () {
             return {
                 creatingNewIndex: false,
@@ -63,16 +63,13 @@
         },
         methods: {
             createIndex: async function () {
-                const client = await getClient(this.panelAppId, this.panelAdminAPIKey);
+                const client = await getClient(this.appId, this.apiKey);
                 const res = client.customInitIndex(this.newIndexName).setSettings({});
                 this.pendingCreation = true;
                 await res.wait();
                 this.pendingCreation = false;
                 this.creatingNewIndex = false;
-                this.$store.commit(`panels/${this.panelKey}/setPanelConfig`, {
-                    appId: this.panelAppId,
-                    indexName: this.newIndexName,
-                });
+                this.$emit('onIndexCreated', this.newIndexName);
                 this.newIndexName = '';
             },
             enableCreatingNewIndex: function () {

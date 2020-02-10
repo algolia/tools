@@ -9,7 +9,7 @@
         <div v-if="type === 'click'" class="mt-24">
             <div>
                 <label>
-                    <input v-model="trackQueryInAnalytics" type="checkbox"> Track queries in Analytics (needed to send click/conversion events)
+                    <input v-model="trackQueryInAnalytics" type="checkbox" class="mr-4"> Track queries in Analytics (needed to send click/conversion events)
                 </label>
             </div>
             <div class="mt-8 flex items-center px-16 bg-white rounded border border-proton-grey-opacity-80">
@@ -34,8 +34,32 @@
                     @onMutate="onMutate"
                 />
             </div>
-            <div class="mt-40">
-                <div v-for="(hit, i) in hits" class="my-16 relative">
+            <perform-search
+                :search-params="params"
+                :app-id="appId"
+                :api-key="apiKey"
+                :index-name="indexName"
+                method="search"
+                :query="query"
+                :title-attribute-name="indexTitleAttribute"
+                :fetch-explain="false"
+                :analyse-hits-per-page="0"
+                :fetch-facets="false"
+                @onUpdateAutoTitleAttributeName="indexAutoTitleAttributeName = $event"
+                @onFetchHits="onFetchHits"
+                @onUpdateError="errorMessage = $event"
+            />
+            <div class="mt-40" v-if="searchResponse">
+                <div class="text-solstice-blue-opacity-70">
+                    Title attribute:
+                    <input
+                        class="w-128 bg-proton-grey-opacity-20 text-xs p-4"
+                        :value="indexTitleAttribute"
+                        @input="indexTitleAttribute = $event.target.value"
+                        placeholder="attribute_name"/>
+                    (default to first string attribute in searchableAttribute)
+                </div>
+                <div v-for="(hit, i) in searchResponse.hits" class="my-16 relative">
                     <div class="flex items-start">
                         <div
                             class="mr-8 border border-nova-grey-opacity-80 text-center w-24 px-8 py-4 rounded text-xs uppercase text-solstice-blue"
@@ -51,17 +75,18 @@
                             :image-suffix-url="indexImageSuffixUrl"
                             :title-attribute-name="indexTitleAttribute"
                             :auto-title-attribute-name="indexAutoTitleAttributeName"
+                            @onUpdateAutoTitleAttributeName="indexAutoTitleAttributeName = $event"
                             v-bind="$props"
                         />
                         <div
-                            v-if="event.queryID"
+                            v-if="searchResponse.queryID"
                             class="mr-12 cursor-pointer bg-white border border-b-0 border-proton-grey-opacity-40 rounded shadow-sm hover:shadow transition-fast-out px-16 p-8 text-sm"
                             @click="sendEvent(hit.objectID, page * hitsPerPage + i, 'click')"
                         >
                             Send Click Event
                         </div>
                         <div
-                            v-if="event.queryID"
+                            v-if="searchResponse.queryID"
                             class="mr-12 cursor-pointer bg-white border border-b-0 border-proton-grey-opacity-40 rounded shadow-sm hover:shadow transition-fast-out px-16 p-8 text-sm"
                             @click="sendEvent(hit.objectID, page * hitsPerPage + i, 'conversion')"
                         >
@@ -74,20 +99,30 @@
                     <pagination
                         @onUpdatePage="page = $event"
                         :page="page"
-                        :nb-pages="nbPages"
+                        :nb-pages="searchResponse.nbPages"
                     />
                 </div>
             </div>
         </div>
         <div v-if="type === 'perso'" class="mt-24">
             <div>
-                Click <input type="radio" v-model="event.eventType" value="click" />
-                Conversion <input type="radio" v-model="event.eventType" value="conversion" />
-                <template v-if="type === 'perso'">
-                    View <input type="radio" v-model="event.eventType" value="view" />
-                </template>
+                <div>
+                    <label>
+                        <input type="radio" v-model="event.eventType" value="click" /> Click
+                    </label>
+                </div>
+                <div>
+                    <label>
+                        <input type="radio" v-model="event.eventType" value="conversion" /> Conversion
+                    </label>
+                </div>
+                <div>
+                    <label>
+                        <input type="radio" v-model="event.eventType" value="view" /> View
+                    </label>
+                </div>
             </div>
-            <div>
+            <div class="mt-8">
                 <input
                     v-model="event.eventName"
                     placeholder="eventName"
@@ -101,7 +136,7 @@
                     class="mt-8 h-full px-16 py-8 bg-transparent text-telluric-blue leading-normal bg-white rounded border border-proton-grey-opacity-80"
                 />
             </div>
-            <div>
+            <div class="mt-8">
                 <button
                     @click="sendEvent()"
                     class="mt-8 cursor-pointer bg-white border border-b-0 border-proton-grey-opacity-40 rounded shadow-sm hover:shadow transition-fast-out px-16 p-8 text-sm"
@@ -119,23 +154,23 @@
     import Pagination from "common/components/explorer/results/Pagination";
     import SmallTabs from 'common/components/tabs/SmallTabs';
     import SearchIcon from 'common/icons/search.svg';
-    import {getSearchIndex} from "common/utils/algoliaHelpers";
     import indexInfoMixin from "common/mixins/indexInfoMixin";
     import aa from 'search-insights';
+    import titleAttribute from "common/mixins/titleAttribute";
+    import PerformSearch from "common/components/explorer/results/PerformSearch";
 
     export default {
         name: 'Event',
-        components: {SearchIcon, Params, PromotedHit, SmallTabs, Pagination},
+        components: {SearchIcon, Params, PromotedHit, SmallTabs, Pagination, PerformSearch},
         props: ['appId', 'apiKey', 'indexName'],
-        mixins: [indexInfoMixin],
+        mixins: [indexInfoMixin, titleAttribute],
         data: function () {
             return {
                 type: 'click',
                 query: '',
                 page: 0,
-                nbPages: 1,
                 hitsPerPage: 8,
-                hits: [],
+                searchResponse: null,
                 editableParams: {},
                 algoliaParams: {},
                 trackQueryInAnalytics: false,
@@ -143,8 +178,6 @@
                     eventType: 'click', //
                     eventName: '', //
                     userToken: '', //
-                    timestamp: 0, //
-                    queryID: '', //
                     filters: [],
                 }
             }
@@ -152,32 +185,28 @@
         watch: {
             appId: function () { this.initialize(); },
             indexName: function () { this.initialize(); },
-            query: function () { this.performSearch(); },
-            page: function () { this.performSearch(); },
-            trackQueryInAnalytics: function () { this.performSearch() },
         },
         created: function () {
             this.initialize();
         },
+        computed: {
+            params: function () {
+                return {
+                    clickAnalytics: this.trackQueryInAnalytics,
+                    hitsPerPage: this.hitsPerPage,
+                    page: this.page,
+                };
+            },
+        },
         methods: {
             initialize: function () {
-                this.event.queryID = null;
                 aa.init({
                     appId: this.appId,
                     apiKey: this.apiKey,
                 });
-                this.performSearch();
             },
-            performSearch: async function () {
-                const index = await getSearchIndex(this.appId, this.apiKey, this.indexName);
-                const res = await index.search(this.query, {
-                    clickAnalytics: this.trackQueryInAnalytics,
-                    hitsPerPage: this.hitsPerPage,
-                    page: this.page,
-                });
-                this.event.queryID = res.queryID;
-                this.nbPages = res.nbPages;
-                this.hits = Object.freeze(res.hits);
+            onFetchHits: function (response) {
+                this.searchResponse = response;
             },
             sendEvent: function (objectID, position, eventType) {
                 if (this.type === 'click') {
@@ -188,7 +217,7 @@
                         timestamp: new Date().getTime(),
                         index: this.indexName,
                         eventName: this.event.eventName || 'clickAnalyticsResult',
-                        queryID: this.event.queryID,
+                        queryID: this.searchResponse.queryID,
                     });
                 } else if (this.type === 'perso') {
                     aa.sendEvent(this.eventType, {
@@ -197,7 +226,7 @@
                         timestamp: new Date().getTime(),
                         index: this.indexName,
                         eventName: this.event.eventName,
-                        queryID: this.event.queryID,
+                        queryID: this.searchResponse.queryID,
                     });
                 }
             },
