@@ -8,6 +8,7 @@ import apilogs from './modules/apilogs';
 import indexdiffer from "./modules/indexdiffer";
 import indexmanager from "./modules/indexmanager";
 import relevancetesting from "./modules/relevancetesting";
+import insightsui from "./modules/insightsui";
 import stateReducer from "./stateReducer";
 
 Vue.use(Vuex);
@@ -20,6 +21,7 @@ export default new Vuex.Store({
         indexdiffer,
         relevancetesting,
         indexmanager,
+        insightsui,
     },
     plugins: [createPersistedState({
         reducer: stateReducer
