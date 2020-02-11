@@ -4,18 +4,28 @@
             <app-header app-name="Insights UI" />
             <div class="max-w-960 mx-auto mt-24 pb-24">
                 <div class="bg-white rounded border border-proton-grey-opacity-60">
-                    <div class="flex bg-white p-8 pb-12 bg-proton-grey-opacity-40 text-telluric-blue">
+                    <div class="flex bg-white p-8 pb-12 border-nova-grey-opacity-20 bg-proton-grey-opacity-80 text-telluric-blue">
                         <app-selector v-model="appId" class="mr-16" />
                         <index-selector v-model="indexName" :app-id="appId" class="" />
                     </div>
-                    <div class="p-16" v-if="appId && indexName">
-                        <div>
-                            <small-tabs
-                                :tabs="[{ value: 'click', name: 'Click Analytics' }, { value: 'perso', name: 'Perso' }]"
-                                v-model="tab"
-                            />
+                    <div v-if="appId && indexName">
+                        <div class="flex bg-proton-grey-opacity-40 text-telluric-blue">
+                            <div
+                                class="mx-8 p-8 -mb-2 cursor-pointer"
+                                :class="tab === 'click' ? 'border-b-2 border-nebula-blue-opacity-80' : ''"
+                                @click="tab = 'click'"
+                            >
+                                Click Analytics
+                            </div>
+                            <div
+                                class="mx-8 p-8 -mb-2 cursor-pointer"
+                                :class="tab === 'perso' ? 'border-b-2 border-nebula-blue-opacity-80' : ''"
+                                @click="tab = 'perso'"
+                            >
+                                Perso
+                            </div>
                         </div>
-                        <div class="mt-24">
+                        <div class="p-16">
                             <click-analytics-event
                                 v-if="tab === 'click'"
                                 :app-id="appId"
@@ -26,18 +36,17 @@
                             <div
                                 v-if="tab === 'perso'"
                             >
+                                <settings-loader :app-id="appId" :api-key="apiKey" :index-name="indexName" />
+                                <strategy :app-id="appId" :api-key="apiKey" />
                                 <perso-event
                                     :aa="aa"
+                                    :app-id="appId"
+                                    :index-name="indexName"
+                                    :api-key="apiKey"
                                 />
                             </div>
                         </div>
                     </div>
-                </div>
-                <div
-                    v-if="tab === 'perso'"
-                    class="mt-24 p-16 bg-white rounded border border-proton-grey-opacity-60"
-                >
-                    <Strategy :app-id="appId" :api-key="apiKey" />
                 </div>
             </div>
         </div>
@@ -49,7 +58,7 @@
     import AppHeader from "common/components/header/AppHeader";
     import AppSelector from "common/components/selectors/AppSelector";
     import IndexSelector from "common/components/selectors/IndexSelector";
-    import SmallTabs from 'common/components/tabs/SmallTabs';
+    import SettingsLoader from "common/components/explorer/results/SettingsLoader";
     import PersoEvent from "./PersoEvent";
     import ClickAnalyticsEvent from "./ClickAnalyticsEvent";
     import Strategy from "./Strategy";
@@ -57,7 +66,7 @@
 
     export default {
         name: 'Home',
-        components: {Strategy, ClickAnalyticsEvent, InternalApp, AppHeader, AppSelector, IndexSelector, SmallTabs, PersoEvent},
+        components: {Strategy, ClickAnalyticsEvent, InternalApp, AppHeader, AppSelector, IndexSelector, PersoEvent, SettingsLoader},
         computed: {
             appId: {
                 get () {

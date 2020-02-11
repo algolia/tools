@@ -1,16 +1,29 @@
 <template>
     <div class="relative">
         <input
-                ref="input"
-                class="input input-custom"
-                :placeholder="placeholder || ''"
-                v-model="query"
-                v-autowidth="{comfortZone: 10, maxWidth: '100%'}"
-                @input="selectedIndex = -1;"
-                @keyup="onKeyUp"
-                @focus="focused = true"
-                @blur="onBlur"
-                @keydown="onKeyDown"
+            v-if="!noAutoWidth"
+            ref="input"
+            :class="inputClasses ? inputClasses : 'input input-custom'"
+            :placeholder="placeholder || ''"
+            v-model="query"
+            v-autowidth="{comfortZone: 10, maxWidth: '100%'}"
+            @input="selectedIndex = -1"
+            @keyup="onKeyUp"
+            @focus="focused = true"
+            @blur="onBlur"
+            @keydown="onKeyDown"
+        />
+        <input
+            v-if="noAutoWidth"
+            ref="input"
+            :class="inputClasses ? inputClasses : 'input input-custom'"
+            :placeholder="placeholder || ''"
+            v-model="query"
+            @input="$emit('input', $event.target.value); selectedIndex = -1"
+            @keyup="onKeyUp"
+            @focus="focused = true"
+            @blur="onBlur"
+            @keydown="onKeyDown"
         />
         <div class="shadow mt-4 absolute z-10 bg-white dropdown" v-if="focused && (query.length > 0 || displayEmptyQuery)">
             <div
@@ -35,7 +48,7 @@
 
     export default {
         name: 'autocomplete',
-        props: ['items', 'refine', 'value', 'displayEmptyQuery', 'placeholder'],
+        props: ['items', 'refine', 'value', 'displayEmptyQuery', 'placeholder', 'inputClasses', 'emptySearchForQueryEqualsValue', 'noAutoWidth'],
         data: function () {
             let query = '';
             if (this.value !== undefined && this.value !== null) query = this.value.toString();
@@ -56,7 +69,10 @@
         computed: {
             currentQuery: function () {
                 const value = this.value !== undefined && this.value !== null ? this.value.toString() : null;
-                return this.query === value ? '' : this.query;
+                if (this.emptySearchForQueryEqualsValue) {
+                    return this.query === value ? '' : this.query;
+                }
+                return this.query;
             },
         },
         methods: {
@@ -114,18 +130,23 @@
                 }
             },
             onSelected: function (e) {
-                this.allowBlur = false;
                 if (this.selectedIndex !== -1 && this.items.length > 0) {
                     this.$emit('onSelected', this.items[this.selectedIndex], e);
                 } else {
                     this.$emit('onSelected', this.query, e);
                 }
+                this.$refs.input.blur();
 
                 this.query = '';
                 this.selectedIndex = this.query.length === 0 && !this.displayEmptyQuery ? -1 : 0;
             },
         },
         watch: {
+            value: function (newVal) {
+                if (newVal !== this.query) {
+                    this.query = newVal;
+                }
+            },
             currentQuery: function (newVal) {
                 this.refine(newVal);
             },

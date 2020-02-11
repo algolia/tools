@@ -69,6 +69,7 @@
                         :title-attribute-name="indexTitleAttribute"
                         :auto-title-attribute-name="indexAutoTitleAttributeName"
                         @onUpdateAutoTitleAttributeName="indexAutoTitleAttributeName = $event"
+                        @onUpdateImageAttribute="indexImageAttributeName = $event"
                         v-bind="$props"
                     />
                     <div
@@ -101,6 +102,7 @@
     import indexInfoMixin from "common/mixins/indexInfoMixin";
     import titleAttribute from "common/mixins/titleAttribute";
     import PerformSearch from "common/components/explorer/results/PerformSearch";
+    import {algoliaParams} from "common/utils/algoliaHelpers";
 
     export default {
         name: 'ClickAnalyticsEvent',
@@ -116,20 +118,16 @@
                 editableParams: {},
                 algoliaParams: {},
                 trackQueryInAnalytics: false,
-                event: {
-                    eventType: 'click', //
-                    eventName: '', //
-                    userToken: '', //
-                    filters: [],
-                }
             }
         },
         computed: {
             params: function () {
                 return {
+                    analytics: true,
                     clickAnalytics: this.trackQueryInAnalytics,
                     hitsPerPage: this.hitsPerPage,
                     page: this.page,
+                    ...this.algoliaParams,
                 };
             },
         },
@@ -138,13 +136,12 @@
                 this.searchResponse = response;
             },
             sendEvent: function (eventType, objectID, position) {
-                aa.sendEvent(eventType, {
-                    userToken: this.userToken || 'anonymous',
+                this.aa.sendEvent(eventType, {
                     objectIDs: [objectID],
                     positions: [position],
+                    eventName: 'clickOnResultsFromInsightsUI',
                     timestamp: new Date().getTime(),
                     index: this.indexName,
-                    eventName: this.event.eventName || 'clickAnalyticsResult',
                     queryID: this.searchResponse.queryID,
                 });
             },

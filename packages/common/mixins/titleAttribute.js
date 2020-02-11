@@ -10,10 +10,11 @@ export default {
             this.$emit('onUpdateAutoTitleAttributeName', this.titleAttribute);
         }
     },
-    props: ['titleAttributeName'],
+    props: ['titleAttributeName', 'autoTitleAttributeName'],
     computed: {
         titleAttribute: function () {
-            let titleAttribute = this.titleAttributeName;
+            let titleAttribute = this.titleAttributeName || this.autoTitleAttributeName;
+
 
             if (!titleAttribute && this.searchResponse) {
                 const searchableAttributes = this.indexSettings.searchableAttributes || this.indexSettings.attributesToIndex || [];

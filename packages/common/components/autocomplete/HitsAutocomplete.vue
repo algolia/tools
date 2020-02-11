@@ -7,6 +7,9 @@
             :value="value"
             :display-empty-query="displayEmptyQuery"
             :placeholder="placeholder"
+            :input-classes="inputClasses"
+            :empty-search-for-query-equals-value="false"
+            :no-auto-width="true"
             v-on="$listeners"
         >
             <template slot="item" slot-scope="{ index, item }">
@@ -26,30 +29,43 @@
     import PromotedHit from "../explorer/synonyms-rules/PromotedHit";
     import {getSearchIndex} from "../../utils/algoliaHelpers";
     import props from "../explorer/props";
+    import titleAttribute from "../../mixins/titleAttribute";
 
     export default {
         name: 'HitsAutocomplete',
         components: {PromotedHit, Autocomplete},
+        mixins: [titleAttribute],
         props: [
-            'params', 'value', 'displayEmptyQuery', 'placeholder',
+            'inputClasses', 'params', 'value', 'displayEmptyQuery', 'placeholder',
             ...props.credentials,
             ...props.images,
             ...props.attributes,
+            ...props.paramsAndSettings,
         ],
         data: function () {
             return {
-                algoliaResponse: null,
+                searchResponse: null,
                 items: []
             }
         },
         methods: {
             refine: async function (query) {
                 const index = await getSearchIndex(this.appId, this.apiKey, this.indexName, this.server);
-                this.algoliaResponse = await index.customSearch({
+                const res = await index.customSearch({
                     query,
                     ...(this.params || {}),
                 });
-                this.items = this.algoliaResponse.hits;
+                if (res.hits.length === 0) {
+                    const res2 = await index.getObjects([query]);
+                    if (res2.results.length > 0 && res2.results[0] !== null) {
+                        const items = res2.results || [];
+                        this.items = Object.freeze(items);
+                        this.searchResponse = Object.freeze({hits: items});
+                        return;
+                    }
+                }
+                this.searchResponse = Object.freeze(res);
+                this.items = Object.freeze(res.hits);
             },
         },
         created: function () {

@@ -6,6 +6,7 @@
             :refine="refine"
             :value="value"
             :display-empty-query="displayEmptyQuery"
+            :empty-search-for-query-equals-value="true"
             v-on="$listeners"
         >
             <template slot="item" slot-scope="{ index, item }">

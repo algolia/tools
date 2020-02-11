@@ -5,6 +5,7 @@
         :refine="refine"
         :value="value"
         :display-empty-query="true"
+        :empty-search-for-query-equals-value="true"
         @onSelected="onSelected"
         @onBlur="onBlur"
     >
