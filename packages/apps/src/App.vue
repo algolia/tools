@@ -56,6 +56,13 @@
                             {name: 'Mlock Alerts', url: '/mlock-alerts'},
                         ]
                     },
+                    {
+                        name: 'Feature Testing tools',
+                        description: 'Test features without code',
+                        apps: [
+                            {name: 'Insights UI', url: '/insights-ui'},
+                        ]
+                    },
                 ]
             };
         },
