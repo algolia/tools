@@ -130,6 +130,7 @@
                 }
             },
             onSelected: function (e) {
+                this.allowBlur = false;
                 if (this.selectedIndex !== -1 && this.items.length > 0) {
                     this.$emit('onSelected', this.items[this.selectedIndex], e);
                 } else {
