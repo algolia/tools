@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="flex p-8 cursor-pointer" @click="isOpen = !isOpen">
+        <div class="flex p-8 cursor-pointer" @click="toggleOpen">
             <div class="mr-16 text-nova-grey w-68">{{timeDiff}}</div>
             <div class="flex flex-1 flex-wrap">
                 <div
@@ -131,6 +131,16 @@
                     'NB operations': this.logItem.nb_operations,
                     'Processing time': this.logItem.processing_time_ms
                 };
+            }
+        },
+        methods: {
+            toggleOpen: function () {
+                this.isOpen = !this.isOpen;
+                if (this.isOpen) {
+                    this.$emit('onShouldStopFetching');
+                } else {
+                    this.$emit('onShouldStartFetching');
+                }
             }
         }
     }

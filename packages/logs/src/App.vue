@@ -56,6 +56,8 @@
                             :log-item="log"
                             :now-date="nowDate"
                             class="border-t border-b border-proton-grey-opacity-20"
+                            @onShouldStopFetching="onShouldStopFetching"
+                            @onShouldStartFetching="onShouldStartFetching"
                         />
                         <div v-if="paginatedLogs.length <= 0" class="p-8">
                             No logs found
@@ -129,6 +131,7 @@
                   ip: true,
                 },
                 servers: ['-1'],
+                isStopBecauseOfOpen: false,
             };
         },
         watch: {
@@ -242,6 +245,15 @@
             }
         },
         methods: {
+            onShouldStopFetching: function () {
+                this.stopInterval();
+                this.isStopBecauseOfOpen = true;
+            },
+            onShouldStartFetching: function () {
+                if (this.isStopBecauseOfOpen) {
+                    this.startInterval();
+                }
+            },
             startInterval: function () {
                 this.interval = window.setInterval(async () => {
                     this.nowDate = new Date();
