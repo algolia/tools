@@ -42,6 +42,9 @@
         },
         mixins: [ownedByAlgoliaMixin],
         computed: {
+            apiKey: function () {
+                return this.$store.state.apps[this.appId] ? this.$store.state.apps[this.appId].key : '';
+            },
             apps: function () {
                 return this.$store.state.apps;
             },

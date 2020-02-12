@@ -1,10 +1,9 @@
 import app from './app'
 import Vue from 'vue';
-import {appsData} from  '../../initialData'
 
 export default {
     namespaced: true,
-    modules: appsData,
+    modules: {},
     mutations: {
         addAppId(state, payload) {
             const appId = payload.appId;

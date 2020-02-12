@@ -1,14 +1,17 @@
 <template>
     <internal-app>
         <div class="min-h-screen">
-            <app-header app-name="Insights UI" />
+            <app-header app-name="Insights UI">
+                <display-config class="mx-16 mt-0 ml-auto"/>
+            </app-header>
+            <app-management />
             <div class="max-w-960 mx-auto mt-24 pb-24">
                 <div class="bg-white rounded border border-proton-grey-opacity-60">
                     <div class="flex bg-white p-8 pb-12 border-nova-grey-opacity-20 bg-proton-grey-opacity-80 text-telluric-blue">
                         <app-selector v-model="appId" class="mr-16" />
                         <index-selector v-model="indexName" :app-id="appId" class="" />
                     </div>
-                    <div v-if="appId && indexName">
+                    <div v-if="indexData && this.apiKey">
                         <div class="flex bg-proton-grey-opacity-40 text-telluric-blue">
                             <div
                                 class="mx-8 p-8 -mb-2 cursor-pointer"
@@ -58,16 +61,31 @@
     import AppHeader from "common/components/header/AppHeader";
     import AppSelector from "common/components/selectors/AppSelector";
     import IndexSelector from "common/components/selectors/IndexSelector";
+    import AppManagement from "common/components/configuration/AppManagement";
     import SettingsLoader from "common/components/explorer/results/SettingsLoader";
     import PersoEvent from "./PersoEvent";
     import ClickAnalyticsEvent from "./ClickAnalyticsEvent";
     import Strategy from "./Strategy";
     import aa from "search-insights";
+    import DisplayConfig from "./DisplayConfig";
+    import indexInfoMixin from "common/mixins/indexInfoMixin";
 
     export default {
         name: 'Home',
-        components: {Strategy, ClickAnalyticsEvent, InternalApp, AppHeader, AppSelector, IndexSelector, PersoEvent, SettingsLoader},
+        components: {Strategy, ClickAnalyticsEvent, InternalApp, AppHeader, AppSelector, IndexSelector, PersoEvent, SettingsLoader, AppManagement, DisplayConfig},
+        mixins: [indexInfoMixin],
+        watch: {
+            appReady: function (val) {
+                if (!val) {
+                    this.$store.commit('insightsui/setAppId', null);
+                    this.$store.commit('insightsui/setIndexName', null);
+                }
+            }
+        },
         computed: {
+            appReady: function () {
+                return this.$store.state.apps[this.appId];
+            },
             appId: {
                 get () {
                     return this.$store.state.insightsui.appId;
@@ -93,7 +111,7 @@
                 }
             },
             apiKey: function () {
-                return this.$store.state.apps[this.appId].key;
+                return this.$store.state.apps[this.appId] ? this.$store.state.apps[this.appId].key : '';
             },
             aa: function () {
                 aa.init({

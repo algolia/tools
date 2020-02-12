@@ -90,7 +90,7 @@
                 }
             },
             imageAttributeName: function () {
-                if (!this.imageAttribute) {
+                if (!this.imageAttribute || !this.flattenHit[this.imageAttribute]) {
                     this.autoFindImageAttributeName();
                 }
                 return this.imageAttribute;

@@ -1,9 +1,12 @@
 import Vue from 'vue';
-import {panelsData} from  '../../initialData'
+import panel from "./panel";
 
 export default {
     namespaced: true,
-    modules: panelsData,
+    modules: {
+        leftPanel: panel(null, null),
+        rightPanel: panel(null, null)
+    },
     state: {
         splitMode: false,
         query: '',
