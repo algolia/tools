@@ -42,7 +42,7 @@
             @onFetchHits="onFetchHits"
             @onUpdateError="errorMessage = $event"
         />
-        <div class="mt-40" v-if="searchResponse">
+        <div class="mt-40 dropdown" v-if="searchResponse">
             <div class="text-solstice-blue-opacity-70">
                 title attribute:
                 <input
