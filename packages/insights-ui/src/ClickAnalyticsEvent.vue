@@ -138,7 +138,7 @@
             sendEvent: function (eventType, objectID, position) {
                 this.aa.sendEvent(eventType, {
                     objectIDs: [objectID],
-                    positions: [position],
+                    positions: [position + 1],
                     eventName: 'clickOnResultsFromInsightsUI',
                     timestamp: new Date().getTime(),
                     index: this.indexName,
