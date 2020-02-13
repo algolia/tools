@@ -1,10 +1,8 @@
+import sleep from "./time";
+
 const cache = {};
 
 const lock = {};
-
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 export default async function (appId) {
     while (lock[appId]) {

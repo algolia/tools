@@ -1,11 +1,8 @@
 import algoliasearch from 'algoliasearch';
+import sleep from "../../utils/time";
 
 const cache = {};
 const lock = {};
-
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 let key = null;
 

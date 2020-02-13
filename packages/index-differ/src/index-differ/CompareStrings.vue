@@ -62,4 +62,12 @@
     .d2h-diff-table {
         color: #5d6494;
     }
+
+    .d2h-code-side-linenumber {
+        display: none;
+    }
+
+    .d2h-code-side-line {
+        padding: 0;
+    }
 </style>

@@ -1,12 +1,23 @@
 <template>
-    <div v-if="currentTab !== 'settings' && differ">
+    <div class="flex w-full text-nova-grey bg-moon-grey-opacity-50 border-b border-proton-grey-opacity-20 px-16 py-8">
         <div class="flex">
-            <div><span class="capitalize">{{currentTab}}</span> loaded:</div>
-            <div class="ml-4">
-                {{Math.max(differ.A.ids[currentTab].length, differ.B.ids[currentTab].length)}}
+            <div class="flex">
+                <div>Loaded:</div>
+                <div class="ml-4">
+                    {{differ.indexLoader.indexData.ids[currentTab].length}}
+                </div>
+                <div>
+                    /{{isNaN(differ.indexLoader.indexData.nbHits[currentTab]) ? 'unknown' : differ.indexLoader.indexData.nbHits[currentTab]}}
+                </div>
             </div>
-            <div>
-                /{{isNaN(differ.A.nbHits[currentTab]) ? 'unknown' : Math.max(differ.A.nbHits[currentTab], differ.B.nbHits[currentTab])}}
+            <div class="ml-16 flex">
+                <div>Loaded ref:</div>
+                <div class="ml-4">
+                    {{differ.refIndexLoader.indexData.ids[currentTab].length}}
+                </div>
+                <div>
+                    /{{isNaN(differ.refIndexLoader.indexData.nbHits[currentTab]) ? 'unknown' : differ.refIndexLoader.indexData.nbHits[currentTab]}}
+                </div>
             </div>
             <div
                 class="ml-16 cursor-pointer text-nebula-blue hover:underline"
@@ -15,8 +26,6 @@
             >
                 Load all
             </div>
-        </div>
-        <div>
         </div>
     </div>
 </template>
@@ -43,11 +52,9 @@
             loadAll: function () {
                 this.loading = true;
                 this.$root.$emit('resetPage');
-                if (this.currentTab === 'records') {
-                    this.differ.allRecords().then(() => {
-                        this.loading = false;
-                    });
-                }
+                this.differ.loadAllRecords().then(() => {
+                    this.loading = false;
+                });
             }
         }
     }

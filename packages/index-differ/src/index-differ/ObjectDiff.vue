@@ -1,43 +1,24 @@
 <template>
     <div>
         <div
-            class="flex cursor-pointer diff-line"
+            class="cursor-pointer diff-line"
             @click="collapsed = !collapsed"
         >
             <div
-                class="w-half flex py-4 border-r border-proton-grey-opacity-20"
+                class="py-4 pt-8 px-16"
                 :class="{
                     'd2h-del': diff.removed,
                     'd2h-mod': diff.modified,
+                    'd2h-ins': diff.added,
                 }"
             >
-                <div v-if="!diff.added" class="ml-8">
-                    <div>
-                        {{diff.value}}
-                        <span v-if="diff.value.startsWith('http')">
-                            <a @click.stop target="_blank" :href="diff.value" class="text-nebula-blue">
-                                <external-link class="w-12 h-12 -mt-2" />
-                            </a>
-                        </span>
-                    </div>
-                </div>
-            </div>
-            <div
-                class="w-half flex py-4"
-                :class="{
-                    'd2h-mod': diff.modified,
-                    'd2h-ins': diff.added
-                }"
-            >
-                <div class="ml-8" v-if="!diff.removed">
-                    <div>
-                        {{diff.value}}
-                        <span v-if="diff.value.startsWith('http')">
-                            <a @click.stop target="_blank" :href="diff.value" class="text-nebula-blue">
-                                <external-link class="w-12 h-12 -mt-2" />
-                            </a>
-                        </span>
-                    </div>
+                <div>
+                    {{diff.value}}
+                    <span v-if="diff.value.startsWith('http')">
+                        <a @click.stop target="_blank" :href="diff.value" class="text-nebula-blue">
+                            <external-link class="w-12 h-12 -mt-2" />
+                        </a>
+                    </span>
                 </div>
             </div>
         </div>
@@ -69,7 +50,7 @@
                 this.collapsed = true;
             });
             this.$root.$on('onForceExpandAll', () => {
-                if (!this.diff.untouched) this.collapsed = false;
+                this.collapsed = false;
             });
         }
     }
@@ -86,6 +67,12 @@
 
     .d2h-files-diff {
         padding: 0;
+        display: flex;
+    }
+
+    .d2h-file-side-diff {
+        display: block;
+        margin: 0;
     }
 
     .diff-line:hover .d2h-mod {
