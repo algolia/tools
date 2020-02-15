@@ -1,6 +1,6 @@
 function deepFlat(obj, parentProps, props) {
     for (let prop in obj) {
-        if (prop === '_rankingInfo' || prop === '_highlightResult' || prop === '_snippetResult' || prop === 'objectID') continue;
+        if (prop === '_rankingInfo' || prop === '_highlightResult' || prop === '_snippetResult') continue;
 
         if (typeof obj[prop] === 'object') {
             deepFlat(obj[prop], [...parentProps, prop], props);
