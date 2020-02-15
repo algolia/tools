@@ -19,12 +19,20 @@
                 advancedIndexSettingsNames: ['indexingGeolocPrecision','maxNbHits','nbShards', 'nbShardsAuto','approxSubstIsBetter','maxApproxIVSizeForEachWord','maxApproxWords'],
             };
         },
+        watch: {
+            appId: function () { this.init(); },
+            indexName: function () { this.init(); },
+            apiKey: function () { this.init(); },
+        },
         created: function () {
-            if (!this.appId || !this.indexName) return;
-            this.loadIndexSettings();
-            this.loadKeysIndexer();
+            if (!this.appId || !this.indexName || !this.apiKey) return;
+            this.init();
         },
         methods: {
+            init: function () {
+                this.loadIndexSettings();
+                this.loadKeysIndexer();
+            },
             loadIndexSettings: async function () {
                 const client = await getClient(this.appId, this.apiKey);
                 const index = client.customInitIndex(this.indexName);
