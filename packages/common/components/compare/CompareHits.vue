@@ -108,7 +108,6 @@
 <script>
     import panelsMixin from "common/mixins/panelsMixin";
     import TrackedElements from "./TrackedElements";
-    import RankingInfoAnalyser from "common/components/explorer/hits/rankingInfoAnalyser"
 
     export default {
         name: 'CompareHits',

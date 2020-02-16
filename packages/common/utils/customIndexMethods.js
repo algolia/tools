@@ -156,8 +156,12 @@ const customBrowse = function (params) {
 };
 
 const customSearchForFacetValues = function (args) {
-    const newParams = getNewParams(args);
-    return this.searchForFacetValues(newParams);
+    const {
+        facetName,
+        facetQuery,
+        newParams
+    } = getNewParams(args);
+    return this.searchForFacetValues(facetName, facetQuery, newParams);
 };
 
 export default {
@@ -165,4 +169,5 @@ export default {
     customBrowse,
     disjunctiveSearch,
     customSearchForFacetValues,
+    buildFacetFilters,
 }
