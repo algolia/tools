@@ -103,6 +103,7 @@ export default function (rule) {
     this.alternatives = ruleCopy.condition && ruleCopy.condition.alternatives ? ruleCopy.condition.alternatives : false;
 
     this.promote = ruleCopy.consequence.promote || [];
+    this.filterPromotes = ruleCopy.consequence.filterPromotes || false;
     this.hide = ruleCopy.consequence.hide || [];
     this.userData = ruleCopy.consequence.userData;
 
@@ -148,7 +149,12 @@ export default function (rule) {
 
         rule.consequence = {};
 
-        if (this.hasPatternAndAnchoring && this.hasPromote && this.promote.length > 0) rule.consequence.promote = JSON.parse(JSON.stringify(this.promote));
+        if (this.hasPatternAndAnchoring && this.hasPromote && this.promote.length > 0) {
+            rule.consequence.promote = JSON.parse(JSON.stringify(this.promote));
+            if (this.filterPromotes) {
+                rule.consequence.filterPromotes = true;
+            }
+        }
         if (this.hasHide && this.hide.length > 0) rule.consequence.hide = JSON.parse(JSON.stringify(this.hide));
 
         if (this.hasParams && Object.keys(this.editableParams).length > 0) {

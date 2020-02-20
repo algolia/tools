@@ -189,46 +189,54 @@
                         </div>
                     </div>
                 </div>
-                <div v-if="newRule.hasPatternAndAnchoring" class="py-8 flex border-t border-proton-grey-opacity-20">
-                    <div class="w-212">
-                        <input type="checkbox" v-model="newRule.hasPromote" class="mr-1"/>
-                        promote
-                    </div>
-                    <div v-if="newRule.hasPromote" class="flex-grow">
-                        <div v-for="(promoted, i) in newRule.promote" :key="promoted.objectID" class="flex w-full mb-12">
-                            <promoted-hit
-                                :id="newRule.promote[i].objectID"
-                                class="w-200"
-                                v-bind="$props"
-                                v-on="$listeners"
-                            />
-                            <div class="ml-12">
-                                position
-                                <input
-                                    type="number"
-                                    min="0"
-                                    max="1000"
-                                    v-model.number="newRule.promote[i].position"
-                                    class="input-custom inline w-48"
+                <div v-if="newRule.hasPatternAndAnchoring">
+                    <div class="py-8 flex border-t border-proton-grey-opacity-20">
+                        <div class="w-212">
+                            <input type="checkbox" v-model="newRule.hasPromote" class="mr-1"/>
+                            promote
+                        </div>
+                        <div v-if="newRule.hasPromote" class="flex-grow">
+                            <div v-for="(promoted, i) in newRule.promote" :key="promoted.objectID" class="flex w-full mb-12">
+                                <promoted-hit
+                                    :id="newRule.promote[i].objectID"
+                                    class="w-200"
+                                    v-bind="$props"
+                                    v-on="$listeners"
                                 />
+                                <div class="ml-12">
+                                    position
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        max="1000"
+                                        v-model.number="newRule.promote[i].position"
+                                        class="input-custom inline w-48"
+                                    />
+                                </div>
+                                <div class="ml-4 w-12 h-12">
+                                    <trash-icon
+                                        class="w-full h-full ml-4 cursor-pointer text-cosmos-black-opacity-70"
+                                        @click="deletePromote(i)"
+                                    />
+                                </div>
                             </div>
-                            <div class="ml-4 w-12 h-12">
-                                <trash-icon
-                                    class="w-full h-full ml-4 cursor-pointer text-cosmos-black-opacity-70"
-                                    @click="deletePromote(i)"
+                            <div class="mt-24 mb-12">
+                                <hit-autocomplete
+                                    :params="{hitsPerPage: 4, enableRules: false}"
+                                    value=""
+                                    placeholder="Search for a new hit to promote"
+                                    :display-empty-query="true"
+                                    v-bind="$props"
+                                    v-on="$listeners"
+                                    @onSelected="addPromote"
                                 />
                             </div>
                         </div>
-                        <div class="mt-24 mb-12">
-                            <hit-autocomplete
-                                :params="{hitsPerPage: 4, enableRules: false}"
-                                value=""
-                                placeholder="Search for a new hit to promote"
-                                :display-empty-query="true"
-                                v-bind="$props"
-                                v-on="$listeners"
-                                @onSelected="addPromote"
-                            />
+                    </div>
+                    <div v-if="newRule.hasPromote" class="py-8 flex border-t border-proton-grey-opacity-20">
+                        <div class="w-212">
+                            <input type="checkbox" v-model="newRule.filterPromotes" class="mr-1"/>
+                            promote follow filters
                         </div>
                     </div>
                 </div>

@@ -119,6 +119,9 @@
                         </div>
                     </div>
                 </div>
+                <div v-if="intermediateRule.filterPromotes > 0" class="py-8 flex border-t border-proton-grey-opacity-20">
+                    <div class="w-188">promote follow filters</div>
+                </div>
                 <div v-if="intermediateRule.hide.length > 0" class="py-8 flex border-t border-proton-grey-opacity-20">
                     <div class="w-188">hide</div>
                     <div class="ml-4">
