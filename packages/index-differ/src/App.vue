@@ -72,7 +72,7 @@
                             </label>
                             <label class="mr-16">
                                 <div class="flex">
-                                    <input type="checkbox" class="mr-8" v-model="filters.deleted">
+                                    <input type="checkbox" class="mr-8" v-model="filters.removed">
                                     <div>Deleted</div>
                                 </div>
                             </label>
@@ -194,7 +194,7 @@
                 filters: {
                     untouched: true,
                     added: true,
-                    deleted: true,
+                    removed: true,
                     modified: true,
                 },
                 indices: [],
