@@ -34,7 +34,7 @@ app.use('/busted', serveStatic(__dirname + "/packages/busted/dist"));
 app.use('/insights-ui', serveStatic(__dirname + "/packages/insights-ui/dist"));
 
 app.use((req, res) => {
-    res.redirect("https://algolia-experimental.herokuapp.com/apps");
+    res.redirect("https://tools.algolia.com/apps");
 });
 
 var port = process.env.PORT || 80;
