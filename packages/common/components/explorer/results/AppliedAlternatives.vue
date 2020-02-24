@@ -41,7 +41,7 @@
         data: function () {
             return {
                 // ignoreTypes: ['original', 'typo', 'conjugation']
-                keepTypes: ['excluded', 'plural', 'split', 'concat', 'synonym', 'compound', 'altcorrection'],
+                keepTypes: ['excluded', 'plural', 'split', 'concat', 'synonym', 'compound', 'altcorrection', 'conjugation'],
                 originalTypes: ['original', 'stopword', 'optional'],
             }
         },

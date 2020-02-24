@@ -525,8 +525,139 @@ ignorePlurals:
       label: Uzbek
     - name: zh
       label: Chinese
-  default: false
+  default: true
   settings_default: null
+
+ignoreConjugations:
+    scope:
+        - settings
+        - search
+    value_type: enum
+    values:
+        - true
+        - false
+        - name: af
+          label: Afrikaans
+        - name: ar
+          label: Arabic
+        - name: az
+          label: Azerbaijani
+        - name: bg
+          label: Bulgarian
+        - name: ca
+          label: Catalan
+        - name: cs
+          label: Czech
+        - name: cy
+          label: Welsh
+        - name: da
+          label: Danish
+        - name: de
+          label: German
+        - name: en
+          label: English
+        - name: eo
+          label: Esperanto
+        - name: es
+          label: Spanish
+        - name: et
+          label: Estonian
+        - name: eu
+          label: Basque
+        - name: fi
+          label: Finnish
+        - name: fo
+          label: Faroese
+        - name: fr
+          label: French
+        - name: gl
+          label: Galician
+        - name: he
+          label: Hebrew
+        - name: hi
+          label: Hindi
+        - name: hu
+          label: Hungarian
+        - name: hy
+          label: Armenian
+        - name: id
+          label: Indonesian
+        - name: is
+          label: Icelandic
+        - name: it
+          label: Italian
+        - name: ja
+          label: Japanese
+        - name: ka
+          label: Georgian
+        - name: kk
+          label: Kazakh
+        - name: ko
+          label: Korean
+        - name: ky
+          label: Kirghiz
+        - name: lt
+          label: Lithuanian
+        - name: mi
+          label: Maori
+        - name: mn
+          label: Mongolian
+        - name: mr
+          label: Marathi
+        - name: ms
+          label: Malay
+        - name: mt
+          label: Maltese
+        - name: nb
+          label: Norwegian Bokmål
+        - name: nl
+          label: Dutch
+        - name: no
+          label: Norwegian
+        - name: ns
+          label: Northern Sotho
+        - name: pl
+          label: Polish
+        - name: ps
+          label: Pashto
+        - name: pt
+          label: Portuguese
+        - name: qu
+          label: Quechua
+        - name: ro
+          label: Romanian
+        - name: ru
+          label: Russian
+        - name: sk
+          label: Slovak
+        - name: sq
+          label: Albanian
+        - name: sv
+          label: Swedish
+        - name: sw
+          label: Swahili
+        - name: ta
+          label: Tamil
+        - name: te
+          label: Telugu
+        - name: tl
+          label: Tagalog
+        - name: tn
+          label: Tswana
+        - name: tr
+          label: Turkish
+        - name: tt
+          label: Tatar
+        - name: uk
+          label: Ukrainian
+        - name: ur
+          label: Urdu
+        - name: uz
+          label: Uzbek
+        - name: zh
+          label: Chinese
+    default: true
+    settings_default: null
 
 removeStopWords:
   scope:
@@ -618,7 +749,7 @@ removeStopWords:
       label: Urdu
     - name: zh
       label: Chinese
-  default: false
+  default: true
   settings_default: null
 
 camelCaseAttributes:
