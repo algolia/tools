@@ -276,7 +276,7 @@
                 }
             },
             fetchSuite: async function () {
-                const endpoint = process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT || 'https://algolia-apps-backend.herokuapp.com';
+                const endpoint = process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT || 'https://tools-backend.algolia.com';
                 const res = await fetch(`${endpoint}/relevance-testing/suites/${this.suiteId}`, {
                     credentials: 'include',
                     headers: {
@@ -318,7 +318,7 @@
                 this.setCurrentRun(run);
             },
             addGroup: async function () {
-                const endpoint = process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT || 'https://algolia-apps-backend.herokuapp.com';
+                const endpoint = process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT || 'https://tools-backend.algolia.com';
                 const res = await fetch(`${endpoint}/relevance-testing/suites/${this.suite.id}/groups`, {
                     method: 'POST',
                     credentials: 'include',

@@ -12,7 +12,7 @@ export default async function (appId) {
     if (cache[appId]) return cache[appId];
 
     lock[appId] = true;
-    const backendEndpoint = process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT || 'https://algolia-apps-backend.herokuapp.com';
+    const backendEndpoint = process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT || 'https://tools-backend.algolia.com';
 
     const res = await fetch(`${backendEndpoint}/signature/${appId}`, {
         credentials: 'include',

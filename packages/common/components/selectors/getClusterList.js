@@ -7,7 +7,7 @@ const lock = {};
 let key = null;
 
 export async function getKey() {
-    const backendEndpoint = process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT || 'https://algolia-apps-backend.herokuapp.com';
+    const backendEndpoint = process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT || 'https://tools-backend.algolia.com';
 
     const res = await fetch(`${backendEndpoint}/applications-search-key`, {
         credentials: 'include',

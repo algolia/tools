@@ -85,7 +85,7 @@
         },
         methods: {
             updateRun: async function () {
-                const endpoint = process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT || 'https://algolia-apps-backend.herokuapp.com';
+                const endpoint = process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT || 'https://tools-backend.algolia.com';
                 await fetch(`${endpoint}/relevance-testing/suites/${this.suite.id}/runs/${this.run.id}`, {
                     method: 'PUT',
                     credentials: 'include',
@@ -101,7 +101,7 @@
                 });
             },
             deleteRun: async function () {
-                const endpoint = process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT || 'https://algolia-apps-backend.herokuapp.com';
+                const endpoint = process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT || 'https://tools-backend.algolia.com';
                 await fetch(`${endpoint}/relevance-testing/suites/${this.suite.id}/runs/${this.run.id}`, {
                     method: 'DELETE',
                     credentials: 'include',

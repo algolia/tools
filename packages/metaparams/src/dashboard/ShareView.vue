@@ -102,7 +102,7 @@
                 this.copied = true;
             },
             createShortLink: async function () {
-                const endpoint = process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT || 'https://algolia-apps-backend.herokuapp.com';
+                const endpoint = process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT || 'https://tools-backend.algolia.com';
                 const res = await fetch(`${endpoint}/state`, {
                     credentials: 'include',
                     method: 'POST',
