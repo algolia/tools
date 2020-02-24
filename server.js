@@ -40,7 +40,7 @@ app.use('/insights-ui', serveStatic(__dirname + "/packages/insights-ui/dist"));
 
 app.use((req, res) => {
     res.redirect("https://tools.algolia.com/apps");
-});
+}); 
 
 var port = process.env.PORT || 80;
 app.listen(port);
