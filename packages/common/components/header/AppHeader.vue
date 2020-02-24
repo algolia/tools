@@ -5,7 +5,7 @@
                 <div class="flex w-full">
                     <div class="flex items-center text-telluric-blue mr-16 text-lg">
                         <algolia-logo-experimental class="w-20 h-20 mr-8"/>
-                        <div class="mr-4 mt-2"><a href="/apps">{{appName ? 'Apps' : 'Experimental Apps'}}</a></div>
+                        <div class="mr-4 mt-2"><a href="/apps">Tools</a></div>
                         <chevron-left v-if="appName" class="w-12 h-12 rotate-180 mr-4" />
                         <div v-if="appName" class="mt-2 font-bold">{{appName}}</div>
                     </div>
