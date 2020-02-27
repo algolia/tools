@@ -48,6 +48,13 @@
                         ]
                     },
                     {
+                        name: 'Data tools',
+                        description: 'Play with data',
+                        apps: [
+                            {name: 'Transform', url: '/transform'},
+                        ]
+                    },
+                    {
                         name: 'Info tools',
                         description: 'Get information on engine features',
                         apps: [
