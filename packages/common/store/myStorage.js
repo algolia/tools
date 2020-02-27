@@ -44,4 +44,4 @@ export default function(options, storage, key) {
             setState(key, state, storage);
         });
     };
-};
+}

@@ -21,7 +21,7 @@
         name: 'Attributes',
         components: {Attribute},
         props: [
-            'topAttributes', 'searchableAttributes', 'item',
+            'topAttributes', 'searchableAttributes', 'item', 'noCollapse',
             ...props.attributes,
             ...props.paramsAndSettings,
         ],
@@ -41,7 +41,7 @@
                 return this.allKeys.length - this.keys.length;
             },
             needsCollapse: function () {
-                return this.topAttributes.length > 0;
+                return this.noCollapse !== true && this.topAttributes.length > 0;
             },
             uncollapsedAttributes: function () {
                 const hasAttributesToRetrieve = this.searchParams && this.searchParams.attributesToRetrieve;

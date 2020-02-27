@@ -957,6 +957,15 @@ enableExperimentalBlendPersonalization:
     - false
   default: true
 
+experimentalDecompoundQuery:
+  scope:
+      - search
+  value_type: boolean
+  values:
+      - true
+      - false
+  default: false
+
 queryType:
   scope:
     - settings

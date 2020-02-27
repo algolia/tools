@@ -1,0 +1,190 @@
+<template>
+    <div>
+        <h2 class="mt-24 text-solstice-blue-opacity-80">Load into index</h2>
+        <div class="mt-24 flex">
+            <div class="flex">
+                <app-selector v-model="appId" :only-algolia="true" />
+                <input v-model="indexName" class="ml-24 input-custom mr-8 w-148">
+            </div>
+        </div>
+        <div class="mt-24">
+            <task-group-view
+                v-if="tasksGroup"
+                :tasks-group="tasksGroup"
+            />
+            <div v-if="!tasksGroup && (!indexInfo || (indexName.length > 0 && indexName !== indexInfo.indexName))">
+                <div>
+                    <div>
+                        <label class="cursor-pointer">
+                            <input type="radio" v-model="method" value="saveObjects" /> saveObjects
+                        </label>
+                    </div>
+                    <div class="mt-4">
+                        <label class="cursor-pointer">
+                            <input type="radio" v-model="method" value="partialUpdateObjects" /> partialUpdateObjects
+                        </label>
+                    </div>
+                </div>
+                <div class="mt-24 flex">
+                    <div
+                        @click="process()"
+                        class="cursor-pointer bg-white rounded border border-b-0 border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out mr-8 px-16 p-8 text-sm"
+                    >
+                        Load
+                    </div>
+                </div>
+                <div v-if="errorMessage.length > 0" class="mt-24 border border-mars-1 mt-16 p-8 rounded">
+                    <div>{{errorMessage}}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+    import AppSelector from 'common/components/selectors/AppSelector';
+    import IndexSelector from 'common/components/selectors/IndexSelector';
+    import TaskGroupView from "common/components/TasksGroup";
+    import {getSearchIndex} from "common/utils/algoliaHelpers";
+    import {Task, TasksGroup} from "common/utils/tasks";
+
+    export default {
+        name: 'Applier',
+        props: ['dataset', 'indexInfo', 'transformer'],
+        components: {AppSelector, IndexSelector, TaskGroupView},
+        data: function () {
+            return {
+                appId: null,
+                indexName: this.indexInfo ? `${this.indexInfo.indexName}_transformed` : 'transformed_index',
+                tasksGroup: null,
+                errorMessage: '',
+                method: 'saveObjects',
+            }
+        },
+        methods: {
+            chunk: function (hits) {
+                const chunks = [];
+                let i = 0; let j = 0;
+                const chunkSize = 1000;
+                for (i = 0, j = hits.length; i < j; i += chunkSize) {
+                    chunks.push(hits.slice(i, i + chunkSize));
+                }
+                return chunks;
+            },
+            apiKey: function (appId) {
+                return this.$store.state.apps[appId].key;
+            },
+            getNewHits: function (hits) {
+                const newHits = [];
+                hits.forEach((hit) => {
+                    const newHit = this.transformer(hit);
+                    if (newHit === null) return;
+
+                    if (Array.isArray(newHit)) {
+                        newHits.push(...newHit);
+                    } else {
+                        newHits.push(newHit);
+                    }
+                });
+                return newHits;
+            },
+            process: async function () {
+                const srcIndex = this.indexInfo ? await getSearchIndex(this.indexInfo.appId, this.apiKey(this.indexInfo.appId), this.indexInfo.indexName) : null;
+                const dstIndex = await getSearchIndex(this.appId, this.apiKey(this.appId), this.indexName);
+
+                const label = this.indexInfo ? `${this.indexInfo.appId}:${this.indexInfo.indexName}` : 'dataset';
+                const tasksGroup = new TasksGroup(`Transform ${label} to ${this.appId}:${this.indexName}`);
+
+                if (this.indexInfo) {
+                    const srcSettings = await srcIndex.getSettings();
+                    tasksGroup.addTask(new Task('Copy settings/synonyms/rules', async () => {
+                        delete(srcSettings.replicas);
+                        const promises = [
+                            dstIndex.setSettings(srcSettings).wait(),
+                            await srcIndex.browseSynonyms({
+                                hitsPerPage: 1000,
+                                batch: (synonyms) => {
+                                    dstIndex.saveSynonyms(synonyms, {replaceExistingSynonyms: false});
+                                }
+                            }),
+                            await srcIndex.browseRules({
+                                hitsPerPage: 1000,
+                                batch: (rules) => {
+                                    dstIndex.saveRules(rules, {clearExistingRules: false});
+                                }
+                            }),
+                        ];
+
+                        await Promise.all(promises);
+                    }));
+
+                    const browseTask = new Task('Copy records');
+
+                    browseTask.setCallback(async () => {
+                        let res = await srcIndex.customBrowse({
+                            query: '',
+                            hitsPerPage: 1000,
+                            attributesToRetrieve: ['*']
+                        });
+                        browseTask.setNth(0);
+                        browseTask.setOutOf(Math.ceil(res.nbHits / 1000));
+                        let resAdd = this.method === 'saveObjects' ? await dstIndex.saveObjects(this.getNewHits(res.hits)) : await dstIndex.partialUpdateObjects(this.getNewHits(res.hits));
+                        resAdd.taskIDs.forEach((resAddN) => tasksGroup.addAlgoliaTaskId(resAddN));
+                        browseTask.setNth(res.page + 1);
+
+                        while (res.cursor) {
+                            res = await srcIndex.customBrowse({cursor: res.cursor});
+                            resAdd = this.method === 'saveObjects' ? await dstIndex.saveObjects(this.getNewHits(res.hits)) : await dstIndex.partialUpdateObjects(this.getNewHits(res.hits));
+                            resAdd.taskIDs.forEach((resAddN) => tasksGroup.addAlgoliaTaskId(resAddN));
+                            browseTask.setNth(res.page + 1);
+                        }
+                    });
+                    tasksGroup.addTask(browseTask);
+                } else {
+                    const browseTask = new Task('Upload records');
+
+                    browseTask.setCallback(async () => {
+                        const chunks = this.chunk(this.dataset);
+                        browseTask.setNth(0);
+                        browseTask.setOutOf(chunks.length);
+
+                        for (let i = 0; i < chunks.length; i++) {
+                            const resAdd = this.method === 'saveObjects' ? await dstIndex.saveObjects(this.getNewHits(chunks[i])) : await dstIndex.partialUpdateObjects(this.getNewHits(chunks[i]));
+                            resAdd.taskIDs.forEach((resAddN) => tasksGroup.addAlgoliaTaskId(resAddN));
+                            browseTask.setNth(i + 1);
+                        }
+                    });
+                    tasksGroup.addTask(browseTask);
+                }
+
+                const waitTask = new Task('Wait Tasks');
+                waitTask.setCallback(async () => {
+                    if (tasksGroup.tasksIds.length > 0) {
+                        waitTask.setNth(0);
+                        waitTask.setOutOf(tasksGroup.tasksIds.length);
+                        let i;
+                        for (i = 0; i < tasksGroup.tasksIds.length; i++) {
+                            await dstIndex.waitTask(tasksGroup.tasksIds[i]);
+                            waitTask.setNth(i + 1);
+                        }
+                    }
+                });
+
+                tasksGroup.addTask(waitTask);
+
+                this.tasksGroup = tasksGroup;
+
+                try {
+                    this.errorMessage = '';
+                    await this.tasksGroup.run();
+                } catch (e) {
+                    this.errorMessage = e.message;
+                    this.tasksGroup = null;
+                    throw e;
+                }
+
+                this.tasksGroup = null;
+            },
+        },
+    }
+</script>
