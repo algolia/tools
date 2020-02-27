@@ -74,6 +74,17 @@
             apiKey: function (appId) {
                 return this.$store.state.apps[appId].key;
             },
+            saveObjects: async function (index, hits) {
+                if (this.method === 'saveObjects') {
+                    return index.saveObjects(this.getNewHits(hits), {
+                        autoGenerateObjectIDIfNotExist: true,
+                    })
+                } else {
+                    return index.partialUpdateObjects(this.getNewHits(hits), {
+                        autoGenerateObjectIDIfNotExist: true,
+                    })
+                }
+            },
             getNewHits: function (hits) {
                 const newHits = [];
                 hits.forEach((hit) => {
@@ -128,13 +139,13 @@
                         });
                         browseTask.setNth(0);
                         browseTask.setOutOf(Math.ceil(res.nbHits / 1000));
-                        let resAdd = this.method === 'saveObjects' ? await dstIndex.saveObjects(this.getNewHits(res.hits)) : await dstIndex.partialUpdateObjects(this.getNewHits(res.hits));
+                        let resAdd = await this.saveObjects(dstIndex, res.hits);
                         resAdd.taskIDs.forEach((resAddN) => tasksGroup.addAlgoliaTaskId(resAddN));
                         browseTask.setNth(res.page + 1);
 
                         while (res.cursor) {
                             res = await srcIndex.customBrowse({cursor: res.cursor});
-                            resAdd = this.method === 'saveObjects' ? await dstIndex.saveObjects(this.getNewHits(res.hits)) : await dstIndex.partialUpdateObjects(this.getNewHits(res.hits));
+                            resAdd = await this.saveObjects(dstIndex, res.hits);
                             resAdd.taskIDs.forEach((resAddN) => tasksGroup.addAlgoliaTaskId(resAddN));
                             browseTask.setNth(res.page + 1);
                         }
@@ -149,7 +160,7 @@
                         browseTask.setOutOf(chunks.length);
 
                         for (let i = 0; i < chunks.length; i++) {
-                            const resAdd = this.method === 'saveObjects' ? await dstIndex.saveObjects(this.getNewHits(chunks[i])) : await dstIndex.partialUpdateObjects(this.getNewHits(chunks[i]));
+                            const resAdd = await this.saveObjects(dstIndex, chunks[i]);
                             resAdd.taskIDs.forEach((resAddN) => tasksGroup.addAlgoliaTaskId(resAddN));
                             browseTask.setNth(i + 1);
                         }

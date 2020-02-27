@@ -50,6 +50,7 @@
                         <option value=",">,</option>
                         <option value=";">;</option>
                         <option value="\t">\t</option>
+                        <option value="#">#</option>
                     </select>
                 </div>
             </div>
