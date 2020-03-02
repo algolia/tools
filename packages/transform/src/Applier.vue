@@ -47,10 +47,12 @@
     import TaskGroupView from "common/components/TasksGroup";
     import {getSearchIndex} from "common/utils/algoliaHelpers";
     import {Task, TasksGroup} from "common/utils/tasks";
+    import algoliasearch from 'algoliasearch';
+    import Papa from "papaparse";
 
     export default {
         name: 'Applier',
-        props: ['dataset', 'indexInfo', 'transformer'],
+        props: ['dataset', 'indexInfo', 'transformer', 'csvFile'],
         components: {AppSelector, IndexSelector, TaskGroupView},
         data: function () {
             return {
@@ -75,20 +77,27 @@
                 return this.$store.state.apps[appId].key;
             },
             saveObjects: async function (index, hits) {
+                const newHits = await this.getNewHits(hits);
                 if (this.method === 'saveObjects') {
-                    return index.saveObjects(this.getNewHits(hits), {
+                    return index.saveObjects(newHits, {
                         autoGenerateObjectIDIfNotExist: true,
                     })
                 } else {
-                    return index.partialUpdateObjects(this.getNewHits(hits), {
+                    return index.partialUpdateObjects(newHits, {
                         autoGenerateObjectIDIfNotExist: true,
                     })
                 }
             },
-            getNewHits: function (hits) {
+            getNewHits: async function (hits) {
                 const newHits = [];
-                hits.forEach((hit) => {
-                    const newHit = this.transformer(hit);
+
+                const context = {
+                    algoliasearch: algoliasearch,
+                };
+
+                for (let i = 0; i < hits.length; i++) {
+                    const newHit = await this.transformer.call(context, hits[i]);
+
                     if (newHit === null) return;
 
                     if (Array.isArray(newHit)) {
@@ -96,7 +105,8 @@
                     } else {
                         newHits.push(newHit);
                     }
-                });
+                }
+
                 return newHits;
             },
             process: async function () {
@@ -151,6 +161,45 @@
                         }
                     });
                     tasksGroup.addTask(browseTask);
+                } else if (this.csvFile) {
+                    const browseTask = new Task('Upload records');
+
+                    browseTask.setCallback(() => {
+                        return new Promise((resolve, reject) => {
+                            let hits = [];
+                            let count = 0;
+
+                            browseTask.setNth(0);
+                            browseTask.setOutOf('undefined');
+
+                            Papa.parse(this.csvFile, {
+                                header: true,
+                                delimitersToGuess: [',', ';', '\t', '#'],
+                                step: async (lineObject, parser) => {
+                                    hits.push(lineObject.data);
+                                    count++;
+                                    if (hits.length >= 1000) {
+                                        parser.pause();
+                                        const resAdd = await this.saveObjects(dstIndex, hits);
+                                        resAdd.taskIDs.forEach((resAddN) => tasksGroup.addAlgoliaTaskId(resAddN));
+                                        browseTask.setNth(count);
+                                        hits = [];
+                                        parser.resume();
+                                    }
+                                },
+                                complete: async (results) => {
+                                    if (hits.length > 0) {
+                                        const resAdd = await this.saveObjects(dstIndex, hits);
+                                        resAdd.taskIDs.forEach((resAddN) => tasksGroup.addAlgoliaTaskId(resAddN));
+                                        browseTask.setNth(count);
+                                    }
+                                    resolve();
+                                }
+                            });
+                        })
+                    });
+
+                    tasksGroup.addTask(browseTask);
                 } else {
                     const browseTask = new Task('Upload records');
 
@@ -184,6 +233,7 @@
                 tasksGroup.addTask(waitTask);
 
                 this.tasksGroup = tasksGroup;
+                this.$root.$emit('onShouldPauseProxy');
 
                 try {
                     this.errorMessage = '';
@@ -194,6 +244,7 @@
                     throw e;
                 }
 
+                this.$root.$emit('onShouldResumeProxy');
                 this.tasksGroup = null;
             },
         },

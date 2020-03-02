@@ -40,7 +40,7 @@
                 if (this.value !== value) {
                     this.$emit('input', value, event)
                 }
-            })
+            });
         },
         beforeDestroy() {
             this.editor && this.editor.dispose()

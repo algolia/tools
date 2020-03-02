@@ -4,24 +4,24 @@
         <div class="flex mt-24">
             <div
                 @click="setType('index')"
-                class="w-200 cursor-pointer mr-24 text-center rounded border border-proton-grey-opacity-60 p-24"
+                class="w-232 cursor-pointer mr-24 text-center rounded border border-proton-grey-opacity-60 p-24"
                 :class="type === 'index' ? 'bg-proton-grey-opacity-40' : 'bg-white'"
             >
-                Algolia Index
-            </div>
-            <div
-                @click="setType('json')"
-                class="w-200 cursor-pointer mr-24 text-center rounded border border-proton-grey-opacity-60 p-24"
-                :class="type === 'json' ? 'bg-proton-grey-opacity-40' : 'bg-white'"
-            >
-                JSON
+                Algolia Index (∞ size)
             </div>
             <div
                 @click="setType('csv')"
-                class="w-200 cursor-pointer mr-24 text-center rounded border border-proton-grey-opacity-60 p-24"
+                class="w-232 cursor-pointer mr-24 text-center rounded border border-proton-grey-opacity-60 p-24"
                 :class="type === 'csv' ? 'bg-proton-grey-opacity-40' : 'bg-white'"
             >
-                CSV
+                CSV (∞ size)
+            </div>
+            <div
+                @click="setType('json')"
+                class="w-232 cursor-pointer mr-24 text-center rounded border border-proton-grey-opacity-60 p-24"
+                :class="type === 'json' ? 'bg-proton-grey-opacity-40' : 'bg-white'"
+            >
+                JSON (small/medium size)
             </div>
         </div>
         <div v-if="['json', 'csv'].includes(type)">
@@ -42,16 +42,10 @@
                     <div class="mt-24" v-if="isLoadingFile">Loading ...</div>
                     <div v-if="dataset && dataset.length > 0" class="mt-24">
                         {{dataset.length}} records loaded
+                        <span v-if="sample">
+                            (This is a sample, csv will be fully loaded during the apply step)
+                        </span>
                     </div>
-                </div>
-                <div v-if="type === 'csv'" class="mt-24">
-                    Delimitor:
-                    <select class="bg-white" v-model="delimitor">
-                        <option value=",">,</option>
-                        <option value=";">;</option>
-                        <option value="\t">\t</option>
-                        <option value="#">#</option>
-                    </select>
                 </div>
             </div>
         </div>
@@ -77,30 +71,34 @@
     import AppSelector from 'common/components/selectors/AppSelector';
     import IndexSelector from 'common/components/selectors/IndexSelector';
     import {getSearchIndex} from "common/utils/algoliaHelpers";
-    import {dsvFormat} from 'd3-dsv';
+    import Papa from 'papaparse';
 
     export default {
         name: 'DatasetSelector',
         components: {AppSelector, IndexSelector},
         data: function () {
             return {
-                type: null,
+                type: 'csv',
                 url: '',
                 rawDataSetString: '',
                 dataset: null,
+                csvFile: null,
                 isLoadingFile: false,
                 isDragring: false,
+                sample: false,
                 indexInfo: {
                     appId: null,
                     indexName: null,
                 },
                 nbHits: null,
-                delimitor: ',',
             }
         },
         watch: {
             dataset: function () {
                 this.$emit('onUpdateDataset', this.dataset);
+            },
+            csvFile: function () {
+                this.$emit('onUpdateCsvFile', this.csvFile);
             },
             indexInfo: {
                 deep: true,
@@ -125,8 +123,9 @@
             reset: function () {
                 this.nbHits = null;
                 this.dataset = null;
+                this.csvFile = null;
                 this.isLoadingFile = false;
-                this.dataset = null;
+                this.sample = false;
                 this.$emit('onUpdateIndexInfo', null);
             },
             addFile: function (e) {
@@ -137,26 +136,47 @@
                 const files = [...droppedFiles];
                 const file = files[0];
 
-                const reader = new FileReader();
+                if (this.type === 'json') {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const dataText = e.target.result;
 
-                reader.onload = (e) => {
-                    const dataText = e.target.result;
-
-                    if (this.type === 'json') {
                         const dataset = JSON.parse(dataText);
                         this.dataset = Object.freeze(dataset);
-                    }
 
-                    if (this.type === 'csv') {
-                        const dataset = [...dsvFormat(this.delimitor).parse(dataText)];
-                        this.dataset = Object.freeze(dataset);
-                    }
+                        this.isLoadingFile = false;
+                    };
+                    this.isLoadingFile = true;
+                    reader.readAsText(file, "UTF-8");
+                } else { // csv
+                    this.isLoadingFile = true;
 
-                    this.isLoadingFile = false;
-                };
-
-                this.isLoadingFile = true;
-                reader.readAsText(file, "UTF-8");
+                    const hits = [];
+                    let count = 0;
+                    Papa.parse(file, {
+                        header: true,
+                        delimitersToGuess: [',', ';', '\t', '#'],
+                        preview: 100,
+                        step: async (lineObject, parser) => {
+                            hits.push(lineObject.data);
+                            count++;
+                            if (count >= 100) {
+                                this.csvFile = file;
+                                this.dataset = Object.freeze(hits);
+                                this.isLoadingFile = false;
+                                this.sample = true;
+                            }
+                            //parser.pause();
+                            //parser.resume();
+                        },
+                        error: function () { count++; },
+                        complete: (results) => {
+                            this.csvFile = file;
+                            this.dataset = Object.freeze(hits);
+                            this.isLoadingFile = false;
+                        }
+                    });
+                }
             },
             loadIndex: async function () {
                 this.reset();

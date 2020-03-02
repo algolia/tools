@@ -193,6 +193,7 @@
                     this.tasksGroup = await this.differentAppCopy(config);
                 }
 
+                this.$root.$emit('onShouldPauseProxy');
                 try {
                     this.errorMessage = '';
                     await this.tasksGroup.run();
@@ -202,6 +203,7 @@
                     this.tasksGroup = null;
                     throw e;
                 }
+                this.$root.$emit('onShouldResumeProxy');
 
                 this.tasksGroup = null;
 

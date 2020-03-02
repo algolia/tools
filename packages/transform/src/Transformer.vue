@@ -35,12 +35,15 @@
                     <div class="mt-24 text-solstice-blue-opacity-60">
                         <div>
                             Return Object to modify the object
-                        </div>
-                        <div>
+                            <br>
                             Return Array to split records
-                        </div>
-                        <div>
+                            <br>
                             Return null to not index the record
+                            <br>
+                            <br>
+                            async/await is allowed
+                            <br>
+                            this.algoliasearch gives you access to algolia lib
                         </div>
                     </div>
                 </div>
@@ -72,6 +75,7 @@
     import MonacoEditor from "./MonacoEditor";
     import Attributes from "common/components/explorer/hits/Attributes";
     import HitsTransformer from "common/components/explorer/hits/hitsTransformer";
+    import algoliasearch from 'algoliasearch';
 
     export default {
         name: 'Transformer',
@@ -100,10 +104,14 @@
             },
         },
         methods: {
-            transformExample: function () {
+            transformExample: async function () {
                 try {
-                    const func = eval(`((refObj) => {\n ${this.transformer} \n})`);
-                    this.dstObjectExample = func(this.srcObjectExample);
+                    const context = {
+                        algoliasearch: algoliasearch,
+                    };
+
+                    const func = eval(`(async function (refObj) {\n ${this.transformer} \n})`);
+                    this.dstObjectExample = await func.call(context, this.srcObjectExample);
                     this.error = null;
                     this.$emit('onUpdateTransformer', func);
                 } catch (e) {

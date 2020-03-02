@@ -9,6 +9,7 @@
                 <dataset-selector
                     @onUpdateDataset="dataset = $event"
                     @onUpdateIndexInfo="indexInfo = $event"
+                    @onUpdateCsvFile="csvFile = $event"
                 />
                 <transformer
                     v-if="dataset"
@@ -20,6 +21,7 @@
                     :dataset="dataset"
                     :index-info="indexInfo"
                     :transformer="transformer"
+                    :csv-file="csvFile"
                 />
             </div>
         </div>
@@ -43,6 +45,7 @@
                 transformer: null,
                 dataset: null,
                 indexInfo: null,
+                csvFile: null,
             }
         }
     }

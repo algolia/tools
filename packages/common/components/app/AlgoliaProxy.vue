@@ -14,13 +14,24 @@
             return {
                 currentUser: null,
                 authorized: true,
+                paused: false,
             }
         },
         created:  function () {
             this.connect();
 
+            this.$root.$on('onShouldPauseProxy', () => {
+                this.paused = true;
+            });
+
+            this.$root.$on('onShouldResumeProxy', () => {
+                this.paused = true;
+            });
+
             window.addEventListener("focus", () => {
-                this.connect();
+                if (!this.paused) {
+                    this.connect();
+                }
             });
         },
         methods: {
