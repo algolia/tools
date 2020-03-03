@@ -78,7 +78,7 @@
         components: {AppSelector, IndexSelector},
         data: function () {
             return {
-                type: 'csv',
+                type: null,
                 url: '',
                 rawDataSetString: '',
                 dataset: null,
