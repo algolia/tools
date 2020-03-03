@@ -84,7 +84,7 @@
                     })
                 } else {
                     return index.partialUpdateObjects(newHits, {
-                        autoGenerateObjectIDIfNotExist: true,
+                        createIfNotExists: true,
                     })
                 }
             },
