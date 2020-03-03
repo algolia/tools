@@ -110,7 +110,7 @@
                         algoliasearch: algoliasearch,
                     };
 
-                    const func = eval(`(async function (refObj) {\n ${this.transformer} \n})`);
+                    const func = new Function(`return async function (refObj) {\n ${this.transformer} \n}`)();
                     this.dstObjectExample = await func.call(context, Object.freeze(JSON.parse(JSON.stringify(this.srcObjectExample))));
                     this.error = null;
                     this.$emit('onUpdateTransformer', func);
