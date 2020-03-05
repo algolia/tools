@@ -110,17 +110,18 @@
                 return newHits;
             },
             process: async function () {
-                const client = await getClient(this.indexInfo.appId, this.apiKey(this.indexInfo.appId));
-                client.transporter.timeouts.read = 60;
-                client.transporter.timeouts.write = 60;
-                client.transporter.timeouts.connect = 60;
-                const srcIndex = this.indexInfo ? client.customInitIndex(this.indexInfo.indexName) : null;
-                const dstIndex = await getSearchIndex(this.appId, this.apiKey(this.appId), this.indexName);
+                const clientDst = await getClient(this.appId, this.apiKey(this.appId));
+                clientDst.transporter.timeouts = {read: 60, write: 60, connect: 60};
+                const dstIndex = await clientDst.customInitIndex(this.indexName);
 
                 const label = this.indexInfo ? `${this.indexInfo.appId}:${this.indexInfo.indexName}` : 'dataset';
                 const tasksGroup = new TasksGroup(`Transform ${label} to ${this.appId}:${this.indexName}`);
 
                 if (this.indexInfo) {
+                    const client = await getClient(this.indexInfo.appId, this.apiKey(this.indexInfo.appId));
+                    client.transporter.timeouts = {read: 60, write: 60, connect: 60};
+                    const srcIndex = client.customInitIndex(this.indexInfo.indexName);
+
                     const srcSettings = await srcIndex.getSettings();
                     tasksGroup.addTask(new Task('Copy settings/synonyms/rules', async () => {
                         delete(srcSettings.replicas);
@@ -174,7 +175,7 @@
                             let count = 0;
 
                             browseTask.setNth(0);
-                            browseTask.setOutOf('undefined');
+                            browseTask.setOutOf('unknown');
 
                             Papa.parse(this.csvFile, {
                                 header: true,
