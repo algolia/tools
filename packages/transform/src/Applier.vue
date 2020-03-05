@@ -45,7 +45,7 @@
     import AppSelector from 'common/components/selectors/AppSelector';
     import IndexSelector from 'common/components/selectors/IndexSelector';
     import TaskGroupView from "common/components/TasksGroup";
-    import {getSearchIndex} from "common/utils/algoliaHelpers";
+    import {getClient, getSearchIndex} from "common/utils/algoliaHelpers";
     import {Task, TasksGroup} from "common/utils/tasks";
     import algoliasearch from 'algoliasearch';
     import Papa from "papaparse";
@@ -110,7 +110,11 @@
                 return newHits;
             },
             process: async function () {
-                const srcIndex = this.indexInfo ? await getSearchIndex(this.indexInfo.appId, this.apiKey(this.indexInfo.appId), this.indexInfo.indexName) : null;
+                const client = await getClient(this.indexInfo.appId, this.apiKey(this.indexInfo.appId));
+                client.transporter.timeouts.read = 60;
+                client.transporter.timeouts.write = 60;
+                client.transporter.timeouts.connect = 60;
+                const srcIndex = this.indexInfo ? client.customInitIndex(this.indexInfo.indexName) : null;
                 const dstIndex = await getSearchIndex(this.appId, this.apiKey(this.appId), this.indexName);
 
                 const label = this.indexInfo ? `${this.indexInfo.appId}:${this.indexInfo.indexName}` : 'dataset';
