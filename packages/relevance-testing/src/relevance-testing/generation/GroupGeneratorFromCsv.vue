@@ -196,6 +196,7 @@
                             const value = isNaN(parsedValue) ? row[i] : parsedValue;
                             requirement.recordsMatching[0].value = value;
                         } else if (columnType === 'objectID') {
+                            addRequirement = true;
                             then.push({
                                 test: "contains",
                                 operator: "=",
