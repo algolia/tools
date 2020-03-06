@@ -54,7 +54,9 @@
                 </select>
             </div>
             <div class="mt-2">
-                <input type="checkbox" v-model="shouldIgnoreImageProxy" /> disable image proxy
+                <label>
+                    <input type="checkbox" v-model="shouldIgnoreImageProxy" /> disable image proxy
+                </label>
             </div>
             <button class="mt-12 bg-white rounded border border-b-0 border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out px-16 p-8 text-sm" @click="editImageAttributes = false">
                 Close
