@@ -137,14 +137,7 @@
                         test: "contains",
                         operator: "=",
                         value: 1,
-                        recordsMatching: [
-                            {
-                                type: "attribute",
-                                key: "objectID",
-                                operator: '=',
-                                value: 'myObjectID',
-                            },
-                        ],
+                        recordsMatching: [],
                     };
                     let nbHitsRequirement = {
                         test: "nbHits",
@@ -157,6 +150,12 @@
                         key: "position",
                         operator: "=",
                         value: 0,
+                    };
+                    let recordMatchingRequirement = {
+                        type: "attribute",
+                        key: "objectID",
+                        operator: "=",
+                        value: 'myObjectID',
                     };
 
                     let addRequirement = false;
@@ -186,30 +185,23 @@
                             requirement.operator = row[i];
                         } else if (columnType === 'attributeName') {
                             addRequirement = true;
-                            requirement.recordsMatching[0].key = row[i];
+                            recordMatchingRequirement.key = row[i];
                         } else if (columnType === 'operator') {
                             addRequirement = true;
-                            requirement.recordsMatching[0].operator = row[i];
+                            recordMatchingRequirement.operator = row[i];
                         } else if (columnType === 'attributeValue') {
                             addRequirement = true;
                             const parsedValue = parseFloat(row[i]);
                             const value = isNaN(parsedValue) ? row[i] : parsedValue;
-                            requirement.recordsMatching[0].value = value;
+                            recordMatchingRequirement.value = value;
                         } else if (columnType === 'objectID') {
                             addRequirement = true;
-                            then.push({
-                                test: "contains",
-                                operator: "=",
-                                value: 1,
-                                recordsMatching: [
-                                    {
-                                        type: "attribute",
-                                        key: "objectID",
-                                        operator: "is",
-                                        value: row[i],
-                                    },
-                                ],
-                            })
+                            recordMatchingRequirement = {
+                                type: "attribute",
+                                key: "objectID",
+                                operator: "is",
+                                value: row[i],
+                            };
                         } else if (columnType === 'position') {
                             const value = parseFloat(row[i]);
                             if (!isNaN(value)) {
@@ -224,6 +216,8 @@
                     });
 
                     if (addRequirement) {
+                        requirement.recordsMatching.push(recordMatchingRequirement);
+
                         if (addPositionRequirement) {
                             requirement.recordsMatching.push(positionRequirement);
                         }
