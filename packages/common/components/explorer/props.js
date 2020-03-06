@@ -1,6 +1,6 @@
 export default {
     credentials: ['appId', 'apiKey', 'indexName', 'server', 'method'],
-    images: ['imageSize', 'imageAttribute', 'imageBaseUrl', 'imageSuffixUrl'],
+    images: ['imageSize', 'imageAttribute', 'imageBaseUrl', 'imageSuffixUrl', 'ignoreImageProxy'],
     attributes: ['titleAttributeName', 'autoTitleAttributeName', 'showSearchableAttributes', 'showCustomRanking', 'showAttributesForFaceting', 'showOnlyMatchingAttributes'],
     paramsAndSettings: ['query', 'searchParams', 'indexSettings', 'keysIndexer'],
     response: ['analyseResponse', 'searchResponse'],

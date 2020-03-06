@@ -40,6 +40,14 @@ export default {
                 this.$store.commit(`${this.indexCommitPrefix}/setImageSize`, value);
             }
         },
+        indexIgnoreImageProxy: {
+            get () {
+                return this.indexData.ignoreImageProxy || false;
+            },
+            set (value) {
+                this.$store.commit(`${this.indexCommitPrefix}/setIgnoreImageProxy`, value);
+            }
+        },
         indexImageAttributeName: {
             get () {
                 return this.indexData.imageAttributeName;

@@ -12,6 +12,7 @@ export default function () {
             imageAttributeName: null,
             autoTitleAttributeName: null,
             titleAttribute: '',
+            ignoreImageProxy: false,
             imageSize: 40,
             imageBaseUrl: '',
             imageSuffixUrl: '',
@@ -39,6 +40,9 @@ export default function () {
             },
             setImageSize(state, payload) {
                 Vue.set(state, 'imageSize', payload);
+            },
+            setIgnoreImageProxy(state, payload) {
+                Vue.set(state, 'ignoreImageProxy', payload);
             },
             setAutoTitleAttributeName(state, payload) {
                 Vue.set(state, 'autoTitleAttributeName', payload);

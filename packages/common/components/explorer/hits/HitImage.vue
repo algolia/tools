@@ -20,7 +20,7 @@
                 v-if="hasImage"
                 class="rounded w-full h-full"
                 style="object-fit: cover;"
-                :src="`https://rocky-thicket-17824.herokuapp.com/${forcedImageSize || imageSize}/${imageBaseUrl}${image}${imageSuffixUrl}`"
+                :src="`${proxyUrl}${imageBaseUrl}${image}${imageSuffixUrl}`"
             />
         </div>
         <div v-if="editImageAttributes && !forcedImageSize" class="p-12 text-center">
@@ -53,6 +53,9 @@
                     <option value="240">240px</option>
                 </select>
             </div>
+            <div class="mt-2">
+                <input type="checkbox" v-model="shouldIgnoreImageProxy" /> disable image proxy
+            </div>
             <button class="mt-12 bg-white rounded border border-b-0 border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out px-16 p-8 text-sm" @click="editImageAttributes = false">
                 Close
             </button>
@@ -81,12 +84,26 @@
             }
         },
         computed: {
+            proxyUrl: function () {
+                if (this.shouldIgnoreImageProxy) {
+                    return '';
+                }
+                return `https://rocky-thicket-17824.herokuapp.com/${this.forcedImageSize || this.imageSize}/`;
+            },
             size: {
                 get () {
                     return this.imageSize;
                 },
                 set (val) {
                     this.$emit('onUpdateImageSize', val);
+                }
+            },
+            shouldIgnoreImageProxy: {
+                get () {
+                    return this.ignoreImageProxy;
+                },
+                set (value) {
+                    this.$emit('onUpdateIgnoreImageProxy', value);
                 }
             },
             imageAttributeName: function () {

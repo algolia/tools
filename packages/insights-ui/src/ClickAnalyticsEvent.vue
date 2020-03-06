@@ -63,6 +63,7 @@
                         class="w-240"
                         :hit="hit"
                         :image-size="indexImageSize"
+                        :ignore-image-proxy="indexIgnoreImageProxy"
                         :image-attribute="indexImageAttributeName"
                         :image-base-url="indexImageBaseUrl"
                         :image-suffix-url="indexImageSuffixUrl"

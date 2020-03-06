@@ -46,6 +46,7 @@
                                 v-model="objectIDs[i]"
                                 placeholder="objectID"
                                 :display-empty-query="true"
+                                :ignore-image-proxy="indexIgnoreImageProxy"
                                 :image-size="indexImageSize"
                                 :image-attribute="indexImageAttributeName"
                                 :image-base-url="indexImageBaseUrl"
