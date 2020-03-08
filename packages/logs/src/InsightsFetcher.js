@@ -65,14 +65,13 @@ export default function (appId, apiKey, indexName) {
                     if (rawLog.event.filters) {
                         s += `on ${rawLog.event.filters.length} filters `;
                     }
-                    s += `( userToken=<code>${rawLog.event.userToken}</code> `;
+                    s += `<br><br>userToken=<code>${rawLog.event.userToken}</code> `;
                     if (rawLog.event.index) {
                         s += `index=<code>${rawLog.event.index}</code> `;
                     }
                     if (rawLog.event.queryID) {
                         s += `queryID=<code>${rawLog.event.queryID}</code> `;
                     }
-                    s +=  ')';
 
                     return s;
                 }),

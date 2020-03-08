@@ -109,10 +109,12 @@
                 mergedLogs: [],
                 logsType: 'all',
                 logsTypes: {
-                    'all': 'All logs',
-                    'query': 'Query logs',
-                    'build': 'Build logs',
-                    'error': 'Error logs',
+                    'all': 'Search API + Insights API',
+                    'all search': 'Search API',
+                    'all insights': 'Insights API',
+                    'query': 'Search API query logs',
+                    'build': 'Search API build logs',
+                    'error': 'Search API error logs',
                 },
                 interval: null,
                 stopIfFound: false,
@@ -135,7 +137,12 @@
             };
         },
         watch: {
-            logsType: function (n, o) { if (n === o) return; this.fetchLogs(true) },
+            logsType: function (n, o) {
+                if (n === o) return;
+                this.mergedLogs = Object.freeze([]);
+                this.logs = Object.freeze([]);
+                this.fetchLogs(true);
+            },
             logs: function (val) {
                 if (this.stopIfFound && val.length > 0 && this.logs.length >= Math.min(1000, this.shouldFoundN)) {
                     this.stopInterval();
@@ -156,6 +163,11 @@
             },
             allFieldsChecked: function () {
                 this.logs = this.filterLogs(this.mergedLogs);
+            },
+            insightsFetcher: function () {
+                this.mergedLogs = Object.freeze([]);
+                this.logs = Object.freeze([]);
+                this.fetchLogs(true);
             }
         },
         created: async function () {
@@ -225,7 +237,7 @@
                 const options = {
                     offset: 0,
                     length: 1000,
-                    type: this.logsType,
+                    type: this.logsType.startsWith('all') ? 'all' : this.logsType,
                 };
 
                 if (!this.allIndices) {
@@ -265,11 +277,13 @@
                 this.interval = null;
             },
             fetchLogs: async function (resetLogs) {
-                const promises = [
-                    await this.searchFetcher.fetchLogs(this.searchLogsOption, resetLogs),
-                    await this.insightsFetcher.fetchLogs(this.allIndices),
-                ];
+                const promiseSearch = this.logsType !== 'all insights' ? this.searchFetcher.fetchLogs(this.searchLogsOption, resetLogs) : (async () => [])();
+                const promiseInsights = ['all', 'all insights'].includes(this.logsType) ? this.insightsFetcher.fetchLogs(this.allIndices) : (async () => [])();
 
+                const promises = [
+                    await promiseSearch,
+                    await promiseInsights,
+                ];
 
                 const [searchLogs, analyticsLogs] = await Promise.all(promises);
                 const mergedLogs = [...searchLogs, ...analyticsLogs];

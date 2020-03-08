@@ -87,6 +87,7 @@ export default function (rawLog, server) {
     this.answer_code = rawLog.answer_code;
     this.nb_operations = rawLog.nb_api_calls;
     this.processing_time_ms = rawLog.processing_time_ms;
+    this.queryID = rawLog.inner_queries && rawLog.inner_queries.length > 0 && rawLog.inner_queries[0].query_id ? rawLog.inner_queries[0].query_id : null;
 
     this.response = rawLog.answer;
 
