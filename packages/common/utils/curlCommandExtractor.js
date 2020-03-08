@@ -94,6 +94,8 @@ export function parseCurlCommand (command) {
                     indexName = matches[1];
                     if (data.params) {
                         params = data.params;
+                    } else {
+                        params = data;
                     }
                 }
             }
