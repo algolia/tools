@@ -21,7 +21,7 @@
                 class="w-232 cursor-pointer mr-24 text-center rounded border border-proton-grey-opacity-60 p-24"
                 :class="type === 'json' ? 'bg-proton-grey-opacity-40' : 'bg-white'"
             >
-                JSON (small/medium size)
+                JSON (∞ size)
             </div>
         </div>
         <div v-if="['json', 'csv'].includes(type)">
@@ -72,6 +72,8 @@
     import IndexSelector from 'common/components/selectors/IndexSelector';
     import {getSearchIndex} from "common/utils/algoliaHelpers";
     import Papa from 'papaparse';
+    import FileStreamer from "./FileStreamer";
+    import oboe from 'oboe';
 
     export default {
         name: 'DatasetSelector',
@@ -83,6 +85,7 @@
                 rawDataSetString: '',
                 dataset: null,
                 csvFile: null,
+                jsonFile: null,
                 isLoadingFile: false,
                 isDragring: false,
                 sample: false,
@@ -99,6 +102,9 @@
             },
             csvFile: function () {
                 this.$emit('onUpdateCsvFile', this.csvFile);
+            },
+            jsonFile: function () {
+                this.$emit('onUpdateJsonFile', this.jsonFile);
             },
             indexInfo: {
                 deep: true,
@@ -124,6 +130,7 @@
                 this.nbHits = null;
                 this.dataset = null;
                 this.csvFile = null;
+                this.jsonFile = null;
                 this.isLoadingFile = false;
                 this.sample = false;
                 this.$emit('onUpdateIndexInfo', null);
@@ -137,17 +144,36 @@
                 const file = files[0];
 
                 if (this.type === 'json') {
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        const dataText = e.target.result;
-
-                        const dataset = JSON.parse(dataText);
-                        this.dataset = Object.freeze(dataset);
-
-                        this.isLoadingFile = false;
-                    };
                     this.isLoadingFile = true;
-                    reader.readAsText(file, "UTF-8");
+
+                    let count = 0;
+                    let hits = [];
+
+                    const stream = new FileStreamer(file, () => {
+                        this.jsonFile = file;
+                        this.dataset = Object.freeze(hits);
+                        this.isLoadingFile = false;
+                    });
+
+                    const oboeStream = oboe();
+                    oboeStream.node('!.[*]', (node) => {
+                        if (!this.isLoadingFile) return;
+
+                        hits.push(node);
+                        count++;
+
+                        if (count >= 100) {
+                            this.jsonFile = file;
+                            this.dataset = Object.freeze(hits);
+                            this.isLoadingFile = false;
+                            this.sample = true;
+                            stream.pause();
+                        }
+                    });
+
+                    stream.start(function (data) {
+                        oboeStream.emit('data', data);
+                    });
                 } else { // csv
                     this.isLoadingFile = true;
 
@@ -166,8 +192,6 @@
                                 this.isLoadingFile = false;
                                 this.sample = true;
                             }
-                            //parser.pause();
-                            //parser.resume();
                         },
                         error: function () { count++; },
                         complete: (results) => {

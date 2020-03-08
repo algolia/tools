@@ -10,6 +10,7 @@
                     @onUpdateDataset="dataset = $event"
                     @onUpdateIndexInfo="indexInfo = $event"
                     @onUpdateCsvFile="csvFile = $event"
+                    @onUpdateJsonFile="jsonFile = $event"
                 />
                 <transformer
                     v-if="dataset"
@@ -22,6 +23,7 @@
                     :index-info="indexInfo"
                     :transformer="transformer"
                     :csv-file="csvFile"
+                    :json-file="jsonFile"
                 />
             </div>
         </div>
@@ -46,6 +48,7 @@
                 dataset: null,
                 indexInfo: null,
                 csvFile: null,
+                jsonFile: null,
             }
         }
     }

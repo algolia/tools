@@ -45,14 +45,16 @@
     import AppSelector from 'common/components/selectors/AppSelector';
     import IndexSelector from 'common/components/selectors/IndexSelector';
     import TaskGroupView from "common/components/TasksGroup";
-    import {getClient, getSearchIndex} from "common/utils/algoliaHelpers";
+    import {getClient} from "common/utils/algoliaHelpers";
     import {Task, TasksGroup} from "common/utils/tasks";
     import algoliasearch from 'algoliasearch';
     import Papa from "papaparse";
+    import oboe from 'oboe';
+    import FileStreamer from "./FileStreamer";
 
     export default {
         name: 'Applier',
-        props: ['dataset', 'indexInfo', 'transformer', 'csvFile'],
+        props: ['dataset', 'indexInfo', 'transformer', 'csvFile', 'jsonFile'],
         components: {AppSelector, IndexSelector, TaskGroupView},
         data: function () {
             return {
@@ -166,7 +168,51 @@
                         }
                     });
                     tasksGroup.addTask(browseTask);
-                } else if (this.csvFile) {
+
+                } else if (this.jsonFile) {
+                    const browseTask = new Task('Upload records');
+
+                    browseTask.setCallback(() => {
+                        return new Promise((resolve, reject) => {
+                            let count = 0;
+                            let hits = [];
+
+                            browseTask.setNth(0);
+                            browseTask.setOutOf('unknown');
+
+                            const stream = new FileStreamer(this.jsonFile, async () => {
+                                if (hits.length > 0) {
+                                    const resAdd = await this.saveObjects(dstIndex, hits);
+                                    resAdd.taskIDs.forEach((resAddN) => tasksGroup.addAlgoliaTaskId(resAddN));
+                                    browseTask.setNth(count);
+                                }
+                                resolve();
+                            });
+
+                            const oboeStream = oboe();
+                            oboeStream.node('!.[*]', async (node) => {
+                                hits.push(node);
+                                count++;
+                                if (hits.length >= 1000) {
+                                    stream.pause();
+                                    const hitsToPush = hits.slice();
+                                    hits = [];
+                                    const resAdd = await this.saveObjects(dstIndex, hitsToPush);
+                                    resAdd.taskIDs.forEach((resAddN) => tasksGroup.addAlgoliaTaskId(resAddN));
+                                    browseTask.setNth(count);
+                                    stream.resume();
+                                }
+                            });
+
+                            stream.start(function (data) {
+                                oboeStream.emit('data', data);
+                            });
+                        })
+                    });
+
+                    tasksGroup.addTask(browseTask);
+                }
+                else if (this.csvFile) {
                     const browseTask = new Task('Upload records');
 
                     browseTask.setCallback(() => {
@@ -204,21 +250,6 @@
                         })
                     });
 
-                    tasksGroup.addTask(browseTask);
-                } else {
-                    const browseTask = new Task('Upload records');
-
-                    browseTask.setCallback(async () => {
-                        const chunks = this.chunk(this.dataset);
-                        browseTask.setNth(0);
-                        browseTask.setOutOf(chunks.length);
-
-                        for (let i = 0; i < chunks.length; i++) {
-                            const resAdd = await this.saveObjects(dstIndex, chunks[i]);
-                            resAdd.taskIDs.forEach((resAddN) => tasksGroup.addAlgoliaTaskId(resAddN));
-                            browseTask.setNth(i + 1);
-                        }
-                    });
                     tasksGroup.addTask(browseTask);
                 }
 
