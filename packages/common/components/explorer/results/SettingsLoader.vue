@@ -7,6 +7,7 @@
 
     import {getClient} from "common/utils/algoliaHelpers";
     import indexInfoMixin from "common/mixins/indexInfoMixin";
+    import getSignature from "../../../utils/signature";
 
     export default {
         name: 'SettingsLoader',
@@ -68,7 +69,8 @@
             loadKeysIndexer: async function () {
                 if (!this.appId || !this.apiKey);
 
-                const analyze = await analyseIndex(this.appId, this.apiKey, this.indexName);
+                const signature = await getSignature(this.appId);
+                const analyze = await analyseIndex(this.appId, this.apiKey, this.indexName, signature);
                 const keysIndexer = new searchIndexer();
                 analyze.keys.forEach(function (key) {
                     keysIndexer.addString(key);

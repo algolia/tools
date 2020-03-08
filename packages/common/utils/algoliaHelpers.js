@@ -38,13 +38,13 @@ function getHosts(appId, apikey, server) {
 
 }
 
-export async function getClient(appId, apiKey, server) {
-    const cacheKey = `${appId}-${apiKey}-${server}`;
+export async function getClient(appId, apiKey, server, noSignature) {
+    const cacheKey = `${appId}-${apiKey}-${server}-${noSignature}`;
     if (clientCache[cacheKey]) return clientCache[cacheKey];
 
     let headers = {};
 
-    if (!isLocalAppId(appId) && apiKey) {
+    if (!isLocalAppId(appId) && apiKey && noSignature !== true) {
         const signature = await getSignature(appId);
         headers['X-Algolia-Signature'] = signature;
     }
@@ -77,10 +77,10 @@ export async function getClient(appId, apiKey, server) {
 }
 
 // todo no need to cache this, only the client matters
-export async function getSearchIndex(appId, apiKey, indexName, server) {
-    const cacheKey = `${appId}-${apiKey}-${indexName}-${server}`;
+export async function getSearchIndex(appId, apiKey, indexName, server, noSignature) {
+    const cacheKey = `${appId}-${apiKey}-${indexName}-${server}-${noSignature}`;
     if (indexCache[cacheKey]) return indexCache[cacheKey];
-    const client = await getClient(appId, apiKey, server);
+    const client = await getClient(appId, apiKey, server, noSignature);
     const index = client.customInitIndex(indexName);
 
     indexCache[cacheKey] = index;

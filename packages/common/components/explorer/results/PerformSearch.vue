@@ -20,6 +20,7 @@
         components: {SettingsLoader},
         props: [
             'appId', 'indexName', 'apiKey', 'server', 'query', 'method',
+            'noSignature',
             'searchParams',
             'titleAttributeName',
             'fetchExplain',
@@ -148,7 +149,7 @@
                 const method = this.method === 'search' ? 'customSearch' : 'customBrowse';
 
                 const requestNumber = this.requestNumber++;
-                const index = await getSearchIndex(this.appId, this.apiKey, this.indexName, this.server);
+                const index = await getSearchIndex(this.appId, this.apiKey, this.indexName, this.server, this.noSignature);
 
                 index[method](this.searchParamsWithDefaults).then(async (res) => {
                     if (this.requestNumberReceived > requestNumber) return;
@@ -191,7 +192,7 @@
                     return;
                 }
 
-                const index = await getSearchIndex(this.appId, this.apiKey, this.indexName, this.server);
+                const index = await getSearchIndex(this.appId, this.apiKey, this.indexName, this.server, this.noSignature);
                 const requestNumberAnalysis = this.requestNumberAnalysis++;
 
                 index[method](this.searchParamsForAnalysis).then((res) => {

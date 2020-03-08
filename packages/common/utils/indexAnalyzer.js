@@ -1,11 +1,11 @@
 import greenlet from 'greenlet';
 
-export default greenlet((appId, apiKey, indexName) => new Promise(function (resolve, reject) {
+export default greenlet((appId, apiKey, indexName, signature) => new Promise(function (resolve, reject) {
     if (appId === 'MySuperApp' || appId.endsWith('.local') || appId.endsWith('.test')) {
         resolve([], {}, []);
         return;
     }
-    
+
     const isObject = function (obj) {
         return Object.prototype.toString.call(obj) === '[object Object]';
     };
@@ -41,6 +41,7 @@ export default greenlet((appId, apiKey, indexName) => new Promise(function (reso
 
     self.importScripts('https://cdn.jsdelivr.net/npm/algoliasearch@3.33.0/dist/algoliasearchLite.min.js');
     const client = algoliasearch(appId, apiKey);
+    client.setExtraHeader('X-Algolia-Signature', signature);
     const index = client.initIndex(indexName);
     index.search('', {
         page: 0,
