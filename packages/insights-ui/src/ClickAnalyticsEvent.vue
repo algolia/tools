@@ -38,6 +38,7 @@
             :fetch-explain="false"
             :analyse-hits-per-page="0"
             :fetch-facets="false"
+            :no-signature="trackQueryInAnalytics"
             @onUpdateAutoTitleAttributeName="indexAutoTitleAttributeName = $event"
             @onFetchHits="onFetchHits"
             @onUpdateError="errorMessage = $event"
@@ -124,7 +125,7 @@
         computed: {
             params: function () {
                 return {
-                    analytics: true,
+                    analytics: this.trackQueryInAnalytics,
                     clickAnalytics: this.trackQueryInAnalytics,
                     hitsPerPage: this.hitsPerPage,
                     page: this.page,
