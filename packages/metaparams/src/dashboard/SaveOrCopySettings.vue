@@ -67,6 +67,38 @@
                                 </span>
                             </label>
                         </div>
+                        <div>
+                            <label>
+                                <input v-model="copyResources.partial" type="checkbox" class="mr-2" />
+                                Copy only some resources
+                            </label>
+                            <div v-if="copyResources.partial" class="ml-12">
+                                <div>
+                                    <label>
+                                        <input v-model="copyResources.records" type="checkbox" class="mr-2" />
+                                        Copy records
+                                    </label>
+                                </div>
+                                <div>
+                                    <label>
+                                        <input v-model="copyResources.synonyms" type="checkbox" class="mr-2" />
+                                        Copy synonyms
+                                    </label>
+                                </div>
+                                <div>
+                                    <label>
+                                        <input v-model="copyResources.rules" type="checkbox" class="mr-2" />
+                                        Copy rules
+                                    </label>
+                                </div>
+                                <div>
+                                    <label>
+                                        <input v-model="copyResources.settings" type="checkbox" class="mr-2" />
+                                        Copy settings
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="flex mt-16">
@@ -120,6 +152,13 @@
                     nbHits: 1000,
                     currentQueryOnly: false,
                 },
+                copyResources: {
+                    partial: false,
+                    records: true,
+                    settings: true,
+                    synonyms: true,
+                    rules: true,
+                },
                 batchSize: 1000,
                 overwriteDefaultTimeout: false,
                 writeTimeout: 30,
@@ -142,7 +181,7 @@
                 return this.dstAppId === this.panelAppId;
             },
             sameAppCopyMethod: function () {
-                return this.sameAppIdAsPanel && !this.limitCopy.enabled && !this.limitCopy.currentQueryOnly;
+                return this.sameAppIdAsPanel && !this.limitCopy.enabled && !this.limitCopy.currentQueryOnly && !this.copyResources.partial;
             }
         },
         methods: {
@@ -164,6 +203,7 @@
                     hitsPerPage: !this.limitCopy.enabled ? batchSize : Math.min(batchSize, this.limitCopy.nbHits),
                     inReplicaCopy: this.inReplicaCopy,
                     applyUnsavedSettings: this.isIndexSettingsDirty,
+                    copyResources: {...this.copyResources},
                 };
 
                 config.panelIndex = config.srcClient.customInitIndex(config.srcIndexName);
@@ -248,69 +288,81 @@
                 const srcSettings = await config.srcIndex.getSettings();
                 const newSettings = config.applyUnsavedSettings ? config.indexSettings : srcSettings;
 
-                tasksGroup.addTask(new Task('Copy settings + unsaved', async () => {
-                    delete(newSettings.replicas);
-                    await config.dstIndex.setSettings(newSettings).wait();
-                }));
+                if (!config.copyResources.partial || config.copyResources.settings) {
+                    tasksGroup.addTask(new Task('Copy settings + unsaved', async () => {
+                        delete(newSettings.replicas);
+                        await config.dstIndex.setSettings(newSettings).wait();
+                    }));
+                }
 
-                tasksGroup.addTask(new Task('Copy synonyms', async () => {
-                    await config.srcIndex.browseSynonyms({
-                        hitsPerPage: 1000,
-                        batch: (synonyms) => {
-                            config.dstIndex.saveSynonyms(synonyms, {replaceExistingSynonyms: false});
-                        }
-                    });
-                }));
+                if (!config.copyResources.partial || config.copyResources.synonyms) {
+                    tasksGroup.addTask(new Task('Copy synonyms', async () => {
+                        await config.srcIndex.browseSynonyms({
+                            hitsPerPage: 1000,
+                            batch: (synonyms) => {
+                                config.dstIndex.saveSynonyms(synonyms, {replaceExistingSynonyms: false});
+                            }
+                        });
+                    }));
+                }
 
-                tasksGroup.addTask(new Task('Copy rules', async () => {
-                    await config.srcIndex.browseRules({
-                        hitsPerPage: 1000,
-                        batch: (rules) => {
-                            config.dstIndex.saveRules(rules, {clearExistingRules: false});
-                        }
-                    });
-                }));
+                if (!config.copyResources.partial || config.copyResources.rules) {
+                    tasksGroup.addTask(new Task('Copy rules', async () => {
+                        await config.srcIndex.browseRules({
+                            hitsPerPage: 1000,
+                            batch: (rules) => {
+                                config.dstIndex.saveRules(rules, {clearExistingRules: false});
+                            }
+                        });
+                    }));
+                }
 
-                if (!this.limitCopy.currentQueryOnly) {
-                    const browseTask = new Task('Copy records');
+                if (!config.copyResources.partial || config.copyResources.records) {
+                    if (!this.limitCopy.currentQueryOnly) {
+                        const browseTask = new Task('Copy records');
 
-                    browseTask.setCallback(async () => {
-                        let nbCopied = 0;
-                        let res = await config.srcIndex.customBrowse({query: '', hitsPerPage: config.hitsPerPage, attributesToRetrieve: ['*']});
-                        let nbToCopy = this.limitCopy.enabled ? Math.min(res.nbHits, this.limitCopy.nbHits) : res.nbHits;
-                        nbCopied += res.hits.length;
-                        browseTask.setNth(0);
-                        browseTask.setOutOf(Math.ceil(nbToCopy / config.hitsPerPage));
-                        let resAdd = await config.dstIndex.saveObjects(res.hits);
-                        resAdd.taskIDs.forEach((resAddN) => tasksGroup.addAlgoliaTaskId(resAddN));
-                        browseTask.setNth(res.page + 1);
-
-                        while (res.cursor && (!this.limitCopy.enabled || nbCopied < this.limitCopy.nbHits)) {
-                            res = await config.srcIndex.customBrowse({cursor: res.cursor});
+                        browseTask.setCallback(async () => {
+                            let nbCopied = 0;
+                            let res = await config.srcIndex.customBrowse({
+                                query: '',
+                                hitsPerPage: config.hitsPerPage,
+                                attributesToRetrieve: ['*']
+                            });
+                            let nbToCopy = this.limitCopy.enabled ? Math.min(res.nbHits, this.limitCopy.nbHits) : res.nbHits;
                             nbCopied += res.hits.length;
-                            resAdd = await config.dstIndex.saveObjects(res.hits);
+                            browseTask.setNth(0);
+                            browseTask.setOutOf(Math.ceil(nbToCopy / config.hitsPerPage));
+                            let resAdd = await config.dstIndex.saveObjects(res.hits);
                             resAdd.taskIDs.forEach((resAddN) => tasksGroup.addAlgoliaTaskId(resAddN));
                             browseTask.setNth(res.page + 1);
-                        }
-                    });
-                    tasksGroup.addTask(browseTask);
-                } else {
-                    tasksGroup.addTask(new Task('Copy records', async () => {
-                        const params = Object.assign({}, config.searchParams, {
-                            attributesToRetrieve: ['*'],
-                            analytics: false,
-                            enableABTest: false,
-                            page: 0,
-                        });
-                        let res = await config.srcIndex.customSearch(params);
 
-                        let resAdd = await config.dstIndex.saveObjects(res.hits.map((hit) => {
-                            delete(hit._highlightResult);
-                            delete(hit._snippetResult);
-                            return hit;
+                            while (res.cursor && (!this.limitCopy.enabled || nbCopied < this.limitCopy.nbHits)) {
+                                res = await config.srcIndex.customBrowse({cursor: res.cursor});
+                                nbCopied += res.hits.length;
+                                resAdd = await config.dstIndex.saveObjects(res.hits);
+                                resAdd.taskIDs.forEach((resAddN) => tasksGroup.addAlgoliaTaskId(resAddN));
+                                browseTask.setNth(res.page + 1);
+                            }
+                        });
+                        tasksGroup.addTask(browseTask);
+                    } else {
+                        tasksGroup.addTask(new Task('Copy records', async () => {
+                            const params = Object.assign({}, config.searchParams, {
+                                attributesToRetrieve: ['*'],
+                                analytics: false,
+                                enableABTest: false,
+                                page: 0,
+                            });
+                            let res = await config.srcIndex.customSearch(params);
+
+                            let resAdd = await config.dstIndex.saveObjects(res.hits.map((hit) => {
+                                delete (hit._highlightResult);
+                                delete (hit._snippetResult);
+                                return hit;
+                            }));
+                            resAdd.taskIDs.forEach((resAddN) => tasksGroup.addAlgoliaTaskId(resAddN));
                         }));
-                        resAdd.taskIDs.forEach((resAddN) => tasksGroup.addAlgoliaTaskId(resAddN));
-                    }));
+                    }
                 }
 
                 const waitTask = new Task('Wait Tasks');
