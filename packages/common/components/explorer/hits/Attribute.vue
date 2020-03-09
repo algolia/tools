@@ -50,6 +50,7 @@
 
 <script>
     import {syntaxHighlight} from 'common/utils/formatters';
+    import {isString as isStringFunc} from "../../../utils/types";
 
     export default {
         name: 'Attribute',
@@ -85,7 +86,7 @@
                 return this.isArray || this.isObject || (this.isString && this.stringValue.length > 53);
             },
             isString: function () {
-                return typeof this.item._v_ === 'string' || this.item._v_ instanceof String;
+                return isStringFunc(this.item._v_);
             },
             isObject: function() {
                 return this.item._v_ && typeof this.item._v_ === 'object' && this.item._v_.constructor === Object;

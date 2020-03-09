@@ -32,6 +32,7 @@ app.use('/index-manager', serveStatic(__dirname + "/packages/index-manager/dist"
 app.use('/perso-formula', serveStatic(__dirname + "/packages/perso-formula/dist"));
 app.use('/relevance-testing', serveStatic(__dirname + "/packages/relevance-testing/dist"));
 app.use('/index-differ', serveStatic(__dirname + "/packages/index-differ/dist"));
+app.use('/index-analyzer', serveStatic(__dirname + "/packages/index-analyzer/dist"));
 app.use('/dictionaries', serveStatic(__dirname + "/packages/dictionaries/dist"));
 app.use('/index-size', serveStatic(__dirname + "/packages/index-size/dist"));
 app.use('/mlock-alerts', serveStatic(__dirname + "/packages/mlock-alerts/dist"));

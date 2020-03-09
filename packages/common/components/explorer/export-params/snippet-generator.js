@@ -11,6 +11,7 @@ import 'prismjs/components/prism-scala'
 import 'prismjs/components/prism-bash'
 
 import templates from './templates'
+import {isString} from "../../../utils/types";
 
 const SnippetGenerator = function () {
     this.snippet = function (config) {
@@ -58,7 +59,7 @@ const SnippetGenerator = function () {
     };
 
     this.getStringValue = function (value, language) {
-        if (this.isString(value)) {
+        if (isString(value)) {
             if (language === 'python') return `"${value}"`;
             return `'${value}'`;
         }
@@ -74,10 +75,6 @@ const SnippetGenerator = function () {
         if (Array.isArray(value)) {
             return `[\n      ${value.map((v) => this.getStringValue(v, language)).join(',\n      ')}\n    ]`;
         }
-    };
-
-    this.isString = function (value) {
-        return typeof value === 'string' || value instanceof String;
     };
 };
 

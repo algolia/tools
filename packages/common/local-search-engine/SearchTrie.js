@@ -1,13 +1,11 @@
+import {isString} from "../utils/types";
+
 const normalize = function (s) {
     return s.toLowerCase();
 };
 
 const tokenize = function (s) {
     return s.split(' ').map(normalize);
-};
-
-const isString = function (value) {
-    return typeof value === 'string' || value instanceof String;
 };
 
 const intersect = function() { return [...arguments].reduce((acc, val) => { return acc.filter((elt) => { return val.indexOf(elt) > -1; }); }); };

@@ -1,8 +1,5 @@
 import {cleanAttributeName, cleanDeepAttributeName} from "../utils/formatters";
-
-const isString = function (s) {
-    return typeof s === 'string' || s instanceof String;
-};
+import {isString} from "../utils/types";
 
 export default {
     watch: {
