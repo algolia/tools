@@ -22,7 +22,9 @@
                         :class="{'bg-moon-grey-opacity-50': alternative.types}"
                     >
                         <template v-if="alternative.types">
-                            <div>{{alternative.words.join(' ')}}</div>
+                            <div>
+                                <span v-if="alternative.types.includes('synonym')">"</span>{{alternative.words.join(' ')}}<span v-if="alternative.types.includes('synonym')">"</span>
+                            </div>
                             <div class="text-nova-grey" v-for="type in alternative.types">
                                 {{type}}
                             </div>
