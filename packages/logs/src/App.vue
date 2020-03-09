@@ -134,6 +134,8 @@
                 },
                 servers: ['-1'],
                 isStopBecauseOfOpen: false,
+                requestNumber: 0,
+                requestNumberReceived: 0,
             };
         },
         watch: {
@@ -285,7 +287,13 @@
                     await promiseInsights,
                 ];
 
+                const requestNumber = this.requestNumber++;
+
                 const [searchLogs, analyticsLogs] = await Promise.all(promises);
+
+                if (this.requestNumberReceived > requestNumber) return;
+                this.requestNumberReceived = requestNumber;
+
                 const mergedLogs = [...searchLogs, ...analyticsLogs];
 
                 mergedLogs.sort((logA, logB) => {

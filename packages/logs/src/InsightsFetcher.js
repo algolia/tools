@@ -11,7 +11,6 @@ export default function (appId, apiKey, indexName) {
     this.apiKey = apiKey;
     this.region = 'us';
     this.indexName = indexName;
-    this.endpoint = `https://insights.${this.region}.algolia.io/1/events`;
 
     this.fetchLogs = async function (allIndices) {
         const startDate = new Date().addSeconds(-3600 * 12);
@@ -19,7 +18,8 @@ export default function (appId, apiKey, indexName) {
 
         const params = `?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`;
 
-        const res = await fetch(`${this.endpoint}${params}`, {
+        const endpoint = `https://insights.${this.region}.algolia.io/1/events`;
+        const res = await fetch(`${endpoint}${params}`, {
             headers: {
                 'Content-Type': 'application/json',
                 'X-Algolia-Application-Id': this.appId,
@@ -29,7 +29,7 @@ export default function (appId, apiKey, indexName) {
         const json = await res.json();
 
         // rawlog.event = EventType, EventName, Index, ObjectIDs, Positions, Filters, UserToken, QueryID, Timestamp
-        return json.events.filter((rawlog) => allIndices || rawlog.event.index === this.indexName).slice(0, 1000).map((rawLog) => {
+        const logs = json.events.filter((rawlog) => allIndices || rawlog.event.index === this.indexName).slice(0, 1000).map((rawLog) => {
             return {
                 server: '',
                 rawLog: rawLog,
@@ -78,5 +78,14 @@ export default function (appId, apiKey, indexName) {
                 getQueries: () => [],
             };
         });
+
+        if (logs.length <= 0) {
+            if (this.region === 'us') {
+                this.region = 'de';
+                return this.fetchLogs(appId, apiKey, indexName);
+            }
+        }
+
+        return logs;
     }
 }
