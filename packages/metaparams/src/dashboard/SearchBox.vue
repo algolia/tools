@@ -25,11 +25,12 @@
     import CustomSelect from "common/components/selectors/CustomSelect";
     import panelsMixin from "common/mixins/panelsMixin";
     import {parseCurlCommand} from "common/utils/curlCommandExtractor";
+    import indexInfoMixin from "common/mixins/indexInfoMixin";
 
     export default {
         name: 'SearchBox',
         props: ['panelKey'],
-        mixins: [panelsMixin],
+        mixins: [panelsMixin, indexInfoMixin],
         components: {SearchIcon, CustomSelect},
         data: function () {
             return {
@@ -37,6 +38,12 @@
             }
         },
         computed: {
+            appId: function () { // Necessary to fetch searchParams
+                return this.panelAppId;
+            },
+            indexName: function () { // Necessary to fetch searchParams
+                return this.panelIndexName;
+            },
             twoInputs: {
                 get () {
                     return this.$store.state.panels.twoInputs || false;
