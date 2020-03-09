@@ -1,4 +1,5 @@
 import parse from 'bash-parser';
+import paramsSpecs from 'common/params-specs/data.yml';
 
 const isFakeArray = val => val.startsWith("[") && val.endsWith("]");
 
@@ -18,6 +19,17 @@ const removeEscapes = data => {
     return decoded;
 };
 
+const castValue = function (k, v) {
+    if (paramsSpecs[k] && ['integer', 'boolean'].includes(paramsSpecs[k].value_type)) {
+        if (v === 'false') return 0;
+        if (v === 'true') return 1;
+
+        const parsedValue = parseInt(v);
+        return isNaN(parsedValue) ? v : parsedValue;
+    }
+    return v;
+};
+
 const decode = function (data) {
     return JSON.parse(removeEscapes(data), (key, val) => {
         if (key === "params") {
@@ -26,7 +38,7 @@ const decode = function (data) {
                     if (isFakeArray(v)) {
                         return [k, JSON.parse(v)];
                     }
-                    return [k, v];
+                    return [k, castValue(k, v)];
                 })
             );
         }
