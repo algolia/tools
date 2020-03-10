@@ -1212,6 +1212,15 @@ attributeCriteriaComputedByMinProximity:
     - false
   default: false
 
+scanDistinctHitsUntilPaginationLimitedTo:
+  scope:
+    - search
+  value_type: boolean
+  values:
+    - true
+    - false
+  default: true
+
 enableABTest:
   scope:
       - search
