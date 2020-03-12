@@ -15,13 +15,14 @@
                                 :app-id="appId"
                                 class="ml-24"
                             />
-                            <input placeholder="attributeName" class="rounded ml-24 px-4" v-model="attributeName" />
+                            <input placeholder="attributeName" class="rounded mx-24 px-4 flex-grow" v-model="attributeName" />
                         </div>
                         <div class="bg-white text-nova-grey">
                             <metrics
                                 :app-id="appId"
                                 :index-name="indexName"
                                 :attribute-name="attributeName"
+                                @onUpdateAttributeName="attributeName = $event"
                             />
                         </div>
                     </div>

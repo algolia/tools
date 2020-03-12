@@ -18,27 +18,64 @@
                 Load all
             </div>
         </div>
-        <div v-if="data && data.nbHits > 0" class="p-16">
-            <div v-if="attributeName.length > 0">
+        <div class="flex p-16">
+            <div v-if="name.length === 0">All attributes</div>
+            <div v-else
+                 class="cursor-pointer text-nebula-blue hover:underline"
+                 @click="$emit('onUpdateAttributeName', '')"
+            >
+                All attributes
+            </div>
+            <template v-if="name.length > 0" v-for="(part, i) in attributeParts">
+                <div>
+                    <span>&nbsp;>&nbsp;</span>
+                    <span
+                        v-if="i < attributeParts.length - 1 || typeFilter !== null"
+                        class="cursor-pointer text-nebula-blue hover:underline"
+                        @click="$emit('onUpdateAttributeName', attributeParts.slice(0, i + 1).join('.'))"
+                    >{{part}}</span>
+                    <span v-else>{{part}}</span>
+                </div>
+            </template>
+            <div v-if="typeFilter">&nbsp;: {{typeFilter}}</div>
+        </div>
+        <div v-if="data" class="p-16">
+            <div v-if="name.length > 0">
                 <h2 class="mb-24">Types</h2>
                 <table>
                     <tr
                         v-for="type in data.sortedTypes"
                         class="border-t border-proton-grey-opacity-30"
                     >
-                        <td class="p-8">{{type}}</td>
+                        <td class="p-8">
+                            <span
+                                v-if="typeFilter === null"
+                                class="cursor-pointer text-nebula-blue hover:underline"
+                                @click="$emit('onUpdateAttributeName', `${name}:${type}`)"
+                            >
+                                {{type}}
+                            </span>
+                            <span v-else>{{type}}</span>
+                        </td>
                         <td class="p-8">{{data.type[type]}}</td>
                         <td class="p-8">{{percent(data.type[type], data.nbHits)}}</td>
                     </tr>
                 </table>
             </div>
             <div v-if="data.type.object">
-                <h2 v-if="attributeName.length > 0" class="my-24">Object keys</h2>
+                <h2 v-if="name.length > 0" class="my-24">Object keys</h2>
                 <tr
                     v-for="key in data.object.sortedKeys"
                     class="border-t border-proton-grey-opacity-30"
                 >
-                    <td class="p-8">{{key}}</td>
+                    <td class="p-8">
+                        <span
+                            class="cursor-pointer text-nebula-blue hover:underline"
+                            @click="$emit('onUpdateAttributeName', `${name}${name.length > 0 ? '.': ''}${key}`)"
+                        >
+                            {{key}}
+                        </span>
+                    </td>
                     <td class="p-8">{{data.object.keysUniqueWithCount[key]}}</td>
                     <td class="p-8">{{percent(data.object.keysUniqueWithCount[key], data.type.object)}}</td>
                 </tr>
@@ -69,7 +106,7 @@
                         <td class="p-8">{{data.numerics[metric]}}</td>
                     </tr>
                 </table>
-                <distribution-chart :data="data" :attribute-name="attributeName" />
+                <distribution-chart :data="data" :attribute-name="name" />
             </div>
             <div v-if="Object.keys(data.values.stringUniqueValuesWithCount).length > 0">
                 <h2 class="my-24">String Values</h2>
@@ -93,6 +130,13 @@
                     </div>
                 </div>
             </div>
+            <div v-if="data.recordsMatching.length > 0">
+                <h2 class="py-24">First 10 hits</h2>
+                <hits
+                    :hits="data.recordsMatching"
+                    :attribute-parts="attributeParts"
+                />
+            </div>
         </div>
     </div>
 </template>
@@ -103,17 +147,18 @@
     import {isNumber, isObject, isString} from "common/utils/types";
     import DistributionChart from "./DistributionChart";
     import ValuesList from "./ValuesList";
+    import Hits from "./Hits";
 
     export default {
         name: 'Metrics',
-        components: {ValuesList, DistributionChart},
+        components: {Hits, ValuesList, DistributionChart},
         props: ['appId', 'indexName', 'attributeName'],
         data: function () {
             return {
                 isComputing: false,
                 enableSample: true,
                 hasBeenSampled: false,
-                sampleLimit: 4000,
+                sampleLimit: 1000,
                 i: 0,
                 nbHits: 0,
                 data: null,
@@ -131,9 +176,20 @@
             apiKey: function () {
                 return this.$store.state.apps[this.appId] ? this.$store.state.apps[this.appId].key : '';
             },
+            attributeParts: function () {
+                return this.name.split('.');
+            },
+            name: function () {
+                return this.attributeName.split(':')[0];
+            },
+            typeFilter: function () {
+                const parts = this.attributeName.split(':');
+                return parts.length > 1 && parts[1].length > 0 ? parts[1] : null;
+            }
         },
         methods: {
             percent: function(nb, count) {
+                if (count === 0) return '0%';
                 return `${(nb * 100 / count).toFixed(2)}%`;
             },
             compute: async function () {
@@ -145,6 +201,7 @@
                 const index = await getSearchIndex(this.appId, this.apiKey, this.indexName);
 
                 const data = {
+                    readNbHits: 0,
                     nbHits: 0,
                     type: {
                         undefined: 0,
@@ -186,23 +243,38 @@
                         sortedKeys: [],
                         keysUniqueWithCount: {},
                     },
+                    recordsMatching: [],
                 };
 
-                const processHit = (hit) => {
-                    const value = getRaw(hit, this.attributeName);
+                const shouldProcessUndefined = this.typeFilter === null || this.typeFilter === 'undefined';
+                const shouldProcessNumber = this.typeFilter === null || this.typeFilter === 'number';
+                const shouldProcessArray = this.typeFilter === null || this.typeFilter === 'array';
+                const shouldProcessObject = this.typeFilter === null || this.typeFilter === 'object';
+                const shouldProcessBoolean = this.typeFilter === null || this.typeFilter === 'boolean';
+                const shouldProcessNull = this.typeFilter === null || this.typeFilter === 'null';
+                const shouldProcessString = this.typeFilter === null || this.typeFilter === 'string';
 
-                    data.nbHits++;
+                const processHit = (hit) => {
+                    const value = getRaw(hit, this.name);
+
+                    data.readNbHits++;
 
                     // types
-                    if (value === undefined) {
+                    if (shouldProcessUndefined && value === undefined) {
+                        if (data.recordsMatching.length < 10) data.recordsMatching.push(hit);
+                        data.nbHits++;
                         data.type.undefined++;
-                    } else if (isNumber(value)) {
+                    } else if (shouldProcessNumber && isNumber(value)) {
+                        if (data.recordsMatching.length < 10) data.recordsMatching.push(hit);
+                        data.nbHits++;
                         data.type.numeric++;
                         data.values.numericValues.push(value);
                         data.numerics.sum += value;
                         data.values.numericUniqueValueWithCount[value] = data.values.numericUniqueValueWithCount[value] || 0;
                         data.values.numericUniqueValueWithCount[value]++;
-                    } else if (Array.isArray(value)) {
+                    } else if (shouldProcessArray && Array.isArray(value)) {
+                        if (data.recordsMatching.length < 10) data.recordsMatching.push(hit);
+                        data.nbHits++;
                         data.type.array++;
 
                         value.forEach((v) => {
@@ -213,49 +285,64 @@
                                 data.values.sumNbWords += v.toString().split(' ').length;
                             }
                         });
-                    } else if (isObject(value)) {
+                    } else if (shouldProcessObject && isObject(value)) {
+                        if (data.recordsMatching.length < 10) data.recordsMatching.push(hit);
+                        data.nbHits++;
                         data.type.object++;
 
                         Object.keys(value).forEach((v) => {
                             data.object.keysUniqueWithCount[v] = data.object.keysUniqueWithCount[v] || 0;
                             data.object.keysUniqueWithCount[v]++;
                         });
-                    } else if (value === true){
+                    } else if (shouldProcessBoolean && value === true) {
+                        if (data.recordsMatching.length < 10) data.recordsMatching.push(hit);
+                        data.nbHits++;
                         data.type.boolean++;
                         data.boolean.true++;
-                    } else if (value === false) {
+                    } else if (shouldProcessBoolean && value === false) {
+                        if (data.recordsMatching.length < 10) data.recordsMatching.push(hit);
+                        data.nbHits++;
                         data.type.boolean++;
                         data.boolean.false++;
-                    } else if (value === null) {
+                    } else if (shouldProcessNull && value === null) {
+                        if (data.recordsMatching.length < 10) data.recordsMatching.push(hit);
+                        data.nbHits++;
                         data.type.null++;
-                    } else if (isString(value)) {
+                    } else if (shouldProcessString && isString(value)) {
+                        if (data.recordsMatching.length < 10) data.recordsMatching.push(hit);
+                        data.nbHits++;
                         data.type.string++;
                         data.values.stringUniqueValuesWithCount[value] = data.values.stringUniqueValuesWithCount[value] || 0;
                         data.values.stringUniqueValuesWithCount[value]++;
                         data.values.sumLength += value.length;
                         data.values.sumNbWords += value.toString().split(' ').length;
                     } else {
-                        console.log('Unknown type', value);
+                        if (this.typeFilter === null) {
+                            console.log('Unknown type', value);
+                        }
                     }
                 };
 
                 let res = await index.customBrowse({query: '', attributesToRetrieve: ['*']});
                 this.nbHits = res.nbHits;
                 res.hits.forEach((hit) => processHit(hit));
+                this.i = data.readNbHits;
 
-                while (res.cursor) {
-                    res = await index.customBrowse({cursor: res.cursor});
-                    res.hits.forEach((hit) => processHit(hit));
-                    this.i = data.nbHits;
+                if (!this.enableSample || data.readNbHits < this.sampleLimit) {
+                    while (res.cursor) {
+                        res = await index.customBrowse({cursor: res.cursor});
+                        res.hits.forEach((hit) => processHit(hit));
+                        this.i = data.readNbHits;
 
-                    if (this.enableSample && data.nbHits >= this.sampleLimit) {
-                        break;
+                        if (this.enableSample && data.readNbHits >= this.sampleLimit) {
+                            break;
+                        }
                     }
                 }
 
                 this.hasBeenSampled = (res.cursor !== undefined);
 
-                if (data.nbHits > 0) {
+                if (data.readNbHits > 0) {
                     // Numeric final computations
                     data.values.numericValues.sort((a, b) => a - b);
                     data.numerics.min = data.values.numericValues[0];
@@ -275,7 +362,7 @@
                     data.values.averageNbWords = (data.values.sumNbWords / Object.keys(data.values.stringUniqueValuesWithCount).length).toFixed(2);
 
                     // types
-                    data.sortedTypes = Object.keys(data.type);
+                    data.sortedTypes = Object.keys(data.type).filter((t) => this.typeFilter === null || this.typeFilter === t);
                     data.sortedTypes.sort((a, b) => data.type[b] - data.type[a]);
 
                     data.object.sortedKeys = Object.keys(data.object.keysUniqueWithCount);
