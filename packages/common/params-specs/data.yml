@@ -1105,7 +1105,6 @@ nbShards:
   min: 1
   max: 8
   default: 1
-  settings_default: 1
 
 getRankingInfo:
   scope:
