@@ -17,7 +17,7 @@
         ],
         data: function () {
             return {
-                advancedIndexSettingsNames: ['indexingGeolocPrecision','maxNbHits','nbShards', 'nbShardsAuto','approxSubstIsBetter','maxApproxIVSizeForEachWord','maxApproxWords'],
+                advancedIndexSettingsNames: ['indexingGeolocPrecision','maxNbHits', 'nbShardsAuto','approxSubstIsBetter','maxApproxIVSizeForEachWord','maxApproxWords'],
             };
         },
         watch: {
