@@ -52,7 +52,7 @@
             </div>
             <div v-if="data" class="p-16">
                 <types :data="data" :type-filter="typeFilter" :name="name" v-on="$listeners" />
-                <object-keys :data="data" :name="name" v-on="$listeners" />
+                <object-keys :data="data" :name="name" :attributes="attributes" v-on="$listeners" />
                 <boolean-values :data="data" v-on="$listeners" />
                 <numeric-values :data="data" :name="name" v-on="$listeners" />
                 <string-values :data="data" v-on="$listeners" />
@@ -77,11 +77,12 @@
     export default {
         name: 'Metrics',
         components: {ObjectKeys, Types, BooleanValues, NumericValues, StringValues, Hits, ValuesList},
-        props: ['appId', 'indexName', 'attributeName'],
+        props: ['appId', 'indexName', 'attributeName', 'attributes'],
         data: function () {
             return {
                 isComputing: false,
                 sampleLimit: 1000,
+                stopBrowsing: false,
                 i: 0,
                 nbHits: 0,
                 cached: {},
@@ -124,6 +125,7 @@
 
                 this.$root.$emit('onShouldPauseProxy');
                 this.isComputing = true;
+                this.stopBrowsing = false;
 
                 const index = await getSearchIndex(this.appId, this.apiKey, this.indexName);
 
@@ -257,7 +259,7 @@
                 this.i = data.readNbHits;
 
                 if (!enableSample || data.readNbHits < this.sampleLimit) {
-                    while (res.cursor) {
+                    while (res.cursor && !this.stopBrowsing) {
                         res = await index.customBrowse({cursor: res.cursor});
                         res.hits.forEach((hit) => processHit(hit));
                         this.i = data.readNbHits;

@@ -30,9 +30,11 @@ export function numberWithCommas(x, precision) {
     return (x || 0).toFixed(precision).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
+const regexp = /^.*\(([^()]+)\)+(:.*)?$/g;
+const regexp2 = /^(.*)(:.*)$/g;
+
 export function cleanAttributeName(attribute) {
-    const regexp = /^.*\(([^()]+)\)+$/g;
-    return attribute.trim().replace(regexp, '$1');
+    return attribute.trim().replace(regexp, '$1').replace(regexp2, '$1');
 }
 
 export function humanNumber(number, decimals, dec_point, thousands_sep) {

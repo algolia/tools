@@ -3,7 +3,7 @@
         <table>
             <tr v-for="k in paginatedValues" class="border-t border-proton-grey-opacity-30">
                 <td class="p-8">
-                    {{k}}
+                    {{k.length > 0 ? k : '&lt;empty&gt;'}}
                 </td>
                 <td class="p-8">
                     {{data.values.stringUniqueValuesWithCount[k]}}
