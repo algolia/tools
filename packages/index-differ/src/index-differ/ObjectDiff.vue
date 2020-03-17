@@ -10,6 +10,7 @@
                     'd2h-del': diff.removed,
                     'd2h-mod': diff.modified,
                     'd2h-ins': diff.added,
+                    'd2h-sam': !diff.removed && !diff.added && !diff.modified,
                 }"
             >
                 <div>
@@ -81,6 +82,10 @@
 
     .diff-line:hover .d2h-del {
         background-color: #fea6a5;
+    }
+
+    .diff-line:hover .d2h-sam {
+        background-color: rgba(197, 201, 224, 0.3);
     }
 
     .diff-line:hover .d2h-ins {
