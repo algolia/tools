@@ -185,8 +185,8 @@
         data: function () {
             return {
                 refIndexInfo: {
-                    appId: 'AJ0P3S7DWQ',
-                    indexName: 'movies',
+                    appId: null,
+                    indexName: null,
                     index: null,
                     replicas: [],
                     primary: null,
