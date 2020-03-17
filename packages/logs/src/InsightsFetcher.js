@@ -43,7 +43,7 @@ export default function (appId, apiKey, indexName) {
                     all: {},
                 },
                 verb: 'POST',
-                path: '/1/events',
+                path: rawLog.path,
                 timestamp: rawLog.receivedAt,
                 date: new Date(rawLog.receivedAt),
                 url: `https://insights.${this.region}.algolia.io/1/events`,
@@ -52,20 +52,31 @@ export default function (appId, apiKey, indexName) {
                 nb_operations: 1,
                 processing_time_ms: '',
                 response: rawLog.errors.join(' '),
-                operation: new Operation('POST', '/1/events', () => {
+                operation: new Operation('POST', rawLog.path, () => {
                     if (!rawLog.event) {
                         return `Failing insights event`;
                     }
+
+                    let type = rawLog.event.eventType;
+                    if (!type) {
+                        if (rawLog.path.endsWith('/click')) type = 'click';
+                        if (rawLog.path.endsWith('/conversion')) type = 'conversion';
+                    }
+
                     let s = 'Report ';
-                    s += `<code>${rawLog.event.eventType}</code> `;
-                    s += `<code>${rawLog.event.eventName}</code> `;
+                    s += `<code>${type}</code> `;
+                    if (rawLog.event.eventName) {
+                        s += `<code>${rawLog.event.eventName}</code> `;
+                    }
                     if (rawLog.event.objectIDs) {
                         s += `on ${rawLog.event.objectIDs.length} objectIDs `;
                     }
                     if (rawLog.event.filters) {
                         s += `on ${rawLog.event.filters.length} filters `;
                     }
-                    s += `<br><br>userToken=<code>${rawLog.event.userToken}</code> `;
+                    if (rawLog.event.userToken) {
+                        s += `<br><br>userToken=<code>${rawLog.event.userToken}</code> `;
+                    }
                     if (rawLog.event.index) {
                         s += `index=<code>${rawLog.event.index}</code> `;
                     }

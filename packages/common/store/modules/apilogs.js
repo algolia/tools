@@ -6,6 +6,7 @@ export default {
         appId: null,
         indexName: null,
         server: null,
+        logsType: null,
     },
     mutations: {
         setAppId: function (state, payload) {
@@ -16,6 +17,9 @@ export default {
         },
         setServer: function (state, payload) {
             Vue.set(state, 'server', payload);
+        },
+        setLogsType: function (state, payload) {
+            Vue.set(state, 'logsType', payload);
         }
     }
 }

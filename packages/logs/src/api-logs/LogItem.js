@@ -43,7 +43,7 @@ const extractQueryParams = function (rawLog) {
             } else {
                 if (paramsJSON && typeof paramsJSON === 'object' && paramsJSON.constructor === Object && paramsJSON.query) {
                     Object.keys(paramsJSON).forEach((k) => {
-                        params.all[k] = paramsJSON[k];
+                        params.all[k] = JSON.paramsJSON[k];
                     });
                     params.bodies.push(paramsJSON);
                 } else {

@@ -107,7 +107,6 @@
                 query: '',
                 logs: [],
                 mergedLogs: [],
-                logsType: 'all',
                 logsTypes: {
                     'all': 'Search API + Insights API',
                     'all search': 'Search API',
@@ -219,6 +218,17 @@
                     }
                 },
             },
+            logsType: {
+                get () {
+                    return this.$store.state.apilogs.logsType || 'all';
+                },
+                set (val) {
+                    this.$store.commit('apilogs/setLogsType', val);
+                    if (this.fetchIsOn) {
+                        this.fetchLogs(true);
+                    }
+                },
+            },
             allFieldsChecked: {
                 get () {
                     return Object.keys(this.searchFields).every(field => this.searchFields[field]);
@@ -316,46 +326,47 @@
                 }
             },
             filterLogs: function (logs) {
-                if (this.query.length === 0) return logs;
+                const query = encodeURIComponent(this.query);
+                if (query.length === 0) return logs;
 
                 const allFieldsChecked = this.allFieldsChecked; // caching computation
 
                 return logs.filter(log => {
                     if (allFieldsChecked) {
-                        return log.rawLogString.includes(this.query);
+                        return log.rawLogString.includes(query);
                     }
-                    else if (this.searchFields.query && log.getQueries().some(query => query.includes(this.query))) {
+                    else if (this.searchFields.query && log.getQueries().some(query => query.includes(query))) {
                         return true;
                     }
-                    else if (this.searchFields.body && log.params.rawBody && log.params.rawBody.includes(this.query)) {
+                    else if (this.searchFields.body && log.params.rawBody && log.params.rawBody.includes(query)) {
                         return true;
                     }
-                    else if (this.searchFields.response && log.response && log.response.includes(this.query)) {
+                    else if (this.searchFields.response && log.response && log.response.includes(query)) {
                         return true;
                     }
-                    else if (this.searchFields.userAgent && log.params.all['x-algolia-agent'] && log.params.all['x-algolia-agent'].includes(this.query)) {
+                    else if (this.searchFields.userAgent && log.params.all['x-algolia-agent'] && log.params.all['x-algolia-agent'].includes(query)) {
                         return true;
                     }
-                    else if (this.searchFields.userAgent && log.params.all['user-agent'] && log.params.all['user-agent'].includes(this.query)) {
+                    else if (this.searchFields.userAgent && log.params.all['user-agent'] && log.params.all['user-agent'].includes(query)) {
                         return true;
                     }
-                    else if (this.searchFields.userAgent && log.params.all['X-Algolia-Agent'] && log.params.all['X-Algolia-Agent'].includes(this.query)) {
+                    else if (this.searchFields.userAgent && log.params.all['X-Algolia-Agent'] && log.params.all['X-Algolia-Agent'].includes(query)) {
                         return true;
                     }
-                    else if (this.searchFields.userAgent && log.params.all['User-Agent'] && log.params.all['User-Agent'].includes(this.query)) {
+                    else if (this.searchFields.userAgent && log.params.all['User-Agent'] && log.params.all['User-Agent'].includes(query)) {
                         return true;
                     }
-                    else if (this.searchFields.apiKey && log.params.headers['X-Algolia-Api-Key'] && log.params.headers['X-Algolia-Api-Key'].includes(this.query)) {
+                    else if (this.searchFields.apiKey && log.params.headers['X-Algolia-Api-Key'] && log.params.headers['X-Algolia-Api-Key'].includes(query)) {
                         return true;
                     }
-                    else if (this.searchFields.apiKey && log.params.all['x-algolia-api-key'] && log.params.all['x-algolia-api-key'].includes(this.query)) {
+                    else if (this.searchFields.apiKey && log.params.all['x-algolia-api-key'] && log.params.all['x-algolia-api-key'].includes(query)) {
                         return true;
                     }
-                    else if (this.searchFields.url && log.url.includes(this.query)) {
+                    else if (this.searchFields.url && log.url.includes(query)) {
                         return true;
                     }
                     else {
-                        return this.searchFields.ip && log.ip.includes(this.query);
+                        return this.searchFields.ip && log.ip.includes(query);
                     }
                 });
             },
