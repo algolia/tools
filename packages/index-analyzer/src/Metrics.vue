@@ -191,11 +191,11 @@
 
                     // types
                     if (shouldProcessUndefined && value === undefined) {
-                        if (data.recordsMatching.length < 10) data.recordsMatching.push(hit);
+                        if (data.recordsMatching.length < 10) data.recordsMatching.push(hit.objectID);
                         data.matchingNbHits++;
                         data.type.undefined++;
                     } else if (shouldProcessNumber && isNumber(value)) {
-                        if (data.recordsMatching.length < 10) data.recordsMatching.push(hit);
+                        if (data.recordsMatching.length < 10) data.recordsMatching.push(hit.objectID);
                         data.matchingNbHits++;
                         data.type.numeric++;
                         data.values.numericValues.push(value);
@@ -203,7 +203,7 @@
                         data.values.numericUniqueValueWithCount[value] = data.values.numericUniqueValueWithCount[value] || 0;
                         data.values.numericUniqueValueWithCount[value]++;
                     } else if (shouldProcessArray && Array.isArray(value)) {
-                        if (data.recordsMatching.length < 10) data.recordsMatching.push(hit);
+                        if (data.recordsMatching.length < 10) data.recordsMatching.push(hit.objectID);
                         data.matchingNbHits++;
                         data.type.array++;
 
@@ -216,7 +216,7 @@
                             }
                         });
                     } else if (shouldProcessObject && isObject(value)) {
-                        if (data.recordsMatching.length < 10) data.recordsMatching.push(hit);
+                        if (data.recordsMatching.length < 10) data.recordsMatching.push(hit.objectID);
                         data.matchingNbHits++;
                         data.type.object++;
 
@@ -225,21 +225,21 @@
                             data.object.keysUniqueWithCount[v]++;
                         });
                     } else if (shouldProcessBoolean && value === true) {
-                        if (data.recordsMatching.length < 10) data.recordsMatching.push(hit);
+                        if (data.recordsMatching.length < 10) data.recordsMatching.push(hit.objectID);
                         data.matchingNbHits++;
                         data.type.boolean++;
                         data.boolean.true++;
                     } else if (shouldProcessBoolean && value === false) {
-                        if (data.recordsMatching.length < 10) data.recordsMatching.push(hit);
+                        if (data.recordsMatching.length < 10) data.recordsMatching.push(hit.objectID);
                         data.matchingNbHits++;
                         data.type.boolean++;
                         data.boolean.false++;
                     } else if (shouldProcessNull && value === null) {
-                        if (data.recordsMatching.length < 10) data.recordsMatching.push(hit);
+                        if (data.recordsMatching.length < 10) data.recordsMatching.push(hit.objectID);
                         data.matchingNbHits++;
                         data.type.null++;
                     } else if (shouldProcessString && isString(value)) {
-                        if (data.recordsMatching.length < 10) data.recordsMatching.push(hit);
+                        if (data.recordsMatching.length < 10) data.recordsMatching.push(hit.objectID);
                         data.matchingNbHits++;
                         data.type.string++;
                         data.values.stringUniqueValuesWithCount[value] = data.values.stringUniqueValuesWithCount[value] || 0;
@@ -298,6 +298,10 @@
 
                     data.object.sortedKeys = Object.keys(data.object.keysUniqueWithCount);
                     data.object.sortedKeys.sort((a, b) => data.object.keysUniqueWithCount[b] - data.object.keysUniqueWithCount[a]);
+                }
+
+                if (data.recordsMatching.length > 0) {
+                    data.recordsMatching = (await index.getObjects(data.recordsMatching, {attributesToRetrieve: ['*']})).results;
                 }
 
                 this.data = Object.freeze(data);
