@@ -97,12 +97,15 @@
             attributeName: function () { this.compute(true) },
         },
         computed: {
+            key: function () {
+                return `${this.appId}-${this.indexName}-${this.attributeName}`;
+            },
             data: {
                 get () {
-                    return this.cached[this.attributeName];
+                    return this.cached[this.key];
                 },
                 set (data) {
-                    this.$set(this.cached, this.attributeName, data);
+                    this.$set(this.cached, this.key, data);
                 }
             },
             apiKey: function () {
@@ -225,11 +228,13 @@
                             data.object.keysUniqueWithCount[v]++;
                         });
                     } else if (shouldProcessBoolean && value === true) {
+                        console.log('ok1');
                         if (data.recordsMatching.length < 10) data.recordsMatching.push(hit.objectID);
                         data.matchingNbHits++;
                         data.type.boolean++;
                         data.boolean.true++;
                     } else if (shouldProcessBoolean && value === false) {
+                        console.log('ok2');
                         if (data.recordsMatching.length < 10) data.recordsMatching.push(hit.objectID);
                         data.matchingNbHits++;
                         data.type.boolean++;
@@ -253,7 +258,7 @@
                     }
                 };
 
-                const attributesToRetrieve = this.attributeName.length === 0 ? ['*'] : [this.attributeName];
+                const attributesToRetrieve = this.attributeName.length === 0 ? ['*'] : [this.name];
                 let res = await index.customBrowse({query: '', attributesToRetrieve: attributesToRetrieve});
                 this.nbHits = res.nbHits;
                 res.hits.forEach((hit) => processHit(hit));

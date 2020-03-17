@@ -1,6 +1,10 @@
 <template>
     <div>
         <table>
+            <tr>
+                <td class="uppercase tracking-wide text-xs p-8">value</td>
+                <td class="uppercase tracking-wide text-xs p-8">Count</td>
+            </tr>
             <tr v-for="k in paginatedValues" class="border-t border-proton-grey-opacity-30">
                 <td class="p-8">
                     {{k.length > 0 ? k : '&lt;empty&gt;'}}

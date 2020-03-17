@@ -2,6 +2,11 @@
     <div v-if="name.length > 0">
         <h2 class="mb-24">Types</h2>
         <table>
+            <tr>
+                <td class="uppercase tracking-wide text-xs p-8">Type</td>
+                <td class="uppercase tracking-wide text-xs p-8">Count</td>
+                <td class="uppercase tracking-wide text-xs p-8">%</td>
+            </tr>
             <tr
                 v-for="type in data.sortedTypes"
                 class="border-t border-proton-grey-opacity-30"

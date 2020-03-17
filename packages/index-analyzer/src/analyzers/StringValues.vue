@@ -3,8 +3,12 @@
         <h2 class="my-24">String Values</h2>
         <div class="flex">
             <values-list :data="data"/>
-            <div>
+            <div class="ml-48">
                 <table>
+                    <tr>
+                        <td class="uppercase tracking-wide text-xs p-8">Metric</td>
+                        <td class="uppercase tracking-wide text-xs p-8">Value</td>
+                    </tr>
                     <tr class="border-t border-proton-grey-opacity-30">
                         <td class="p-8">Average count</td>
                         <td class="p-8">{{data.values.averageStringCountValues}}</td>

@@ -2,6 +2,11 @@
     <div v-if="data.type.object">
         <h2 v-if="name.length > 0" class="my-24">Object keys</h2>
         <table>
+            <tr>
+                <td class="uppercase tracking-wide text-xs p-8">Key</td>
+                <td class="uppercase tracking-wide text-xs p-8">Count</td>
+                <td class="uppercase tracking-wide text-xs p-8">%</td>
+            </tr>
             <tr
                 v-for="key in data.object.sortedKeys"
                 class="border-t border-proton-grey-opacity-30 align-top"
