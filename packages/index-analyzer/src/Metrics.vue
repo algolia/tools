@@ -253,7 +253,8 @@
                     }
                 };
 
-                let res = await index.customBrowse({query: '', attributesToRetrieve: ['*']});
+                const attributesToRetrieve = this.attributeName.length === 0 ? ['*'] : [this.attributeName];
+                let res = await index.customBrowse({query: '', attributesToRetrieve: attributesToRetrieve});
                 this.nbHits = res.nbHits;
                 res.hits.forEach((hit) => processHit(hit));
                 this.i = data.readNbHits;
