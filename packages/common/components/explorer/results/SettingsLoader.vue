@@ -45,6 +45,7 @@
                 for (key in indexSettings) {
                     if (key === 'version') continue;
                     if (key === 'userData') continue;
+                    if (key === 'nbShards' && indexSettings[key] === 1) continue;
                     if (this.advancedIndexSettingsNames.indexOf(key) !== -1) {
                         advancedSettings[key] = indexSettings[key];
                         continue;
