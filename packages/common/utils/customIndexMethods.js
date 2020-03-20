@@ -159,7 +159,7 @@ const customSearchForFacetValues = function (args) {
     const {
         facetName,
         facetQuery,
-        newParams
+        ...newParams
     } = getNewParams(args);
     return this.searchForFacetValues(facetName, facetQuery, newParams);
 };
