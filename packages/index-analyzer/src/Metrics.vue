@@ -41,21 +41,29 @@
                     <div>
                         <span>&nbsp;>&nbsp;</span>
                         <span
-                            v-if="i < attributeParts.length - 1 || typeFilter !== null"
+                            v-if="i < attributeParts.length - 1 || typeFilter !== null || valueFilter !== null"
                             class="cursor-pointer text-nebula-blue hover:underline"
                             @click="$emit('onUpdateAttributeName', attributeParts.slice(0, i + 1).join('.'))"
                         >{{part}}</span>
                         <span v-else>{{part}}</span>
                     </div>
                 </template>
-                <div v-if="typeFilter">&nbsp;: {{typeFilter}}</div>
+                <div v-if="typeFilter">&nbsp:
+                    <span
+                        v-if="valueFilter !== null"
+                        class="cursor-pointer text-nebula-blue hover:underline"
+                        @click="$emit('onUpdateAttributeName', `${attributeParts.join('.')}:${typeFilter}`)"
+                    >{{typeFilter}}</span>
+                    <span v-else>{{typeFilter}}</span>
+                </div>
+                <div v-if="valueFilter">&nbsp;: {{valueFilter}}</div>
             </div>
             <div v-if="data" class="p-16">
                 <types :data="data" :type-filter="typeFilter" :name="name" v-on="$listeners" />
                 <object-keys :data="data" :name="name" :attributes="attributes" v-on="$listeners" />
-                <boolean-values :data="data" v-on="$listeners" />
-                <numeric-values :data="data" :name="name" v-on="$listeners" />
-                <string-values :data="data" v-on="$listeners" />
+                <boolean-values :data="data" :name="name" :value-filter="valueFilter" v-on="$listeners" />
+                <numeric-values :data="data" :name="name" :value-filter="valueFilter" v-on="$listeners" />
+                <string-values :data="data" :name="name" :value-filter="valueFilter" v-on="$listeners" />
                 <hits :data="data" :attribute-parts="attributeParts" v-on="$listeners" />
             </div>
         </div>
@@ -119,7 +127,11 @@
             },
             typeFilter: function () {
                 const parts = this.attributeName.split(':');
-                return parts.length > 1 && parts[1].length > 0 ? parts[1] : null;
+                return parts.length > 1 && parts[1].length > 0 && parts[1] !== 'all' ? parts[1] : null;
+            },
+            valueFilter: function () {
+                const parts = this.attributeName.split(':');
+                return parts.length > 2 && parts[2].length > 0 ? parts[2] : null;
             }
         },
         methods: {
@@ -180,7 +192,7 @@
                 };
 
                 const shouldProcessUndefined = this.typeFilter === null || this.typeFilter === 'undefined';
-                const shouldProcessNumber = this.typeFilter === null || this.typeFilter === 'number';
+                const shouldProcessNumber = this.typeFilter === null || this.typeFilter === 'numeric';
                 const shouldProcessArray = this.typeFilter === null || this.typeFilter === 'array';
                 const shouldProcessObject = this.typeFilter === null || this.typeFilter === 'object';
                 const shouldProcessBoolean = this.typeFilter === null || this.typeFilter === 'boolean';
@@ -189,15 +201,16 @@
 
                 const processHit = (hit) => {
                     const value = getRaw(hit, this.name);
+                    const shouldProcessValue = this.valueFilter === null || this.valueFilter === (value ? value.toString() : NaN);
 
                     data.readNbHits++;
 
                     // types
-                    if (shouldProcessUndefined && value === undefined) {
+                    if (shouldProcessUndefined && value === undefined && shouldProcessValue) {
                         if (data.recordsMatching.length < 10) data.recordsMatching.push(hit.objectID);
                         data.matchingNbHits++;
                         data.type.undefined++;
-                    } else if (shouldProcessNumber && isNumber(value)) {
+                    } else if (shouldProcessNumber && isNumber(value) && shouldProcessValue) {
                         if (data.recordsMatching.length < 10) data.recordsMatching.push(hit.objectID);
                         data.matchingNbHits++;
                         data.type.numeric++;
@@ -211,7 +224,12 @@
                         data.type.array++;
 
                         value.forEach((v) => {
-                            if (isString(v) || isNumber(v)) {
+                            const shouldProcessValueInner = this.valueFilter === null || this.valueFilter === v;
+                            if (isNumber(v) && shouldProcessValueInner) {
+                                data.values.numericUniqueValueWithCount[v] = data.values.numericUniqueValueWithCount[v] || 0;
+                                data.values.numericUniqueValueWithCount[v]++;
+                            }
+                            if (isString(v) && shouldProcessValueInner) {
                                 data.values.stringUniqueValuesWithCount[v] = data.values.stringUniqueValuesWithCount[v] || 0;
                                 data.values.stringUniqueValuesWithCount[v]++;
                                 data.values.sumLength += v.toString().length;
@@ -227,23 +245,21 @@
                             data.object.keysUniqueWithCount[v] = data.object.keysUniqueWithCount[v] || 0;
                             data.object.keysUniqueWithCount[v]++;
                         });
-                    } else if (shouldProcessBoolean && value === true) {
-                        console.log('ok1');
+                    } else if (shouldProcessBoolean && value === true && shouldProcessValue) {
                         if (data.recordsMatching.length < 10) data.recordsMatching.push(hit.objectID);
                         data.matchingNbHits++;
                         data.type.boolean++;
                         data.boolean.true++;
-                    } else if (shouldProcessBoolean && value === false) {
-                        console.log('ok2');
+                    } else if (shouldProcessBoolean && value === false && shouldProcessValue) {
                         if (data.recordsMatching.length < 10) data.recordsMatching.push(hit.objectID);
                         data.matchingNbHits++;
                         data.type.boolean++;
                         data.boolean.false++;
-                    } else if (shouldProcessNull && value === null) {
+                    } else if (shouldProcessNull && value === null && shouldProcessValue) {
                         if (data.recordsMatching.length < 10) data.recordsMatching.push(hit.objectID);
                         data.matchingNbHits++;
                         data.type.null++;
-                    } else if (shouldProcessString && isString(value)) {
+                    } else if (shouldProcessString && isString(value) && shouldProcessValue) {
                         if (data.recordsMatching.length < 10) data.recordsMatching.push(hit.objectID);
                         data.matchingNbHits++;
                         data.type.string++;
@@ -252,7 +268,7 @@
                         data.values.sumLength += value.length;
                         data.values.sumNbWords += value.toString().split(' ').length;
                     } else {
-                        if (this.typeFilter === null) {
+                        if (this.typeFilter === null && this.valueFilter === null) {
                             console.log('Unknown type', value);
                         }
                     }
@@ -294,8 +310,8 @@
                     let sum = 0;
                     for (let key in data.values.stringUniqueValuesWithCount) sum += data.values.stringUniqueValuesWithCount[key];
                     data.values.averageStringCountValues = sum / Object.keys(data.values.stringUniqueValuesWithCount).length;
-                    data.values.averageLength = (data.values.sumLength / Object.keys(data.values.stringUniqueValuesWithCount).length).toFixed(2);
-                    data.values.averageNbWords = (data.values.sumNbWords / Object.keys(data.values.stringUniqueValuesWithCount).length).toFixed(2);
+                    data.values.averageLength = (data.values.sumLength / data.type.string).toFixed(2);
+                    data.values.averageNbWords = (data.values.sumNbWords / data.type.string).toFixed(2);
 
                     // types
                     data.sortedTypes = Object.keys(data.type).filter((t) => this.typeFilter === null || this.typeFilter === t);

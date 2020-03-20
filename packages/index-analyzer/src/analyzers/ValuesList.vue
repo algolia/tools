@@ -7,10 +7,17 @@
             </tr>
             <tr v-for="k in paginatedValues" class="border-t border-proton-grey-opacity-30">
                 <td class="p-8">
-                    {{k.length > 0 ? k : '&lt;empty&gt;'}}
+                    <span
+                        v-if="valueFilter === null"
+                        class="cursor-pointer text-nebula-blue hover:underline"
+                        @click="$emit('onUpdateAttributeName', `${name}:${type}:${k}`)"
+                    >
+                        {{k.length > 0 ? k : '&lt;empty&gt;'}}
+                    </span>
+                    <span v-else>{{k.length > 0 ? k : '&lt;empty&gt;'}}</span>
                 </td>
                 <td class="p-8">
-                    {{data.values.stringUniqueValuesWithCount[k]}}
+                    {{data.values[countKey][k]}}
                 </td>
             </tr>
         </table>
@@ -27,21 +34,20 @@
 
     export default {
         name: 'ValuesList',
-        props: ['data'],
+        props: ['data', 'countKey', 'valueFilter', 'name', 'type'],
         components: {Pagination},
         data: function () {
             return {
-                values: [],
                 hitsPerPage: 10,
                 page: 0,
             }
         },
-        created: function () {
-            const values = Object.keys(this.data.values.stringUniqueValuesWithCount);
-            values.sort((a, b) => this.data.values.stringUniqueValuesWithCount[b] - this.data.values.stringUniqueValuesWithCount[a]);
-            this.values = Object.freeze(values);
-        },
         computed: {
+            values: function () {
+                const values = Object.keys(this.data.values[this.countKey]);
+                values.sort((a, b) => this.data.values[this.countKey][b] - this.data.values[this.countKey][a]);
+                return values;
+            },
             paginatedValues: function () {
                 return this.values.slice(this.page * this.hitsPerPage, (this.page + 1) * this.hitsPerPage);
             }

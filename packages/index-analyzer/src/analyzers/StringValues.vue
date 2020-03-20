@@ -2,7 +2,14 @@
     <div v-if="Object.keys(data.values.stringUniqueValuesWithCount).length > 0">
         <h2 class="my-24">String Values</h2>
         <div class="flex">
-            <values-list :data="data"/>
+            <values-list
+                :data="data"
+                count-key="stringUniqueValuesWithCount"
+                :name="name"
+                :value-filter="valueFilter"
+                type="string"
+                v-on="$listeners"
+            />
             <div class="ml-48">
                 <table>
                     <tr>
@@ -32,7 +39,7 @@
 
     export default {
         name: 'StringValues',
-        props: ['data'],
+        props: ['data', 'name', 'valueFilter'],
         components: {ValuesList},
     }
 </script>

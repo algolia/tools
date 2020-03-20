@@ -8,12 +8,30 @@
                 <td class="uppercase tracking-wide text-xs p-8">%</td>
             </tr>
             <tr class="border-t border-proton-grey-opacity-30">
-                <td class="p-8">True</td>
+                <td class="p-8">
+                    <span
+                        v-if="valueFilter === null"
+                        class="cursor-pointer text-nebula-blue hover:underline"
+                        @click="$emit('onUpdateAttributeName', `${name}:boolean:true`)"
+                    >
+                        True
+                    </span>
+                    <span v-else>True</span>
+                </td>
                 <td class="p-8">{{data.boolean.true}}</td>
                 <td class="p-8">{{percent(data.boolean.true, data.type.boolean)}}</td>
             </tr>
             <tr class="border-t border-proton-grey-opacity-30">
-                <td class="p-8">False</td>
+                <td class="p-8">
+                    <span
+                        v-if="valueFilter === null"
+                        class="cursor-pointer text-nebula-blue hover:underline"
+                        @click="$emit('onUpdateAttributeName', `${name}:boolean:false`)"
+                    >
+                        False
+                    </span>
+                    <span v-else>False</span>
+                </td>
                 <td class="p-8">{{data.boolean.false}}</td>
                 <td class="p-8">{{percent(data.boolean.false, data.type.boolean)}}</td>
             </tr>
@@ -26,7 +44,7 @@
 
     export default {
         name: 'BooleanValues',
-        props: ['data'],
+        props: ['data', 'valueFilter', 'name'],
         data: function () {
             return {
                 percent: percent,
