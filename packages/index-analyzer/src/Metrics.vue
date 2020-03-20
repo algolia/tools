@@ -132,6 +132,9 @@
             valueFilter: function () {
                 const parts = this.attributeName.split(':');
                 return parts.length > 2 && parts[2].length > 0 ? parts[2] : null;
+            },
+            valueFilterForComparison: function () {
+                return this.valueFilter === '<empty>' ? '' : this.valueFilter;
             }
         },
         methods: {
@@ -201,7 +204,7 @@
 
                 const processHit = (hit) => {
                     const value = getRaw(hit, this.name);
-                    const shouldProcessValue = this.valueFilter === null || this.valueFilter === (value ? value.toString() : NaN);
+                    const shouldProcessValue = this.valueFilterForComparison === null || this.valueFilterForComparison === (value !== undefined ? value.toString() : NaN);
 
                     data.readNbHits++;
 
@@ -224,7 +227,7 @@
                         data.type.array++;
 
                         value.forEach((v) => {
-                            const shouldProcessValueInner = this.valueFilter === null || this.valueFilter === v;
+                            const shouldProcessValueInner = this.valueFilterForComparison === null || this.valueFilterForComparison === (v !== undefined ? v.toString() : NaN);
                             if (isNumber(v) && shouldProcessValueInner) {
                                 data.values.numericUniqueValueWithCount[v] = data.values.numericUniqueValueWithCount[v] || 0;
                                 data.values.numericUniqueValueWithCount[v]++;

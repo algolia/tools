@@ -10,7 +10,7 @@
                     <span
                         v-if="valueFilter === null"
                         class="cursor-pointer text-nebula-blue hover:underline"
-                        @click="$emit('onUpdateAttributeName', `${name}:${type}:${k}`)"
+                        @click="$emit('onUpdateAttributeName', `${name}:${type}:${k.length > 0 ? k : '&lt;empty&gt;'}`)"
                     >
                         {{k.length > 0 ? k : '&lt;empty&gt;'}}
                     </span>
@@ -40,6 +40,7 @@
             return {
                 hitsPerPage: 10,
                 page: 0,
+                emptyQuery: JSON.stringify(''),
             }
         },
         computed: {
