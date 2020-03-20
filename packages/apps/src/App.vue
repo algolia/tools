@@ -6,7 +6,7 @@
                 <h2 class="text-solstice-blue-opacity-80">{{group.name}}</h2>
                 <p class="text-solstice-blue-opacity-80">{{group.description}}</p>
                 <div class="flex flex-wrap">
-                    <a v-for="app in group.apps" :href="app.url" target="_blank" class="my-24 mr-24">
+                    <a v-for="app in group.apps" :href="app.url" class="my-24 mr-24">
                         <div
                             class="rounded border border-proton-grey-opacity-60 bg-white p-24 w-200 text-center text-lg shadow text-nova-grey"
                         >
