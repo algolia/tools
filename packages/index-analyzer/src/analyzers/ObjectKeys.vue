@@ -11,17 +11,18 @@
                 <td class="uppercase tracking-wide text-xs p-8">Key</td>
                 <td class="uppercase tracking-wide text-xs p-8">Count</td>
                 <td class="uppercase tracking-wide text-xs p-8">%</td>
+                <td class="uppercase tracking-wide text-xs p-8">Present in settings</td>
             </tr>
             <tr
                 v-for="key in filteredKeys"
                 class="border-t border-proton-grey-opacity-30 align-top"
             >
                 <td class="p-8">
-                <span
-                    class="hit link cursor-pointer text-nebula-blue hover:underline"
-                    @click="$emit('onUpdateAttributeName', `${attributeName}${attributeName.length > 0 ? '.': ''}${key}`)"
-                    v-html="highlightStringBaseOnQuery(key, query)"
-                ></span>
+                    <span
+                        class="hit link cursor-pointer text-nebula-blue hover:underline"
+                        @click="$emit('onUpdateAttributeName', `${attributeName}${attributeName.length > 0 ? '.': ''}${key}`)"
+                        v-html="highlightStringBaseOnQuery(key, query)"
+                    ></span>
                 </td>
                 <td class="p-8">{{data.object.keysUniqueWithCount[key]}}</td>
                 <td class="p-8">{{percent(data.object.keysUniqueWithCount[key], data.type.object)}}</td>
