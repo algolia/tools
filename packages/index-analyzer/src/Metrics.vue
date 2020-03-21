@@ -207,7 +207,7 @@
 
                     // types
                     if (shouldProcessUndefined && value === undefined && shouldProcessValue) {
-                        if (data.recordsMatching.length < 10) data.recordsMatching.push(hit.objectID);
+                        if (this.typeFilter === 'undefined' && data.recordsMatching.length < 10) data.recordsMatching.push(hit.objectID);
                         data.matchingNbHits++;
                         data.type.undefined++;
                     } else if (shouldProcessNumber && isNumber(value) && shouldProcessValue) {
