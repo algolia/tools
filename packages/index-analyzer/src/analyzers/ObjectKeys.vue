@@ -1,23 +1,27 @@
 <template>
     <div v-if="data.type.object">
         <h2 v-if="name.length > 0" class="my-24">Object keys</h2>
-        <table>
+        <input
+            class="px-8 py-4 bg-white rounded border border-proton-grey-opacity-80 bg-transparent text-telluric-blue"
+            placeholder="Filter keys"
+            v-model="query"
+        />
+        <table class="mt-16">
             <tr>
                 <td class="uppercase tracking-wide text-xs p-8">Key</td>
                 <td class="uppercase tracking-wide text-xs p-8">Count</td>
                 <td class="uppercase tracking-wide text-xs p-8">%</td>
             </tr>
             <tr
-                v-for="key in data.object.sortedKeys"
+                v-for="key in filteredKeys"
                 class="border-t border-proton-grey-opacity-30 align-top"
             >
                 <td class="p-8">
                 <span
-                    class="cursor-pointer text-nebula-blue hover:underline"
+                    class="hit link cursor-pointer text-nebula-blue hover:underline"
                     @click="$emit('onUpdateAttributeName', `${name}${name.length > 0 ? '.': ''}${key}`)"
-                >
-                    {{key}}
-                </span>
+                    v-html="highlightStringBaseOnQuery(key, query)"
+                ></span>
                 </td>
                 <td class="p-8">{{data.object.keysUniqueWithCount[key]}}</td>
                 <td class="p-8">{{percent(data.object.keysUniqueWithCount[key], data.type.object)}}</td>
@@ -35,13 +39,24 @@
 
 <script>
     import {percent} from "../helpers";
+    import {highlightStringBaseOnQuery} from "common/utils/formatters";
 
     export default {
         name: 'ObjectKeys',
         props: ['data', 'name', 'attributes'],
         data: function () {
             return {
+                query: '',
                 percent: percent,
+                highlightStringBaseOnQuery: highlightStringBaseOnQuery,
+            }
+        },
+        computed: {
+            filteredKeys: function () {
+                const query = this.query.toLowerCase();
+                return this.data.object.sortedKeys.filter((key) => {
+                    return key.toLowerCase().includes(query);
+                });
             }
         }
     }

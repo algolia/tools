@@ -15,21 +15,7 @@
             </div>
         </div>
         <div>
-            <div
-                v-if="!isComputing && data && data.isSampled"
-                class="flex items-center text-solstice-blue bg-saturn-4-opacity-80 p-16"
-            >
-                <div>
-                    The metrics have been computed on a subset of {{i}} records out of {{nbHits}} ({{Math.floor(i*100/nbHits)}}%).
-                </div>
-                <div
-                    @click="compute(false)"
-                    class="ml-24 cursor-pointer bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out px-16 p-8 text-sm relative group"
-                >
-                    Load all
-                </div>
-            </div>
-            <div class="flex p-16">
+            <div class="flex text-xl p-16">
                 <div v-if="name.length === 0">All attributes</div>
                 <div v-else
                      class="cursor-pointer text-nebula-blue hover:underline"
@@ -58,12 +44,31 @@
                 </div>
                 <div v-if="valueFilter">&nbsp;: {{valueFilter}}</div>
             </div>
+            <div class="ml-16">
+                <div
+                    v-if="!isComputing && data && data.isSampled"
+                    class="flex"
+                >
+                    <div class="flex items-center rounded text-solstice-blue text-saturn-1 border border-saturn-4 bg-saturn-4-opacity-40 px-16 py-12">
+                        <div>
+                            The metrics have been computed on a subset of
+                            {{i}} records out of {{nbHits}} ({{Math.floor(i*100/nbHits)}}%)
+                        </div>
+                        <div
+                            @click="compute(false)"
+                            class="ml-24 cursor-pointer bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out px-16 p-8 text-sm relative group"
+                        >
+                            Load all
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div v-if="data" class="p-16">
                 <types :data="data" :type-filter="typeFilter" :name="name" v-on="$listeners" />
                 <object-keys :data="data" :name="name" :attributes="attributes" v-on="$listeners" />
                 <boolean-values :data="data" :name="name" :value-filter="valueFilter" v-on="$listeners" />
-                <numeric-values :data="data" :name="name" :value-filter="valueFilter" v-on="$listeners" />
-                <string-values :data="data" :name="name" :value-filter="valueFilter" v-on="$listeners" />
+                <numeric-values :data="data" :name="name" :type-filter="typeFilter" :value-filter="valueFilter" v-on="$listeners" />
+                <string-values :data="data" :name="name" :type-filter="typeFilter" :value-filter="valueFilter" v-on="$listeners" />
                 <hits :data="data" :attribute-parts="attributeParts" v-on="$listeners" />
             </div>
         </div>
@@ -167,6 +172,7 @@
                         numericUniqueValueWithCount: {},
                         stringUniqueValuesWithCount: {},
                         averageStringCountValues: 0,
+                        stringCount: 0,
                         sumLength: 0,
                         sumNbWords: 0,
                         averageLength: 0,
@@ -196,11 +202,11 @@
 
                 const shouldProcessUndefined = this.typeFilter === null || this.typeFilter === 'undefined';
                 const shouldProcessNumber = this.typeFilter === null || this.typeFilter === 'numeric';
-                const shouldProcessArray = this.typeFilter === null || this.typeFilter === 'array';
                 const shouldProcessObject = this.typeFilter === null || this.typeFilter === 'object';
                 const shouldProcessBoolean = this.typeFilter === null || this.typeFilter === 'boolean';
                 const shouldProcessNull = this.typeFilter === null || this.typeFilter === 'null';
                 const shouldProcessString = this.typeFilter === null || this.typeFilter === 'string';
+                const shouldProcessArray = this.typeFilter === null || this.typeFilter === 'array' || shouldProcessString || shouldProcessNumber;
 
                 const processHit = (hit) => {
                     const value = getRaw(hit, this.name);
@@ -237,6 +243,7 @@
                                 data.values.stringUniqueValuesWithCount[v]++;
                                 data.values.sumLength += v.toString().length;
                                 data.values.sumNbWords += v.toString().split(' ').length;
+                                data.values.stringCount++;
                             }
                         });
                     } else if (shouldProcessObject && isObject(value)) {
@@ -266,6 +273,7 @@
                         if (data.recordsMatching.length < 10) data.recordsMatching.push(hit.objectID);
                         data.matchingNbHits++;
                         data.type.string++;
+                        data.values.stringCount++;
                         data.values.stringUniqueValuesWithCount[value] = data.values.stringUniqueValuesWithCount[value] || 0;
                         data.values.stringUniqueValuesWithCount[value]++;
                         data.values.sumLength += value.length;
@@ -313,15 +321,24 @@
                     let sum = 0;
                     for (let key in data.values.stringUniqueValuesWithCount) sum += data.values.stringUniqueValuesWithCount[key];
                     data.values.averageStringCountValues = sum / Object.keys(data.values.stringUniqueValuesWithCount).length;
-                    data.values.averageLength = (data.values.sumLength / data.type.string).toFixed(2);
-                    data.values.averageNbWords = (data.values.sumNbWords / data.type.string).toFixed(2);
+                    data.values.averageLength = (data.values.sumLength / data.values.stringCount).toFixed(2);
+                    data.values.averageNbWords = (data.values.sumNbWords / data.values.stringCount).toFixed(2);
 
                     // types
-                    data.sortedTypes = Object.keys(data.type).filter((t) => this.typeFilter === null || this.typeFilter === t);
+                    data.sortedTypes = Object.keys(data.type).filter((t) => {
+                        if (this.typeFilter === null) return true;
+                        if (t === 'array' && ['numeric', 'string', 'array'].includes(this.typeFilter)) return true;
+                        return this.typeFilter === t;
+                    });
                     data.sortedTypes.sort((a, b) => data.type[b] - data.type[a]);
 
                     data.object.sortedKeys = Object.keys(data.object.keysUniqueWithCount);
-                    data.object.sortedKeys.sort((a, b) => data.object.keysUniqueWithCount[b] - data.object.keysUniqueWithCount[a]);
+                    data.object.sortedKeys.sort((a, b) => {
+                        if (data.object.keysUniqueWithCount[b] !== data.object.keysUniqueWithCount[a]) {
+                            return data.object.keysUniqueWithCount[b] - data.object.keysUniqueWithCount[a];
+                        }
+                        return a.localeCompare(b);
+                    });
                 }
 
                 if (data.recordsMatching.length > 0) {

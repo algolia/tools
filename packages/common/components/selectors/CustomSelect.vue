@@ -56,6 +56,7 @@
 <script>
     import ChevronDownIcon from "common/icons/chevron-down.svg";
     import Vue from 'vue';
+    import {highlightStringBaseOnQuery} from "../../utils/formatters";
 
     export default {
         name: 'CustomSelect',
@@ -91,25 +92,7 @@
         },
         methods: {
             highlightString: function (s) {
-                const words = this.query.toLowerCase().split(' ').sort((a, b) => { return b.length - a.length;}).filter((a) => {
-                    return a.trim().length > 0;
-                });
-                let highlightedString = '';
-
-                for (let i = 0; i < s.length; i++) {
-                    let foundMatch = false;
-                    for (let j = 0; j < words.length; j++) {
-                        if (s.toLowerCase().startsWith(words[j].toLowerCase(), i)) {
-                            highlightedString += `<em>${s.slice(i, i + words[j].length)}</em>`;
-                            i += words[j].length - 1;
-                            foundMatch = true;
-                            break;
-                        }
-                    }
-                    if (!foundMatch) highlightedString += s[i];
-                }
-
-                return highlightedString;
+                return highlightStringBaseOnQuery(s, this.query);
             },
             fakeBlur: function () {
                 if (!this.refine) this.onBlur();

@@ -15,7 +15,7 @@
                                 :app-id="appId"
                                 class="ml-24"
                             />
-                            <input placeholder="attributeName" class="rounded mx-24 px-4 flex-grow" v-model="attributeName" />
+                            <input placeholder="attributeName" class="rounded ml-24 px-8 flex-grow" v-model="attributeName" />
                         </div>
                         <div class="bg-white text-nova-grey">
                             <metrics

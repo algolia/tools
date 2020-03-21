@@ -7,7 +7,7 @@
                 count-key="numericUniqueValueWithCount"
                 :name="name"
                 :value-filter="valueFilter"
-                type="numeric"
+                :type="typeFilter === 'array' ? 'array' : 'number'"
                 v-on="$listeners"
             />
             <div class="ml-48" v-if="!valueFilter">
@@ -36,7 +36,7 @@
 
     export default {
         name: 'NumericValues',
-        props: ['data', 'name', 'valueFilter'],
+        props: ['data', 'name', 'valueFilter', 'typeFilter'],
         components: {ValuesList, DistributionChart}
     }
 </script>

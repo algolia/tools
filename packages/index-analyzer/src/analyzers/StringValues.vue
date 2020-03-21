@@ -7,7 +7,7 @@
                 count-key="stringUniqueValuesWithCount"
                 :name="name"
                 :value-filter="valueFilter"
-                type="string"
+                :type="typeFilter === 'array' ? 'array' : 'string'"
                 v-on="$listeners"
             />
             <div class="ml-48">
@@ -39,7 +39,7 @@
 
     export default {
         name: 'StringValues',
-        props: ['data', 'name', 'valueFilter'],
+        props: ['data', 'name', 'valueFilter', 'typeFilter'],
         components: {ValuesList},
     }
 </script>

@@ -1,6 +1,11 @@
 <template>
     <div>
-        <table>
+        <input
+            class="px-8 py-4 bg-white rounded border border-proton-grey-opacity-80 bg-transparent text-telluric-blue"
+            placeholder="Filter values"
+            v-model="query"
+        />
+        <table class="mt-16">
             <tr>
                 <td class="uppercase tracking-wide text-xs p-8">value</td>
                 <td class="uppercase tracking-wide text-xs p-8">Count</td>
@@ -9,11 +14,10 @@
                 <td class="p-8">
                     <span
                         v-if="valueFilter === null"
-                        class="cursor-pointer text-nebula-blue hover:underline"
+                        class="hit link cursor-pointer text-nebula-blue hover:underline"
                         @click="$emit('onUpdateAttributeName', `${name}:${type}:${k.length > 0 ? k : '&lt;empty&gt;'}`)"
-                    >
-                        {{k.length > 0 ? k : '&lt;empty&gt;'}}
-                    </span>
+                        v-html="k.length > 0 ? highlightStringBaseOnQuery(k, query) : '&lt;empty&gt;'"
+                    ></span>
                     <span v-else>{{k.length > 0 ? k : '&lt;empty&gt;'}}</span>
                 </td>
                 <td class="p-8">
@@ -31,6 +35,7 @@
 
 <script>
     import Pagination from "common/components/explorer/results/Pagination";
+    import {highlightStringBaseOnQuery} from "common/utils/formatters";
 
     export default {
         name: 'ValuesList',
@@ -41,11 +46,19 @@
                 hitsPerPage: 10,
                 page: 0,
                 emptyQuery: JSON.stringify(''),
+                query: '',
+                highlightStringBaseOnQuery: highlightStringBaseOnQuery,
             }
         },
         computed: {
             values: function () {
-                const values = Object.keys(this.data.values[this.countKey]);
+                let values = Object.keys(this.data.values[this.countKey]);
+                if (this.query.length) {
+                    const query = this.query.toLowerCase();
+                    values = values.filter((v) => {
+                        return v.toString().toLowerCase().includes(query);
+                    });
+                }
                 values.sort((a, b) => this.data.values[this.countKey][b] - this.data.values[this.countKey][a]);
                 return values;
             },
