@@ -16,6 +16,8 @@
                                 class="ml-24"
                             />
                             <input placeholder="attributeName" class="rounded ml-24 px-8 flex-grow" v-model="attributeName" />
+                            <input placeholder="type" class="rounded ml-24 px-8 flex-grow" v-model="typeFilter" />
+                            <input placeholder="value" class="rounded ml-24 px-8 flex-grow" v-model="valueFilter" />
                         </div>
                         <div class="bg-white text-nova-grey">
                             <metrics
@@ -23,7 +25,11 @@
                                 :index-name="indexName"
                                 :attribute-name="attributeName"
                                 :attributes="attributes"
+                                :typeFilter="typeFilter"
+                                :valueFilter="valueFilter"
                                 @onUpdateAttributeName="attributeName = $event"
+                                @onUpdateValueFilter="valueFilter = $event"
+                                @onUpdateTypeFilter="typeFilter = $event"
                             />
                         </div>
                     </div>
@@ -83,6 +89,24 @@
                 },
                 set (attributeName) {
                     this.$store.commit(`indexanalyzer/setAttributeName`, attributeName);
+                    this.typeFilter = '';
+                    this.valueFilter = '';
+                }
+            },
+            typeFilter: {
+                get () {
+                    return this.$store.state.indexanalyzer.typeFilter || '';
+                },
+                set (typeFilter) {
+                    this.$store.commit(`indexanalyzer/setTypeFilter`, typeFilter);
+                }
+            },
+            valueFilter: {
+                get () {
+                    return this.$store.state.indexanalyzer.valueFilter || '';
+                },
+                set (valueFilter) {
+                    this.$store.commit(`indexanalyzer/setValueFilter`, valueFilter);
                 }
             },
             apiKey: function () {

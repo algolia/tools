@@ -6,6 +6,8 @@ export default {
         appId: null,
         indexName: null,
         attributeName: '',
+        typeFilter: '',
+        valueFilter: '',
     },
     mutations: {
         setAppId: function (state, payload) {
@@ -16,6 +18,12 @@ export default {
         },
         setAttributeName: function (state, payload) {
             Vue.set(state, 'attributeName', payload);
+        },
+        setTypeFilter: function (state, payload) {
+            Vue.set(state, 'typeFilter', payload);
+        },
+        setValueFilter: function (state, payload) {
+            Vue.set(state, 'valueFilter', payload);
         }
     }
 }

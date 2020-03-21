@@ -10,9 +10,9 @@
             <tr class="border-t border-proton-grey-opacity-30">
                 <td class="p-8">
                     <span
-                        v-if="valueFilter === null"
+                        v-if="valueFilter.length === 0"
                         class="cursor-pointer text-nebula-blue hover:underline"
-                        @click="$emit('onUpdateAttributeName', `${name}:boolean:true`)"
+                        @click="$emit('onUpdateValueFilter', 'true')"
                     >
                         True
                     </span>
@@ -24,9 +24,9 @@
             <tr class="border-t border-proton-grey-opacity-30">
                 <td class="p-8">
                     <span
-                        v-if="valueFilter === null"
+                        v-if="valueFilter.length === 0"
                         class="cursor-pointer text-nebula-blue hover:underline"
-                        @click="$emit('onUpdateAttributeName', `${name}:boolean:false`)"
+                        @click="$emit('onUpdateValueFilter', 'false')"
                     >
                         False
                     </span>
@@ -44,7 +44,7 @@
 
     export default {
         name: 'BooleanValues',
-        props: ['data', 'valueFilter', 'name'],
+        props: ['data', 'valueFilter'],
         data: function () {
             return {
                 percent: percent,

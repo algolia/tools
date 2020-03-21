@@ -5,9 +5,7 @@
             <values-list
                 :data="data"
                 count-key="numericUniqueValueWithCount"
-                :name="name"
                 :value-filter="valueFilter"
-                :type="typeFilter === 'array' ? 'array' : 'number'"
                 v-on="$listeners"
             />
             <div class="ml-48" v-if="!valueFilter">
@@ -26,7 +24,7 @@
                 </table>
             </div>
         </div>
-        <distribution-chart v-if="!valueFilter" :data="data" :attribute-name="name" />
+        <distribution-chart v-if="!valueFilter" :data="data" :attribute-name="attributeName" />
     </div>
 </template>
 
@@ -36,7 +34,7 @@
 
     export default {
         name: 'NumericValues',
-        props: ['data', 'name', 'valueFilter', 'typeFilter'],
+        props: ['data', 'attributeName', 'valueFilter'],
         components: {ValuesList, DistributionChart}
     }
 </script>

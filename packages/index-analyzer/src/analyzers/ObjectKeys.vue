@@ -1,6 +1,6 @@
 <template>
     <div v-if="data.type.object">
-        <h2 v-if="name.length > 0" class="my-24">Object keys</h2>
+        <h2 v-if="attributeName.length > 0" class="my-24">Object keys</h2>
         <input
             class="px-8 py-4 bg-white rounded border border-proton-grey-opacity-80 bg-transparent text-telluric-blue"
             placeholder="Filter keys"
@@ -19,15 +19,15 @@
                 <td class="p-8">
                 <span
                     class="hit link cursor-pointer text-nebula-blue hover:underline"
-                    @click="$emit('onUpdateAttributeName', `${name}${name.length > 0 ? '.': ''}${key}`)"
+                    @click="$emit('onUpdateAttributeName', `${attributeName}${attributeName.length > 0 ? '.': ''}${key}`)"
                     v-html="highlightStringBaseOnQuery(key, query)"
                 ></span>
                 </td>
                 <td class="p-8">{{data.object.keysUniqueWithCount[key]}}</td>
                 <td class="p-8">{{percent(data.object.keysUniqueWithCount[key], data.type.object)}}</td>
                 <td class="p-8">
-                    <template v-if="attributes[`${name}${name.length > 0 ? '.': ''}${key}`]">
-                        <div v-for="attribute in attributes[`${name}${name.length > 0 ? '.': ''}${key}`]">
+                    <template v-if="attributes[`${attributeName}${attributeName.length > 0 ? '.': ''}${key}`]">
+                        <div v-for="attribute in attributes[`${attributeName}${attributeName.length > 0 ? '.': ''}${key}`]">
                             {{attribute.settings}}<span v-if="attribute.position !== undefined">[{{attribute.position}}]</span>
                         </div>
                     </template>
@@ -43,7 +43,7 @@
 
     export default {
         name: 'ObjectKeys',
-        props: ['data', 'name', 'attributes'],
+        props: ['data', 'attributeName', 'attributes'],
         data: function () {
             return {
                 query: '',

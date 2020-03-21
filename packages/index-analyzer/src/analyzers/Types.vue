@@ -1,5 +1,5 @@
 <template>
-    <div v-if="name.length > 0">
+    <div v-if="attributeName.length > 0">
         <h2 class="mb-24">Types</h2>
         <table>
             <tr>
@@ -13,9 +13,9 @@
             >
                 <td class="p-8">
                     <span
-                        v-if="typeFilter === null"
+                        v-if="typeFilter.length === 0"
                         class="cursor-pointer text-nebula-blue hover:underline"
-                        @click="$emit('onUpdateAttributeName', `${name}:${type}`)"
+                        @click="$emit('onUpdateTypeFilter', type)"
                     >
                         {{type}}
                     </span>
@@ -33,7 +33,7 @@
 
     export default {
         name: 'types',
-        props: ['data', 'typeFilter', 'name'],
+        props: ['data', 'typeFilter', 'attributeName'],
         data: function () {
             return {
                 percent: percent,

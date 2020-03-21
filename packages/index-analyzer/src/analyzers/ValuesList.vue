@@ -13,11 +13,16 @@
             <tr v-for="k in paginatedValues" class="border-t border-proton-grey-opacity-30">
                 <td class="p-8">
                     <span
-                        v-if="valueFilter === null"
+                        v-if="valueFilter.length === 0 && k.length > 0"
                         class="hit link cursor-pointer text-nebula-blue hover:underline"
-                        @click="$emit('onUpdateAttributeName', `${name}:${type}:${k.length > 0 ? k : '&lt;empty&gt;'}`)"
-                        v-html="k.length > 0 ? highlightStringBaseOnQuery(k, query) : '&lt;empty&gt;'"
+                        @click="$emit('onUpdateValueFilter', `${k.length > 0 ? k : '&lt;empty&gt;'}`)"
+                        v-html="highlightStringBaseOnQuery(k, query)"
                     ></span>
+                    <span
+                        v-else-if="valueFilter.length === 0"
+                        @click="$emit('onUpdateValueFilter', '&lt;empty&gt;')"
+                        class="hit link cursor-pointer text-nebula-blue hover:underline"
+                    >&lt;empty&gt;</span>
                     <span v-else>{{k.length > 0 ? k : '&lt;empty&gt;'}}</span>
                 </td>
                 <td class="p-8">
@@ -39,13 +44,12 @@
 
     export default {
         name: 'ValuesList',
-        props: ['data', 'countKey', 'valueFilter', 'name', 'type'],
+        props: ['data', 'countKey', 'valueFilter'],
         components: {Pagination},
         data: function () {
             return {
                 hitsPerPage: 10,
                 page: 0,
-                emptyQuery: JSON.stringify(''),
                 query: '',
                 highlightStringBaseOnQuery: highlightStringBaseOnQuery,
             }

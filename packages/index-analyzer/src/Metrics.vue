@@ -16,18 +16,18 @@
         </div>
         <div>
             <div class="flex text-xl p-16">
-                <div v-if="name.length === 0">All attributes</div>
+                <div v-if="attributeName.length === 0">All attributes</div>
                 <div v-else
                      class="cursor-pointer text-nebula-blue hover:underline"
                      @click="$emit('onUpdateAttributeName', '')"
                 >
                     All attributes
                 </div>
-                <template v-if="name.length > 0" v-for="(part, i) in attributeParts">
+                <template v-if="attributeName.length > 0" v-for="(part, i) in attributeParts">
                     <div>
                         <span>&nbsp;>&nbsp;</span>
                         <span
-                            v-if="i < attributeParts.length - 1 || typeFilter !== null || valueFilter !== null"
+                            v-if="i < attributeParts.length - 1 || typeFilter.length !== 0 || valueFilter.length !== 0"
                             class="cursor-pointer text-nebula-blue hover:underline"
                             @click="$emit('onUpdateAttributeName', attributeParts.slice(0, i + 1).join('.'))"
                         >{{part}}</span>
@@ -36,9 +36,9 @@
                 </template>
                 <div v-if="typeFilter">&nbsp:
                     <span
-                        v-if="valueFilter !== null"
+                        v-if="valueFilter.length !== 0"
                         class="cursor-pointer text-nebula-blue hover:underline"
-                        @click="$emit('onUpdateAttributeName', `${attributeParts.join('.')}:${typeFilter}`)"
+                        @click="$emit('onUpdateValueFilter', '')"
                     >{{typeFilter}}</span>
                     <span v-else>{{typeFilter}}</span>
                 </div>
@@ -64,11 +64,11 @@
                 </div>
             </div>
             <div v-if="data" class="p-16">
-                <types :data="data" :type-filter="typeFilter" :name="name" v-on="$listeners" />
-                <object-keys :data="data" :name="name" :attributes="attributes" v-on="$listeners" />
-                <boolean-values :data="data" :name="name" :value-filter="valueFilter" v-on="$listeners" />
-                <numeric-values :data="data" :name="name" :type-filter="typeFilter" :value-filter="valueFilter" v-on="$listeners" />
-                <string-values :data="data" :name="name" :type-filter="typeFilter" :value-filter="valueFilter" v-on="$listeners" />
+                <types :data="data" :type-filter="typeFilter" :attribute-name="attributeName" v-on="$listeners" />
+                <object-keys :data="data" :attribute-name="attributeName" :attributes="attributes" v-on="$listeners" />
+                <boolean-values :data="data" :attribute-name="attributeName" :value-filter="valueFilter" v-on="$listeners" />
+                <numeric-values :data="data" :attribute-name="attributeName" :type-filter="typeFilter" :value-filter="valueFilter" v-on="$listeners" />
+                <string-values :data="data" :attribute-name="attributeName" :type-filter="typeFilter" :value-filter="valueFilter" v-on="$listeners" />
                 <hits :data="data" :attribute-parts="attributeParts" v-on="$listeners" />
             </div>
         </div>
@@ -90,7 +90,7 @@
     export default {
         name: 'Metrics',
         components: {ObjectKeys, Types, BooleanValues, NumericValues, StringValues, Hits, ValuesList},
-        props: ['appId', 'indexName', 'attributeName', 'attributes'],
+        props: ['appId', 'indexName', 'attributeName', 'attributes', 'valueFilter', 'typeFilter'],
         data: function () {
             return {
                 isComputing: false,
@@ -108,10 +108,12 @@
             appId: function () { this.compute(true) },
             indexName: function () { this.compute(true) },
             attributeName: function () { this.compute(true) },
+            valueFilter: function () { this.compute(true) },
+            typeFilter: function () { this.compute(true) },
         },
         computed: {
             key: function () {
-                return `${this.appId}-${this.indexName}-${this.attributeName}`;
+                return `${this.appId}-${this.indexName}-${this.attributeName}-${this.typeFilter}-${this.valueFilter}`;
             },
             data: {
                 get () {
@@ -125,18 +127,7 @@
                 return this.$store.state.apps[this.appId] ? this.$store.state.apps[this.appId].key : '';
             },
             attributeParts: function () {
-                return this.name.split('.');
-            },
-            name: function () {
-                return this.attributeName.split(':')[0];
-            },
-            typeFilter: function () {
-                const parts = this.attributeName.split(':');
-                return parts.length > 1 && parts[1].length > 0 && parts[1] !== 'all' ? parts[1] : null;
-            },
-            valueFilter: function () {
-                const parts = this.attributeName.split(':');
-                return parts.length > 2 && parts[2].length > 0 ? parts[2] : null;
+                return this.attributeName.split('.');
             },
             valueFilterForComparison: function () {
                 return this.valueFilter === '<empty>' ? '' : this.valueFilter;
@@ -200,17 +191,17 @@
                     recordsMatching: [],
                 };
 
-                const shouldProcessUndefined = this.typeFilter === null || this.typeFilter === 'undefined';
-                const shouldProcessNumber = this.typeFilter === null || this.typeFilter === 'numeric';
-                const shouldProcessObject = this.typeFilter === null || this.typeFilter === 'object';
-                const shouldProcessBoolean = this.typeFilter === null || this.typeFilter === 'boolean';
-                const shouldProcessNull = this.typeFilter === null || this.typeFilter === 'null';
-                const shouldProcessString = this.typeFilter === null || this.typeFilter === 'string';
-                const shouldProcessArray = this.typeFilter === null || this.typeFilter === 'array' || shouldProcessString || shouldProcessNumber;
+                const shouldProcessUndefined = this.typeFilter.length === 0 || this.typeFilter === 'undefined';
+                const shouldProcessNumber = this.typeFilter.length === 0 || this.typeFilter === 'numeric';
+                const shouldProcessObject = this.typeFilter.length === 0 || this.typeFilter === 'object';
+                const shouldProcessBoolean = this.typeFilter.length === 0 || this.typeFilter === 'boolean';
+                const shouldProcessNull = this.typeFilter.length === 0 || this.typeFilter === 'null';
+                const shouldProcessString = this.typeFilter.length === 0 || this.typeFilter === 'string';
+                const shouldProcessArray = this.typeFilter.length === 0 || this.typeFilter === 'array' || shouldProcessString || shouldProcessNumber;
 
                 const processHit = (hit) => {
-                    const value = getRaw(hit, this.name);
-                    const shouldProcessValue = this.valueFilterForComparison === null || this.valueFilterForComparison === (value !== undefined ? value.toString() : NaN);
+                    const value = getRaw(hit, this.attributeName);
+                    const shouldProcessValue = this.valueFilter.length === 0 || this.valueFilterForComparison === (value !== undefined ? value.toString() : NaN);
 
                     data.readNbHits++;
 
@@ -228,17 +219,17 @@
                         data.values.numericUniqueValueWithCount[value] = data.values.numericUniqueValueWithCount[value] || 0;
                         data.values.numericUniqueValueWithCount[value]++;
                     } else if (shouldProcessArray && Array.isArray(value)) {
-                        if (data.recordsMatching.length < 10) data.recordsMatching.push(hit.objectID);
-                        data.matchingNbHits++;
-                        data.type.array++;
+                        let shouldCount = this.valueFilter.length === 0;
 
                         value.forEach((v) => {
-                            const shouldProcessValueInner = this.valueFilterForComparison === null || this.valueFilterForComparison === (v !== undefined ? v.toString() : NaN);
+                            const shouldProcessValueInner = this.valueFilter.length === 0 || this.valueFilterForComparison === (v !== undefined ? v.toString() : NaN);
                             if (isNumber(v) && shouldProcessValueInner) {
+                                shouldCount = true;
                                 data.values.numericUniqueValueWithCount[v] = data.values.numericUniqueValueWithCount[v] || 0;
                                 data.values.numericUniqueValueWithCount[v]++;
                             }
                             if (isString(v) && shouldProcessValueInner) {
+                                shouldCount = true;
                                 data.values.stringUniqueValuesWithCount[v] = data.values.stringUniqueValuesWithCount[v] || 0;
                                 data.values.stringUniqueValuesWithCount[v]++;
                                 data.values.sumLength += v.toString().length;
@@ -246,6 +237,12 @@
                                 data.values.stringCount++;
                             }
                         });
+
+                        if (shouldCount) {
+                            if (data.recordsMatching.length < 10) data.recordsMatching.push(hit.objectID);
+                            data.matchingNbHits++;
+                            data.type.array++;
+                        }
                     } else if (shouldProcessObject && isObject(value)) {
                         if (data.recordsMatching.length < 10) data.recordsMatching.push(hit.objectID);
                         data.matchingNbHits++;
@@ -279,13 +276,13 @@
                         data.values.sumLength += value.length;
                         data.values.sumNbWords += value.toString().split(' ').length;
                     } else {
-                        if (this.typeFilter === null && this.valueFilter === null) {
+                        if (this.typeFilter.length === 0 && this.valueFilter.length === 0) {
                             console.log('Unknown type', value);
                         }
                     }
                 };
 
-                const attributesToRetrieve = this.attributeName.length === 0 ? ['*'] : [this.name];
+                const attributesToRetrieve = this.attributeName.length === 0 ? ['*'] : [this.attributeName];
                 let res = await index.customBrowse({query: '', attributesToRetrieve: attributesToRetrieve});
                 this.nbHits = res.nbHits;
                 res.hits.forEach((hit) => processHit(hit));
@@ -326,7 +323,7 @@
 
                     // types
                     data.sortedTypes = Object.keys(data.type).filter((t) => {
-                        if (this.typeFilter === null) return true;
+                        if (this.typeFilter.length === 0) return true;
                         if (t === 'array' && ['numeric', 'string', 'array'].includes(this.typeFilter)) return true;
                         return this.typeFilter === t;
                     });
