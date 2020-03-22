@@ -53,6 +53,7 @@
                         apps: [
                             {name: 'Transform', url: '/transform'},
                             {name: 'Index analyzer', url: '/index-analyzer'},
+                            {name: 'Index size', url: '/index-size'},
                         ]
                     },
                     {
@@ -60,7 +61,6 @@
                         description: 'Get information on engine features',
                         apps: [
                             {name: 'Dictionaries', url: '/dictionaries'},
-                            {name: 'Index size', url: '/index-size'},
                             {name: 'Mlock Alerts', url: '/mlock-alerts'},
                         ]
                     },
