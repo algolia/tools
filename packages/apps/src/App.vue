@@ -52,6 +52,7 @@
                         description: 'Play with data',
                         apps: [
                             {name: 'Transform', url: '/transform'},
+                            {name: 'Index analyzer', url: '/index-analyzer'},
                         ]
                     },
                     {
@@ -60,7 +61,6 @@
                         apps: [
                             {name: 'Dictionaries', url: '/dictionaries'},
                             {name: 'Index size', url: '/index-size'},
-                            {name: 'Index analyzer', url: '/index-analyzer'},
                             {name: 'Mlock Alerts', url: '/mlock-alerts'},
                         ]
                     },
