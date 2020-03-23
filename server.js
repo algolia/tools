@@ -39,6 +39,7 @@ app.use('/mlock-alerts', serveStatic(__dirname + "/packages/mlock-alerts/dist"))
 app.use('/transform', serveStatic(__dirname + "/packages/transform/dist"));
 app.use('/busted', serveStatic(__dirname + "/packages/busted/dist"));
 app.use('/insights-ui', serveStatic(__dirname + "/packages/insights-ui/dist"));
+app.use('/attribute-proximity', serveStatic(__dirname + "/packages/attribute-proximity/dist"));
 
 app.use((req, res) => {
     res.redirect("https://tools.algolia.com/apps");

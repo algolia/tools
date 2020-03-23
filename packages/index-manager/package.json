@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "algolia-filters-js-syntax-validator": "^1.0.1",
-    "algoliasearch": "beta",
+    "algoliasearch": "^4.1.0",
     "chart.js": "^2.8.0",
     "common": "^0.0.0",
     "dedent": "^0.7.0",

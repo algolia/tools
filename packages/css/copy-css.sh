@@ -8,3 +8,7 @@ cp ./dist/all.css ./favicon.ico ../metaparams/public/;
 cp ./dist/all.css ./favicon.ico ../mlock-alerts/public/;
 cp ./dist/all.css ./favicon.ico ../relevance-testing/public/;
 cp ./dist/all.css ./favicon.ico ../busted/public/;
+cp ./dist/all.css ./favicon.ico ../index-analyzer/public/;
+cp ./dist/all.css ./favicon.ico ../attribute-proximity/public/;
+cp ./dist/all.css ./favicon.ico ../insights-ui/public/;
+cp ./dist/all.css ./favicon.ico ../transform/public/;

@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "algolia-filters-js-syntax-validator": "^1.0.1",
-    "algoliasearch": "beta",
+    "algoliasearch": "^4.1.0",
     "bash-parser": "^0.5.0",
     "chart.js": "^2.8.0",
     "chartjs-plugin-annotation": "^0.5.7",
