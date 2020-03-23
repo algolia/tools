@@ -78,7 +78,7 @@
 <script>
     import {getSearchIndex} from "common/utils/algoliaHelpers";
     import {getRaw} from "common/utils/objectHelpers";
-    import {isNumber, isObject, isString} from "common/utils/types";
+    import {isBoolean, isNumber, isObject, isString} from "common/utils/types";
     import ValuesList from "./analyzers/ValuesList";
     import Hits from "./analyzers/Hits";
     import StringValues from "./analyzers/StringValues";
@@ -187,6 +187,7 @@
                     object: {
                         sortedKeys: [],
                         keysUniqueWithCount: {},
+                        typesPerAttribute: {},
                     },
                     recordsMatching: [],
                 };
@@ -251,6 +252,21 @@
                         Object.keys(value).forEach((v) => {
                             data.object.keysUniqueWithCount[v] = data.object.keysUniqueWithCount[v] || 0;
                             data.object.keysUniqueWithCount[v]++;
+
+                            if (data.object.typesPerAttribute[v] === undefined) {
+                                data.object.typesPerAttribute[v] = {
+                                    type: {undefined: 0, numeric: 0, array: 0, object: 0, boolean: 0, null: 0, string: 0},
+                                    sortedTypes: [],
+                                }
+                            }
+                            const subV = getRaw(hit, `${this.attributeName}.${v}`);
+                            if (subV === undefined) data.object.typesPerAttribute[v].type.undefined++;
+                            if (isNumber(subV)) data.object.typesPerAttribute[v].type.numeric++;
+                            if (Array.isArray(subV)) data.object.typesPerAttribute[v].type.array++;
+                            if (isObject(subV)) data.object.typesPerAttribute[v].type.object++;
+                            if (isBoolean(subV)) data.object.typesPerAttribute[v].type.boolean++;
+                            if (subV === null) data.object.typesPerAttribute[v].type.null++;
+                            if (isString(subV)) data.object.typesPerAttribute[v].type.string++;
                         });
                     } else if (shouldProcessBoolean && value === true && shouldProcessValue) {
                         if (data.recordsMatching.length < 10) data.recordsMatching.push(hit.objectID);
@@ -329,6 +345,17 @@
                     });
                     data.sortedTypes.sort((a, b) => data.type[b] - data.type[a]);
 
+                    // type per sub attribute
+                    Object.keys(data.object.typesPerAttribute).forEach((attribute) => {
+                        data.object.typesPerAttribute[attribute].sortedTypes = Object.keys(data.object.typesPerAttribute[attribute].type).filter((t) => {
+                            return data.object.typesPerAttribute[attribute].type[t] > 0;
+                        });
+                        data.object.typesPerAttribute[attribute].sortedTypes.sort((a, b) => {
+                            return data.object.typesPerAttribute[attribute].type[b] - data.object.typesPerAttribute[attribute].type[a]
+                        });
+                    });
+
+                    // keys
                     data.object.sortedKeys = Object.keys(data.object.keysUniqueWithCount);
                     data.object.sortedKeys.sort((a, b) => {
                         if (data.object.keysUniqueWithCount[b] !== data.object.keysUniqueWithCount[a]) {

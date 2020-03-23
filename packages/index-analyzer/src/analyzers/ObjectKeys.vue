@@ -12,6 +12,7 @@
                 <td class="uppercase tracking-wide text-xs p-8">Count</td>
                 <td class="uppercase tracking-wide text-xs p-8">%</td>
                 <td class="uppercase tracking-wide text-xs p-8">Present in settings</td>
+                <td class="uppercase tracking-wide text-xs p-8">Types</td>
             </tr>
             <tr
                 v-for="key in filteredKeys"
@@ -30,6 +31,17 @@
                     <template v-if="attributes[`${attributeName}${attributeName.length > 0 ? '.': ''}${key}`]">
                         <div v-for="attribute in attributes[`${attributeName}${attributeName.length > 0 ? '.': ''}${key}`]">
                             {{attribute.settings}}<span v-if="attribute.position !== undefined">[{{attribute.position}}]</span>
+                        </div>
+                    </template>
+                </td>
+                <td class="p-8">
+                    <template v-if="data.object.typesPerAttribute[key]">
+                        <div v-for="type in data.object.typesPerAttribute[key].sortedTypes">
+                            <span
+                                class="cursor-pointer text-nebula-blue hover:underline"
+                                @click="$emit('onUpdateAttributeName', `${attributeName}${attributeName.length > 0 ? '.': ''}${key}`); $emit('onUpdateTypeFilter', type)"
+                            >{{type}}</span>
+                            <span>&nbsp;{{percent(data.object.typesPerAttribute[key].type[type], data.matchingNbHits)}}</span>
                         </div>
                     </template>
                 </td>

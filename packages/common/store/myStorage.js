@@ -41,7 +41,6 @@ export default function(options, storage, key) {
         }
 
         store.subscribe(function(mutation, state) {
-            console.log(mutation);
             setState(key, state, storage);
         });
     };
