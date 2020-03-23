@@ -2,41 +2,112 @@
     <internal-app>
         <div class="min-h-screen pb-48">
             <app-header app-name="Attribute / Proximity" />
-            <div>
-                <div class="max-w-960 mx-auto mt-24">
-                    <div class="flex items-center px-16 bg-white rounded border border-proton-grey-opacity-80">
-                        <search-icon class="block w-16 h-16 mr-16 text-telluric-blue fill-current"/>
-                        <input
-                            class="flex-1 block h-full py-8 bg-transparent text-telluric-blue leading-normal"
-                            placeholder="Search logs below"
-                            v-model="query"
-                        >
+            <div v-if="currentScenario">
+                <div class="flex">
+                    <div class="flex flex-col mx-auto bg-white mt-48">
+                        <div class="flex items-start rounded">
+                            <div class="p-16 pb-0">
+                                <h3>Scenarios</h3>
+                                <ul class="mt-16">
+                                    <li
+                                        v-for="scenarioName in Object.keys(scenarios)"
+                                        class="flex"
+                                        @click="setScenario(scenarioName)"
+                                    >
+                                        <span class="min-w-24 text-nebula-blue">
+                                            <input type="radio" :checked="currentScenario === scenarioName" />
+                                        </span>
+                                        <span
+                                            class="cursor-pointer hover:underline"
+                                            :class="{'text-nebula-blue': currentScenario === scenarioName}"
+                                        >
+                                        {{scenarios[scenarioName].name}}
+                                    </span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="p-16 pb-0">
+                                <h3>Searchable Attributes</h3>
+                                <div class="p-16 px-0">
+                                    <table>
+                                        <tr v-for="attributeName in scenario.searchableAttributes">
+                                            <td>{{attributeName}}</td>
+                                            <td class="pl-16">
+                                                <label>
+                                                    <input
+                                                        :checked="orderedAttributes[attributeName] === true"
+                                                        @input="$set(orderedAttributes, attributeName, $event.target.checked)"
+                                                        type="checkbox"
+                                                    />
+                                                    ordered
+                                                </label>
+                                            </td>
+                                            <td class="pl-16">
+                                                <label>
+                                                    <input
+                                                        :checked="disableProximityAttributes[attributeName] === true"
+                                                        @input="$set(disableProximityAttributes, attributeName, $event.target.checked)"
+                                                        type="checkbox"
+                                                    />
+                                                    disable proximity
+                                                </label>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="p-16 pb-0">
+                                <h3>Recommended Queries</h3>
+                                <ul class="mt-16">
+                                    <li v-for="q in scenario.queries">
+                                        <span class="cursor-pointer hover:underline" @click="query = q">
+                                            {{q}}
+                                        </span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="p-16 pb-0">
+                                <h3>Strategies</h3>
+                                <ul class="mt-16">
+                                    <li
+                                        v-for="strategy in strategies"
+                                        class="flex"
+                                    >
+                                        <label>
+                                            <input
+                                                :checked="disabledStrategies[strategy.name] !== true"
+                                                @input="$set(disabledStrategies, strategy.name, !$event.target.checked)"
+                                                type="checkbox"
+                                            />
+                                            {{strategy.name}}
+                                        </label>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="p-16">
+                            <h3>Query</h3>
+                            <div class="mt-16 flex items-center px-16 bg-white rounded border border-proton-grey-opacity-80">
+                                <search-icon class="block w-16 h-16 mr-16 text-telluric-blue fill-current"/>
+                                <input
+                                    class="flex-1 block h-full py-8 bg-transparent text-telluric-blue leading-normal"
+                                    placeholder="Search logs below"
+                                    v-model="query"
+                                >
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="flex justify-between mx-48 mt-48">
-                    <div class="w-20p">
-                        <div class="h-32 text-center">proximity > attribute (current)</div>
-                        <records :records="transformedRecords(records, 'proximity', 'attribute-second-current')" />
-                    </div>
-                    <div class="w-20p">
-                        <div class="h-32 text-center">attribute (current) > proximity</div>
-                        <records :records="transformedRecords(records, 'attribute', 'attribute-first-current')" />
-                    </div>
-                    <div class="w-20p">
-                        <div class="h-32 text-center">
-                            <div>attribute (current) > proximity</div>
-                            <div>attributeCriteteriaComputedByMinProximity</div>
+                <div class="flex w-full max-w-full justify-between px-48 mt-48">
+                    <template v-for="strategy in filteredStrategies">
+                        <div class="flex-grow" :style="`max-width: calc(100% / ${filteredStrategies.length})`">
+                            <div class="h-32 text-center">
+                                <div>{{strategy.name}}</div>
+                                <div v-if="strategy.extraInfo">{{strategy.extraInfo}}</div>
+                            </div>
+                            <records :records="transformedRecords(records, strategy.firstCriteria, strategy.attributeStrategy)" />
                         </div>
-                        <records :records="transformedRecords(records, 'attribute', 'attribute-first-current-criteria')" />
-                    </div>
-                    <div class="w-20p">
-                        <div class="h-32 text-center">proximity > attribute (new)</div>
-                        <records :records="transformedRecords(records, 'proximity', 'attribute-new')" />
-                    </div>
-                    <div class="w-20p">
-                        <div class="h-32 text-center">attribute (new) > proximity</div>
-                        <records :records="transformedRecords(records, 'attribute', 'attribute-new')" />
-                    </div>
+                    </template>
                 </div>
             </div>
         </div>
@@ -49,6 +120,7 @@
     import SearchIcon from "common/icons/search.svg";
     import Records from "./Records";
     import {isObject, isString} from "common/utils/types";
+    import scenarios from "./scenarios";
 
     export default {
         name: 'App',
@@ -56,124 +128,78 @@
         data: function () {
             return {
                 query: 'A B C',
-                records: [
+                currentScenario: null,
+                scenarios: scenarios,
+                orderedAttributes: {},
+                disableProximityAttributes: {},
+                disabledStrategies: {},
+                strategies: [
                     {
-                        objectID: '1',
-                        title: 'A B C D',
-                        subTitle: 'D E',
-                        description: 'F',
-                        categories: [],
+                        name: 'proximity > attribute (current)',
+                        firstCriteria: 'proximity',
+                        attributeStrategy: 'attribute-second-current',
                     },
                     {
-                        objectID: '2',
-                        title: 'D A B C',
-                        subTitle: 'D E',
-                        description: 'F',
-                        categories: [],
+                        name: 'attribute (current) > proximity',
+                        firstCriteria: 'attribute',
+                        attributeStrategy: 'attribute-first-current',
                     },
                     {
-                        objectID: '3',
-                        title: 'A',
-                        subTitle: 'B C',
-                        description: 'D F',
-                        categories: [],
+                        name: 'attribute (current) > proximity (attrCritByMin)',
+                        firstCriteria: 'attribute',
+                        attributeStrategy: 'attribute-first-current-criteria',
                     },
                     {
-                        objectID: '4',
-                        title: 'A',
-                        subTitle: 'C B',
-                        description: 'D F',
-                        categories: [],
+                        name: 'proximity > attribute (new)',
+                        firstCriteria: 'proximity',
+                        attributeStrategy: 'attribute-new',
                     },
                     {
-                        objectID: '5',
-                        title: 'E F',
-                        subTitle: 'A B C',
-                        description: 'D F',
-                        categories: [],
-                    },
-                    {
-                        objectID: '6',
-                        title: 'A',
-                        subTitle: 'A B C',
-                        description: 'D E F',
-                        categories: [],
-                    },
-                    {
-                        objectID: '7',
-                        title: 'A B C',
-                        subTitle: 'A B D',
-                        description: 'D E F',
-                        categories: [],
-                    },
-                    {
-                        objectID: '8',
-                        title: 'A',
-                        subTitle: 'Z',
-                        description: 'Z',
-                        categories: ['A', 'B', 'C'],
-                    },
-                    {
-                        objectID: '9',
-                        title: 'Z',
-                        subTitle: 'A',
-                        description: 'Z',
-                        categories: ['A B C', 'C'],
-                    },
-                    {
-                        objectID: '10',
-                        title: 'Z',
-                        subTitle: 'Z',
-                        description: 'Z',
-                        categories: ['A', 'B C'],
-                    },
-                    {
-                        objectID: '11',
-                        title: ['a', 'b'],
-                        subTitle: ['c', 'd'],
-                    },
-                    {
-                        objectID: '12',
-                        title: ['a', 'b', 'c', 'd'],
-                        subTitle: [],
-                    },
-                    {
-                        objectID: '13',
-                        title: 'A B',
-                        subTitle: 'D',
-                        description: 'C',
-                    },
-                    {
-                        objectID: '14',
-                        title: 'A B',
-                        subTitle: 'C',
-                        description: 'D',
-                    },
-                    {
-                        objectID: '15',
-                        title: 'shirt',
-                        subTitle: 'blue',
-                        description: 'This shirt also exist in red',
-                    },
-                    {
-                        objectID: '16',
-                        title: 'shirt',
-                        subTitle: 'blue',
-                        description: 'Goes well with red dress',
-                    },
-                    {
-                        objectID: '16',
-                        title: 'shirt',
-                        subTitle: 'red',
-                        description: 'Goes well with yellow dress',
+                        name: 'attribute (new) > proximity',
+                        firstCriteria: 'attribute',
+                        attributeStrategy: 'attribute-new',
                     },
                 ]
             }
         },
+        watch: {
+            currentScenario: function () {
+                this.orderedAttributes = {};
+                this.disableProximityAttributes = {};
+            }
+        },
+        created: function () {
+            this.setScenario('scenario1');
+        },
+        computed: {
+            scenario: function () {
+                return this.scenarios[this.currentScenario];
+            },
+            records: function () {
+                if (this.scenario) return this.scenario.records;
+                return [];
+            },
+            filteredStrategies: function () {
+                return this.strategies.filter((strategy) => this.disabledStrategies[strategy.name] !== true);
+            }
+        },
         methods: {
+            isOrderedAttribute: function (attributeName) {
+                return this.orderedAttributes[attributeName] === true;
+            },
+            isProximityAttribute: function (attributeName) {
+                return !(this.disableProximityAttributes[attributeName] === true);
+            },
+            setScenario: function (scenario) {
+                this.currentScenario = scenario;
+                if (this.scenario.queries && this.scenario.queries.length > 0) {
+                    this.query = this.scenario.queries[0];
+                }
+            },
             tokenize: function (record) {
                 if (isString(record)) {
-                    return record.trim().split(' ').map((v) => this.normalize(v));
+                    if (record.length <= 0) return [];
+                    return this.normalize(record.trim()).split(' ').map((v) => this.normalize(v));
                 }
                 if (Array.isArray(record)) {
                     const records = [];
@@ -192,7 +218,7 @@
                 return [];
             },
             normalize: function (s) {
-                return s.toLowerCase();
+                return s.toLowerCase().replace(/[^ a-z0-9+]+/gi, '+');
             },
             getHighLightAttribute: function (attributeValue, tokens) {
                 if (Array.isArray(attributeValue)) {
@@ -227,8 +253,18 @@
             },
             transformedRecords: function (records, firstCriteria, attributeStrategy) {
                 const queryTokens = this.tokenize(this.query);
+
+                if (queryTokens.length <= 0) {
+                    return records;
+                }
+
                 const newRecords = records.filter((record) => {
-                    const recordsTokens = this.tokenize(record);
+                    const recordsTokens = [];
+                    Object.keys(record).forEach((attributeName) => {
+                        if (this.scenario.searchableAttributes.includes(attributeName)) {
+                            recordsTokens.push(...this.tokenize(record[attributeName]));
+                        }
+                    });
                     for (let i = 0; i < queryTokens.length; i++) {
                         if (!recordsTokens.includes(queryTokens[i])) {
                             return false;
@@ -250,7 +286,22 @@
                         if (a.rankingInfo.attribute !== b.rankingInfo.attribute) {
                             return a.rankingInfo.attribute - b.rankingInfo.attribute;
                         }
-                        return a.rankingInfo.proximity - b.rankingInfo.proximity;
+                        if (a.rankingInfo.proximity !== b.rankingInfo.proximity) {
+                            return a.rankingInfo.proximity - b.rankingInfo.proximity;
+                        }
+
+                        if (this.scenario.customRanking) {
+                            for (let i = 0; i < this.scenario.customRanking.length; i++) {
+                                const crAttribute = this.scenario.customRanking[i];
+                                const aV = a[crAttribute] !== undefined ? a[crAttribute] : -Infinity;
+                                const bV = b[crAttribute] !== undefined ? b[crAttribute] : -Infinity;
+                                if (aV !== bV) {
+                                    return bV - aV;
+                                }
+                            }
+                        }
+
+                        return a.objectID.localeCompare(b.objectID);
                     });
                 } else {
                     return newRecords.sort((a, b) => {
@@ -277,23 +328,30 @@
                 positions[firstToken].forEach((pos) => {
                     let localProximity = 0;
 
+                    const attributeName = this.scenario.searchableAttributes[Math.floor(pos / 1000)];
+                    const ordered = this.isOrderedAttribute(attributeName);
+                    const hasProximity = this.isProximityAttribute(attributeName);
+                    const pos2 = ordered ? pos : Math.floor(pos / 1000) * 1000;
+
                     if (previousPosition !== undefined) {
+                        const previousAttributeName = this.scenario.searchableAttributes[Math.floor(previousPosition / 1000)];
+                        const previousHasProximity = this.isProximityAttribute(previousAttributeName);
                         const diff = Math.abs(pos - previousPosition);
                         const diffAttribute = Math.abs(Math.floor(pos / 1000) - Math.floor(previousPosition / 1000));
-                        if (diff >= 8) {
+                        if (diff >= 8 || !hasProximity || !previousHasProximity) {
                             localProximity = 8;
                         } else {
                             localProximity = diff;
-                            if (diffAttribute === 0) {
+                            if (diffAttribute === 0 && pos - previousPosition < 0) {
                                 localProximity++;
                             }
                         }
                     }
 
-                    triedPositions.push(pos);
+                    triedPositions.push(pos2);
                     if (positionsForTokens[firstToken] === undefined) positionsForTokens[firstToken] = [];
-                    positionsForTokens[firstToken].push(pos);
-                    proximities.push(this.computeProximityRec(positions, queryTokens.slice(1), currentProximity + localProximity, pos, [...usedPositions, pos], triedPositions, positionsForTokens));
+                    positionsForTokens[firstToken].push(pos2);
+                    proximities.push(this.computeProximityRec(positions, queryTokens.slice(1), currentProximity + localProximity, pos, [...usedPositions, pos2], triedPositions, positionsForTokens));
                 });
 
                 proximities.sort((a, b) => a.proximity - b.proximity);
@@ -302,9 +360,9 @@
             },
             computeProximity: function (record, attributeStrategy) {
                 const positions = {};
-                ['title', 'subTitle', 'description', 'categories'].forEach((attribute, attributePos) => {
+                this.scenario.searchableAttributes.forEach((attribute, attributePos) => {
                     if (isString(record[attribute])) {
-                        const valueTokens = record[attribute].trim().split(' ').map((v) => this.normalize(v));
+                        const valueTokens = this.tokenize(record[attribute]);
                         valueTokens.forEach((token, tokenPos) => {
                             positions[token] = positions[token] === undefined ? [] : positions[token];
                             positions[token].push(attributePos * 1000 + tokenPos);
