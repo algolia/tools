@@ -15,9 +15,11 @@
                                 :app-id="appId"
                                 class="ml-24"
                             />
-                            <input placeholder="attributeName" class="rounded ml-24 px-8 flex-grow" v-model="attributeName" />
-                            <input placeholder="type" class="rounded ml-24 px-8 flex-grow" v-model="typeFilter" />
-                            <input placeholder="value" class="rounded ml-24 px-8 flex-grow" v-model="valueFilter" />
+                            <div class="flex flex-grow">
+                                <input placeholder="attributeName" class="rounded ml-24 px-8 max-w-third flex-grow" v-model="attributeName" />
+                                <input v-if="attributeName.length > 0" placeholder="type" class="rounded ml-24 px-8 max-w-third flex-grow" v-model="typeFilter" />
+                                <input v-if="attributeName.length > 0" placeholder="value" class="rounded ml-24 px-8 max-w-third flex-grow" v-model="valueFilter" />
+                            </div>
                         </div>
                         <div class="bg-white text-nova-grey">
                             <metrics
@@ -57,12 +59,34 @@
         data: function () {
             return {
                 attributes: {},
+                timeout: null,
+                attributeName: '',
+                typeFilter: '',
+                valueFilter: '',
             }
         },
         created: function () {
-          this.getAttributesInSettings();
+            this.loadUrl();
+            this.getAttributesInSettings();
+
+            window.onpopstate = () => {
+                this.loadUrl();
+            };
+            this.updateUrl(true);
+        },
+        watch: {
+            attributeName: function () { this.typeFilter = ''; this.valueFilter = '' },
+            uniquekey: function (o, n) {
+                if (o !== n) {
+                    this.getAttributesInSettings();
+                    this.updateUrl();
+                }
+            }
         },
         computed: {
+            uniquekey: function () {
+                return `${this.appId}-${this.indexName}-${this.attributeName}-${this.typeFilter}-${this.valueFilter}`;
+            },
             appId: {
                 get () {
                     return this.$store.state.indexanalyzer.appId || null;
@@ -70,7 +94,6 @@
                 set (appId) {
                     this.attributeName = '';
                     this.$store.commit(`indexanalyzer/setAppId`, appId);
-                    this.getAttributesInSettings();
                 }
             },
             indexName: {
@@ -80,33 +103,6 @@
                 set (indexName) {
                     this.attributeName = '';
                     this.$store.commit(`indexanalyzer/setIndexName`, indexName);
-                    this.getAttributesInSettings();
-                }
-            },
-            attributeName: {
-                get () {
-                    return this.$store.state.indexanalyzer.attributeName || '';
-                },
-                set (attributeName) {
-                    this.$store.commit(`indexanalyzer/setAttributeName`, attributeName);
-                    this.typeFilter = '';
-                    this.valueFilter = '';
-                }
-            },
-            typeFilter: {
-                get () {
-                    return this.$store.state.indexanalyzer.typeFilter || '';
-                },
-                set (typeFilter) {
-                    this.$store.commit(`indexanalyzer/setTypeFilter`, typeFilter);
-                }
-            },
-            valueFilter: {
-                get () {
-                    return this.$store.state.indexanalyzer.valueFilter || '';
-                },
-                set (valueFilter) {
-                    this.$store.commit(`indexanalyzer/setValueFilter`, valueFilter);
                 }
             },
             apiKey: function () {
@@ -114,6 +110,33 @@
             },
         },
         methods: {
+            loadUrl: function () {
+                const url = new URL(window.location.href);
+                const appId = url.searchParams.get("app-id");
+                const indexName = url.searchParams.get("index-name");
+                const attribute = url.searchParams.get("attribute");
+                const type = url.searchParams.get("type");
+                const value = url.searchParams.get("value");
+
+                if (appId !== null && indexName !== null) {
+                    this.appId = appId;
+                    this.indexName = indexName;
+                    if (attribute !== null && type !== null && value !== null) {
+                        this.attributeName = attribute;
+                        this.typeFilter = type;
+                        this.valueFilter = value;
+                    }
+                }
+            },
+            updateUrl: function (replaceState) {
+                const url = `${window.location.origin}${window.location.pathname}?app-id=${this.appId}&index-name=${this.indexName}&attribute=${this.attributeName}&type=${this.typeFilter}&value=${this.valueFilter}`;
+                
+                if (replaceState) {
+                    window.history.replaceState(null, null, url);
+                } else {
+                    window.history.pushState(null, null, url);
+                }
+            },
             addAttribute: function (key, attr, i) {
                 const attributes = attr.split(',').map((a) => cleanAttributeName(a));
                 attributes.forEach((a) => {
