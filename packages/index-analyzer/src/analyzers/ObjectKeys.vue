@@ -13,6 +13,7 @@
                 <td class="uppercase tracking-wide text-xs p-8">%</td>
                 <td class="uppercase tracking-wide text-xs p-8">Present in settings</td>
                 <td class="uppercase tracking-wide text-xs p-8">Types</td>
+                <td class="py-8"></td>
             </tr>
             <tr
                 v-for="key in filteredKeys"
@@ -41,7 +42,13 @@
                                 class="cursor-pointer text-nebula-blue hover:underline"
                                 @click="$emit('onUpdateAttributeName', `${attributeName}${attributeName.length > 0 ? '.': ''}${key}`); $emit('onUpdateTypeFilter', type)"
                             >{{type}}</span>
-                            <span>&nbsp;{{percent(data.object.typesPerAttribute[key].type[type], data.matchingNbHits)}}</span>
+                        </div>
+                    </template>
+                </td>
+                <td class="py-8">
+                    <template v-if="data.object.typesPerAttribute[key]">
+                        <div v-for="type in data.object.typesPerAttribute[key].sortedTypes">
+                            <span>({{percent(data.object.typesPerAttribute[key].type[type], data.matchingNbHits)}})</span>
                         </div>
                     </template>
                 </td>

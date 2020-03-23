@@ -130,7 +130,7 @@
             },
             updateUrl: function (replaceState) {
                 const url = `${window.location.origin}${window.location.pathname}?app-id=${this.appId}&index-name=${this.indexName}&attribute=${this.attributeName}&type=${this.typeFilter}&value=${this.valueFilter}`;
-                
+
                 if (replaceState) {
                     window.history.replaceState(null, null, url);
                 } else {
