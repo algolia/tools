@@ -46,15 +46,22 @@
             </div>
             <div class="ml-16">
                 <div
-                    v-if="!isComputing && data && data.isSampled"
+                    v-if="!isComputing && data"
                     class="flex"
                 >
-                    <div class="flex items-center rounded text-solstice-blue text-saturn-1 border border-saturn-4 bg-saturn-4-opacity-40 px-16 py-12">
-                        <div>
+                    <div
+                        class="flex items-center rounded border px-16 py-12"
+                        :class="data.isSampled ? 'border-saturn-4 bg-saturn-4-opacity-40 text-saturn-1' : 'border-neptune-4-opacity-50 bg-nebula-blue-opacity-10 text-solstice-blue'"
+                    >
+                        <div v-if="data.isSampled">
                             The metrics have been computed on a subset of
                             {{i}} records out of {{nbHits}} ({{Math.floor(i*100/nbHits)}}%)
                         </div>
+                        <div v-else>
+                            The metrics have been computed on the full dataset: {{nbHits}} records
+                        </div>
                         <div
+                            v-if="data.isSampled"
                             @click="compute(false)"
                             class="ml-24 cursor-pointer bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out px-16 p-8 text-sm relative group"
                         >
