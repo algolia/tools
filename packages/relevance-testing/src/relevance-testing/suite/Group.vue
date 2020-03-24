@@ -35,6 +35,7 @@
                             :class="{'bg-proton-grey-opacity-10': currentTest === test}"
                             @onSelected="$emit('onTestSelected', test)"
                             @onDeleted="$emit('onTestSelected', null)"
+                            @onTestCreated="$emit('onTestSelected', $event)"
                         />
                     </td>
                     <template>

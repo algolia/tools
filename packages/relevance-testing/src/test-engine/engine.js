@@ -142,6 +142,10 @@ export class Test {
         } else if (operator === 'notContains') {
             if (Array.isArray(recordValue)) return recordValue.every((v) => !v.includes(refValue));
             return !recordValue.includes(refValue);
+        } else if (operator === 'startsWith') {
+            return recordValue.startsWith(refValue);
+        } else if (operator === 'endsWith') {
+            return recordValue.endsWith(refValue);
         } else if (operator === 'is') {
             if (Array.isArray(recordValue)) return recordValue.includes(refValue);
             return recordValue === refValue;

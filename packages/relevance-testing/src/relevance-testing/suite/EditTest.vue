@@ -64,6 +64,15 @@
                                 <div class="mt-40">
                                     <div class="flex">
                                         <button
+                                            @click="duplicateTest()"
+                                            class="mr-8 flex item-center bg-white rounded border border-b-0 border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out px-16 p-8"
+                                        >
+                                            <copy-icon class="w-12 h-12 block cursor-pointer mr-4 -mt-1" />
+                                            <div>
+                                                Duplicate test
+                                            </div>
+                                        </button>
+                                        <button
                                             v-if="!confirmDelete"
                                             @click="confirmDelete = true"
                                             class="flex item-center bg-white rounded border border-b-0 border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out px-16 p-8"
@@ -74,7 +83,7 @@
                                             </div>
                                         </button>
                                     </div>
-                                    <div v-if="confirmDelete" class="flex">
+                                    <div v-if="confirmDelete" class="flex mt-8">
                                         <button
                                             @click="confirmDelete = false"
                                             class="block bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out px-16 p-8 text-sm relative group">
@@ -99,13 +108,16 @@
 
 <script>
     import TrashIcon from 'common/icons/trash.svg';
+    import CopyIcon from 'common/icons/copy.svg';
     import Params from 'common/components/params/Params';
     import {algoliaParams} from "common/utils/algoliaHelpers";
+    import {goToAnchor} from "common/utils/domHelpers";
+    import {Test} from "../../test-engine/engine";
 
     export default {
         name: 'EditTest',
         props: ['suite', 'test', 'testPos', 'isActive'],
-        components: {TrashIcon, Params},
+        components: {TrashIcon, CopyIcon, Params},
         data: function () {
             return {
                 confirmDelete: false,
@@ -185,6 +197,34 @@
                 });
 
                 this.test.run(true);
+            },
+            duplicateTest: async function () {
+                const endpoint = process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT || 'https://tools-backend.algolia.com';
+
+                const testDataCopy = JSON.parse(JSON.stringify(this.test.testData));
+                testDataCopy.description = `[COPY] ${testDataCopy.description || ''}`;
+
+                const res = await fetch(`${endpoint}/relevance-testing/suites/${this.suite.id}/groups/${this.test.group.id}/tests`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        test_data: JSON.stringify(testDataCopy),
+                    }),
+                });
+
+                const testData = await res.json();
+                const test = new Test(testData, this.suite.runs, this.test.group);
+                this.test.group.tests.push(test);
+                test.run();
+                this.$nextTick(() => {
+                    this.$emit('onTestCreated', test);
+                    window.setTimeout(() => {
+                        goToAnchor(`#test-${test.id}`);
+                    }, 200);
+                })
             },
             deleteTest: async function (test, testPos) {
                 const endpoint = process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT || 'https://tools-backend.algolia.com';

@@ -22,6 +22,8 @@
                     'isNot': 'is not',
                     'contains': 'contains',
                     'notContains': 'doesn\'t contains',
+                    'startsWith': 'starts with',
+                    'endsWith': 'ends with',
                 },
                 numericOptions: {
                     '=': '(=) equals',
