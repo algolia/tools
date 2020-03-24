@@ -1,4 +1,60 @@
 export default {
+    scenario0: {
+        name: 'black jeans',
+        queries: [
+            'black jeans'
+        ],
+        searchableAttributes: [
+            'color,brand,category',
+            'name',
+            'description'
+        ],
+        customRanking: [
+            'popularity'
+        ],
+        records: [
+            {
+                "objectID": "1",
+                "name": "Black jeans shirt with pockets",
+                "category": "shirt",
+                "color": "black",
+                "brand": "Levi's",
+                "description": "Beautiful black shirt that should be worn with jeans",
+                "popularity": 100,
+                "image": "https://res.cloudinary.com/hilnmyskv/image/upload/v1546013811/proximity_demo/55_20black.jpg"
+            },
+            {
+                "objectID": "2",
+                "name": "Original jeans with innovative cut",
+                "category": "jeans",
+                "color": "black",
+                "brand": "Levi's",
+                "description": "These jeans are perfect for parties and fashion shows",
+                "popularity": 80,
+                "image": "https://res.cloudinary.com/hilnmyskv/image/upload/v1546013916/proximity_demo/I_262824187_00_20170116.jpg"
+            },
+            {
+                "objectID": "3",
+                "name": "Awesome shoes with cool graphics",
+                "category": "shoes",
+                "color": "red",
+                "brand": "Nike",
+                "description": "Best shoes for any occasion, and they pair amazingly well with black jeans",
+                "popularity": 50,
+                "image": "https://res.cloudinary.com/hilnmyskv/image/upload/v1546013972/proximity_demo/air-huarache-mens-shoe-eoToq9X2.jpg"
+            },
+            {
+                "objectID": "4",
+                "name": "New shoes",
+                "category": "shoes",
+                "color": "black",
+                "brand": "Nike",
+                "description": "Goes best with fancy jeans",
+                "popularity": 200,
+                "image": "https://res.cloudinary.com/hilnmyskv/image/upload/v1546013972/proximity_demo/air-huarache-mens-shoe-eoToq9X2.jpg"
+            }
+        ]
+    },
     scenario1: {
         name: 'A B C',
         queries: [
@@ -256,47 +312,4 @@ export default {
             }
         ]
     },
-    scenario7: {
-        name: 'black jeans',
-        queries: [
-            'black jeans'
-        ],
-        searchableAttributes: [
-            'color,brand,category',
-            'name',
-            'description'
-        ],
-        records: [
-            {
-                "objectID": "1",
-                "name": "Black jean shirt with pockets",
-                "category": "shirt",
-                "color": "black",
-                "brand": "Levi's",
-                "description": "Beautiful black shirt that should be worn with jeans",
-                "popularity": 100,
-                "image": "https://res.cloudinary.com/hilnmyskv/image/upload/v1546013811/proximity_demo/55_20black.jpg"
-            },
-            {
-                "objectID": "2",
-                "name": "Original jeans with innovative cut",
-                "category": "jeans",
-                "color": "black",
-                "brand": "Levi's",
-                "description": "These jeans are perfect for parties and fashion shows",
-                "popularity": 80,
-                "image": "https://res.cloudinary.com/hilnmyskv/image/upload/v1546013916/proximity_demo/I_262824187_00_20170116.jpg"
-            },
-            {
-                "objectID": "3",
-                "name": "Awesome shoes with cool graphics",
-                "category": "shoes",
-                "color": "red",
-                "brand": "Nike",
-                "description": "Best shoes for any occasion, and they pair amazingly well with black jeans",
-                "popularity": 50,
-                "image": "https://res.cloudinary.com/hilnmyskv/image/upload/v1546013972/proximity_demo/air-huarache-mens-shoe-eoToq9X2.jpg"
-            }
-        ]
-    }
 }

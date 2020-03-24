@@ -172,7 +172,7 @@
             }
         },
         created: function () {
-            this.setScenario('scenario7');
+            this.setScenario('scenario0');
         },
         computed: {
             scenario: function () {
