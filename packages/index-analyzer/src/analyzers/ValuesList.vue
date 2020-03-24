@@ -9,6 +9,9 @@
             <tr>
                 <td class="uppercase tracking-wide text-xs p-8">value</td>
                 <td class="uppercase tracking-wide text-xs p-8">Count</td>
+                <td class="uppercase tracking-wide text-xs p-8">
+                    <download-icon class="w-12 h-12 cursor-pointer" @click="exportTableToCSV()"/>
+                </td>
             </tr>
             <tr v-for="k in paginatedValues" class="border-t border-proton-grey-opacity-30">
                 <td class="p-8">
@@ -41,11 +44,13 @@
 <script>
     import Pagination from "common/components/explorer/results/Pagination";
     import {highlightStringBaseOnQuery} from "common/utils/formatters";
+    import {downloadCsv, percent} from "../helpers";
+    import DownloadIcon from "common/icons/download.svg";
 
     export default {
         name: 'ValuesList',
-        props: ['data', 'countKey', 'valueFilter'],
-        components: {Pagination},
+        props: ['data', 'countKey', 'valueFilter', 'appId', 'indexName', 'attributeName'],
+        components: {Pagination, DownloadIcon},
         data: function () {
             return {
                 hitsPerPage: 10,
@@ -70,5 +75,18 @@
                 return this.values.slice(this.page * this.hitsPerPage, (this.page + 1) * this.hitsPerPage);
             }
         },
+        methods: {
+            exportTableToCSV: function () {
+                const rows = [
+                    ['Value', 'Count'],
+                    ...this.values.map((key) => [
+                        key,
+                        this.data.values[this.countKey][key]
+                    ]),
+                ];
+
+                downloadCsv(rows, `${this.appId}.${this.indexName}.${this.attributeName}.values.xls`);
+            }
+        }
     }
 </script>

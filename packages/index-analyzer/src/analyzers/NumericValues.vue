@@ -6,9 +6,12 @@
                 :data="data"
                 count-key="numericUniqueValueWithCount"
                 :value-filter="valueFilter"
+                :app-id="appId"
+                :index-name="indexName"
+                :attribute-name="attributeName"
                 v-on="$listeners"
             />
-            <div class="ml-48" v-if="!valueFilter">
+            <div class="ml-48" v-if="!valueFilter" style="margin-top: 42px;">
                 <table>
                     <tr>
                         <td class="uppercase tracking-wide text-xs p-8">Metric</td>
@@ -34,7 +37,7 @@
 
     export default {
         name: 'NumericValues',
-        props: ['data', 'attributeName', 'valueFilter'],
+        props: ['data', 'attributeName', 'valueFilter', 'appId', 'indexName'],
         components: {ValuesList, DistributionChart}
     }
 </script>

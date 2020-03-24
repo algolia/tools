@@ -6,9 +6,12 @@
                 :data="data"
                 count-key="stringUniqueValuesWithCount"
                 :value-filter="valueFilter"
+                :app-id="appId"
+                :index-name="indexName"
+                :attribute-name="attributeName"
                 v-on="$listeners"
             />
-            <div class="ml-48">
+            <div class="ml-48" style="margin-top: 42px;">
                 <table>
                     <tr>
                         <td class="uppercase tracking-wide text-xs p-8">Metric</td>
@@ -37,7 +40,7 @@
 
     export default {
         name: 'StringValues',
-        props: ['data', 'valueFilter', 'typeFilter'],
+        props: ['data', 'valueFilter', 'typeFilter', 'appId', 'indexName', 'attributeName'],
         components: {ValuesList},
     }
 </script>

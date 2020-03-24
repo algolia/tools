@@ -14,6 +14,9 @@
                 <td class="uppercase tracking-wide text-xs p-8">Present in settings</td>
                 <td class="uppercase tracking-wide text-xs p-8">Types</td>
                 <td class="py-8"></td>
+                <td class="uppercase tracking-wide text-xs p-8">
+                    <download-icon class="w-12 h-12 cursor-pointer" @click="exportTableToCSV()"/>
+                </td>
             </tr>
             <tr
                 v-for="key in filteredKeys"
@@ -48,7 +51,7 @@
                 <td class="py-8">
                     <template v-if="data.object.typesPerAttribute[key]">
                         <div v-for="type in data.object.typesPerAttribute[key].sortedTypes">
-                            <span>({{percent(data.object.typesPerAttribute[key].type[type], data.matchingNbHits)}})</span>
+                            <span>({{percent(data.object.typesPerAttribute[key].type[type], data.matchingNbHits)}})</span><br>
                         </div>
                     </template>
                 </td>
@@ -58,12 +61,14 @@
 </template>
 
 <script>
-    import {percent} from "../helpers";
+    import {downloadCsv, percent} from "../helpers";
     import {highlightStringBaseOnQuery} from "common/utils/formatters";
+    import DownloadIcon from "common/icons/download.svg";
 
     export default {
         name: 'ObjectKeys',
-        props: ['data', 'attributeName', 'attributes'],
+        props: ['data', 'attributeName', 'attributes', 'appId', 'indexName'],
+        components: {DownloadIcon},
         data: function () {
             return {
                 query: '',
@@ -77,6 +82,31 @@
                 return this.data.object.sortedKeys.filter((key) => {
                     return key.toLowerCase().includes(query);
                 });
+            }
+        },
+        methods: {
+            exportTableToCSV: function () {
+                const rows = [
+                    ['Key', 'Count', '%', 'Present in settings', 'Types', ''],
+                    ...this.filteredKeys.map((key) => [
+                        key,
+                        this.data.object.keysUniqueWithCount[key],
+                        percent(this.data.object.keysUniqueWithCount[key], this.data.type.object),
+
+                        this.attributes[`${this.attributeName}${this.attributeName.length > 0 ? '.': ''}${key}`] ?
+                        this.attributes[`${this.attributeName}${this.attributeName.length > 0 ? '.': ''}${key}`].map((attribute) => {
+                            return `${attribute.settings}[${attribute.position}]`;
+                        }).join("\n")
+                        : '',
+
+                        this.data.object.typesPerAttribute[key].sortedTypes.map((type) => type).join("\n"),
+                        this.data.object.typesPerAttribute[key].sortedTypes.map((type) => {
+                            return percent(this.data.object.typesPerAttribute[key].type[type], this.data.matchingNbHits);
+                        }).join("\n"),
+                    ]),
+                ];
+
+                downloadCsv(rows, `${this.appId}.${this.indexName}.${this.attributeName}.types.xls`);
             }
         }
     }
