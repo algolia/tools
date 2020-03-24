@@ -2,7 +2,7 @@
     <div>
         <div v-for="record in records" class="hit bg-white mr-16 mt-16 p-16 rounded">
             <attributes
-                :top-attributes="[]"
+                :top-attributes="['objectID', ...searchableAttributes]"
                 :no-collapse="true"
                 class="w-full"
                 :search-params="{}"
@@ -18,7 +18,7 @@
 
     export default {
         name: 'Records',
-        props: ['records'],
+        props: ['records', 'searchableAttributes'],
         components: {Attributes},
         data: function () {
             return {

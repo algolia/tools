@@ -105,7 +105,10 @@
                                 <div>{{strategy.name}}</div>
                                 <div v-if="strategy.extraInfo">{{strategy.extraInfo}}</div>
                             </div>
-                            <records :records="transformedRecords(records, strategy.firstCriteria, strategy.attributeStrategy)" />
+                            <records
+                                :records="transformedRecords(records, strategy.firstCriteria, strategy.attributeStrategy)"
+                                :searchable-attributes="allSearchableAttributes"
+                            />
                         </div>
                     </template>
                 </div>
@@ -169,7 +172,7 @@
             }
         },
         created: function () {
-            this.setScenario('scenario1');
+            this.setScenario('scenario7');
         },
         computed: {
             scenario: function () {
@@ -181,7 +184,15 @@
             },
             filteredStrategies: function () {
                 return this.strategies.filter((strategy) => this.disabledStrategies[strategy.name] !== true);
-            }
+            },
+            allSearchableAttributes: function () {
+                const attributes = [];
+                this.scenario.searchableAttributes.forEach((attribute) => {
+                    const attrs = attribute.split(',');
+                    attributes.push(...attrs);
+                });
+                return attributes;
+            },
         },
         methods: {
             isOrderedAttribute: function (attributeName) {
@@ -218,7 +229,7 @@
                 return [];
             },
             normalize: function (s) {
-                return s.toLowerCase().replace(/[^ a-z0-9+]+/gi, '+');
+                return s.toLowerCase().replace(/[^ a-z0-9]+/gi, '').replace(/ +(?= )/g,'');;
             },
             getHighLightAttribute: function (attributeValue, tokens) {
                 if (Array.isArray(attributeValue)) {
@@ -258,20 +269,23 @@
                     return records;
                 }
 
-                const newRecords = records.filter((record) => {
+                const recordsMatchingQuery = records.filter((record) => {
                     const recordsTokens = [];
                     Object.keys(record).forEach((attributeName) => {
-                        if (this.scenario.searchableAttributes.includes(attributeName)) {
+                        if (this.allSearchableAttributes.includes(attributeName)) {
                             recordsTokens.push(...this.tokenize(record[attributeName]));
                         }
                     });
+
                     for (let i = 0; i < queryTokens.length; i++) {
                         if (!recordsTokens.includes(queryTokens[i])) {
                             return false;
                         }
                     }
                     return true;
-                }).map((record) => {
+                });
+
+                const newRecords = recordsMatchingQuery.map((record) => {
                     const hr = this.getHighLightAttributes(record);
                      return {
                          ...record,
@@ -361,25 +375,28 @@
             computeProximity: function (record, attributeStrategy) {
                 const positions = {};
                 this.scenario.searchableAttributes.forEach((attribute, attributePos) => {
-                    if (isString(record[attribute])) {
-                        const valueTokens = this.tokenize(record[attribute]);
-                        valueTokens.forEach((token, tokenPos) => {
-                            positions[token] = positions[token] === undefined ? [] : positions[token];
-                            positions[token].push(attributePos * 1000 + tokenPos);
-                        });
-                    }
-                    if (Array.isArray(record[attribute])) {
-                        let pos = 0;
-                        record[attribute].forEach((arrayValue) => {
-                            const valueTokens = arrayValue.trim().split(' ').map((v) => this.normalize(v));
-                            valueTokens.forEach((token) => {
+                    let pos = 0;
+                    attribute.split(',').forEach((samelineAttr) => {
+                        if (isString(record[samelineAttr])) {
+                            const valueTokens = this.tokenize(record[samelineAttr]);
+                            valueTokens.forEach((token, tokenPos) => {
                                 positions[token] = positions[token] === undefined ? [] : positions[token];
-                                positions[token].push(attributePos * 1000 + pos);
-                                pos += 1;
+                                positions[token].push(attributePos * 1000 + Math.min(999, pos + tokenPos));
                             });
-                            pos += 7;
-                        });
-                    }
+                        }
+                        if (Array.isArray(record[samelineAttr])) {
+                            record[samelineAttr].forEach((arrayValue) => {
+                                const valueTokens = arrayValue.trim().split(' ').map((v) => this.normalize(v));
+                                valueTokens.forEach((token) => {
+                                    positions[token] = positions[token] === undefined ? [] : positions[token];
+                                    positions[token].push(attributePos * 1000 + Math.min(999, pos));
+                                    pos += 1;
+                                });
+                                pos += 7;
+                            });
+                        }
+                        pos += 8;
+                    });
                 });
                 Object.keys(positions).forEach((key) => {
                     positions[key].sort((a, b) => a - b);
