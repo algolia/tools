@@ -44,7 +44,7 @@
                         </custom-select>
                         <div class="ml-auto flex items-center">
                             <refresh-cw class="w-16 h-16" :class="{'infinte-rotate': interval}" />
-                            <button class="mx-12 border border-telluric-blue-opacity-60 p-4 rounded" @click="interval ? stopInterval() : startInterval()">
+                            <button class="mx-12 border border-telluric-blue-opacity-60 p-4 rounded" @click="interval ? stopInterval(true) : startInterval()">
                                 {{interval ? 'Stop Refreshing' : 'Start Refreshing'}}
                             </button>
                         </div>
@@ -116,6 +116,7 @@
                     'error': 'Search API error logs',
                 },
                 interval: null,
+                manuallyStop: false,
                 stopIfFound: false,
                 shouldFoundN: 1,
                 page: 0,
@@ -146,7 +147,7 @@
             },
             logs: function (val) {
                 if (this.stopIfFound && val.length > 0 && this.logs.length >= Math.min(1000, this.shouldFoundN)) {
-                    this.stopInterval();
+                    this.stopInterval(true);
                     this.stopIfFound = false;
                 }
             },
@@ -274,17 +275,22 @@
                 this.isStopBecauseOfOpen = true;
             },
             onShouldStartFetching: function () {
-                if (this.isStopBecauseOfOpen) {
+                if (this.isStopBecauseOfOpen && !this.manuallyStop) {
                     this.startInterval();
                 }
             },
             startInterval: function () {
+                this.manuallyStop = false;
+
                 this.interval = window.setInterval(async () => {
                     this.nowDate = new Date();
                     this.fetchLogs();
                 }, 3000);
             },
-            stopInterval: function () {
+            stopInterval: function (manualStop) {
+                if (manualStop) {
+                    this.manuallyStop = true;
+                }
                 window.clearInterval(this.interval);
                 this.interval = null;
             },
