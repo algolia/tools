@@ -1,9 +1,20 @@
 <template>
     <div>
         <h2 class="mt-24 text-solstice-blue-opacity-80">Load into index</h2>
-        <div class="mt-24 flex">
-            <div class="flex">
-                <app-selector v-model="appId" :only-algolia="true" />
+        <div class="mt-24">
+            <div>
+                <label class="cursor-pointer">
+                    <input
+                        type="checkbox"
+                        class="mr-4"
+                        v-model="showAllApps"
+                    />
+                    Unsafe mode (allow copy on non Algolia apps)
+
+                </label>
+            </div>
+            <div class="mt-12 flex">
+                <app-selector v-model="appId" :only-algolia="!showAllApps" />
                 <input v-model="indexName" class="ml-24 input-custom mr-8 w-148">
             </div>
         </div>
@@ -27,10 +38,14 @@
                 </div>
                 <div class="mt-24 flex">
                     <div
+                        v-if="appId"
                         @click="process()"
                         class="cursor-pointer bg-white rounded border border-b-0 border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out mr-8 px-16 p-8 text-sm"
                     >
                         Load
+                    </div>
+                    <div v-else class="rounded border px-16 py-12 border-saturn-4 bg-saturn-4-opacity-40 text-saturn-1">
+                        You need to select an appId in order to save
                     </div>
                 </div>
                 <div v-if="errorMessage.length > 0" class="mt-24 border border-mars-1 mt-16 p-8 rounded">
@@ -62,6 +77,7 @@
                 indexName: this.indexInfo ? `${this.indexInfo.indexName}_transformed` : 'transformed_index',
                 tasksGroup: null,
                 errorMessage: '',
+                showAllApps: false,
                 method: 'saveObjects',
             }
         },
