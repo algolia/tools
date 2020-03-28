@@ -41,8 +41,9 @@
             <div class="flex relative">
                 <div v-if="isLong" class="absolute left-0 -ml-12 cursor-pointer" @click="collapsed = !collapsed">{{collapsed ? '+' : '-'}}</div>
                 <div v-if="parentKey" class="mr-4">{{parentKey}}:</div>
+
                 <div v-if="collapsed" v-html="highlightedValue" class="whitespace-pre truncate"></div>
-                <div v-if="!collapsed" class="json-token string break-words w-full"><span v-html="rawStringValue"></span></div>
+                <div v-if="!collapsed" class="json-token string break-words w-full"><span v-html="escapeAndHighlightHit(rawStringValue)"></span></div>
             </div>
         </div>
     </div>
@@ -51,6 +52,7 @@
 <script>
     import {syntaxHighlight} from 'common/utils/formatters';
     import {isString as isStringFunc} from "../../../utils/types";
+    import {escapeAndHighlightHit} from "../../../utils/formatters";
 
     export default {
         name: 'Attribute',
@@ -58,6 +60,7 @@
         data: function () {
             return {
                 collapsed: true,
+                escapeAndHighlightHit: escapeAndHighlightHit,
             }
         },
         computed: {

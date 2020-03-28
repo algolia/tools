@@ -102,8 +102,8 @@
 
                 const forcedParams = {
                     getRankingInfo: true,
-                    highlightPreTag: '<em>',
-                    highlightPostTag: '</em>',
+                    highlightPreTag: '<ais-highlight-0000000000>',
+                    highlightPostTag: '</ais-highlight-0000000000>',
                 };
 
                 if (this.fetchFacets) {

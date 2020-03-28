@@ -62,6 +62,27 @@ export function cleanDeepAttributeName(attribute) {
     return attribute.split('.')[0];
 }
 
+let div = null;
+function escapeHtml(value) {
+    div = (div === null ? document.createElement('div') : div);
+    div.textContent = value;
+    return div.innerHTML;
+}
+
+
+export function escapeAndHighlightHit(
+    value = '',
+    regexp = /<(\/)?ais-highlight-(\d+)>/g,
+    highlightClassName = ''
+) {
+    const str = value.replace(regexp, '{{{$1ais-highlight-$2}}}');
+
+    return escapeHtml(str).replace(
+        /{{{(\/?)ais-highlight-[^}]*}}}/g,
+        highlightClassName === '' ? '<$1em>' : `<$1em class="${highlightClassName}">`
+    );
+}
+
 export function syntaxHighlight(json) {
     return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
         var cls = 'number';
@@ -76,7 +97,7 @@ export function syntaxHighlight(json) {
         } else if (/null/.test(match)) {
             cls = 'null';
         }
-        return '<span class="json-token ' + cls + '">' + match + '</span>';
+        return '<span class="json-token ' + cls + '">' + escapeAndHighlightHit(match) + '</span>';
     });
 };
 
