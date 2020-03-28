@@ -121,7 +121,7 @@ const disjunctiveSearch = async function (params) {
     refinedFacets.forEach((facetName, i) => {
         newRes.disjunctiveFacets[facetName] = res.results[i + 1].facets[facetName];
         facetRefinements[facetName].forEach((value) => {
-            if (newRes.disjunctiveFacets[facetName][value] === undefined) {
+            if (newRes.disjunctiveFacets[facetName] && newRes.disjunctiveFacets[facetName][value] === undefined) {
                 newRes.disjunctiveFacets[facetName][value] = null;
             }
         });
