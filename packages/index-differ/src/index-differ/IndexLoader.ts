@@ -184,7 +184,7 @@ export class IndexLoader {
                     method: 'POST',
                     path: encode('/1/indexes/%s/browse', this.index.indexName),
                     data: {
-                        params: serializeQueryParameters(this.browseParams),
+                        params: serializeQueryParameters({attributesToRetrieve: ['*'], ...this.browseParams}),
                     },
                 }).then(fn);
             } else {
@@ -192,7 +192,7 @@ export class IndexLoader {
                     method: 'POST',
                     path: encode('/1/indexes/%s/browse', this.index.indexName),
                     data: {
-                        params: serializeQueryParameters(this.browseParams),
+                        params: serializeQueryParameters({attributesToRetrieve: ['*'], ...this.browseParams}),
                         cursor: this.indexData.cursor,
                     },
                 }).then(fn);
