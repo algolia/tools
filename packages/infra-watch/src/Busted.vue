@@ -1,43 +1,31 @@
 <template>
-    <internal-app>
-        <div class="min-h-screen">
-            <app-header app-name="Busted" />
-            <div class="max-w-960 mx-auto mt-24">
-                <div class="bg-white rounded border border-proton-grey-opacity-60 p-24">
-                    <table>
-                        <tr v-for="bust in busted">
-                            <td class="px-12">{{bust.name}}</td>
-                            <td class="px-12">{{bust.email}}</td>
-                            <td>
-                                {{bust.appName}}
-                            </td>
-                            <td class="px-12">
-                                <a
-                                    :href="bust.adminUrl"
-                                    class="text-nebula-blue cursor-pointer hover:underline"
-                                    target="_blank"
-                                >
-                                    {{bust.appId}}
-                                </a>
-                            </td>
-                            <td class="px-12">{{bust.cluster}}</td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </internal-app>
+    <table>
+        <tr v-for="bust in busted">
+            <td class="px-12">{{bust.name}}</td>
+            <td class="px-12">{{bust.email}}</td>
+            <td>
+                {{bust.appName}}
+            </td>
+            <td class="px-12">
+                <a
+                    :href="bust.adminUrl"
+                    class="text-nebula-blue cursor-pointer hover:underline"
+                    target="_blank"
+                >
+                    {{bust.appId}}
+                </a>
+            </td>
+            <td class="px-12">{{bust.cluster}}</td>
+        </tr>
+    </table>
 </template>
 
 <script>
-    import InternalApp from "common/components/app/InternalApp";
-    import AppHeader from "common/components/header/AppHeader";
     import {getKey} from "common/components/selectors/getClusterList";
     import algoliasearch from "algoliasearch";
 
     export default {
-        name: 'Home',
-        components: {InternalApp, AppHeader},
+        name: 'Busted',
         data: function () {
             return {
                 busted: [],
@@ -55,7 +43,7 @@
                         for (let i = 0; i < application.clusters_and_replicas_names.length; i++) {
                             const cluster = application.clusters_and_replicas_names[i];
 
-                            if (application.user_email.endsWith('@algolia.com')) {
+                            if (application.deleted !== true && application.user_email.endsWith('@algolia.com')) {
                                 if (cluster.startsWith('d') || cluster.startsWith('v')) {
                                     this.busted.push({
                                         name: application.user_full_name,
@@ -66,7 +54,7 @@
                                         adminUrl: `https://admin.algolia.com/admin/users/${application.user_id}/applications/${application.application_id}`,
                                     });
                                     this.busted.sort((a, b) => {
-                                        if (a.name !== b.name) return a.name.localeCompare(b.name);
+                                        if (a.name && b.name && a.name !== b.name) return a.name.localeCompare(b.name);
                                         return a.cluster.localeCompare(b.cluster);
                                     });
                                     break;

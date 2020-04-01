@@ -1,7 +1,7 @@
 const path = require('path');
 
 module.exports = {
-    publicPath: 'busted',
+    publicPath: 'infra-watch',
     chainWebpack: config => {
         const svgRule = config.module.rule("svg");
         svgRule.uses.clear();

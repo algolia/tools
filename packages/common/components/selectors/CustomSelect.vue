@@ -22,7 +22,7 @@
             <input
                 v-if="dropdownOpened && refine"
                 ref="input"
-                class="px-8 py-4 text-solstice-blue rounded text-base bg-moon-grey"
+                class="px-8 py-4 text-solstice-blue rounded text-base bg-moon-grey w-full"
                 v-model="query"
                 @keyup="onKeyUp"
                 @keydown="onKeyDown"

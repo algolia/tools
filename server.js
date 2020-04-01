@@ -19,7 +19,7 @@ app.use((req, res, next) => {
 
 app.use(history({
     rewrites: [
-        { from: /^\/relevance-testing\/.*$/, to: '/relevance-testing/index.html' }
+        { from: /^\/relevance-testing\/.*$/, to: '/relevance-testing/index.html' },
     ]
 }));
 
@@ -35,11 +35,14 @@ app.use('/index-differ', serveStatic(__dirname + "/packages/index-differ/dist"))
 app.use('/index-analyzer', serveStatic(__dirname + "/packages/index-analyzer/dist"));
 app.use('/dictionaries', serveStatic(__dirname + "/packages/dictionaries/dist"));
 app.use('/index-size', serveStatic(__dirname + "/packages/index-size/dist"));
-app.use('/mlock-alerts', serveStatic(__dirname + "/packages/mlock-alerts/dist"));
+app.use('/infra-watch', serveStatic(__dirname + "/packages/infra-watch/dist"));
 app.use('/transform', serveStatic(__dirname + "/packages/transform/dist"));
-app.use('/busted', serveStatic(__dirname + "/packages/busted/dist"));
 app.use('/insights-ui', serveStatic(__dirname + "/packages/insights-ui/dist"));
 app.use('/attribute-proximity', serveStatic(__dirname + "/packages/attribute-proximity/dist"));
+
+// Legacy
+app.use('/mlock-alerts', (req, res) => res.redirect('/infra-watch'));
+app.use('/busted', (req, res) => res.redirect('/infra-watch'));
 
 app.use((req, res) => {
     res.redirect("https://tools.algolia.com/apps");

@@ -1,15 +1,38 @@
 <template>
     <internal-app>
         <div class="min-h-screen">
-            <app-header app-name="Mlock Alerts" />
+            <app-header app-name="Infra Watch" />
             <div class="max-w-960 mx-auto mt-24">
-                <div class="bg-white rounded border border-proton-grey-opacity-60 px-24">
-                    <template v-if="!isEmpty">
-                        <failing-group :group="failing" group-name="Failing"/>
-                        <failing-group :group="recovered" group-name="Recovered"/>
-                    </template>
-                    <div v-else class="p-8 text-center text-cosmos-black-opacity-70">
-                        No problem
+                <div class="bg-white rounded border border-proton-grey-opacity-60">
+                    <div
+                        class="flex border-b border-proton-grey text-xs uppercase tracking-wide bg-proton-grey-opacity-40 text-telluric-blue"
+                    >
+                        <!--<div
+                            class="mx-8 p-8"
+                            :class="`${currentTab === 'inspect' ? '-mb-2 border-b-2 border-nebula-blue-opacity-80' : 'cursor-pointer'}`"
+                            @click="currentTab = 'inspect'"
+                        >
+                            Inspect
+                        </div>-->
+                        <div
+                            class="mx-8 p-8"
+                            :class="`${currentTab === 'mlocks' ? '-mb-2 border-b-2 border-nebula-blue-opacity-80' : 'cursor-pointer'}`"
+                            @click="currentTab = 'mlocks'"
+                        >
+                            Mlocks alerts
+                        </div>
+                        <div
+                            class="mx-8 p-8"
+                            :class="`${currentTab === 'busted' ? '-mb-2 border-b-2 border-nebula-blue-opacity-80' : 'cursor-pointer'}`"
+                            @click="currentTab = 'busted'"
+                        >
+                            Busted
+                        </div>
+                    </div>
+                    <div class="p-24">
+                        <!--<inspect v-if="currentTab === 'inspect'" />-->
+                        <mlocks v-if="currentTab === 'mlocks'" :failing="failing" :recovered="recovered" />
+                        <busted v-if="currentTab === 'busted'" />
                     </div>
                 </div>
             </div>
@@ -22,15 +45,18 @@
     import AppHeader from "common/components/header/AppHeader";
     import {getKey} from "common/components/selectors/getClusterList";
     import algoliasearch from "algoliasearch";
-    import FailingGroup from "./FailingGroup";
+    import Mlocks from "./Mlocks";
+    import Busted from "./Busted";
+    import Inspect from "./Inspect";
 
     export default {
         name: 'Home',
-        components: {FailingGroup, InternalApp, AppHeader},
+        components: {Inspect, Busted, Mlocks, InternalApp, AppHeader},
         data: function () {
             return {
                 failing: [],
                 recovered: [],
+                currentTab: 'mlocks'
             };
         },
         created: async function () {
@@ -50,17 +76,18 @@
             this.failing = await this.extractClusters(json.failingSeries, index);
             this.recovered = await this.extractClusters(json.recoveredSeries, index);
         },
-        computed: {
-            isEmpty: function () {
-                return this.failing.length === 0 && this.recovered.length === 0;
-            }
-        },
         methods: {
+            isCluster: function (clusterName) {
+                return clusterName.startsWith('v') || clusterName.startsWith('d');
+            },
+            isDsn: function (clusterName) {
+                return clusterName.startsWith('t');
+            },
             extractClusters: async function (series, index) {
                 const clusters = series.map((x) => {
                     return x[2][0].split('=')[1];
                 }).filter((clusterName) => {
-                    return clusterName.startsWith('v') || clusterName.startsWith('d') || clusterName.startsWith('t');
+                    return this.isCluster(clusterName) || this.isDsn(clusterName);
                 });
 
                 const newClusters = {};
@@ -72,21 +99,20 @@
                     });
 
                     res.hits.forEach((hit) => {
-                        const clustersFromMachine = hit.clusters_and_replicas_names.sort((a, b) => {
-                            if (a.startsWith('d')) return -1;
-                            return 1;
-                        });
-                        const mainCluster = clustersFromMachine[0];
+                        const mainCluster = hit.cluster_name;
 
                         if (newClusters[mainCluster] === undefined) {
                             newClusters[mainCluster] = {
-                                cluster: mainCluster,
-                                dsns: [],
+                                allMachines: hit.clusters_and_replicas_names,
+                                clusters: hit.clusters_and_replicas_names.filter((m) => this.isCluster(m)),
+                                dsns: hit.clusters_and_replicas_names.filter((m) => this.isDsn(m)),
+                                failingMachines: [],
                                 users: {},
                             };
                         }
-                        if (mainCluster !== clusterName) {
-                            newClusters[mainCluster].dsns.push(clusterName);
+
+                        if (newClusters[mainCluster].failingMachines.includes(clusterName) === false) {
+                            newClusters[mainCluster].failingMachines.push(clusterName);
                         }
 
                         if (newClusters[mainCluster].users[hit.user_email] === undefined) {
@@ -104,6 +130,7 @@
                         if (!foundApp) {
                             newClusters[mainCluster].users[hit.user_email].apps.push({
                                 appId: hit.application_id,
+                                appName: hit.name || '',
                                 adminUrl: `https://admin.algolia.com/admin/users/${hit.user_id}/applications/${hit.application_id}`,
                             });
                         }

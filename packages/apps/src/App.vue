@@ -61,7 +61,7 @@
                         description: 'Get information on engine features',
                         apps: [
                             {name: 'Dictionaries', url: '/dictionaries'},
-                            {name: 'Mlock Alerts', url: '/mlock-alerts'},
+                            {name: 'Infra Watch', url: '/infra-watch'},
                         ]
                     },
                     {

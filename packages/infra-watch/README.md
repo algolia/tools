@@ -1,4 +1,4 @@
-# Busted
+# Infra Watch
 
 ## Project setup
 ```
