@@ -11,7 +11,7 @@ app.use((req, res, next) => {
             return res.redirect('https://' + req.headers.host + req.url);
         }
         if (req.hostname === 'algolia-experimental.herokuapp.com') {
-            //return res.redirect(`https://tools.algolia.com${req.url}`);
+            return res.redirect(`https://tools.algolia.com${req.url}`);
         }
     }
     return next();
