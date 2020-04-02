@@ -1,8 +1,8 @@
 <template>
     <div>
         <template v-if="!isEmpty">
-            <failing-group :group="failing" group-name="Failing"/>
-            <failing-group :group="recovered" group-name="Recovered"/>
+            <failing-group :infras="failing" group-name="Failing"/>
+            <failing-group :infras="recovered" group-name="Recovered" class="mt-24"/>
         </template>
         <div v-else class="p-8 text-center text-cosmos-black-opacity-70">
             No problem
@@ -19,7 +19,7 @@
         components: {FailingGroup},
         computed: {
             isEmpty: function () {
-                return this.failing.length === 0 && this.recovered.length === 0;
+                return Object.keys(this.failing).length === 0 && Object.keys(this.recovered).length === 0;
             }
         },
     }

@@ -64,7 +64,7 @@
             },
             allKeys: function () {
                 const getRankingInfo = this.searchParams && this.searchParams.getRankingInfo === true;
-                
+
                 return Object.keys(this.item).filter((key) => {
                     return !this.reservedAttributes[key] || (getRankingInfo === true && key === '_rankingInfo');
                 }).sort((a, b) => {
