@@ -2,7 +2,7 @@
     <internal-app>
         <div class="min-h-screen">
             <app-header app-name="Infra Watch" />
-            <div class="max-w-960 mx-auto mt-24">
+            <div class="max-w-960 mx-auto mt-24 pb-48">
                 <div class="bg-white rounded border border-proton-grey-opacity-60">
                     <div
                         class="flex border-b border-proton-grey text-xs uppercase tracking-wide bg-proton-grey-opacity-40 text-telluric-blue"
