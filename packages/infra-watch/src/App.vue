@@ -19,7 +19,7 @@
                             :class="`${currentTab === 'mlocks' ? '-mb-2 border-b-2 border-nebula-blue-opacity-80' : 'cursor-pointer'}`"
                             @click="currentTab = 'mlocks'"
                         >
-                            Mlocks alerts <span v-if="Object.keys(failing).length > 0">({{Object.keys(failing).length}})</span>
+                            Mlocks alerts <span v-if="Object.keys(failing).length > 1">({{Object.keys(failing).length - 1}})</span>
                         </div>
                         <div
                             class="mx-8 p-8"

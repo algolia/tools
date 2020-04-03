@@ -1,5 +1,5 @@
 <template>
-    <div v-if="Object.keys(infras).length > 0">
+    <div v-if="Object.keys(infras).length > 1">
         <h2 class="text-solstice-blue-opacity-80">
             {{groupName}}
         </h2>
