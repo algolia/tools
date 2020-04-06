@@ -40,29 +40,34 @@
                         {{ isDragring ? 'Drop file here' : 'Drag file here' }}
                     </div>
                     <div class="mt-24" v-if="isLoadingFile">Loading ...</div>
-                    <div v-if="dataset && dataset.length > 0" class="mt-24">
-                        {{dataset.length}} records loaded
-                        <span v-if="sample">
-                            (This is a sample, csv will be fully loaded during the apply step)
-                        </span>
-                    </div>
                 </div>
             </div>
         </div>
         <div v-if="type === 'index'">
             <div class="mt-24 flex">
-                <div class="flex">
+                <div class="flex items-center">
                     <app-selector v-model="indexInfo.appId" />
                     <index-selector
                         v-model="indexInfo.indexName"
                         :app-id="indexInfo.appId"
                         class="ml-24"
                     />
+                    <div class="flex ml-48">
+                        Fetch extra record:
+                        <input
+                            type="text"
+                            v-model="extraObjectID"
+                            class="input-custom ml-8 w-124"
+                        />
+                    </div>
                 </div>
             </div>
-            <div v-if="nbHits" class="mt-24">
-                {{nbHits}} records loaded
-            </div>
+        </div>
+        <div v-if="dataset && dataset.length > 0" class="mt-24">
+            {{dataset.length}} records loaded
+            <span v-if="sample">
+                (This is a sample, csv will be fully loaded during the apply step)
+            </span>
         </div>
     </div>
 </template>
@@ -86,6 +91,7 @@
                 dataset: null,
                 csvFile: null,
                 jsonFile: null,
+                extraObjectID: '',
                 isLoadingFile: false,
                 isDragring: false,
                 sample: false,
@@ -111,6 +117,9 @@
                 handler: function () {
                     this.loadIndex();
                 }
+            },
+            extraObjectID: function () {
+                this.loadIndex(true);
             }
         },
         computed: {
@@ -202,16 +211,25 @@
                     });
                 }
             },
-            loadIndex: async function () {
-                this.reset();
+            loadIndex: async function (noReset) {
+                if (!noReset) {
+                    this.reset();
+                }
+
                 if (!this.indexInfo.appId || !this.indexInfo.indexName || !this.apiKey) return;
 
                 const index = await getSearchIndex(this.indexInfo.appId, this.apiKey, this.indexInfo.indexName);
-                const res = await index.search('', {attributesToHighlight: [], attributesToSnippet: []});
+                const res = await index.search('', {attributesToRetrieve: ['*'], attributesToHighlight: [], attributesToSnippet: []});
+
+                if (this.extraObjectID.length > 0) {
+                    const extraObject = await index.getObject(this.extraObjectID, {attributesToRetrieve: ['*']});
+                    res.hits.unshift(extraObject);
+                }
 
                 const dataset = res.hits;
                 this.dataset = Object.freeze(dataset);
                 this.nbHits = res.nbHits;
+                this.sample = res.nbHits > this.dataset.length;
                 this.$emit('onUpdateIndexInfo', this.indexInfo);
             }
         }

@@ -16,7 +16,14 @@
                                 :item="hitsTransformer.transformObj(srcObjectExample)._v_"
                             />
                         </div>
-
+                        <div class="flex">
+                            <pagination
+                                @onUpdatePage="page = $event"
+                                :page="page"
+                                :nb-pages="nbPages"
+                                class="mx-auto"
+                            />
+                        </div>
                     </div>
                 </div>
                 <div class="w-third pr-24">
@@ -75,17 +82,19 @@
     import MonacoEditor from "./MonacoEditor";
     import Attributes from "common/components/explorer/hits/Attributes";
     import HitsTransformer from "common/components/explorer/hits/hitsTransformer";
+    import Pagination from "common/components/explorer/results/Pagination";
     import algoliasearch from 'algoliasearch';
 
     export default {
         name: 'Transformer',
-        components: {MonacoEditor, Attributes},
+        components: {MonacoEditor, Attributes, Pagination},
         props: ['dataset'],
         data: function () {
             return {
                 dstObjectExample: {},
                 transformer: 'return {\n  ...refObj,\n\n};',
                 error: null,
+                page: 0,
                 hitsTransformer: new HitsTransformer(),
             }
         },
@@ -93,15 +102,19 @@
             this.transformExample();
         },
         watch: {
-            transformer: function () { this.transformExample(); },
+            transformer: function () { this.page = 0; this.transformExample(); },
             srcObjectExample: function () { this.transformExample(); },
         },
         computed: {
             srcObjectExample: function () {
                 if (this.dataset && this.dataset.length > 0) {
-                    return this.dataset[0];
+                    return this.dataset[this.page];
                 }
             },
+            nbPages: function () {
+                if (!this.dataset) return 0;
+                return this.dataset.length;
+            }
         },
         methods: {
             transformExample: async function () {
