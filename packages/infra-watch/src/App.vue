@@ -101,7 +101,7 @@
                         applications.forEach((application) => {
                             let addedBusted = false;
                             let addedWrongPlan = false;
-                            if (application.deleted !== true) {
+                            if (application.deleted === true) {
                                 return;
                             }
 
@@ -126,7 +126,7 @@
                                         addedBusted = true;
                                         break;
                                     }
-                                } else if (cluster.startsWith('c') || cluster.startsWith('b') || cluster.startsWith('w')) {
+                                } else if (cluster.startsWith('c') || cluster.startsWith('b')) {
                                     if (enterprisePlans.includes(application.plan_name)) {
                                         if (!addedWrongPlan) {
                                             this.wrongPlans.push(this.getAppObject(application, cluster));
