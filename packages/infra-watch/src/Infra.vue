@@ -91,12 +91,12 @@
         props: ['infra'],
         methods: {
             generateWaveFrontLink: function (machines) {
-                const allMachines = machines.slice();
+                const allMachines = machines.map((m) => m.replace(/<\/?em>/g, ''));
                 const mainMachine = allMachines.shift();
                 return `https://metrics.wavefront.com/dashboards/cluster-analysis#_v01(p:(cluster:(l:'Cluster%20regex',v:'${mainMachine}-*${allMachines.map((m) => `%20or%20source=${m}-*`).join('')}'),cluster-name:${mainMachine}))`
             },
             generateInfraBookingLink: function (machine) {
-                return `https://infrabooking.algolia.com/infra/clusters?query=${machine}`;
+                return `https://infrabooking.algolia.com/infra/clusters?query=${machine.replace(/<\/?em>/g, '')}`;
             },
             shortcuts: function (infra) {
                 const shortcuts = [];
