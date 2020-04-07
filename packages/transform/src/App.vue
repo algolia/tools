@@ -11,6 +11,8 @@
                     @onUpdateIndexInfo="indexInfo = $event"
                     @onUpdateCsvFile="csvFile = $event"
                     @onUpdateJsonFile="jsonFile = $event"
+                    @onUpdateXmlFile="xmlFile = $event"
+                    @onUpdateXmlRootNode="xmlRootNode = $event"
                 />
                 <transformer
                     v-if="dataset"
@@ -24,6 +26,8 @@
                     :transformer="transformer"
                     :csv-file="csvFile"
                     :json-file="jsonFile"
+                    :xml-file="xmlFile"
+                    :xml-root-node="xmlRootNode"
                 />
             </div>
         </div>
@@ -49,6 +53,8 @@
                 indexInfo: null,
                 csvFile: null,
                 jsonFile: null,
+                xmlFile: null,
+                xmlRootNode: 'item',
             }
         }
     }

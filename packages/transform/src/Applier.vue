@@ -66,10 +66,11 @@
     import Papa from "papaparse";
     import oboe from 'oboe';
     import FileStreamer from "./FileStreamer";
+    import XmlStreamer from "./XmlStreamer";
 
     export default {
         name: 'Applier',
-        props: ['dataset', 'indexInfo', 'transformer', 'csvFile', 'jsonFile'],
+        props: ['dataset', 'indexInfo', 'transformer', 'csvFile', 'jsonFile', 'xmlFile', 'xmlRootNode'],
         components: {AppSelector, IndexSelector, TaskGroupView},
         data: function () {
             return {
@@ -262,6 +263,48 @@
                                     }
                                     resolve();
                                 }
+                            });
+                        })
+                    });
+
+                    tasksGroup.addTask(browseTask);
+                } else if (this.xmlFile) {
+                    const browseTask = new Task('Upload records');
+
+                    browseTask.setCallback(() => {
+                        return new Promise((resolve, reject) => {
+                            let count = 0;
+                            let hits = [];
+
+                            browseTask.setNth(0);
+                            browseTask.setOutOf('unknown');
+
+                            const parser = new XmlStreamer(this.xmlRootNode, async (node) => {
+                                hits.push(node);
+                                count++;
+                                if (hits.length >= 1000) {
+                                    stream.pause();
+                                    const hitsToPush = hits.slice();
+                                    hits = [];
+                                    const resAdd = await this.saveObjects(dstIndex, hitsToPush);
+                                    resAdd.taskIDs.forEach((resAddN) => tasksGroup.addAlgoliaTaskId(resAddN));
+                                    browseTask.setNth(count);
+                                    stream.resume();
+                                }
+                            });
+
+                            const stream = new FileStreamer(this.xmlFile, async () => {
+                                if (hits.length > 0) {
+                                    const resAdd = await this.saveObjects(dstIndex, hits);
+                                    resAdd.taskIDs.forEach((resAddN) => tasksGroup.addAlgoliaTaskId(resAddN));
+                                    browseTask.setNth(count);
+                                }
+                                parser.close();
+                                resolve();
+                            });
+
+                            stream.start(function (data) {
+                                parser.write(data);
                             });
                         })
                     });

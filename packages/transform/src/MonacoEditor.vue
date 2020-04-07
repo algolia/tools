@@ -41,6 +41,12 @@
                     this.$emit('input', value, event)
                 }
             });
+
+            const KM = monaco.KeyMod;
+            const KC = monaco.KeyCode;
+            this.editor.addCommand(KM.chord(KM.CtrlCmd | KC.KEY_S), () => {
+                this.$emit('onShouldSave');
+            });
         },
         beforeDestroy() {
             this.editor && this.editor.dispose()

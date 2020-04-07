@@ -23,8 +23,15 @@
             >
                 JSON (∞ size)
             </div>
+            <div
+                @click="setType('xml')"
+                class="w-232 cursor-pointer mr-24 text-center rounded border border-proton-grey-opacity-60 p-24"
+                :class="type === 'json' ? 'bg-proton-grey-opacity-40' : 'bg-white'"
+            >
+                XML (∞ size)
+            </div>
         </div>
-        <div v-if="['json', 'csv'].includes(type)">
+        <div v-if="['json', 'csv', 'xml'].includes(type)">
             <div class="mt-24">
                 <div>
                     <div
@@ -38,6 +45,14 @@
                         @dragover.prevent
                     >
                         {{ isDragring ? 'Drop file here' : 'Drag file here' }}
+                    </div>
+                    <div v-if="type === 'xml'" class="flex mt-24">
+                        Xml node name:
+                        <input
+                            type="text"
+                            v-model="xmlRootNode"
+                            class="input-custom ml-8 w-124"
+                        />
                     </div>
                     <div class="mt-24" v-if="isLoadingFile">Loading ...</div>
                 </div>
@@ -79,6 +94,7 @@
     import Papa from 'papaparse';
     import FileStreamer from "./FileStreamer";
     import oboe from 'oboe';
+    import XmlStreamer from "./XmlStreamer";
 
     export default {
         name: 'DatasetSelector',
@@ -91,10 +107,12 @@
                 dataset: null,
                 csvFile: null,
                 jsonFile: null,
+                xmlFile: null,
                 extraObjectID: '',
                 isLoadingFile: false,
                 isDragring: false,
                 sample: false,
+                xmlRootNode: 'item',
                 indexInfo: {
                     appId: null,
                     indexName: null,
@@ -112,6 +130,9 @@
             jsonFile: function () {
                 this.$emit('onUpdateJsonFile', this.jsonFile);
             },
+            xmlFile: function () {
+                this.$emit('onUpdateXmlFile', this.xmlFile);
+            },
             indexInfo: {
                 deep: true,
                 handler: function () {
@@ -119,6 +140,10 @@
                 }
             },
             extraObjectID: function () {
+                this.loadIndex(true);
+            },
+            xmlRootNode: function () {
+                this.$emit('onUpdateXmlRootNode', this.xmlRootNode);
                 this.loadIndex(true);
             }
         },
@@ -183,7 +208,7 @@
                     stream.start(function (data) {
                         oboeStream.emit('data', data);
                     });
-                } else { // csv
+                } else if (this.type === 'csv') {
                     this.isLoadingFile = true;
 
                     const hits = [];
@@ -208,6 +233,37 @@
                             this.dataset = Object.freeze(hits);
                             this.isLoadingFile = false;
                         }
+                    });
+                } else if (this.type === 'xml') {
+                    this.isLoadingFile = true;
+
+                    let count = 0;
+                    let hits = [];
+
+                    const parser = new XmlStreamer(this.xmlRootNode, (node) => {
+                        if (!this.isLoadingFile) return;
+
+                        hits.push(node);
+                        count++;
+
+                        if (count >= 100) {
+                            this.xmlFile = file;
+                            this.dataset = Object.freeze(hits);
+                            this.isLoadingFile = false;
+                            this.sample = true;
+                            stream.pause();
+                        }
+                    });
+
+                    const stream = new FileStreamer(file, () => {
+                        this.xmlFile = file;
+                        this.dataset = Object.freeze(hits);
+                        this.isLoadingFile = false;
+                        parser.close();
+                    });
+
+                    stream.start(function (data) {
+                        parser.write(data);
                     });
                 }
             },

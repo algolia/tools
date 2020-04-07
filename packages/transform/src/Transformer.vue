@@ -36,21 +36,68 @@
                                 v-model="transformer"
                                 class="w-full h-256 rounded overflow-hidden"
                                 language="javascript"
+                                @onShouldSave="saveTransformer(saveAs)"
                             />
                         </div>
+                        <div class="flex items-center mt-8">
+                            <div class="text-center" :class="{invisible: !hasBeenSaved}">
+                                Saved {{savedConfig === 'new' ? 'draft' : savedConfig}}!
+                            </div>
+                            <div class="ml-auto">
+                                <a
+                                    @click="reset()"
+                                    class="text-nebula-blue cursor-pointer hover:underline"
+                                >reset</a>
+                            </div>
+                        </div>
                     </div>
-                    <div class="mt-24 text-solstice-blue-opacity-60">
-                        <div>
-                            Return Object to modify the object
-                            <br>
-                            Return Array to split records
-                            <br>
-                            Return null to not index the record
-                            <br>
-                            <br>
-                            async/await is allowed
-                            <br>
-                            this.algoliasearch gives you access to algolia lib
+                    <div class="mt-12 text-solstice-blue-opacity-60">
+                        <div class="flex">
+                            <div class="w-half">
+                                <h3 class="mb-12">Help</h3>
+                                Return Object to modify the object
+                                <br>
+                                Return Array to split records
+                                <br>
+                                Return null to not index the record
+                                <br>
+                                <br>
+                                async/await is allowed
+                                <br>
+                                this.algoliasearch gives you access to algolia lib
+                            </div>
+                            <div class="w-half">
+                                <h3 class="mb-12">Current Draft</h3>
+                                <div>
+                                    <div class="flex ml-auto">
+                                        <div>Save as:</div>
+                                        <input
+                                            v-model="saveAs"
+                                            @keyup.enter="saveTransformer(saveAs, true)"
+                                            class="ml-8 input-custom w-124"
+                                        />
+                                    </div>
+                                </div>
+                                <h3 class="mt-12 mb-12">Backups</h3>
+                                <div>
+                                    <div v-for="t in notNewTransformers" class="flex">
+                                        <div class="w-full group">
+                                            -
+                                            <a
+                                                @click="transformer = t.body; saveTransformer()"
+                                                class="text-nebula-blue cursor-pointer hover:underline"
+                                            >{{t.name}}</a>
+                                            <trash-icon
+                                                @click="deleteTransformer(t.name)"
+                                                class="ml-12 w-12 h-12 cursor-pointer hover:text-telluric-blue invisible group-hover:visible"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div v-if="notNewTransformers.length === 0">
+                                        No backups
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -83,26 +130,41 @@
     import Attributes from "common/components/explorer/hits/Attributes";
     import HitsTransformer from "common/components/explorer/hits/hitsTransformer";
     import Pagination from "common/components/explorer/results/Pagination";
+    import TrashIcon from "common/icons/trash.svg";
     import algoliasearch from 'algoliasearch';
+
+    const defaultTransformer = 'return {\n  ...refObj,\n\n};';
 
     export default {
         name: 'Transformer',
-        components: {MonacoEditor, Attributes, Pagination},
+        components: {MonacoEditor, Attributes, Pagination, TrashIcon},
         props: ['dataset'],
         data: function () {
             return {
                 dstObjectExample: {},
-                transformer: 'return {\n  ...refObj,\n\n};',
+                transformer: defaultTransformer,
                 error: null,
                 page: 0,
                 hitsTransformer: new HitsTransformer(),
+                timeout: null,
+                saveAs: '',
+                savedConfig: '',
+                hasBeenSaved: false,
+                transformers: [],
             }
         },
         created: function () {
             this.transformExample();
+            this.fetchTransformers();
         },
         watch: {
-            transformer: function () { this.page = 0; this.transformExample(); },
+            transformer: function (o, n) {
+                if (o !== n) {
+                    this.page = 0;
+                    this.transformExample();
+                    this.saveTransformerWithTimeout('new');
+                }
+            },
             srcObjectExample: function () { this.transformExample(); },
         },
         computed: {
@@ -114,9 +176,80 @@
             nbPages: function () {
                 if (!this.dataset) return 0;
                 return this.dataset.length;
+            },
+            notNewTransformers: function () {
+                return this.transformers.filter((t) => t.name !== 'new');
             }
         },
         methods: {
+            reset: function () {
+                this.transformer = defaultTransformer;
+            },
+            saveTransformerWithTimeout: function (name, reloadTransformers) {
+                if (this.timeout) {
+                    clearTimeout(this.timeout);
+                }
+
+                this.timeout = setTimeout(() => {
+                    this.saveTransformer(name, reloadTransformers);
+                }, 3000);
+            },
+            saveTransformer: async function (name, reloadTransformers) {
+                clearTimeout(this.timeout);
+                const endpoint = process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT || 'https://tools-backend.algolia.com';
+                await fetch(`${endpoint}/transformations/update`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        name: name || 'new',
+                        body: this.transformer,
+                    }),
+                });
+                this.savedConfig = name || 'new',
+                this.hasBeenSaved = true;
+                setTimeout(() => {
+                    this.hasBeenSaved = false;
+                }, 2000);
+                if (reloadTransformers) {
+                    this.fetchTransformers();
+                }
+            },
+            fetchTransformers: async function () {
+                const endpoint = process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT || 'https://tools-backend.algolia.com';
+                const res = await fetch(`${endpoint}/transformations/get-all`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({}),
+                });
+                const transformers = Object.freeze(await res.json());
+                if (transformers.length <= 0) {
+                    await this.saveTransformerWithTimeout('new');
+                    this.fetchTransformers();
+                } else {
+                    this.transformer = transformers.find((t) => t.name === 'new').body;
+                }
+                this.transformers = transformers;
+            },
+            deleteTransformer: async function (name) {
+                const endpoint = process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT || 'https://tools-backend.algolia.com';
+                await fetch(`${endpoint}/transformations/delete`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        name: name,
+                    }),
+                });
+                this.fetchTransformers();
+            },
             transformExample: async function () {
                 try {
                     const context = {
