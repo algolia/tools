@@ -13,3 +13,7 @@ export function isBoolean(v) {
 export function isNumber(v) {
     return typeof v === "number";
 }
+
+export function isNumeric(n) {
+    return !isNaN(parseFloat(n)) && isFinite(n);
+}

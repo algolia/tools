@@ -7,7 +7,7 @@ export default function (userRootItem, onHit) {
 
     const getFinalNodeName = function (name) {
         const n = name.toLowerCase();
-        if (n.startsWith('g:')) return n.slice(2);
+        if (n.startsWith('g:') || n.startsWith('c:')) return n.slice(2);
         return n;
     };
 
@@ -35,7 +35,10 @@ export default function (userRootItem, onHit) {
         const nodeName = node.name.toLowerCase();
         if (nodeName === rootItem) {
             if (Object.keys(node.attributes).length > 0) {
-                stack.push({_attrs: node.attributes});
+                stack.push({attrs: Object.keys(node.attributes).reduce((acc, key) => ({
+                    ...acc,
+                    [getFinalNodeName(key)]: node.attributes[key],
+                }), {})});
             } else {
                 stack.push({});
             }
@@ -44,7 +47,10 @@ export default function (userRootItem, onHit) {
             const currentObject = stack[stack.length - 1];
             if (Object.keys(node.attributes).length > 0) {
                 currentObject[finalNodeName] = {
-                    _attrs: JSON.parse(JSON.stringify(node.attributes))
+                    attrs: Object.keys(node.attributes).reduce((acc, key) => ({
+                        ...acc,
+                        [getFinalNodeName(key)]: node.attributes[key],
+                    }), {}),
                 };
             } else {
                 currentObject[finalNodeName] = {};

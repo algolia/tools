@@ -35,6 +35,7 @@
 
             this.editor = monaco.editor.create(this.$el, options);
 
+
             this.editor.onDidChangeModelContent(event => {
                 const value = this.editor.getValue();
                 if (this.value !== value) {

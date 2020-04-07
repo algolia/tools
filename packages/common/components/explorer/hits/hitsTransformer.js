@@ -16,12 +16,15 @@ export default function (excluded) {
 
         return obj;
     };
+
     this.getNewItemObject = function (item, highlightItem, snippetItem) {
         const newObject = {};
         let hasMatchGlobal = false;
 
-        for (let key in item) {
-            if (this.excluded.indexOf(key) !== -1) continue;
+        let key;
+        for (key in item) {
+            if (this.excluded.indexOf(key) !== -1 || item[key] === undefined) continue;
+
             const obj = this.getNewItem(
                 item[key],
                 highlightItem !== undefined ? highlightItem[key] : undefined,
@@ -33,6 +36,7 @@ export default function (excluded) {
 
         return {_v_: newObject, _s_: JSON.stringify(this.recursivelyGetValues(newObject)), _b_: hasMatchGlobal};
     };
+
     this.getNewItemArray = function (array, highlightItem, snippetItem) {
         let hasMatchGlobal = false;
 
@@ -50,6 +54,7 @@ export default function (excluded) {
 
         return {_v_: newArray, _s_: JSON.stringify(this.recursivelyGetValues(newArray)), _b_: hasMatchGlobal};
     };
+
     this.getNewItem = function (item, highlightItem, snippetItem) {
         if (this.isObject(item)) {
             return this.getNewItemObject(item, highlightItem, snippetItem);
@@ -86,6 +91,7 @@ export default function (excluded) {
             );
         });
     };
+
     this.getNewItemSimple = function (item, highlightItem) {
         if (this.isObject(item)) {
             return this.getNewItemObjectSimple(item, highlightItem);
@@ -96,10 +102,11 @@ export default function (excluded) {
         const hasMatch = highlightItem !== undefined && highlightItem.matchLevel !== undefined;
         return hasMatch ? highlightItem.value : item;
     };
+
     this.getNewItemObjectSimple = function (item, highlightItem, snippetItem) {
         const newObject = {};
         for (let key in item) {
-            if (this.excluded.indexOf(key) !== -1) continue;
+            if (this.excluded.indexOf(key) !== -1 || item[key] === undefined) continue;
             const obj = this.getNewItemSimple(
                 item[key],
                 highlightItem !== undefined ? highlightItem[key] : undefined,
@@ -110,6 +117,7 @@ export default function (excluded) {
 
         return newObject;
     };
+
     this.transformObjSimple = function (item) {
         return this.getNewItemObjectSimple(item, item._highlightResult);
     };

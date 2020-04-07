@@ -34,7 +34,7 @@
                         <div class="mt-24">
                             <monaco-editor
                                 v-model="transformer"
-                                class="w-full h-256 rounded overflow-hidden"
+                                class="w-full h-512 rounded overflow-hidden"
                                 language="javascript"
                                 @onShouldSave="saveTransformer(saveAs)"
                             />
@@ -44,6 +44,12 @@
                                 Saved {{savedConfig === 'new' ? 'draft' : savedConfig}}!
                             </div>
                             <div class="ml-auto">
+                                <a
+                                    @click="transformer = generatedConfig()"
+                                    class="text-nebula-blue cursor-pointer hover:underline"
+                                >auto-generate</a>
+                            </div>
+                            <div class="ml-16">
                                 <a
                                     @click="reset()"
                                     class="text-nebula-blue cursor-pointer hover:underline"
@@ -132,6 +138,7 @@
     import Pagination from "common/components/explorer/results/Pagination";
     import TrashIcon from "common/icons/trash.svg";
     import algoliasearch from 'algoliasearch';
+    import {isNumeric, isObject, isString} from "common/utils/types";
 
     const defaultTransformer = 'return {\n  ...refObj,\n\n};';
 
@@ -179,11 +186,62 @@
             },
             notNewTransformers: function () {
                 return this.transformers.filter((t) => t.name !== 'new');
-            }
+            },
         },
         methods: {
             reset: function () {
                 this.transformer = defaultTransformer;
+            },
+            generatedConfig: function () {
+                const hit = this.srcObjectExample;
+                let s = 'return {\n';
+
+                function getValue(key, varName, value) {
+                    if (isString(value) && isNumeric(value)) {
+                        return `parseFloat(${varName}),\n`;
+                    } else if (Array.isArray(value)) {
+                        return `${varName}.map((el) => {\n    return el;  \n  }),\n`;
+                    } else {
+                        return `${varName},\n`;
+                    }
+                }
+
+                Object.keys(hit).forEach((key) => {
+                    let refObjVarName = `refObj.${key}`;
+                    let value = hit[key];
+
+                    if (isObject(value)) {
+                        const keys = Object.keys(value);
+
+                        if (keys.length > 0) {
+                            const hasAttrs = keys.includes('attrs');
+
+                            if (keys.length === 1 && !hasAttrs) {
+                                s += `  ${key}: ${getValue(key, `${refObjVarName}.${keys[0]}`, value[keys[0]])}`;
+                                return;
+                            }
+
+                            s += `  ${key}: {\n`;
+                            if (hasAttrs) {
+                                const attrKeys = Object.keys(value.attrs);
+                                attrKeys.forEach((k) => {
+                                    s += `    ${k}: ${getValue(k, `${refObjVarName}.attrs.${k}`, value[k])}`;
+                                });
+                            }
+
+                            keys.filter((k) => k !== 'attrs').forEach((k) => {
+                                s += `    ${k}: ${getValue(k, `${refObjVarName}.${k}`, value[k])}`;
+                            });
+                            s += `  },\n`;
+                            return;
+                        }
+                    }
+
+                    s += `  ${key}: ${getValue(key, refObjVarName, value)}`;
+                });
+
+                s += '}';
+                return s;
             },
             saveTransformerWithTimeout: function (name, reloadTransformers) {
                 if (this.timeout) {

@@ -34,17 +34,21 @@
         <div v-if="['json', 'csv', 'xml'].includes(type)">
             <div class="mt-24">
                 <div>
+                    <input ref="file" class="invisible" type="file" @change="addFile($event.target.files)">
                     <div
-                        class="border rounded p-48"
+                        class="border cursor-pointer rounded p-48 mt-8"
                         :class="isDragring ? 'border-mars-1' : 'border-proton-grey-opacity-60'"
                         v-cloak
+                        @click="$refs.file.click()"
                         @dragenter="isDragring = true"
                         @dragleave="isDragring = false"
                         @drop="isDragring = false"
-                        @drop.prevent="addFile"
+                        @drop.prevent="addFile($event.dataTransfer.files)"
                         @dragover.prevent
                     >
-                        {{ isDragring ? 'Drop file here' : 'Drag file here' }}
+                        <div>Click to choose file</div>
+                        <div class="my-12">OR</div>
+                        <div>{{ isDragring ? 'Drop file here' : 'Drag file here' }}</div>
                     </div>
                     <div v-if="type === 'xml'" class="flex mt-24">
                         Xml node name:
@@ -169,9 +173,8 @@
                 this.sample = false;
                 this.$emit('onUpdateIndexInfo', null);
             },
-            addFile: function (e) {
+            addFile: function (droppedFiles) {
                 this.reset();
-                let droppedFiles = e.dataTransfer.files;
                 if(!droppedFiles) return;
 
                 const files = [...droppedFiles];
