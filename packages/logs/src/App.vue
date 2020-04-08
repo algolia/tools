@@ -371,8 +371,14 @@
                     else if (this.searchFields.url && log.url.includes(query)) {
                         return true;
                     }
+                    else if (this.searchFields.ip && log.params.headers['X-Forwarded-For'] && log.params.headers['X-Forwarded-For'].includes(query)) {
+                        return true;
+                    }
+                    else if (this.searchFields.ip && log.params.all['x-forwarded-for'] && log.params.all['x-forwarded-for'].includes(query)) {
+                        return true;
+                    }
                     else {
-                        return this.searchFields.ip && log.ip.includes(query);
+                        return this.searchFields.ip && (log.ip.includes(query));
                     }
                 });
             },
