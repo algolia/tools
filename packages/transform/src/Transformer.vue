@@ -229,7 +229,7 @@
                                 });
                             }
 
-                            keys.filter((k) => k !== 'attrs').forEach((k) => {
+                            keys.filter((k) => k !== 'attrs' && (k !== 'value' || value[k])).forEach((k) => {
                                 s += `    ${k}: ${getValue(k, `${refObjVarName}.${k}`, value[k])}`;
                             });
                             s += `  },\n`;
