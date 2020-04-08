@@ -10,6 +10,7 @@
                         </div>
                         <div class="p-24">
                             <attributes
+                                v-if="srcObjectExample"
                                 :top-attributes="['objectID']"
                                 :no-collapse="true"
                                 class="w-full"
@@ -114,7 +115,7 @@
                         </div>
                         <div class="p-24">
                             <attributes
-                                v-if="!error"
+                                v-if="!error && dstObjectExample"
                                 class="w-full"
                                 :top-attributes="['objectID']"
                                 :no-collapse="true"

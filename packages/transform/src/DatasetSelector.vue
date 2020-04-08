@@ -26,7 +26,7 @@
             <div
                 @click="setType('xml')"
                 class="w-232 cursor-pointer mr-24 text-center rounded border border-proton-grey-opacity-60 p-24"
-                :class="type === 'json' ? 'bg-proton-grey-opacity-40' : 'bg-white'"
+                :class="type === 'xml' ? 'bg-proton-grey-opacity-40' : 'bg-white'"
             >
                 XML (∞ size)
             </div>
@@ -34,29 +34,41 @@
         <div v-if="['json', 'csv', 'xml'].includes(type)">
             <div class="mt-24">
                 <div>
-                    <input ref="file" class="invisible" type="file" @change="addFile($event.target.files)">
+                    <input ref="file" class="invisible" type="file" @change="setFiles($event.target.files)">
                     <div
                         class="border cursor-pointer rounded p-48 mt-8"
                         :class="isDragring ? 'border-mars-1' : 'border-proton-grey-opacity-60'"
                         v-cloak
-                        @click="$refs.file.click()"
+                        @click="file = null; $refs.file.click()"
                         @dragenter="isDragring = true"
                         @dragleave="isDragring = false"
                         @drop="isDragring = false"
-                        @drop.prevent="addFile($event.dataTransfer.files)"
+                        @drop.prevent="setFiles($event.dataTransfer.files)"
                         @dragover.prevent
                     >
                         <div>Click to choose file</div>
                         <div class="my-12">OR</div>
                         <div>{{ isDragring ? 'Drop file here' : 'Drag file here' }}</div>
                     </div>
+                    <div v-if="file" class="mt-4">
+                        Loaded: {{file.name}}
+                    </div>
                     <div v-if="type === 'xml'" class="flex mt-24">
                         Xml node name:
                         <input
+                            ref=""
                             type="text"
                             v-model="xmlRootNode"
                             class="input-custom ml-8 w-124"
+                            @keyup.enter="updateXmlRootNode()"
                         />
+                    </div>
+                    <div v-if="xmlError" class="flex mt-16">
+                        <div
+                            class="border border-mars-1-opacity-60 bg-mars-1-opacity-20 p-8 rounded"
+                            v-html="xmlError"
+                        >
+                        </div>
                     </div>
                     <div class="mt-24" v-if="isLoadingFile">Loading ...</div>
                 </div>
@@ -107,6 +119,7 @@
             return {
                 type: null,
                 url: '',
+                file: null,
                 rawDataSetString: '',
                 dataset: null,
                 csvFile: null,
@@ -116,6 +129,7 @@
                 isLoadingFile: false,
                 isDragring: false,
                 sample: false,
+                xmlError: '',
                 xmlRootNode: 'item',
                 indexInfo: {
                     appId: null,
@@ -146,10 +160,6 @@
             extraObjectID: function () {
                 this.loadIndex(true);
             },
-            xmlRootNode: function () {
-                this.$emit('onUpdateXmlRootNode', this.xmlRootNode);
-                this.loadIndex(true);
-            }
         },
         computed: {
             apiKey: function () {
@@ -157,6 +167,11 @@
             },
         },
         methods: {
+            updateXmlRootNode: function () {
+                this.$emit('onUpdateXmlRootNode', this.xmlRootNode);
+                this.reset();
+                this.loadFile();
+            },
             setType: function (type) {
                 this.reset();
                 this.type = type;
@@ -171,14 +186,18 @@
                 this.jsonFile = null;
                 this.isLoadingFile = false;
                 this.sample = false;
+                this.xmlError = '';
                 this.$emit('onUpdateIndexInfo', null);
             },
-            addFile: function (droppedFiles) {
-                this.reset();
+            setFiles: function (droppedFiles) {
                 if(!droppedFiles) return;
-
                 const files = [...droppedFiles];
-                const file = files[0];
+                this.file = files[0];
+                this.reset();
+                this.loadFile();
+            },
+            loadFile: function () {
+                if(!this.file) return;
 
                 if (this.type === 'json') {
                     this.isLoadingFile = true;
@@ -186,8 +205,8 @@
                     let count = 0;
                     let hits = [];
 
-                    const stream = new FileStreamer(file, () => {
-                        this.jsonFile = file;
+                    const stream = new FileStreamer(this.file, () => {
+                        this.jsonFile = this.file;
                         this.dataset = Object.freeze(hits);
                         this.isLoadingFile = false;
                     });
@@ -200,7 +219,7 @@
                         count++;
 
                         if (count >= 100) {
-                            this.jsonFile = file;
+                            this.jsonFile = this.file;
                             this.dataset = Object.freeze(hits);
                             this.isLoadingFile = false;
                             this.sample = true;
@@ -216,7 +235,7 @@
 
                     const hits = [];
                     let count = 0;
-                    Papa.parse(file, {
+                    Papa.parse(this.file, {
                         header: true,
                         delimitersToGuess: [',', ';', '\t', '#'],
                         preview: 100,
@@ -224,7 +243,7 @@
                             hits.push(lineObject.data);
                             count++;
                             if (count >= 100) {
-                                this.csvFile = file;
+                                this.csvFile = this.file;
                                 this.dataset = Object.freeze(hits);
                                 this.isLoadingFile = false;
                                 this.sample = true;
@@ -232,7 +251,7 @@
                         },
                         error: function () { count++; },
                         complete: (results) => {
-                            this.csvFile = file;
+                            this.csvFile = this.file;
                             this.dataset = Object.freeze(hits);
                             this.isLoadingFile = false;
                         }
@@ -250,7 +269,7 @@
                         count++;
 
                         if (count >= 100) {
-                            this.xmlFile = file;
+                            this.xmlFile = this.file;
                             this.dataset = Object.freeze(hits);
                             this.isLoadingFile = false;
                             this.sample = true;
@@ -258,14 +277,23 @@
                         }
                     });
 
-                    const stream = new FileStreamer(file, () => {
-                        this.xmlFile = file;
+                    const stream = new FileStreamer(this.file, () => {
+                        this.xmlFile = this.file;
                         this.dataset = Object.freeze(hits);
                         this.isLoadingFile = false;
                         parser.close();
                     });
 
-                    stream.start(function (data) {
+                    let i = 0;
+                    stream.start((data) => {
+                        if (i >= 10) {
+                            this.xmlError = `No node &lt;${this.xmlRootNode}&gt; found in the first 10MB of the file.<br>Change it and press enter`;
+                            this.isLoadingFile = false;
+                            stream.pause();
+                            parser.close();
+                            return;
+                        }
+                        i++;
                         parser.write(data);
                     });
                 }

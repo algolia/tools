@@ -19,7 +19,6 @@ export default function (file, finishCallBack) {
         finished = !chunkSize || start >= file.size;
 
         callback(event.target.result);
-        //console.log(event.target.result);
         this.nextChunk();
     };
 
