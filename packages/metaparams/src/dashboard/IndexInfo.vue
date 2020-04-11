@@ -23,7 +23,7 @@
                 App jobs: {{sumBuildingJobs}}
             </div>
             <div class="border-b border-dotted border-telluric-blue-opacity-60 ml-12"
-                 v-if="nbShards > 1 || indexInfo.fileSize > 20480000000"
+                 v-if="nbShards > 1 || indexInfo.fileSize > 2048000000"
             >
                 Nb Shards: {{nbShards}}
             </div>
