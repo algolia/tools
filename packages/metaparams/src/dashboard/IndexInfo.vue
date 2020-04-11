@@ -98,7 +98,7 @@
             },
             nbShards: function () {
                 if (!this.advancedIndexSettings) return 1;
-                return this.advancedIndexSettings.nbShardsAuto > 1 ? this.advancedIndexSettings.nbShardsAuto : this.advancedIndexSettings.nbShards;
+                return this.advancedIndexSettings.nbShardsAuto > 1 ? this.advancedIndexSettings.nbShardsAuto : this.indexSettings.nbShards;
             }
         },
         methods: {
