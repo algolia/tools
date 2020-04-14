@@ -246,7 +246,7 @@
                     return {
                         matchLevel: 'full',
                         value: valueTokens.map((valueToken) => {
-                            return tokens.includes(this.normalize(valueToken)) ? `<em>${valueToken}</em>` : valueToken;
+                            return tokens.includes(this.normalize(valueToken)) ? `<ais-highlight-000>${valueToken}</ais-highlight-000>` : valueToken;
                         }).join(' '),
                     }
                 }
@@ -295,36 +295,36 @@
                      }
                 });
 
-                if (firstCriteria === 'attribute') {
-                    return newRecords.sort((a, b) => {
+                return newRecords.sort((a, b) => {
+                    if (firstCriteria === 'attribute') {
                         if (a.rankingInfo.attribute !== b.rankingInfo.attribute) {
                             return a.rankingInfo.attribute - b.rankingInfo.attribute;
                         }
-                        if (a.rankingInfo.proximity !== b.rankingInfo.proximity) {
-                            return a.rankingInfo.proximity - b.rankingInfo.proximity;
-                        }
+                    }
 
-                        if (this.scenario.customRanking) {
-                            for (let i = 0; i < this.scenario.customRanking.length; i++) {
-                                const crAttribute = this.scenario.customRanking[i];
-                                const aV = a[crAttribute] !== undefined ? a[crAttribute] : -Infinity;
-                                const bV = b[crAttribute] !== undefined ? b[crAttribute] : -Infinity;
-                                if (aV !== bV) {
-                                    return bV - aV;
-                                }
+                    if (a.rankingInfo.proximity !== b.rankingInfo.proximity) {
+                        return a.rankingInfo.proximity - b.rankingInfo.proximity;
+                    }
+
+                    if (firstCriteria !== 'attribute') {
+                        if (a.rankingInfo.attribute !== b.rankingInfo.attribute) {
+                            return a.rankingInfo.attribute - b.rankingInfo.attribute;
+                        }
+                    }
+
+                    if (this.scenario.customRanking) {
+                        for (let i = 0; i < this.scenario.customRanking.length; i++) {
+                            const crAttribute = this.scenario.customRanking[i];
+                            const aV = a[crAttribute] !== undefined ? a[crAttribute] : -Infinity;
+                            const bV = b[crAttribute] !== undefined ? b[crAttribute] : -Infinity;
+                            if (aV !== bV) {
+                                return bV - aV;
                             }
                         }
+                    }
 
-                        return a.objectID.localeCompare(b.objectID);
-                    });
-                } else {
-                    return newRecords.sort((a, b) => {
-                        if (a.rankingInfo.proximity !== b.rankingInfo.proximity) {
-                            return a.rankingInfo.proximity - b.rankingInfo.proximity;
-                        }
-                        return a.rankingInfo.attribute - b.rankingInfo.attribute;
-                    });
-                }
+                    return a.objectID.localeCompare(b.objectID);
+                });
             },
             computeProximityRec: function (positions, queryTokens, currentProximity, previousPosition, usedPositions, triedPositions, positionsForTokens) {
                 if (queryTokens.length === 0) {
@@ -429,7 +429,7 @@
                     });
                     if (queryTokensPositions.length > 0) {
                         queryTokensPositions.sort((a, b) => a - b);
-                        attribute += queryTokensPositions[0] % 1000;
+                        attribute += queryTokensPositions[0];
                     }
                 }
 

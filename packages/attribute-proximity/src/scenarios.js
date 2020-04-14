@@ -312,4 +312,34 @@ export default {
             }
         ]
     },
+    scenario7: {
+        name: 'Same attribute score on on different attributes',
+        queries: [
+            'A B',
+        ],
+        searchableAttributes: [
+            'title',
+            'subTitle',
+            'description',
+        ],
+        customRanking: [
+            'score'
+        ],
+        records: [
+            {
+                objectID: '1',
+                title: 'A',
+                subTitle: 'C',
+                description: 'A B',
+                score: 1,
+            },
+            {
+                objectID: '2',
+                title: 'C',
+                subTitle: 'A B',
+                description: 'C',
+                score: 2,
+            },
+        ]
+    },
 }
