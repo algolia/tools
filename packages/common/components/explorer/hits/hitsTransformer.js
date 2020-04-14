@@ -5,10 +5,10 @@ export default function (excluded) {
         if (obj && obj._v_ !== undefined) return this.recursivelyGetValues(obj._v_);
 
         if (Array.isArray(obj)) {
-            return obj.slice(0, 1000).map((o) => this.recursivelyGetValues(o));
+            return obj.slice(0, 10).map((o) => this.recursivelyGetValues(o));
         }
         if (this.isObject(obj)) {
-            return Object.keys(obj).reduce((acc, key) => ({
+            return Object.keys(obj).slice(0, 10).reduce((acc, key) => ({
                 ...acc,
                 [key]: this.recursivelyGetValues(obj[key]),
             }), {});
