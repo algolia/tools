@@ -550,7 +550,7 @@
                 }
             },
             save: async function () {
-                const index = await getSearchIndex(this.appId, this.apiKey, this.indexName, this.server);
+                const index = await getSearchIndex(this.appId, this.apiKey, this.indexName, this.server, this.userId);
                 try {
                     const task = await index.saveRule(this.newRule.getFinalRule(), { forwardToReplicas: this.forwardToReplicas });
                     this.saving = true;

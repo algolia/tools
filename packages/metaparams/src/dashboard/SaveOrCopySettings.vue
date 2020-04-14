@@ -188,6 +188,9 @@
             adminAPIKey: function (appId) {
                 return this.$store.state.apps[appId].key;
             },
+            userId: function (appId) {
+                return this.$store.state.apps[appId].userId;
+            },
             getConfig: async function () {
                 const batchSize = this.configureBatchSize ? this.batchSize : 1000;
                 const config = {
@@ -197,8 +200,8 @@
                     srcIndexName: this.panelIndexName,
                     panelKey: this.panelKey,
                     otherPanelKey: this.panelKey === 'leftPanel' ? 'rightPanel': 'leftPanel',
-                    srcClient: await getClient(this.panelAppId, this.adminAPIKey(this.panelAppId), this.panelServer),
-                    dstClient: this.dstAppId ? await getClient(this.dstAppId, this.adminAPIKey(this.dstAppId), this.panelServer) : null,
+                    srcClient: await getClient(this.panelAppId, this.adminAPIKey(this.panelAppId), this.panelServer, this.userId(this.panelAppId)),
+                    dstClient: this.dstAppId ? await getClient(this.dstAppId, this.adminAPIKey(this.dstAppId), this.panelServer, this.userId(this.dstAppId)) : null,
                     query: this.$store.state.panels.query,
                     hitsPerPage: !this.limitCopy.enabled ? batchSize : Math.min(batchSize, this.limitCopy.nbHits),
                     inReplicaCopy: this.inReplicaCopy,
@@ -227,7 +230,7 @@
                     this.$store.commit(`${this.indexCommitPrefix}/resetIndexSettings`);
                 }
 
-                if (this.sameAppCopyMethod) {
+                if (this.sameAppCopyMethod && !this.userId(config.srcAppId) && !this.userId(config.dstAppId)) {
                     this.tasksGroup = await this.sameAppCopy(config);
                 } else {
                     this.tasksGroup = await this.differentAppCopy(config);

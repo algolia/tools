@@ -62,7 +62,7 @@
                 });
             },
             save: async function () {
-                const index = await getSearchIndex(this.appId, this.apiKey, this.indexName, this.server);
+                const index = await getSearchIndex(this.appId, this.apiKey, this.indexName, this.server, this.userId);
                 try {
                     let task;
                     if (this.action === 'enableAllRules') {

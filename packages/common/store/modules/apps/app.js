@@ -7,6 +7,7 @@ export default function (appId, adminApiKey, lastIndexName) {
         state: {
             key: adminApiKey,
             lastIndexName: lastIndexName,
+            userId: null,
             __app_name: '',
             __app_owner: '',
         },
@@ -19,6 +20,9 @@ export default function (appId, adminApiKey, lastIndexName) {
             },
             setAppOwner: function (state, payload) {
                 Vue.set(state, '__app_owner', payload);
+            },
+            setUserId: function (state, payload) {
+                Vue.set(state, 'userId', payload);
             },
             addIndex: function (state, payload) {
                 const indexName = payload;

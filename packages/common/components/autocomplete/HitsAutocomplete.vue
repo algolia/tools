@@ -50,7 +50,7 @@
         },
         methods: {
             refine: async function (query) {
-                const index = await getSearchIndex(this.appId, this.apiKey, this.indexName, this.server);
+                const index = await getSearchIndex(this.appId, this.apiKey, this.indexName, this.server, this.userId);
                 const res = await index.customSearch({
                     query,
                     ...(this.params || {}),

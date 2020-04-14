@@ -145,7 +145,7 @@
                 return synonym;
             },
             save: async function () {
-                const index = await getSearchIndex(this.appId, this.apiKey, this.indexName);
+                const index = await getSearchIndex(this.appId, this.apiKey, this.indexName, this.server, this.userId);
                 const task = await index.saveSynonym(this.getNewSynonym(), { forwardToReplicas: this.forwardToReplicas });
                 this.saving = true;
                 await index.waitTask(task['taskID']);

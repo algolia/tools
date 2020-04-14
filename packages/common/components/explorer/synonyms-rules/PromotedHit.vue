@@ -49,7 +49,7 @@
         },
         created: async function () {
             if (!this.hit) {
-                const index = await getSearchIndex(this.appId, this.apiKey, this.indexName);
+                const index = await getSearchIndex(this.appId, this.apiKey, this.indexName, this.server, this.userId);
                 try {
                     this.fetched = await index.getObject(this.id);
                 } catch (e) {}

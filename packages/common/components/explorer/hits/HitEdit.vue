@@ -83,7 +83,7 @@
                 this.nbErrors = annotations.length;
             },
             save: async function () {
-                const index = await getSearchIndex(this.appId, this.apiKey, this.indexName, this.server);
+                const index = await getSearchIndex(this.appId, this.apiKey, this.indexName, this.server, this.userId);
                 const hit = JSON.parse(this.newHit);
                 const hits = Array.isArray(hit) ? hit : [hit];
                 const res = index.saveObjects(hits, {autoGenerateObjectIDIfNotExist: true});

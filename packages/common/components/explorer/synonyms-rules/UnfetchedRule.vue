@@ -37,7 +37,7 @@
         },
         methods: {
             getRule: async function () {
-                const index = await getSearchIndex(this.appId, this.apiKey, this.indexName, this.server);
+                const index = await getSearchIndex(this.appId, this.apiKey, this.indexName, this.server, this.userId);
                 this.rule = await index.getRule(this.ruleId);
             }
         }

@@ -16,6 +16,7 @@
                 <div class="flex flex-wrap justify-start items-center">
                     <app-selector v-model="appId" class="mb-12" />
                     <index-selector v-model="indexName" :app-id="appId" class="ml-12 mb-12" />
+                    <user-selector v-model="panelUserId" :app-id="appId" class="ml-12 mb-12" />
 
                     <index-new
                         v-if="canWrite"
@@ -24,7 +25,7 @@
                         :api-key="panelAdminAPIKey"
                         @onIndexCreated="onIndexCreated"
                     />
-                    <index-delete v-if="canWrite && !isReplica" class="mb-12 pb-4" :panel-key="panelKey" />
+                    <index-delete v-if="canWrite && !isReplica" class="mb-12 pb-4" :panel-key="panelKey" :user-id="panelUserId" />
                     <button v-if="$store.state.panels.splitMode && !sameIndexOnEachPanel && panelKey === 'leftPanel'"
                             @click="$store.commit('panels/rightFromLeft')"
                             class="block ml-8 mb-12 pb-4 relative group"
@@ -113,6 +114,7 @@
     import AppSelector from "common/components/selectors/AppSelector";
     import IndexSelector from "common/components/selectors/IndexSelector";
     import ServerSelector from "common/components/selectors/ServerSelector";
+    import UserSelector from "common/components/selectors/UserSelector";
     import Facets from "common/components/explorer/facets/Facets";
 
     import FlipLeftIcon from "common/icons/flip-left.svg";
@@ -147,7 +149,8 @@
             ServerSelector,
             MaximizeIcon,
             MinimizeIcon,
-            Facets
+            Facets,
+            UserSelector,
         },
         data: function () {
             return {

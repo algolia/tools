@@ -63,10 +63,11 @@
             deleteIndex: async function () {
                 if (this.panelIndexName !== this.indexNameToDelete) return;
 
-                const client = await getClient(this.panelAppId, this.panelAdminAPIKey);
-                const res = client.customInitIndex(this.indexNameToDelete).delete();
+                const client = await getClient(this.panelAppId, this.panelAdminAPIKey, this.panelServer, this.panelUserId);
+                const index = client.customInitIndex(this.indexNameToDelete);
+                const res = await index.delete();
                 this.pendingDeletion = true;
-                await res.wait();
+                await index.waitTask(res.taskID);
                 this.pendingDeletion = false;
                 this.deletingIndex = false;
                 const indexes = await client.listIndices({

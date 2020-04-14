@@ -110,7 +110,7 @@
                 }
                 if (!this.isSearchable) return;
 
-                const index = await getSearchIndex(this.appId, this.$store.state.apps[this.appId].key, this.indexName);
+                const index = await getSearchIndex(this.appId, this.$store.state.apps[this.appId].key, this.indexName, this.server, this.userId);
 
                 const res = await index.customSearchForFacetValues({
                     facetName: this.facetName,

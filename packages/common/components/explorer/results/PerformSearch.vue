@@ -3,6 +3,7 @@
         :app-id="appId"
         :index-name="indexName"
         :api-key="apiKey"
+        :user-id="userId"
         @onFetchSettings="indexSettings = $event"
     />
 </template>
@@ -19,7 +20,7 @@
     export default {
         components: {SettingsLoader},
         props: [
-            'appId', 'indexName', 'apiKey', 'server', 'query', 'method',
+            'appId', 'indexName', 'apiKey', 'server', 'query', 'method', 'userId',
             'noSignature',
             'searchParams',
             'titleAttributeName',
@@ -61,8 +62,8 @@
                     });
                 });
             },
-            server: function (o, n) { if (o !== n) this.triggerSearch(); this.triggerAnalyseSearch(); },
-            method: function (o, n) { if (o !== n) this.triggerSearch(); this.triggerAnalyseSearch(); },
+            server: function (o, n) { if (o !== n) this.init(); },
+            method: function (o, n) { if (o !== n) this.init(); },
             searchParamsWithDefaults: function (o, n) {
                 if (JSON.stringify(o) !== JSON.stringify(n)) this.triggerSearch();
             },
@@ -72,6 +73,7 @@
             appId: function (o, n) { if (o !== n) this.init() },
             indexName: function (o, n) { if (o !== n) this.init() },
             apiKey: function (o, n) { if (o !== n)  this.init() },
+            userId: function (o, n) { if (o !== n) this.init(); },
         },
         computed: {
             rankingInfoAnalyzer: function () {
@@ -149,7 +151,7 @@
                 const method = this.method === 'search' ? 'customSearch' : 'customBrowse';
 
                 const requestNumber = this.requestNumber++;
-                const index = await getSearchIndex(this.appId, this.apiKey, this.indexName, this.server, this.noSignature);
+                const index = await getSearchIndex(this.appId, this.apiKey, this.indexName, this.server, this.userId, this.noSignature);
 
                 index[method](this.searchParamsWithDefaults).then(async (res) => {
                     if (this.requestNumberReceived > requestNumber) return;
@@ -192,7 +194,7 @@
                     return;
                 }
 
-                const index = await getSearchIndex(this.appId, this.apiKey, this.indexName, this.server, this.noSignature);
+                const index = await getSearchIndex(this.appId, this.apiKey, this.indexName, this.server, this.userId, this.noSignature);
                 const requestNumberAnalysis = this.requestNumberAnalysis++;
 
                 index[method](this.searchParamsForAnalysis).then((res) => {

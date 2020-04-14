@@ -38,8 +38,8 @@ function getHosts(appId, apikey, server) {
 
 }
 
-export async function getClient(appId, apiKey, server, noSignature) {
-    const cacheKey = `${appId}-${apiKey}-${server}-${noSignature}`;
+export async function getClient(appId, apiKey, server, userId, noSignature) {
+    const cacheKey = `${appId}-${apiKey}-${server}-${userId}-${noSignature}`;
     if (clientCache[cacheKey]) return clientCache[cacheKey];
 
     let headers = {};
@@ -63,10 +63,30 @@ export async function getClient(appId, apiKey, server, noSignature) {
     const client = addMethods(baseClient, {
         customInitIndex: function (base) {
             return function (indexName) {
+                const mcmMethodsNames = ['saveObjects', 'deleteObject', 'getObject', 'getObjects', 'waitTask', 'setSettings'];
                 const index = base.initIndex(indexName);
+
+                mcmMethodsNames.forEach((methodName) => {
+                    const mcmMethod = index[methodName];
+                    index[methodName] = function (param, requestOptions) {
+                        const options = requestOptions || {};
+                        const headers = options.headers || {};
+                        if (this.userId() !== undefined) headers['X-Algolia-User-ID'] = this.userId();
+                        if (methodName !== 'setSettings') options.headers = headers;
+                        const promise = mcmMethod(param, options);
+                        const waitMethod = promise.wait;
+                        promise.wait = () => waitMethod({headers});
+
+                        return promise;
+                    }
+                });
+
                 return {
                     ...index,
                     ...customIndexMethods,
+                    userId: function () {
+                        return userId || undefined;
+                    }
                 }
             };
         }
@@ -77,10 +97,10 @@ export async function getClient(appId, apiKey, server, noSignature) {
 }
 
 // todo no need to cache this, only the client matters
-export async function getSearchIndex(appId, apiKey, indexName, server, noSignature) {
-    const cacheKey = `${appId}-${apiKey}-${indexName}-${server}-${noSignature}`;
+export async function getSearchIndex(appId, apiKey, indexName, server, userId, noSignature) {
+    const cacheKey = `${appId}-${apiKey}-${indexName}-${server}-${userId}-${noSignature}`;
     if (indexCache[cacheKey]) return indexCache[cacheKey];
-    const client = await getClient(appId, apiKey, server, noSignature);
+    const client = await getClient(appId, apiKey, server, userId, noSignature);
     const index = client.customInitIndex(indexName);
 
     indexCache[cacheKey] = index;

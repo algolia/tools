@@ -188,7 +188,7 @@
                     this.allObjs = [];
                 }
 
-                const index = await getSearchIndex(this.appId, this.apiKey, this.indexName);
+                const index = await getSearchIndex(this.appId, this.apiKey, this.indexName, this.server, this.userId);
                 const hitsPerPage = loadAll ? 1000 : 20;
                 const res = await index[this.methodName](this.query, {
                     page: page,

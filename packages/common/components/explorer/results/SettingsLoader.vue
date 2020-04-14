@@ -11,7 +11,7 @@
 
     export default {
         name: 'SettingsLoader',
-        props: ['appId', 'indexName', 'apiKey'],
+        props: ['appId', 'indexName', 'apiKey', 'userId'],
         mixins: [
             indexInfoMixin,
         ],
@@ -71,7 +71,7 @@
                 if (!this.appId || !this.apiKey);
 
                 const signature = await getSignature(this.appId);
-                const analyze = await analyseIndex(this.appId, this.apiKey, this.indexName, signature);
+                const analyze = await analyseIndex(this.appId, this.apiKey, this.indexName, this.userId, signature);
                 const keysIndexer = new searchIndexer();
                 analyze.keys.forEach(function (key) {
                     keysIndexer.addString(key);

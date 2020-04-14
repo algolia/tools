@@ -17,6 +17,14 @@ export default {
                 });
             }
         },
+        panelUserId: {
+            get () {
+                return this.$store.state.apps[this.panelAppId].userId || null;
+            },
+            set(value) {
+                this.$store.commit(`apps/${this.appId}/setUserId`, value);
+            }
+        },
         trackedObjects: {
             get () {
                 return this.$store.state.panels.trackedObjects || [];

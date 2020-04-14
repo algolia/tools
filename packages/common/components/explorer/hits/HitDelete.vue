@@ -37,7 +37,7 @@
         },
         methods: {
             deleteHit: async function () {
-                const index = await getSearchIndex(this.appId, this.apiKey, this.indexName, this.server);
+                const index = await getSearchIndex(this.appId, this.apiKey, this.indexName, this.server, this.userId);
                 const task = await index.deleteObject(this.hit.objectID);
                 this.saving = true;
                 await index.waitTask(task['taskID']);

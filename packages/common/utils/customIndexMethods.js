@@ -105,6 +105,8 @@ const disjunctiveSearch = async function (params) {
     });
 
     const requests = getDisjunctiveRequests(this.indexName, disjunctiveFacets, refinedFacets, paramsWithoutDisjunctiveFacets);
+    const requestOptions = {};
+    if (this.userId() !== undefined) requestOptions.headers = {'X-Algolia-User-ID': this.userId()};
 
     const res = await this.transporter.read({
         method: 'POST',
@@ -113,10 +115,11 @@ const disjunctiveSearch = async function (params) {
             requests: requests,
             strategy: 'none'
         },
-    });
+    }, requestOptions);
 
     const newRes = res.results[0];
-    newRes.disjunctiveFacets = JSON.parse(JSON.stringify(newRes.facets));
+
+    newRes.disjunctiveFacets = JSON.parse(JSON.stringify(newRes.facets || {}));
 
     refinedFacets.forEach((facetName, i) => {
         newRes.disjunctiveFacets[facetName] = res.results[i + 1].facets[facetName];
@@ -136,6 +139,7 @@ const customSearch = function (params) {
     if (newParams.disjunctiveFacets && newParams.disjunctiveFacets.length > 0) return this.disjunctiveSearch(newParams);
     delete (newParams.disjunctiveFacets);
 
+    if (this.userId() !== undefined) newParams.headers = {'X-Algolia-User-ID': this.userId()};
     return this.search(newParams.query || '', newParams);
 };
 
@@ -148,11 +152,14 @@ const customBrowse = function (params) {
     const data = { params: serializeQueryParameters(newParams) };
     if (cursor) data.cursor = cursor;
 
+    const requestOptions = {};
+    if (this.userId() !== undefined) requestOptions.headers = {'X-Algolia-User-ID': this.userId()};
+
     return this.transporter.read({
         method: 'POST',
         path: encode('/1/indexes/%s/browse', this.indexName),
         data: data,
-    });
+    }, requestOptions);
 };
 
 const customSearchForFacetValues = function (args) {
@@ -161,6 +168,7 @@ const customSearchForFacetValues = function (args) {
         facetQuery,
         ...newParams
     } = getNewParams(args);
+    if (this.userId() !== undefined) newParams.headers = {'X-Algolia-User-ID': this.userId()};
     return this.searchForFacetValues(facetName, facetQuery, newParams);
 };
 
