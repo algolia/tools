@@ -197,13 +197,22 @@
                 const hit = this.srcObjectExample;
                 let s = 'return {\n';
 
-                function getValue(key, varName, value) {
+                function getValue(key, varNames, value) {
+                    const finalVarName = varNames.join('.');
                     if (isString(value) && isNumeric(value)) {
-                        return `parseFloat(${varName}),\n`;
+                        if (varNames.length <= 2) {
+                            return `${varNames[0]} !== undefined ? parseFloat(${finalVarName}) : undefined,\n`;
+                        } else {
+                            return `parseFloat(${finalVarName}),\n`;
+                        }
                     } else if (Array.isArray(value)) {
-                        return `${varName}.map((el) => {\n    return el;  \n  }),\n`;
+                        return `(${finalVarName} || []).map((el) => {\n    return el;  \n  }),\n`;
                     } else {
-                        return `${varName},\n`;
+                        if (varNames.length <= 2) {
+                            return `${varNames[0]} !== undefined ? ${finalVarName} : undefined,\n`;
+                        } else {
+                            return `${finalVarName},\n`;
+                        }
                     }
                 }
 
@@ -218,7 +227,7 @@
                             const hasAttrs = keys.includes('attrs');
 
                             if (keys.length === 1 && !hasAttrs) {
-                                s += `  ${key}: ${getValue(key, `${refObjVarName}.${keys[0]}`, value[keys[0]])}`;
+                                s += `  ${key}: ${getValue(key, [refObjVarName, keys[0]], value[keys[0]])}`;
                                 return;
                             }
 
@@ -226,19 +235,19 @@
                             if (hasAttrs) {
                                 const attrKeys = Object.keys(value.attrs);
                                 attrKeys.forEach((k) => {
-                                    s += `    ${k}: ${getValue(k, `${refObjVarName}.attrs.${k}`, value[k])}`;
+                                    s += `    ${k}: ${getValue(k, [refObjVarName, 'attrs', k], value[k])}`;
                                 });
                             }
 
                             keys.filter((k) => k !== 'attrs' && (k !== 'value' || value[k])).forEach((k) => {
-                                s += `    ${k}: ${getValue(k, `${refObjVarName}.${k}`, value[k])}`;
+                                s += `    ${k}: ${getValue(k, [refObjVarName, k], value[k])}`;
                             });
                             s += `  },\n`;
                             return;
                         }
                     }
 
-                    s += `  ${key}: ${getValue(key, refObjVarName, value)}`;
+                    s += `  ${key}: ${getValue(key, [refObjVarName], value)}`;
                 });
 
                 s += '}';
