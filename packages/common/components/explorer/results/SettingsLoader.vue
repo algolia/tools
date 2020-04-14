@@ -63,9 +63,9 @@
                     }
                 }
 
-                this.$emit('onFetchSettings', settings);
-                this.$store.commit(`apps/${this.appId}/${this.indexName}/replaceIndexSettings`, settings);
-                this.$store.commit(`apps/${this.appId}/${this.indexName}/setAdvancedIndexSettings`, advancedSettings);
+                this.$emit('onFetchSettings', Object.freeze(settings));
+                this.$store.commit(`apps/${this.appId}/${this.indexName}/replaceIndexSettings`, Object.freeze(settings));
+                this.$store.commit(`apps/${this.appId}/${this.indexName}/setAdvancedIndexSettings`, Object.freeze(advancedSettings));
             },
             loadKeysIndexer: async function () {
                 if (!this.appId || !this.apiKey);

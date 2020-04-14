@@ -108,7 +108,7 @@
 
                 if (this.fetchFacets) {
                     const attributesForFaceting = this.indexSettings && this.indexSettings.attributesForFaceting ? this.indexSettings.attributesForFaceting : [];
-                    let facets = this.searchParams.facets || attributesForFaceting || [];
+                    let facets = (this.searchParams.facets || attributesForFaceting || []).slice(0, 50);
                     if (facets.some((facet) => facet === '*')) {
                         facets = attributesForFaceting;
                     }

@@ -94,6 +94,7 @@ const SettingsChecker = function() {
 
         if (!Array.isArray(value)) value = [value];
 
+        if (value.length > 50) return [];
         const array = value.map(cleanAttribute).flat();
 
         if (key === 'ranking') {
