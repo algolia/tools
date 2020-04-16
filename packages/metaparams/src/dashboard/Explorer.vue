@@ -30,6 +30,14 @@
             >
                 Checks ({{formatHumanNumber(nbChecks)}})
             </div>
+            <div
+                v-if="panelUserId"
+                class="mx-8 p-8"
+                :class="`${panelCurrentTab === 'mcm' ? '-mb-2 border-b-2 border-nebula-blue-opacity-80' : 'cursor-pointer'}`"
+                @click="panelCurrentTab = 'mcm'"
+            >
+                MCM
+            </div>
         </div>
         <div class="p-8">
             <perform-search
@@ -154,6 +162,10 @@
                 :indexSettings="indexSettings"
                 @onUpdateCount="onUpdateChecksCount"
             />
+            <mcm
+                v-if="panelCurrentTab === 'mcm'"
+                :panel-key="panelKey"
+            />
         </div>
     </div>
 </template>
@@ -167,10 +179,11 @@
     import Checks from "common/components/explorer/checks/Checks";
     import indexInfoMixin from "common/mixins/indexInfoMixin";
     import panelsMixin from "common/mixins/panelsMixin";
+    import Mcm from "./Mcm";
 
     export default {
         name: 'Explorer',
-        components: {Checks, Fetcher, Results, PerformSearch, ErrorMessage},
+        components: {Mcm, Checks, Fetcher, Results, PerformSearch, ErrorMessage},
         props: ['panelKey', 'readOnly'],
         mixins: [indexInfoMixin, panelsMixin],
         data: function () {
@@ -183,6 +196,11 @@
                 algoliaResponse: null,
                 analyseAlgoliaResponse: null,
             };
+        },
+        created: function () {
+            if (!this.panelUserId && this.panelCurrentTab === 'mcm') {
+                this.panelCurrentTab = 'hits';
+            }
         },
         computed: {
             appId: function () { // Needed for indexInfoMixin
