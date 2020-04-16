@@ -174,7 +174,7 @@
         },
         methods: {
             compute: function () {
-                const allTracked = [...(this.forcedTracked || []), ...this.trackedObjects];
+                const allTracked = [...(this.forcedTracked || []), ...this.trackedObjects].map((e) => e.replace(/\\\\/g, '\\'));
                 const leftOnOther = this.leftHits.map(() => -1);
                 const rightOnOther = this.rightHits.map(() => -1);
 
@@ -195,7 +195,7 @@
                             const facetName = parts[0];
                             const facetValue = parts.length > 1 ? parts[1] : '';
 
-                            if (hits[i].objectID === needle || (parts.length > 1 && hits[i][facetName] == facetValue)) {
+                            if (hits[i].objectID === needle || (parts.length > 1 && hits[i][facetName] == facetValue)) { // We don't want strict equality
                                 if (hitsTracked[i] === -1) hitsTracked[i] = needleIndex;
                                 if (trackedPositions[needleIndex] === -1) trackedPositions[needleIndex] = i;
                             }
