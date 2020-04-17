@@ -56,6 +56,18 @@
                 v-bind="$props"
                 v-on="$listeners"
             />
+
+            <div
+                v-if="searchResponse.query.length > 0"
+                class="flex"
+            >
+                <button
+                    class="block mb-24 text-nova-grey text-md bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out px-24 py-16 relative group mx-auto mt-48"
+                    @click="$emit('onShouldUpdateQuery', '')"
+                >
+                    Clear query: {{searchResponse.query}}
+                </button>
+            </div>
         </div>
     </div>
 </template>

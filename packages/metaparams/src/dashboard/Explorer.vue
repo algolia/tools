@@ -112,6 +112,7 @@
                 @onUpdateImageSize="indexImageSize = $event"
                 @onUpdateTitleAttributeName="indexTitleAttribute = $event"
                 @onUpdateAutoTitleAttributeName="indexAutoTitleAttributeName = $event"
+                @onShouldUpdateQuery="onShouldUpdateQuery($event)"
             />
             <fetcher
                 v-show="panelCurrentTab === 'synonyms'"
@@ -290,6 +291,13 @@
                     inputKey: key,
                 });
             },
+            onShouldUpdateQuery: function (query) {
+                if (this.panelKey === 'rightPanel' && this.$store.state.panels.twoInputs && this.$store.state.panels.comparePanels) {
+                    this.onSetParamValue('query', query);
+                } else {
+                    this.$store.commit("panels/setQuery", query);
+                }
+            }
         },
     }
 </script>
