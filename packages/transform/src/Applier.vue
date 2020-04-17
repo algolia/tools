@@ -49,7 +49,7 @@
                     </div>
                 </div>
                 <div v-if="errorMessage.length > 0" class="mt-24 border border-mars-1 mt-16 p-8 rounded">
-                    <div>{{errorMessage}}</div>
+                    <pre>{{errorMessage}}</pre>
                 </div>
             </div>
         </div>
@@ -115,14 +115,20 @@
                 };
 
                 for (let i = 0; i < hits.length; i++) {
-                    const newHit = await this.transformer.call(context, hits[i]);
+                    try {
+                        const newHit = await this.transformer.call(context, hits[i]);
 
-                    if (newHit === null) return;
+                        if (newHit === null) return;
 
-                    if (Array.isArray(newHit)) {
-                        newHits.push(...newHit);
-                    } else {
-                        newHits.push(newHit);
+                        if (Array.isArray(newHit)) {
+                            newHits.push(...newHit);
+                        } else {
+                            newHits.push(newHit);
+                        }
+                    } catch (e) {
+                        this.errorMessage = e.stack;
+                        this.tasksGroup = null;
+                        throw e;
                     }
                 }
 
