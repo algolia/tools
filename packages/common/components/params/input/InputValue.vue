@@ -24,6 +24,7 @@
     import InputAttribute from "./InputAttribute";
     import inputMixin from "../scripts/inputMixin";
     import InputDecompoundedAttributes from "./InputDecompoundedAttributes";
+    import InputIntegerSlider from "./InputIntegerSlider";
 
     export default {
         name: 'InputValue',
@@ -34,6 +35,7 @@
                     enum: InputParamValue,
                     boolean: InputParamValue,
                     integer: InputInteger,
+                    integer_slider: InputIntegerSlider,
                     enum_list: InputParamValue,
                     attributes_list: InputAttribute,
                     attribute: InputAttribute,
