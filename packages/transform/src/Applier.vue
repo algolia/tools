@@ -147,28 +147,6 @@
                     client.transporter.timeouts = {read: 60, write: 60, connect: 60};
                     const srcIndex = client.customInitIndex(this.indexInfo.indexName);
 
-                    const srcSettings = await srcIndex.getSettings();
-                    tasksGroup.addTask(new Task('Copy settings/synonyms/rules', async () => {
-                        delete(srcSettings.replicas);
-                        const promises = [
-                            dstIndex.setSettings(srcSettings).wait(),
-                            await srcIndex.browseSynonyms({
-                                hitsPerPage: 1000,
-                                batch: (synonyms) => {
-                                    dstIndex.saveSynonyms(synonyms, {replaceExistingSynonyms: false});
-                                }
-                            }),
-                            await srcIndex.browseRules({
-                                hitsPerPage: 1000,
-                                batch: (rules) => {
-                                    dstIndex.saveRules(rules, {clearExistingRules: false});
-                                }
-                            }),
-                        ];
-
-                        await Promise.all(promises);
-                    }));
-
                     const browseTask = new Task('Copy records');
 
                     browseTask.setCallback(async () => {
