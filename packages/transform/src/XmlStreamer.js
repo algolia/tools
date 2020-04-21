@@ -44,18 +44,27 @@ export default function (userRootItem, onHit) {
             }
         } else if (stack.length > 0) {
             const finalNodeName = getFinalNodeName(nodeName);
-            const currentObject = stack[stack.length - 1];
-            if (Object.keys(node.attributes).length > 0) {
-                currentObject[finalNodeName] = {
-                    attrs: Object.keys(node.attributes).reduce((acc, key) => ({
-                        ...acc,
-                        [getFinalNodeName(key)]: node.attributes[key],
-                    }), {}),
-                };
-            } else {
+            let currentObject = stack[stack.length - 1];
+
+            if (currentObject[finalNodeName] === undefined) {
                 currentObject[finalNodeName] = {};
+                currentObject = currentObject[finalNodeName];
+            } else {
+                if (!Array.isArray(currentObject[finalNodeName])) {
+                    currentObject[finalNodeName] = [currentObject[finalNodeName]];
+                }
+                currentObject[finalNodeName].push({});
+                currentObject = currentObject[finalNodeName][currentObject[finalNodeName].length - 1];
             }
-            stack.push(currentObject[finalNodeName]);
+
+            if (Object.keys(node.attributes).length > 0) {
+                currentObject.attrs = Object.keys(node.attributes).reduce((acc, key) => ({
+                    ...acc,
+                    [getFinalNodeName(key)]: node.attributes[key],
+                }), {});
+            }
+
+            stack.push(currentObject);
         }
     };
 

@@ -278,8 +278,12 @@
                     });
 
                     const stream = new FileStreamer(this.file, () => {
-                        this.xmlFile = this.file;
-                        this.dataset = Object.freeze(hits);
+                        if (hits.length <= 0) {
+                            this.xmlError = `No node &lt;${this.xmlRootNode}&gt; found in the first 10MB of the file.<br>Change it and press enter`;
+                        } else {
+                            this.xmlFile = this.file;
+                            this.dataset = Object.freeze(hits);
+                        }
                         this.isLoadingFile = false;
                         parser.close();
                     });
