@@ -1,24 +1,16 @@
 <template>
     <div class="mt-24">
-        <div v-if="!tasksGroup && !displayCopyOption" class="">
+        <div v-if="!tasksGroup && !displayCopyOption" class="flex">
             <button
                 v-if="!readOnly && isIndexSettingsDirty"
-                @click="saveSettings(false)"
+                @click="saveSettings()"
                 class="block bg-white rounded border border-saturn-2 text-saturn-1 shadow-sm hover:shadow transition-fast-out mr-8 px-16 p-8 text-sm relative group"
             >
                 Save in current index
                 <tooltip :position="panelKey === 'leftPanel' ? 'left' : 'right'">Launch a setSettings immediately</tooltip>
             </button>
             <button
-                v-if="!readOnly && isIndexSettingsDirty"
-                @click="saveSettings(true)"
-                class="mt-8 block bg-white rounded border border-saturn-2 text-saturn-1 shadow-sm hover:shadow transition-fast-out mr-8 px-16 p-8 text-sm relative group"
-            >
-                Save in current index and all replicas
-                <tooltip :position="panelKey === 'leftPanel' ? 'left' : 'right'">Launch a setSettings immediately</tooltip>
-            </button>
-            <button
-                class="mt-8 block bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out mr-8 px-16 p-8 text-sm relative group"
+                class="block bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out mr-8 px-16 p-8 text-sm relative group"
                 @click="displayCopyOption = true"
             >
                 {{ isIndexSettingsDirty ? 'Save in copy' : 'Copy Index' }}
@@ -394,7 +386,7 @@
 
                 return tasksGroup;
             },
-            saveSettings: async function (forwardToReplicas) {
+            saveSettings: async function () {
                 const config = await this.getConfig();
                 const tasksGroup = new TasksGroup(`Update settings of ${config.srcAppId}:${config.srcIndexName}`);
 
@@ -411,7 +403,7 @@
                 const settings = Object.assign(defaultSettings, newSettings);
 
                 tasksGroup.addTask(new Task('Set settings', async () => {
-                    const res = await config.panelIndex.setSettings(settings, {forwardToReplicas: !!forwardToReplicas});
+                    const res = await config.panelIndex.setSettings(settings);
                     tasksGroup.addAlgoliaTaskId(res.taskID);
                 }));
 
