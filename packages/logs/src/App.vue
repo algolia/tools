@@ -131,6 +131,7 @@
                   apiKey: true,
                   url: true,
                   ip: true,
+                  userToken: true,
                 },
                 servers: ['-1'],
                 isStopBecauseOfOpen: false,
@@ -360,6 +361,15 @@
                         return true;
                     }
                     else if (this.searchFields.userAgent && log.params.all['User-Agent'] && log.params.all['User-Agent'].includes(query)) {
+                        return true;
+                    }
+                    else if (this.searchFields.userToken && log.params.all.userToken && log.params.all.userToken.includes(query)) {
+                        return true;
+                    }
+                    else if (this.searchFields.userToken && log.params.all['X-Algolia-UserToken'] && log.params.all['X-Algolia-UserToken'].includes(query)) {
+                        return true;
+                    }
+                    else if (this.searchFields.userToken && log.params.all['x-algolia-usertoken'] && log.params.all['x-algolia-usertoken'].includes(query)) {
                         return true;
                     }
                     else if (this.searchFields.apiKey && log.params.headers['X-Algolia-Api-Key'] && log.params.headers['X-Algolia-Api-Key'].includes(query)) {
