@@ -4,6 +4,13 @@ query:
   value_type: string
   default: ''
 
+extraChartsAttributes:
+  scope:
+    - search
+  value_type: attributes_list
+  default: []
+  settings_default: null
+
 searchableAttributes:
   scope: settings
   value_type: attributes_list

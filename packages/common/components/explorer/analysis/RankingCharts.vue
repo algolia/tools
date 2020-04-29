@@ -73,7 +73,10 @@
                 return new RankingInfoAnalyser(this.indexSettings);
             },
             criteria: function () {
-                return this.rankingInfoAnalyzer.getActualCriteria(this.searchParams);
+                return [
+                    ...this.rankingInfoAnalyzer.getActualCriteria(this.searchParams),
+                    ...(this.searchParams.extraChartsAttributes || []),
+                ];
             },
             searchableAttributes: function () {
                 return this.indexSettings.searchableAttributes || this.indexSettings.attributesToIndex || [];

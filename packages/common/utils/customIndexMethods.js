@@ -7,6 +7,7 @@ const getNewParams = function (params) {
         newQuery.optionalWords = params.query;
     }
     delete(newQuery['optionalWords=query']);
+    delete(newQuery['extraChartsAttributes']);
 
     return newQuery;
 };
