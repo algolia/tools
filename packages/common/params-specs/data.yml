@@ -9,7 +9,6 @@ extraChartsAttributes:
     - search
   value_type: attributes_list
   default: []
-  settings_default: null
 
 searchableAttributes:
   scope: settings
