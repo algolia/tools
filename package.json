@@ -18,6 +18,7 @@
     "packages/*"
   ],
   "scripts": {
+    "build": "yarn lerna run build",
     "start": "node server.js"
   }
 }
