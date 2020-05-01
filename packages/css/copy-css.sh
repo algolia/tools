@@ -6,6 +6,7 @@ cp ./dist/all.css ./favicon.ico ../index-size/public/;
 cp ./dist/all.css ./favicon.ico ../logs/public/;
 cp ./dist/all.css ./favicon.ico ../metaparams/public/;
 cp ./dist/all.css ./favicon.ico ../infra-watch/public/;
+cp ./dist/all.css ./favicon.ico ../infra-mercari/public/;
 cp ./dist/all.css ./favicon.ico ../relevance-testing/public/;
 cp ./dist/all.css ./favicon.ico ../index-analyzer/public/;
 cp ./dist/all.css ./favicon.ico ../attribute-proximity/public/;

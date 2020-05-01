@@ -38,6 +38,7 @@ app.use('/index-size', serveStatic(__dirname + "/packages/index-size/dist"));
 app.use('/infra-watch', serveStatic(__dirname + "/packages/infra-watch/dist"));
 app.use('/transform', serveStatic(__dirname + "/packages/transform/dist"));
 app.use('/insights-ui', serveStatic(__dirname + "/packages/insights-ui/dist"));
+app.use('/mercari', serveStatic(__dirname + "/packages/mercari/dist"));
 app.use('/attribute-proximity', serveStatic(__dirname + "/packages/attribute-proximity/dist"));
 
 // Legacy
