@@ -9,6 +9,7 @@
 
 <script>
     import LineChart from "common/components/explorer/analysis/LineChart";
+    import {formatHumanNumber} from "common/utils/formatters";
 
     export default {
         name: 'UsageGraph',
@@ -64,6 +65,11 @@
                     tooltips: {
                         mode: 'index',
                         intersect: false,
+                        callbacks: {
+                            label: (tooltipItem, data) => {
+                                return formatHumanNumber(tooltipItem.yLabel);
+                            },
+                        },
                     },
                     legend: {
                         labels: {
@@ -78,7 +84,7 @@
                                 max: undefined,
                                 precision: undefined,
                                 callback: (value) => {
-                                    return value;
+                                    return formatHumanNumber(value);
                                 },
                                 fontSize: 10,
                             },
