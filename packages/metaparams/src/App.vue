@@ -130,7 +130,7 @@
 
                     let appId, indexName;
                     for (appId in state.apps) {
-                        this.$store.commit("apps/addAppId", {appId: appId});
+                        this.$store.commit("apps/addAppId", appId);
                         if (state.apps[appId].lastIndexName) {
                             this.$store.commit(`apps/${appId}/setLastIndexName`, state.apps[appId].lastIndexName);
                         }

@@ -1,15 +1,17 @@
 import index from './index'
 import Vue from 'vue'
 
-export default function (appId, adminApiKey, lastIndexName) {
+export default function (appId, lastIndexName) {
     return {
         namespaced: true,
         state: {
-            key: adminApiKey,
+            key: null,
+            ukey: null,
             lastIndexName: lastIndexName,
             userId: null,
             __app_name: '',
             __app_owner: '',
+            __app_uid: '',
         },
         mutations: {
             setLastIndexName(state, payload) {
@@ -21,8 +23,14 @@ export default function (appId, adminApiKey, lastIndexName) {
             setAppOwner: function (state, payload) {
                 Vue.set(state, '__app_owner', payload);
             },
+            setUId: function (state, payload) {
+                Vue.set(state, '__app_uid', payload);
+            },
             setUserId: function (state, payload) {
                 Vue.set(state, 'userId', payload);
+            },
+            setKey: function (state, payload) {
+                Vue.set(state, payload.keyName, payload.value);
             },
             addIndex: function (state, payload) {
                 const indexName = payload;

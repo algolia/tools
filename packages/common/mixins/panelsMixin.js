@@ -11,9 +11,9 @@ export default {
                 return this.$store.state.apps[this.panelAppId].key;
             },
             set(value) {
-                this.$store.commit("apps/addAppId", {
-                    appId: this.panelAppId,
-                    apiKey: value,
+                this.$store.commit(`apps/${this.appId}/setKey`, {
+                    keyName: 'key',
+                    value: value,
                 });
             }
         },

@@ -112,7 +112,7 @@
                             query = res.query;
                             appId = res.appId;
                             indexName = res.indexName;
-                            this.$store.commit("apps/addAppId", {appId: appId});
+                            this.$store.commit("apps/addAppId", appId);
                             this.$store.commit(`apps/${appId}/addIndex`, indexName);
                             this.$store.commit(`panels/${this.panelKey}/setPanelConfig`, {appId: appId, indexName: indexName});
                             this.$nextTick(() => {

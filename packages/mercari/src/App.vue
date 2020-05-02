@@ -5,8 +5,19 @@
                 <display-config class="mx-16 mt-0 ml-auto"/>
             </app-header>
             <app-management />
-            <div class="mx-24">
-                <div class="mx-auto m-24 pb-48" v-if="apps.length > 0">
+            <div class="mx-24 pb-48">
+                <div class="mx-auto m-24" v-if="apps.length > 0">
+                    <template v-for="app in appsWithAdminKey">
+                        <template v-for="index in app.indices">
+                            <index-loader
+                                :app-id="app.application_id"
+                                :index-name="index.name"
+                                :config="config"
+                                @onUpdateSettings="$set(appsState[$event.appId].indices[$event.indexName], 'settings', $event.settings)"
+                                @onUpdateUsage="$set(appsState[$event.appId].indices[$event.indexName], 'usage', $event.usage)"
+                            />
+                        </template>
+                    </template>
                     <h2 class="text-center mb-24">Infra overview: {{config.email}}</h2>
                     <div class="flex">
                         <div class="bg-white rounded border border-proton-grey-opacity-60 mx-auto">
@@ -26,53 +37,37 @@
                                 <tr class="border-b border-proton-grey-opacity-40">
                                     <td class="p-8 align-top">Infra</td>
                                     <td v-for="app in apps" class="p-8 align-top">
+                                        <div>{{app.nbClusters}} clusters</div>
+                                        <div class="mb-12">{{app.nbDsns}} DSNs</div>
                                         <div v-for="cluster in app.clusters_and_replicas_names">{{cluster}}</div>
                                     </td>
                                 </tr>
                                 <tr class="border-b border-proton-grey-opacity-40">
-                                    <td class="p-8 align-top">nbIndices</td>
+                                    <td class="p-8 align-top">Number of indices</td>
                                     <td v-for="app in apps" class="p-8 align-top">
-                                        <div v-if="app.hasAdminKeyRegistered">
-                                            {{app.indices.length}}
-                                            {{app.indices.length > 1 ? 'indices': 'index'}}
-                                            -
-                                            {{formatHumanNumber(app.indices.map((index) => index.fileSize).reduce((a,b) => a + b, 0), 0, ['B', 'KB', 'MB', 'GB'], 1000)}}
-                                        </div>
-                                        <div v-else class="">unregistered appID</div>
+                                        <div v-if="app.indices">{{app.indices.length}} {{app.indices.length > 1 ? 'indices': 'index'}}</div>
+                                        <div v-else class="">unregistered</div>
+                                    </td>
+                                </tr>
+                                <tr class="border-b border-proton-grey-opacity-40">
+                                    <td class="p-8 align-top">Total File size</td>
+                                    <td v-for="app in apps" class="p-8 align-top">
+                                        <div v-if="app.fileSize">{{formatHumanNumber(app.fileSize, 0, ['B', 'KB', 'MB', 'GB'], 1000)}}</div>
+                                        <div v-else class="">unregistered</div>
                                     </td>
                                 </tr>
                                 <tr v-for="conf in config.engineConfs" class="border-b border-proton-grey-opacity-40">
                                     <td class="p-8 align-top w-1    ">{{conf}}</td>
                                     <td v-for="app in apps" class="p-8 align-top">
-                                        {{JSON.stringify(app.engine_configuration[conf])}}
+                                        <span v-if="app.engine_configuration">
+                                            {{JSON.stringify(app.engine_configuration[conf])}}
+                                        </span>
                                     </td>
                                 </tr>
                             </table>
                         </div>
                     </div>
-                    <div v-for="app in appsWithAdminKey" class="mt-24">
-                        <h2 class="text-center mb-24">Indices: {{app.application_id}} - {{app.name}}</h2>
-                        <div class="flex">
-                            <div class="bg-white rounded border border-proton-grey-opacity-60 mx-auto">
-                                <table>
-                                    <tr class="border-b border-proton-grey-opacity-40">
-                                        <td class="p-8 align-top">Name</td>
-                                        <td class="p-8 align-top">nbRecords</td>
-                                        <td class="p-8 align-top">dataSize</td>
-                                        <td class="p-8 align-top">fileSize</td>
-                                        <td class="p-8 align-top">nbShards</td>
-                                    </tr>
-                                    <tr class="border-b border-proton-grey-opacity-40" v-for="index in app.indices">
-                                        <td class="p-8 align-top">{{index.name}}</td>
-                                        <td class="p-8 align-top">{{formatHumanNumber(index.entries)}}</td>
-                                        <td class="p-8 align-top">{{formatHumanNumber(index.dataSize, 0, ['B', 'KB', 'MB', 'GB'], 1000)}}</td>
-                                        <td class="p-8 align-top">{{formatHumanNumber(index.fileSize, 0, ['B', 'KB', 'MB', 'GB'], 1000)}}</td>
-                                        <td class="p-8 align-top">{{index.nbShards}}</td>
-                                    </tr>
-                                </table>
-                            </div>
-                        </div>
-                        </div>
+                    <indices v-for="app in appsWithAdminKey" :app="app" :config="config" class="mt-24" />
                 </div>
             </div>
         </div>
@@ -88,13 +83,15 @@
     import {getKey} from "common/components/selectors/getClusterList";
     import algoliasearch from 'algoliasearch';
     import {formatHumanNumber} from "common/utils/formatters";
+    import IndexLoader from "./IndexLoader";
+    import Indices from "./Indices";
 
     export default {
         name: 'Home',
-        components: {AppManagement, DisplayConfig, InternalApp, AppHeader},
+        components: {Indices, IndexLoader, AppManagement, DisplayConfig, InternalApp, AppHeader},
         data: function () {
             return {
-                apps: [],
+                appsState: {},
                 formatHumanNumber,
                 config: {
                     email: 'etdev@mercari.com',
@@ -113,6 +110,8 @@
                         'min_big_gen_size_mb',
                         'mlock',
                     ],
+                    usagePeriod: 'month',
+                    usageMetrics: ['records', 'avg_processing_time']
                 }
             };
         },
@@ -120,6 +119,10 @@
             this.getApps();
         },
         computed: {
+            apps: function () {
+                const appIds = Object.keys(this.appsState).sort((a, b) => this.appsState[a].name.localeCompare(this.appsState[b].name));
+                return appIds.map((appId) => this.appsState[appId]);
+            },
             appsWithAdminKey: function () {
                 return this.apps.filter((app) => app.hasAdminKeyRegistered);
             }
@@ -129,9 +132,9 @@
                 if (this.$store.state.apps[appId]) return this.$store.state.apps[appId].key;
                 return null;
             },
-            getAppsDashboardInfo: async function (apps) {
+            getAppsDashboardInfo: async function () {
                 const backendEnpoint = process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT || 'https://tools-backend.algolia.com';
-                const res = await fetch(`${backendEnpoint}/apps/${apps.map((app) => app.application_id).join(',')}`, {
+                const res = await fetch(`${backendEnpoint}/apps/${Object.keys(this.apps).join(',')}`, {
                     credentials: 'include',
                     headers: {
                         "Content-Type": "application/json",
@@ -149,30 +152,39 @@
                 })
 
                 const ignoredAppIds = this.config.ignoreAppIds || [];
-                const apps = res.hits.filter((app) => {
-                    return !app.deleted && !ignoredAppIds.includes(app.application_id);
-                }).sort((a, b) => a.name.localeCompare(b.name));
+                const apps = {};
+                res.hits.forEach((app) => {
+                    if (!app.deleted && !ignoredAppIds.includes(app.application_id)) {
+                        app.nbDsns = app.clusters_and_replicas_names.filter((c) => c.startsWith('t')).length;
+                        app.nbClusters = app.clusters_and_replicas_names.filter((c) => c.startsWith('d')).length;
+                        app.apiKey = this.adminAPIKey(app.application_id);
+                        app.hasAdminKeyRegistered = !!app.apiKey;
+                        app.indices = {};
+                        apps[app.application_id] = app;
+                    }
+                })
 
-                const dashboardInfo = await this.getAppsDashboardInfo(apps);
+                this.appsState = apps;
 
-                for (let i = 0; i < apps.length; i++) {
-                    apps[i].engine_configuration = dashboardInfo[i].current_plan.engine_configuration;
-                    const apiKey = this.adminAPIKey(apps[i].application_id);
-                    apps[i].hasAdminKeyRegistered = !!apiKey;
-                    if (apiKey) {
-                        const appClient = algoliasearch(apps[i].application_id, apiKey);
-                        const indices = await appClient.listIndices();
-                        apps[i].indices = indices.items.sort((a, b) => b.fileSize - a.fileSize);
-                        apps[i].indices.map(async (index, indexPos) => {
-                            const algoliaIndex = appClient.initIndex(index.name);
-                            const settings = await algoliaIndex.getSettings({queryParameters: {advanced: 1}});
-                            this.$set(apps[i].indices[indexPos], 'nbShards', settings.nbShardsAuto > 1 ? settings.nbShardsAuto : (settings.nbShards || 1));
+                this.getAppsDashboardInfo(this.appIds).then((appsInfo) => {
+                    appsInfo.forEach((appInfo) => {
+                        this.$set(this.appsState[appInfo.application_id], 'engine_configuration', appInfo.current_plan.engine_configuration);
+                    });
+                });
+
+                for (let appId in this.appsState) {
+                    if (this.appsState[appId].apiKey) {
+                        const appClient = algoliasearch(this.appsState[appId].application_id, this.appsState[appId].apiKey);
+                        appClient.listIndices().then((indices) => {
+                            let fileSize = 0;
+                            indices.items.forEach((index) => {
+                                fileSize += index.fileSize;
+                                this.$set(this.appsState[appId].indices, index.name, index);
+                            });
+                            this.$set(this.appsState[appId], 'fileSize', fileSize);
                         });
                     }
                 }
-
-
-                this.apps = apps;
             }
         }
     }

@@ -68,10 +68,10 @@
         },
         created: function () {
             if (this.value) {
-                this.$store.commit("apps/addAppId", {appId: this.value});
+                this.$store.commit("apps/addAppId", this.value);
             } else if (this.appIds.length > 0) {
                 this.$emit('input', this.appIds[0]);
-                this.$store.commit("apps/addAppId", {appId: this.appIds[0]});
+                this.$store.commit("apps/addAppId", this.appIds[0]);
             }
         },
         methods: {
@@ -81,7 +81,7 @@
             onInput: function (e) {
                 this.query = '';
                 this.$emit('input', e);
-                this.$store.commit("apps/addAppId", {appId: e});
+                this.$store.commit("apps/addAppId", e);
             },
         }
     }

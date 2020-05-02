@@ -6,22 +6,18 @@ export default {
     modules: {},
     mutations: {
         addAppId(state, payload) {
-            const appId = payload.appId;
+            const appId = payload;
             const modulePath = ['apps', appId];
             const module = this._modules.get(modulePath);
-            const apiKey = payload.apiKey || null;
 
             if (module !== undefined && state[appId]) {
-                if (payload.apiKey) {
-                    Vue.set(state[appId], 'key', apiKey);
-                }
                 return; // Avoid having mutations registered twice
             }
 
             if (!state[appId]) {
-                this.registerModule(['apps', appId], app(appId, apiKey, null));
+                this.registerModule(['apps', appId], app(appId, null));
             } else {
-                this.registerModule(['apps', appId], app(appId, apiKey), { preserveState: true });
+                this.registerModule(['apps', appId], app(appId), { preserveState: true });
             }
 
             if (this.state.panels.leftPanel.appId === null) {

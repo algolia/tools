@@ -124,7 +124,10 @@
                 this.$root.$emit(`leftPanelUpdateAnalyseResponse`, algoliaResponse);
             },
             onUpdateApiKey: function (apiKey) {
-                this.$store.commit('apps/addAppId', { appId: this.appId, apiKey: apiKey });
+                this.$store.commit(`apps/${this.appId}/setKey`, {
+                    keyName: 'key',
+                    value: apiKey,
+                });
             },
         }
     }
