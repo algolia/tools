@@ -22,58 +22,23 @@
                     :config="config"
                     @onUpdateUsagePeriod="$set(config.usage, 'period', $event)"
                     @onUpdateEnabledGraph="$set(config.usage, 'enabledGraphs', $event)"
+                    @onUpdateDetailPerIndex="$set(config.usage, 'detailsPerIndex', $event)"
+                    @onUpdateUserEmail="$set(config, 'email', $event)"
                 />
-                <div v-if="apps.length > 0">
-                    <h2 class="text-center mb-24">Infra overview: {{config.email}}</h2>
-                    <div class="flex">
-                        <div class="bg-white rounded border border-proton-grey-opacity-60">
-                            <table>
-                                <tr class="border-b border-proton-grey-opacity-40">
-                                    <td class="p-8 align-top">appId</td>
-                                    <td v-for="app in apps" class="p-8 align-top">
-                                        {{app.application_id}}
-                                    </td>
-                                </tr>
-                                <tr class="border-b border-proton-grey-opacity-40">
-                                    <td class="p-8 align-top">appName</td>
-                                    <td v-for="app in apps" class="p-8 align-top">
-                                        {{app.name}}
-                                    </td>
-                                </tr>
-                                <tr class="border-b border-proton-grey-opacity-40">
-                                    <td class="p-8 align-top">Infra</td>
-                                    <td v-for="app in apps" class="p-8 align-top">
-                                        <div>{{app.nbClusters}} clusters</div>
-                                        <div class="mb-12">{{app.nbDsns}} DSNs</div>
-                                        <div v-for="cluster in app.clusters_and_replicas_names">{{cluster}}</div>
-                                    </td>
-                                </tr>
-                                <tr class="border-b border-proton-grey-opacity-40">
-                                    <td class="p-8 align-top">Number of indices</td>
-                                    <td v-for="app in apps" class="p-8 align-top">
-                                        <div v-if="app.indices !== undefined">{{Object.keys(app.indices).length}} {{Object.keys(app.indices).length > 1 ? 'indices': 'index'}}</div>
-                                        <div v-else class="">unregistered</div>
-                                    </td>
-                                </tr>
-                                <tr class="border-b border-proton-grey-opacity-40">
-                                    <td class="p-8 align-top">Total File size</td>
-                                    <td v-for="app in apps" class="p-8 align-top">
-                                        <div v-if="app.fileSize">{{formatHumanNumber(app.fileSize, 0, ['B', 'KB', 'MB', 'GB'], 1000)}}</div>
-                                        <div v-else class="">unregistered</div>
-                                    </td>
-                                </tr>
-                                <tr v-for="conf in config.engineConfs" class="border-b border-proton-grey-opacity-40">
-                                    <td class="p-8 align-top w-1    ">{{conf}}</td>
-                                    <td v-for="app in apps" class="p-8 align-top">
-                                        <span v-if="app.engine_configuration">
-                                            {{JSON.stringify(app.engine_configuration[conf])}}
-                                        </span>
-                                    </td>
-                                </tr>
-                            </table>
+                <div v-if="apps.length > 0" class="flex-grow">
+                    <div class="bg-white rounded border border-proton-grey-opacity-60">
+                        <panel-tabs
+                            v-model="currentTab"
+                            :options="[
+                                {value: 'overview', label: 'Infra overview'},
+                                {value: 'indices', label: 'Indices'},
+                            ]"
+                        />
+                        <div>
+                            <infra-overview v-if="currentTab === 'overview'" :apps="apps" :config="config" />
+                            <indices v-if="currentTab === 'overview'" v-for="app in appsWithAdminKey" :app="app" :config="config" class="mt-24" />
                         </div>
                     </div>
-                    <indices v-for="app in appsWithAdminKey" :app="app" :config="config" class="mt-24" />
                 </div>
             </div>
         </div>
@@ -84,6 +49,7 @@
     import InternalApp from "common/components/app/InternalApp";
     import AppHeader from "common/components/header/AppHeader";
     import AppManagement from "common/components/configuration/AppManagement";
+    import PanelTabs from "common/components/tabs/PanelTabs";
     import DisplayConfig from "./DisplayConfig";
 
     import {getKey} from "common/components/selectors/getClusterList";
@@ -92,12 +58,16 @@
     import IndexLoader from "./IndexLoader";
     import Indices from "./Indices";
     import Config from "./Config";
+    import InfraOverview from "./InfraOverview";
 
     export default {
         name: 'App',
-        components: {Config, Indices, IndexLoader, AppManagement, DisplayConfig, InternalApp, AppHeader},
+        components: {
+            InfraOverview,
+            PanelTabs, Config, Indices, IndexLoader, AppManagement, DisplayConfig, InternalApp, AppHeader},
         data: function () {
             return {
+                currentTab: 'overview',
                 appsState: {},
                 formatHumanNumber,
                 config: {
@@ -119,6 +89,7 @@
                     ],
                     usage: {
                         period: 'month',
+                        detailsPerIndex: false,
                         enabledGraphs: [],
                         metrics: ['records', 'avg_processing_time'],
                     },
@@ -127,6 +98,12 @@
         },
         created: async function () {
             this.getApps();
+        },
+        watch: {
+            'config.email': function () {
+                this.appsState = {};
+                this.getApps();
+            }
         },
         computed: {
             apps: function () {

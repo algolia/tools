@@ -1,20 +1,31 @@
 <template>
-    <bar-chart
-        :chart-data="chart.data"
-        :options="chart.options"
-        :height="chart.height"
-        class="w-full relative"
-    />
+    <div>
+        <line-chart
+            v-if="chartType === 'line'"
+            :chart-data="chart.data"
+            :options="chart.options"
+            :height="height || chart.height"
+            class="w-full relative"
+        />
+        <bar-chart
+            v-if="chartType === 'bar'"
+            :chart-data="chart.data"
+            :options="chart.options"
+            :height="height || chart.height"
+            class="w-full relative"
+        />
+    </div>
 </template>
 
 <script>
     import BarChart from "common/components/explorer/analysis/BarChart";
+    import LineChart from "common/components/explorer/analysis/LineChart";
     import {formatHumanNumber} from "common/utils/formatters";
 
     export default {
         name: 'UsageGraph',
-        props: ['graph', 'metrics', 'config'],
-        components: {BarChart},
+        props: ['graph', 'metrics', 'config', 'chartType', 'stacked', 'height'],
+        components: {LineChart, BarChart},
         computed: {
             chart: function () {
                 return {
@@ -55,6 +66,7 @@
 
                 const datasets = this.graph.metrics.map((metric, metricPos) => {
                     const points = new Array(nbPoints);
+
                     for(let i = 0; i < nbPoints; i++){
                         points[i] = this.metrics[metric][sampleRate * i].v;
                     }
@@ -93,12 +105,12 @@
                     legend: {
                         display: false,
                         labels: {
-                            boxWidth: 0,
+                            boxWidth: 4,
                         }
                     },
                     scales: {
                         yAxes: [{
-                            stacked: true,
+                            stacked: this.chartType === 'bar' && this.stacked,
                             ticks: {
                                 beginAtZero: true,
                                 stepSize: undefined,
@@ -114,7 +126,7 @@
                             },*/
                         }],
                         xAxes: [{
-                            stacked: true,
+                            stacked: this.chartType === 'bar' && this.stacked,
                             ticks: {
                                 fontSize: 10,
                             },

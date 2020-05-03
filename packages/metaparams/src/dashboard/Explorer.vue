@@ -1,44 +1,15 @@
 <template>
     <div>
-        <div
-            class="flex border-b border-proton-grey text-xs uppercase tracking-wide bg-proton-grey-opacity-40 text-telluric-blue">
-            <div
-                class="mx-8 p-8"
-                :class="`${panelCurrentTab === 'hits' ? '-mb-2 border-b-2 border-nebula-blue-opacity-80' : 'cursor-pointer'}`"
-                @click="panelCurrentTab = 'hits'"
-            >
-                Hits <span v-if="!isNaN(nbHits)">({{formatHumanNumber(nbHits)}})</span>
-            </div>
-            <div
-                class="mx-8 p-8"
-                :class="`${panelCurrentTab === 'synonyms' ? '-mb-2 border-b-2 border-nebula-blue-opacity-80' : 'cursor-pointer'}`"
-                @click="panelCurrentTab = 'synonyms'"
-            >
-                Synonyms ({{formatHumanNumber(this.nbSynonyms)}})
-            </div>
-            <div
-                class="mx-8 p-8"
-                :class="`${panelCurrentTab === 'rules' ? '-mb-2 border-b-2 border-nebula-blue-opacity-80' : 'cursor-pointer'}`"
-                @click="panelCurrentTab = 'rules'"
-            >
-                Rules ({{formatHumanNumber(this.nbRules)}})
-            </div>
-            <div
-                class="mx-8 p-8"
-                :class="`${panelCurrentTab === 'checks' ? '-mb-2 border-b-2 border-nebula-blue-opacity-80' : 'cursor-pointer'}`"
-                @click="panelCurrentTab = 'checks'"
-            >
-                Checks ({{formatHumanNumber(nbChecks)}})
-            </div>
-            <div
-                v-if="panelUserId"
-                class="mx-8 p-8"
-                :class="`${panelCurrentTab === 'mcm' ? '-mb-2 border-b-2 border-nebula-blue-opacity-80' : 'cursor-pointer'}`"
-                @click="panelCurrentTab = 'mcm'"
-            >
-                MCM
-            </div>
-        </div>
+        <panel-tabs
+            v-model="panelCurrentTab"
+            :options="[
+                {value: 'hits', label: 'Hits', labelAppend: ` (${formatHumanNumber(nbHits)})`, labelAppendCondition: !isNaN(nbHits)},
+                {value: 'synonyms', label: 'Synonyms', labelAppend: ` (${formatHumanNumber(nbSynonyms)})`, labelAppendCondition: true},
+                {value: 'rules', label: 'Rules', labelAppend: ` (${formatHumanNumber(nbRules)})`, labelAppendCondition: true},
+                {value: 'checks', label: 'Checks', labelAppend: ` (${formatHumanNumber(nbChecks)})`, labelAppendCondition: true},
+                {condition: panelUserId, value: 'mcm', label: 'MCM'},
+            ]"
+        />
         <div class="p-8">
             <perform-search
                 :search-params="searchParams"
@@ -173,6 +144,7 @@
 <script>
     import {formatHumanNumber} from 'common/utils/formatters'
 
+    import PanelTabs from "common/components/tabs/PanelTabs";
     import PerformSearch from "common/components/explorer/results/PerformSearch";
     import Results from "common/components/explorer/results/Results";
     import ErrorMessage from "common/components/explorer/results/ErrorMessage";
@@ -184,7 +156,7 @@
 
     export default {
         name: 'Explorer',
-        components: {Mcm, Checks, Fetcher, Results, PerformSearch, ErrorMessage},
+        components: {PanelTabs, Mcm, Checks, Fetcher, Results, PerformSearch, ErrorMessage},
         props: ['panelKey', 'readOnly'],
         mixins: [indexInfoMixin, panelsMixin],
         data: function () {

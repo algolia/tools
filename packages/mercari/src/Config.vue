@@ -28,6 +28,11 @@
                     <input type="radio" v-model="usagePeriod" value="year" /> Year
                 </label>
             </div>
+            <div class="mt-8 flex">
+                <label class="mr-8">
+                    <input type="checkbox" v-model="detailsPerIndex" value="" /> Detail per index
+                </label>
+            </div>
             <div class="mt-8">
                 <div v-for="group in availableGroupMetrics">
                     <div>
@@ -85,6 +90,14 @@
                 set (value) {
                     this.$emit('onUpdateUsagePeriod', value);
                 },
+            },
+            detailsPerIndex: {
+                get () {
+                    return this.config.usage.detailsPerIndex;
+                },
+                set (value) {
+                    this.$emit('onUpdateDetailPerIndex', value);
+                }
             },
             enabledGraphs: function () {
                 return this.availableGroupMetrics.filter((group) => this.enabledGroupMetrics.includes(group.name)).map((group) => {

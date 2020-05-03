@@ -4,38 +4,15 @@
             <app-header app-name="Infra Watch" />
             <div class="max-w-960 mx-auto mt-24 pb-48">
                 <div class="bg-white rounded border border-proton-grey-opacity-60">
-                    <div
-                        class="flex border-b border-proton-grey text-xs uppercase tracking-wide bg-proton-grey-opacity-40 text-telluric-blue"
-                    >
-                        <div
-                            class="mx-8 p-8"
-                            :class="`${currentTab === 'inspect' ? '-mb-2 border-b-2 border-nebula-blue-opacity-80' : 'cursor-pointer'}`"
-                            @click="currentTab = 'inspect'"
-                        >
-                            Inspect
-                        </div>
-                        <div
-                            class="mx-8 p-8"
-                            :class="`${currentTab === 'mlocks' ? '-mb-2 border-b-2 border-nebula-blue-opacity-80' : 'cursor-pointer'}`"
-                            @click="currentTab = 'mlocks'"
-                        >
-                            Mlocks alerts <span v-if="Object.keys(failing).length > 1">({{Object.keys(failing).length - 1}})</span>
-                        </div>
-                        <div
-                            class="mx-8 p-8"
-                            :class="`${currentTab === 'busted' ? '-mb-2 border-b-2 border-nebula-blue-opacity-80' : 'cursor-pointer'}`"
-                            @click="currentTab = 'busted'"
-                        >
-                            Busted <span v-if="busted.length > 0">({{busted.length}})</span>
-                        </div>
-                        <div
-                            class="mx-8 p-8"
-                            :class="`${currentTab === 'wrongPlans' ? '-mb-2 border-b-2 border-nebula-blue-opacity-80' : 'cursor-pointer'}`"
-                            @click="currentTab = 'wrongPlans'"
-                        >
-                            Wrong plans <span v-if="wrongPlans.length > 0">({{wrongPlans.length}})</span>
-                        </div>
-                    </div>
+                    <panel-tabs
+                        v-model="currentTab"
+                        :options="[
+                            {value: 'inspect', label: 'Inspect'},
+                            {value: 'mlocks', label: `Mlocks alerts`, labelAppend: `(${Object.keys(failing).length - 1})`, labelAppendCondition: Object.keys(failing).length > 1},
+                            {value: 'busted', label: 'Busted', labelAppend: ` (${busted.length})`, labelAppendCondition: busted.length > 0},
+                            {value: 'wrongPlans', label: 'Wrong plans', labelAppend: `(${wrongPlans.length})`, labelAppendCondition: wrongPlans.length > 0},
+                        ]"
+                    />
                     <div class="p-24">
                         <inspect v-if="currentTab === 'inspect'" />
                         <mlocks v-if="currentTab === 'mlocks'" :failing="failing" :recovered="recovered" />
@@ -51,6 +28,7 @@
 <script>
     import InternalApp from "common/components/app/InternalApp";
     import AppHeader from "common/components/header/AppHeader";
+    import PanelTabs from "common/components/tabs/PanelTabs";
     import Mlocks from "./Mlocks";
     import AppList from "./AppList";
     import Inspect from "./Inspect";
@@ -60,7 +38,7 @@
 
     export default {
         name: 'Home',
-        components: {Inspect, AppList, Mlocks, InternalApp, AppHeader},
+        components: {PanelTabs, Inspect, AppList, Mlocks, InternalApp, AppHeader},
         data: function () {
             return {
                 failing: {},
