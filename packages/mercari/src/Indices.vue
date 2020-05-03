@@ -20,10 +20,10 @@
                         <td class="p-8 align-top"><span v-if="index.settings">{{index.settings.nbShards}}</span></td>
                         <td class="p-8 align-top">
                             <div v-if="index.usage">
-                                <div v-for="metricName in Object.keys(index.usage)">
+                                <div v-for="graph in config.usage.enabledGraphs">
                                     <usage-graph
-                                        :metric-name="metricName"
-                                        :metric-values="index.usage[metricName]"
+                                        :graph="graph"
+                                        :metrics="index.usage"
                                         :config="config"
                                     />
                                 </div>
@@ -51,7 +51,8 @@
         },
         computed: {
             indices: function () {
-                const names = Object.keys(this.app.indices).sort((a, b) => this.app.indices[b].fileSize - this.app.indices[a].fileSize);
+                const indices = this.app.indices || {};
+                const names = Object.keys(indices).sort((a, b) => this.app.indices[b].fileSize - this.app.indices[a].fileSize);
                 return names.map((name) => this.app.indices[name]);
             }
         }

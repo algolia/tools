@@ -5,22 +5,28 @@
                 <display-config class="mx-16 mt-0 ml-auto"/>
             </app-header>
             <app-management />
-            <div class="mx-24 pb-48">
-                <div class="mx-auto m-24" v-if="apps.length > 0">
-                    <template v-for="app in appsWithAdminKey">
-                        <template v-for="index in app.indices">
-                            <index-loader
-                                :app-id="app.application_id"
-                                :index-name="index.name"
-                                :config="config"
-                                @onUpdateSettings="$set(appsState[$event.appId].indices[$event.indexName], 'settings', $event.settings)"
-                                @onUpdateUsage="$set(appsState[$event.appId].indices[$event.indexName], 'usage', $event.usage)"
-                            />
-                        </template>
-                    </template>
+            <template v-if="apps.length > 0" v-for="app in appsWithAdminKey">
+                <template v-for="index in app.indices">
+                    <index-loader
+                        :app-id="app.application_id"
+                        :index-name="index.name"
+                        :config="config"
+                        @onUpdateSettings="$set(appsState[$event.appId].indices[$event.indexName], 'settings', $event.settings)"
+                        @onUpdateUsage="$set(appsState[$event.appId].indices[$event.indexName], 'usage', $event.usage)"
+                    />
+                </template>
+            </template>
+            <div class="flex m-24 pb-48">
+                <config
+                    class="mr-24"
+                    :config="config"
+                    @onUpdateUsagePeriod="$set(config.usage, 'period', $event)"
+                    @onUpdateEnabledGraph="$set(config.usage, 'enabledGraphs', $event)"
+                />
+                <div v-if="apps.length > 0">
                     <h2 class="text-center mb-24">Infra overview: {{config.email}}</h2>
                     <div class="flex">
-                        <div class="bg-white rounded border border-proton-grey-opacity-60 mx-auto">
+                        <div class="bg-white rounded border border-proton-grey-opacity-60">
                             <table>
                                 <tr class="border-b border-proton-grey-opacity-40">
                                     <td class="p-8 align-top">appId</td>
@@ -45,7 +51,7 @@
                                 <tr class="border-b border-proton-grey-opacity-40">
                                     <td class="p-8 align-top">Number of indices</td>
                                     <td v-for="app in apps" class="p-8 align-top">
-                                        <div v-if="app.indices">{{app.indices.length}} {{app.indices.length > 1 ? 'indices': 'index'}}</div>
+                                        <div v-if="app.indices !== undefined">{{Object.keys(app.indices).length}} {{Object.keys(app.indices).length > 1 ? 'indices': 'index'}}</div>
                                         <div v-else class="">unregistered</div>
                                     </td>
                                 </tr>
@@ -85,10 +91,11 @@
     import {formatHumanNumber} from "common/utils/formatters";
     import IndexLoader from "./IndexLoader";
     import Indices from "./Indices";
+    import Config from "./Config";
 
     export default {
-        name: 'Home',
-        components: {Indices, IndexLoader, AppManagement, DisplayConfig, InternalApp, AppHeader},
+        name: 'App',
+        components: {Config, Indices, IndexLoader, AppManagement, DisplayConfig, InternalApp, AppHeader},
         data: function () {
             return {
                 appsState: {},
@@ -110,8 +117,11 @@
                         'min_big_gen_size_mb',
                         'mlock',
                     ],
-                    usagePeriod: 'month',
-                    usageMetrics: ['records', 'avg_processing_time']
+                    usage: {
+                        period: 'month',
+                        enabledGraphs: [],
+                        metrics: ['records', 'avg_processing_time'],
+                    },
                 }
             };
         },
@@ -134,7 +144,7 @@
             },
             getAppsDashboardInfo: async function () {
                 const backendEnpoint = process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT || 'https://tools-backend.algolia.com';
-                const res = await fetch(`${backendEnpoint}/apps/${Object.keys(this.apps).join(',')}`, {
+                const res = await fetch(`${backendEnpoint}/apps/${Object.keys(this.appsState).join(',')}`, {
                     credentials: 'include',
                     headers: {
                         "Content-Type": "application/json",
@@ -159,14 +169,13 @@
                         app.nbClusters = app.clusters_and_replicas_names.filter((c) => c.startsWith('d')).length;
                         app.apiKey = this.adminAPIKey(app.application_id);
                         app.hasAdminKeyRegistered = !!app.apiKey;
-                        app.indices = {};
                         apps[app.application_id] = app;
                     }
                 })
 
                 this.appsState = apps;
 
-                this.getAppsDashboardInfo(this.appIds).then((appsInfo) => {
+                this.getAppsDashboardInfo().then((appsInfo) => {
                     appsInfo.forEach((appInfo) => {
                         this.$set(this.appsState[appInfo.application_id], 'engine_configuration', appInfo.current_plan.engine_configuration);
                     });
@@ -177,10 +186,12 @@
                         const appClient = algoliasearch(this.appsState[appId].application_id, this.appsState[appId].apiKey);
                         appClient.listIndices().then((indices) => {
                             let fileSize = 0;
+                            const indicesObj = {};
                             indices.items.forEach((index) => {
                                 fileSize += index.fileSize;
-                                this.$set(this.appsState[appId].indices, index.name, index);
+                                indicesObj[index.name] = index;
                             });
+                            this.$set(this.appsState[appId], 'indices', indicesObj);
                             this.$set(this.appsState[appId], 'fileSize', fileSize);
                         });
                     }

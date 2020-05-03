@@ -22,24 +22,49 @@
                 return null;
             },
             usageMetrics: function () {
-                return this.config.usageMetrics;
+                const metrics = [];
+
+                this.config.usage.enabledGraphs.forEach((group) => {
+                    metrics.push(...group.metrics);
+                });
+
+                return metrics;
             },
             usagePeriod: function () {
-                return this.config.usagePeriod;
+                return this.config.usage.period;
             }
         },
         methods: {
             fetchIndexUsage: async function () {
+                if (this.usageMetrics.length <= 0) {
+                    return this.$emit('onUpdateUsage', {
+                        appId: this.appId,
+                        indexName: this.indexName,
+                        usage: {},
+                    });
+                }
                 const usageApiKey = this.$store.state.apps[this.appId].ukey;
+
                 if (usageApiKey) {
-                    const res = await fetch(`https://usage.algolia.com/1/usage/${this.usageMetrics.join(',')}/period/${this.usagePeriod}/${this.indexName}`, {
+                    let usagePeriodToFetch = this.usagePeriod === 'week' ? 'year' : this.usagePeriod;
+
+                    const res = await fetch(`https://usage.algolia.com/1/usage/${this.usageMetrics.join(',')}/period/${usagePeriodToFetch}/${this.indexName}`, {
                         headers: {
                             'X-Algolia-Application-Id': this.appId,
                             'X-Algolia-API-Key': usageApiKey,
                         },
                     });
-                    const usage = await res.json();
+                    let usage = await res.json();
                     if (usage.status === 404) return;
+
+                    if (this.usagePeriod === 'week') {
+                        usage = Object.keys(usage).reduce((acc, key) => {
+                            return {
+                                ...acc,
+                                [key]: usage[key].slice(358),
+                            }
+                        }, {});
+                    }
 
                     this.$emit('onUpdateUsage', {
                         appId: this.appId,
