@@ -49,6 +49,14 @@ attributesToRetrieve:
   default: []
   settings_default: null
 
+responseFields:
+  scope:
+    - settings
+    - search
+  value_type: attributes_list
+  default: []
+  settings_default: null
+
 attributesToTransliterate:
   scope:
     - settings
@@ -1257,3 +1265,4 @@ decompoundedAttributes:
     value_type: attributes_list
   default: {'': []}
   settings_default: null
+

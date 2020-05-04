@@ -94,6 +94,7 @@
                     attributesToSnippet: ['*:10'],
                     snippetEllipsisText: '…',
                     attributesToRetrieve: ['*'],
+                    responseFields: ['*'],
                     analytics: false,
                     enableABTest: false,
                 };
@@ -134,6 +135,7 @@
                         attributesToSnippet: [],
                         attributesToHighlight: [],
                         attributesToRetrieve: ['*'],
+                        responseFields: ['*'],
                     },
                 )
             },
