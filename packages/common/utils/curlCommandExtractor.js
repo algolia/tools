@@ -78,7 +78,7 @@ export function parseCurlCommand (command) {
                 url = suffixes[i].text;
                 const urlObj = new URL(url);
                 pathName = urlObj.pathname;
-                const matches = urlObj.hostname.match(/(.*?)-(.*?)\.algolia\.?net(\.com)?/);
+                const matches = urlObj.hostname.match(/(.*?)-(.*?)\.algolia\.?(net|io)(\.com)?/);
 
                 if (matches) {
                     appId = matches[1].toUpperCase();
