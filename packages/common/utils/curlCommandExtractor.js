@@ -85,7 +85,7 @@ export function parseCurlCommand (command) {
                     machine = `-${matches[2]}`;
                 }
             }
-            if (suffixes[i].text === '-d' || suffixes[i].text === '--data') {
+            if (suffixes[i].text === '-d' || suffixes[i].text === '--data' || suffixes[i].text === '--data-binary') {
                 i++;
                 data = decode(suffixes[i].text);
             }
