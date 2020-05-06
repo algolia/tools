@@ -423,7 +423,7 @@
                         const positions = proximity.positionsForTokens[queryToken];
                         if (positions && positions.length > 0) {
                             positions.sort((a, b) => a - b);
-                            attribute += Math.floor(positions[0] / 1000) * 1000;
+                            attribute += positions[0];//Math.floor(positions[0] / 1000) * 1000;
                             queryTokensPositions.push(positions[0]);
                         }
                     });

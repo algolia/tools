@@ -342,4 +342,48 @@ export default {
             },
         ]
     },
+    scenario8: {
+        name: 'Ordered corner case',
+        queries: [
+            'A B C D E F',
+        ],
+        searchableAttributes: [
+            'title',
+            'subTitle',
+            'description',
+        ],
+        customRanking: [
+            'score'
+        ],
+        records: [
+            {
+                objectID: '1',
+                title: 'A B E C D',
+                subTitle: 'Z',
+                description: 'Z',
+                score: 1,
+            },
+            {
+                objectID: '2',
+                title: 'A E B C D',
+                subTitle: 'Z',
+                description: 'Z',
+                score: 2,
+            },
+            {
+                objectID: '3',
+                title: 'A B',
+                subTitle: 'Z C D',
+                description: 'E F',
+                score: 1,
+            },
+            {
+                objectID: '4',
+                title: 'A B',
+                subTitle: 'C D',
+                description: 'Z E F',
+                score: 2,
+            },
+        ]
+    },
 }
