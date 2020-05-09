@@ -429,7 +429,7 @@
                     });
                     if (queryTokensPositions.length > 0) {
                         queryTokensPositions.sort((a, b) => a - b);
-                        attribute += queryTokensPositions[0];
+                        //attribute += queryTokensPositions[0];
                     }
                 }
 

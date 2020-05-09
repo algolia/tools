@@ -313,7 +313,7 @@ export default {
         ]
     },
     scenario7: {
-        name: 'Same attribute score on on different attributes',
+        name: '7',
         queries: [
             'A B',
         ],
@@ -329,15 +329,15 @@ export default {
             {
                 objectID: '1',
                 title: 'A',
-                subTitle: 'C',
-                description: 'A B',
+                subTitle: 'F',
+                description: 'B',
                 score: 1,
             },
             {
                 objectID: '2',
-                title: 'C',
+                title: 'F',
                 subTitle: 'A B',
-                description: 'C',
+                description: 'F',
                 score: 2,
             },
         ]
