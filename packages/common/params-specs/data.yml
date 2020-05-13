@@ -1046,6 +1046,7 @@ disablePrefixOnAttributes:
   scope: settings
   value_type: attributes_list
   default: []
+  setting_default: null
 
 disableExactOnAttributes:
   scope:
