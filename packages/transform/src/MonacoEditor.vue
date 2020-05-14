@@ -31,6 +31,7 @@
                 value: this.value,
                 theme: 'vs-dark',
                 language: this.language,
+                wordWrap: 'on',
             };
 
             this.editor = monaco.editor.create(this.$el, options);
