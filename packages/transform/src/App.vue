@@ -20,7 +20,7 @@
                     @onUpdateTransformer="transformer = $event"
                 />
                 <applier
-                    v-if="dataset && transformer"
+                    v-show="dataset && transformer"
                     :dataset="dataset"
                     :index-info="indexInfo"
                     :transformer="transformer"

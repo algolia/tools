@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-if="dataset && transformer">
         <h2 class="mt-24 text-solstice-blue-opacity-80">Load into index</h2>
         <div class="mt-24">
             <div>
@@ -15,7 +15,7 @@
             </div>
             <div class="mt-12 flex">
                 <app-selector v-model="appId" :only-algolia="!showAllApps" />
-                <input v-model="indexName" class="ml-24 input-custom mr-8 w-148">
+                <input v-model="indexName" placeholder="Dst indexName" class="ml-24 input-custom mr-8 w-148">
             </div>
         </div>
         <div class="mt-24">
@@ -75,7 +75,7 @@
         data: function () {
             return {
                 appId: null,
-                indexName: this.indexInfo ? `${this.indexInfo.indexName}_transformed` : 'transformed_index',
+                indexName: 'transformed_index',
                 tasksGroup: null,
                 errorMessage: '',
                 showAllApps: false,
