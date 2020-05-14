@@ -115,8 +115,10 @@
                 if (this.newAppId.length > 0 && this.newApiKey.length > 0) {
                     this.$store.commit("apps/addAppId", this.newAppId);
                     this.$store.commit(`apps/${this.newAppId}/setKey`, { keyName: 'key', value: this.newApiKey });
+                    this.$store.commit(`apps/${this.newAppId}/setKey`, { keyName: 'ukey', value: this.newUsageApiKey });
                     this.newAppId = "";
                     this.newApiKey = "";
+                    this.newUsageApiKey = "";
                     this.fetchAppsInfo();
                 }
             },
