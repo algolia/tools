@@ -1,9 +1,9 @@
 <template>
     <div>
         <h2 class="mt-24 text-solstice-blue-opacity-80">Transform</h2>
-        <div class="mt-24">
-            <div class="flex">
-                <div class="w-third pr-24">
+        <div>
+            <div class="grid" :style="`grid-template-columns: ${fullscreen ? '50% 50%': '33.3333% 33.3333% 33.3333%'}; grid-template-rows: ${fullscreen ? 'auto auto' : 'auto'};`">
+                <div class="mt-24 pr-24 align-top" :style="`${fullscreen ? 'grid-area: 1 / 1 / 2 / 2': 'grid-area: 1 / 1 / 2 / 2'};`">
                     <div class="bg-white rounded border border-proton-grey-opacity-60">
                         <div class="text-center p-8 border-b border-proton-grey-opacity-60 bg-proton-grey-opacity-40 text-telluric-blue text-xs uppercase tracking-wide">
                             Old Record
@@ -27,10 +27,12 @@
                         </div>
                     </div>
                 </div>
-                <div class="w-third pr-24">
+                <div class="mt-24 pr-24" :style="`${fullscreen ? 'grid-area: 2 / 1 / 3 / 4': 'grid-area: 1 / 2 / 2 / 3'};`">
                     <div>
-                        <div class="text-center p-8 rounded border border-proton-grey-opacity-60 bg-proton-grey-opacity-40 text-telluric-blue text-xs uppercase tracking-wide">
+                        <div class="relative text-center p-8 rounded border border-proton-grey-opacity-60 bg-proton-grey-opacity-40 text-telluric-blue text-xs uppercase tracking-wide">
                             Transformer
+                            <maximize-icon v-if="!fullscreen" @click="toggleFullScreen" class="w-12 h-12 cursor-pointer absolute top-0 right-0 mr-8 mt-8" />
+                            <minimize-icon v-if="fullscreen" @click="toggleFullScreen" class="w-12 h-12 cursor-pointer absolute top-0 right-0 mr-8 mt-8" />
                         </div>
                         <div class="mt-24">
                             <monaco-editor
@@ -108,7 +110,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="w-third pr-24">
+                <div class="mt-24 pr-24" :style="`${fullscreen ? 'grid-area: 1 / 2 / 2 / 3': 'grid-area: 1 / 3 / 2 / 4'};`">
                     <div class="bg-white rounded border border-proton-grey-opacity-60">
                         <div class="text-center p-8 border-b border-proton-grey-opacity-60 bg-proton-grey-opacity-40 text-telluric-blue text-xs uppercase tracking-wide">
                             New record
@@ -138,6 +140,8 @@
     import HitsTransformer from "common/components/explorer/hits/hitsTransformer";
     import Pagination from "common/components/explorer/results/Pagination";
     import TrashIcon from "common/icons/trash.svg";
+    import MaximizeIcon from "common/icons/maximize.svg";
+    import MinimizeIcon from "common/icons/minimize.svg";
     import algoliasearch from 'algoliasearch';
     import {isNumeric, isObject, isString} from "common/utils/types";
 
@@ -145,10 +149,11 @@
 
     export default {
         name: 'Transformer',
-        components: {MonacoEditor, Attributes, Pagination, TrashIcon},
+        components: {MonacoEditor, Attributes, Pagination, TrashIcon, MaximizeIcon, MinimizeIcon},
         props: ['dataset'],
         data: function () {
             return {
+                fullscreen: false,
                 dstObjectExample: {},
                 transformer: defaultTransformer,
                 error: null,
@@ -334,6 +339,10 @@
                     this.$emit('onUpdateTransformer', null);
                 }
             },
+            toggleFullScreen: function () {
+                this.fullscreen = !this.fullscreen;
+                this.$nextTick(() => window.dispatchEvent(new Event('resize')));
+            }
         }
     }
 </script>
