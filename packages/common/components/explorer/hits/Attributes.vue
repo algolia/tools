@@ -68,6 +68,9 @@
                 return Object.keys(this.item).filter((key) => {
                     return !this.reservedAttributes[key] || (getRankingInfo === true && key === '_rankingInfo');
                 }).sort((a, b) => {
+                    if (a === 'objectID') return -1;
+                    if (b === 'objectID') return 1;
+
                     const indexA = this.topAttributes.indexOf(a);
                     const indexB = this.topAttributes.indexOf(b);
 

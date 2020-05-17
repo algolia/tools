@@ -104,12 +104,19 @@
                 const searchableAttributes = this.indexSettings.searchableAttributes || this.indexSettings.attributesToIndex || [];
                 return this.getAllSearchableAttributes(searchableAttributes).map(cleanAttributeName).map(cleanDeepAttributeName);
             },
+            customRankingAttributes: function () {
+                return this.indexSettings.customRanking || [];
+            },
+            facetingAttributes: function () {
+                return this.attributesForFaceting.slice(0, 50);
+            },
             topAttributes: function () {
                 const topAttributes = ['objectID', this.autoTitleAttributeName || 'objectID'];
 
                 if (this.showSearchableAttributes) topAttributes.push(...this.searchableAttributes);
-                if (this.showCustomRanking) topAttributes.push(...(this.indexSettings.customRanking || []));
-                if (this.showAttributesForFaceting) topAttributes.push(...this.attributesForFaceting.slice(0, 50));
+                if (this.showCustomRanking) topAttributes.push(...this.customRankingAttributes);
+                if (this.showAttributesForFaceting) topAttributes.push(...this.facetingAttributes);
+                if (this.searchableAttributes.length + this.customRankingAttributes.length + this.facetingAttributes.length === 0) return [];
                 if (this.searchParams.attributesToRetrieve) {
                     if (this.searchParams.attributesToRetrieve.indexOf('*') !== -1) return [];
                     topAttributes.push(...this.searchParams.attributesToRetrieve);
