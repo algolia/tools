@@ -40,10 +40,9 @@
             </div>
         </div>
         <div v-else>
-            <div class="text-nova-grey bg-moon-grey-opacity-50 border border-proton-grey-opacity-20 mt-16 p-8">
+            <div class="text-nova-grey text-3xl text-center mt-16 p-8">
                 No results for query "{{searchResponse.query}}" <span v-if="searchResponse.object">but found a record by objectID</span>
             </div>
-
             <hit
                 v-if="searchResponse.object"
                 :key="searchResponse.object.objectID"
@@ -56,13 +55,12 @@
                 v-bind="$props"
                 v-on="$listeners"
             />
-
             <div
                 v-if="searchResponse.query.length > 0"
                 class="flex"
             >
                 <button
-                    class="block mb-24 text-nova-grey text-md bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out px-24 py-16 relative group mx-auto mt-48"
+                    class="block mb-24 text-nova-grey text-md bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out px-24 py-16 relative group mx-auto mt-12"
                     @click="$emit('onShouldUpdateQuery', '')"
                 >
                     Clear query: {{searchResponse.query}}
