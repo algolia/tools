@@ -20,7 +20,7 @@
                 v-if="hasImage"
                 class="rounded w-full h-full"
                 style="object-fit: cover;"
-                :src="`${proxyUrl}${imageBaseUrl}${image}${imageSuffixUrl}`"
+                :src="proxyUrl"
             />
         </div>
         <div v-if="editImageAttributes && !forcedImageSize" class="p-12 text-center">
@@ -68,8 +68,23 @@
 <script>
     import CameraIcon from 'common/icons/camera.svg';
     import props from "../props";
+    import createHmac from 'create-hmac';
+
 
     const imageRegex = /(?:https?:)?\/\/.+\.(?:jpe?g|png|svg|webp)(?:\?.*)?$/i;
+    const urlSafeBase64 = (string) => Buffer.from(string).toString('base64').replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
+    const hexDecode = (hex) => Buffer.from(hex, 'hex');
+
+    const signedProxyImageUrl = (salt, target, secret) => {
+        const hmac = createHmac('sha256', hexDecode(secret));
+        hmac.update(hexDecode(salt));
+        hmac.update(target);
+
+        return urlSafeBase64(hmac.digest());
+    };
+
+    const signingKey = '736C756D2D6665726E2D64726F7070696E672D7A65627261';
+    const signingSalt = '63616464792D656C6C69707369732D706C616E65742D666F69626C65';
 
     export default {
         name: 'HitImage',
@@ -86,11 +101,27 @@
             }
         },
         computed: {
+            fullUrl: function () {
+                return `${this.imageBaseUrl}${this.image}${this.imageSuffixUrl}`;
+            },
             proxyUrl: function () {
                 if (this.shouldIgnoreImageProxy) {
-                    return '';
+                    return this.fullUrl;
                 }
-                return `https://rocky-thicket-17824.herokuapp.com/${this.forcedImageSize || this.imageSize}/`;
+
+                const size = this.forcedImageSize || this.imageSize;
+                const modifiers = {
+                    resizing_type: 'fill',
+                    width: size,
+                    height: size,
+                    gravity: 'sm',
+                    enlarge: true,
+                    extend: true,
+                };
+                const smodifiers = Object.keys(modifiers).map(modifierKey => `${modifierKey}:${modifiers[modifierKey]}`).join('/');
+                const path = `/${smodifiers}/${urlSafeBase64(this.fullUrl)}.jpg`;
+
+                return `https://user-content.algolia.com/${signedProxyImageUrl(signingSalt, path, signingKey)}${path}`;
             },
             size: {
                 get () {

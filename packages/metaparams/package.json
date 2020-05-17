@@ -16,6 +16,7 @@
     "chartjs-plugin-annotation": "^0.5.7",
     "common": "^0.0.0",
     "copy-to-clipboard": "^3.2.0",
+    "create-hmac": "^1.1.7",
     "dedent": "^0.7.0",
     "greenlet": "^1.0.1",
     "js-yaml-loader": "^1.0.1",
