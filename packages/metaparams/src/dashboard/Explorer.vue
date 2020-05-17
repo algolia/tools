@@ -264,7 +264,7 @@
                 });
             },
             onShouldUpdateQuery: function (query) {
-                if (this.panelKey === 'rightPanel' && this.$store.state.panels.twoInputs && this.$store.state.panels.comparePanels) {
+                if (this.panelKey === 'rightPanel' && this.$store.state.panels.twoInputs && this.$store.state.panels.splitMode) {
                     this.onSetParamValue('query', query);
                 } else {
                     this.$store.commit("panels/setQuery", query);
