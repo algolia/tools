@@ -17,6 +17,7 @@
                     Save
                 </button>
                 <button
+                    v-if="noCancel !== true"
                     class="bg-white rounded border border-b-0 border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out mr-8 px-16 p-8 text-sm"
                     @click="$emit('onStopEdit')"
                 >
@@ -43,6 +44,7 @@
         components: {AceEditor, LoaderIcon},
         props: [
             'hit', 'allowSaveWithoutEdit',
+            'noCancel',
             ...props.credentials,
         ],
         data: function () {

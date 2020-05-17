@@ -24,25 +24,38 @@
         <div v-if="jumpedToReadOnly" class="my-12 bg-saturn-5 rounded text-solstice-blue-opacity-80 p-8">
             This panel is in readonly mode
         </div>
-        <hit-edit
-            v-if="isAddingRecord"
-            :allow-save-without-edit="jumpedHit !== null"
-            :hit="jumpedHit"
-            class="mt-16"
-            @onStopEdit="isAddingRecord = false; jumpedHit = null"
-            v-bind="$props"
-            v-on="$listeners"
-        />
-        <div>
-            <results-info
-                v-if="searchResponse && !searchResponse.cursor"
+        <div v-if="isAddingRecord && !hasNoRecords" class="mt-24">
+            Add JSON record(s) manually:
+            <hit-edit
+                :allow-save-without-edit="jumpedHit !== null"
+                :hit="jumpedHit"
+                class="mt-8"
+                @onStopEdit="isAddingRecord = false; jumpedHit = null"
                 v-bind="$props"
                 v-on="$listeners"
             />
-            <results-list
-                v-if="searchResponse && (displayMode === 'list' || displayMode === 'images')"
-                v-on="$listeners"
+        </div>
+        <div>
+            <template v-if="!hasNoRecords">
+                <results-info
+                    v-if="searchResponse && !searchResponse.cursor"
+                    v-bind="$props"
+                    v-on="$listeners"
+                />
+                <results-list
+                    v-if="searchResponse && (displayMode === 'list' || displayMode === 'images')"
+                    v-on="$listeners"
+                    v-bind="$props"
+                />
+                <ranking-charts
+                    v-if="analyseResponse && displayMode === 'charts'"
+                    v-on="$listeners"
+                    v-bind="$props"
+                />
+            </template>
+            <no-records v-else-if="displayMode !== 'raw'"
                 v-bind="$props"
+                v-on="$listeners"
             />
             <export-params
                 v-if="displayMode === 'raw'"
@@ -50,11 +63,6 @@
             />
             <raw-response
                 v-if="searchResponse && displayMode === 'raw'"
-                v-bind="$props"
-            />
-            <ranking-charts
-                v-if="analyseResponse && displayMode === 'charts'"
-                v-on="$listeners"
                 v-bind="$props"
             />
             <div
@@ -84,6 +92,7 @@
     import ResultsInfo from "./ResultsInfo";
     import props from '../props';
     import SmallTabs from "../../tabs/SmallTabs";
+    import NoRecords from "./NoRecords";
 
     export default {
         name: 'Results',
@@ -99,6 +108,7 @@
             ...props.actions,
         ],
         components: {
+            NoRecords,
             SmallTabs,
             ResultsInfo,
             PerformSearch,
@@ -128,5 +138,10 @@
                 }
             });
         },
+        computed: {
+            hasNoRecords: function () {
+                return !this.query && this.searchResponse && this.searchResponse.nbHits === 0;
+            }
+        }
     }
 </script>
