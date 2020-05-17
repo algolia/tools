@@ -25,6 +25,15 @@
                         :api-key="panelAdminAPIKey"
                         @onIndexCreated="onIndexCreated"
                     />
+                    <index-rename
+                        v-if="canWrite"
+                        class="mb-12 pb-4"
+                        :app-id="panelAppId"
+                        :api-key="panelAdminAPIKey"
+                        :index-name="panelIndexName"
+                        @onIndexRenamed="onIndexCreated"
+                    />
+                    <index-clear v-if="canWrite && !isReplica" class="mb-12 pb-4" :panel-key="panelKey" :user-id="panelUserId" />
                     <index-delete v-if="canWrite && !isReplica" class="mb-12 pb-4" :panel-key="panelKey" :user-id="panelUserId" />
                     <button v-if="$store.state.panels.splitMode && !sameIndexOnEachPanel && panelKey === 'leftPanel'"
                             @click="$store.commit('panels/rightFromLeft')"
@@ -111,6 +120,7 @@
     import Queries from "@/queries/queries";
     import IndexInfo from "@/dashboard/IndexInfo";
     import IndexNew from "common/components/index/IndexNew";
+    import IndexRename from "common/components/index/IndexRename";
     import AppSelector from "common/components/selectors/AppSelector";
     import IndexSelector from "common/components/selectors/IndexSelector";
     import ServerSelector from "common/components/selectors/ServerSelector";
@@ -128,16 +138,19 @@
     import panelsMixin from "common/mixins/panelsMixin";
 
     import ownedByAlgoliaMixin from "common/mixins/ownedByAlgolia";
+    import IndexClear from "./IndexClear";
 
     export default {
         name: 'Dashboard',
         props: ['panelKey'],
         mixins: [indexInfoMixin, panelsMixin, ownedByAlgoliaMixin],
         components: {
+            IndexClear,
             SearchBox,
             Tooltip,
             IndexDelete,
             IndexNew,
+            IndexRename,
             IndexInfo,
             AppSelector,
             IndexSelector,
