@@ -30,6 +30,8 @@ export function getCriterionValue(item, criterion) {
         return item._rankingInfo.proximityDistance;
     } else if (criterion === 'attribute') {
         return Math.floor(item._rankingInfo.firstMatchedWord / 1000.);
+    } else if (criterion === 'attributeSum') {
+        return item._rankingInfo.firstMatchedWord;
     } else if (criterion === 'position') {
         return (item._rankingInfo.firstMatchedWord % 1000) + 1;
     } else if (criterion === 'exact') {

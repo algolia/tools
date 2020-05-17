@@ -39,8 +39,16 @@ export default function (indexSettings) {
                     actualCriteria.push('typo');
                 }
             } else if (item === 'attribute') {
-                actualCriteria.push('attribute');
-                actualCriteria.push('position');
+
+                const attributeCriteriaComputedBy = this.indexSettings.attributeCriteriaComputedBy || searchParams.attributeCriteriaComputedBy;
+                const isSumComputation = attributeCriteriaComputedBy === 'sum';
+
+                if (!isSumComputation) {
+                    actualCriteria.push('attribute');
+                    actualCriteria.push('position');
+                } else {
+                    actualCriteria.push('attributeSum');
+                }
             }
             else {
                 actualCriteria.push(item);

@@ -1239,7 +1239,7 @@ attributeCriteriaComputedBy:
   scope:
     - search
     - settings
-  value_type: string
+  value_type: enum
   values:
     - best
     - minProximity

@@ -45,7 +45,7 @@
         props: ['item', 'previousItem', 'i', 'indexSettings', 'searchParams'],
         computed: {
             rankingInfoAnalyzer: function () {
-                return new RankingInfoAnalyser(this.indexSettings);
+                return new RankingInfoAnalyser(this.indexSettings, this.searchParams);
             },
             searchableAttributes: function () {
                 return this.indexSettings.searchableAttributes || this.indexSettings.attributesToIndex || paramsSpecs.searchableAttributes.default;
