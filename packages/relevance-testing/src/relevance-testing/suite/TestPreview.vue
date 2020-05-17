@@ -35,6 +35,7 @@
             :app-id="appId"
             :api-key="apiKey"
             :index-name="indexName"
+            :harcoded-query="true"
             :query="currentTest.testData.when.query !== undefined ? currentTest.testData.when.query : ''"
             :display-mode="displayMode"
             :showSearchableAttributes="$store.state.panels.showSearchableAttributes"

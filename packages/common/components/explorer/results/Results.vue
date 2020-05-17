@@ -53,7 +53,7 @@
                     v-bind="$props"
                 />
             </template>
-            <no-records v-else-if="displayMode !== 'raw'"
+            <no-records v-else-if="!displayMode !== 'raw'"
                 v-bind="$props"
                 v-on="$listeners"
             />
@@ -99,6 +99,7 @@
         props: [
             'panelKey',
             'disablePagination',
+            'harcodedQuery',
             ...props.credentials,
             ...props.images,
             ...props.attributes,

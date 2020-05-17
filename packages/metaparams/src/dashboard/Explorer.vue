@@ -53,6 +53,7 @@
                 :server="panelServer"
                 :user-id="panelUserId"
                 :method="panelMethod"
+                :harcoded-query="false"
                 :query="searchParams.query !== undefined ? searchParams.query : $store.state.panels.query"
                 :display-mode="displayMode"
                 :showSearchableAttributes="$store.state.panels.showSearchableAttributes"

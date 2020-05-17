@@ -60,6 +60,7 @@
                 class="flex"
             >
                 <button
+                    v-if="harcodedQuery !== true"
                     class="block mb-24 text-nova-grey text-md bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out px-24 py-16 relative group mx-auto mt-12"
                     @click="$emit('onShouldUpdateQuery', '')"
                 >
@@ -85,6 +86,7 @@
         props: [
             'panelKey',
             'disablePagination',
+            'harcodedQuery',
             ...props.credentials,
             ...props.images,
             ...props.attributes,
