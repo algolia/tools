@@ -1235,6 +1235,18 @@ attributeCriteriaComputedByMinProximity:
     - false
   default: false
 
+attributeCriteriaComputedBy:
+  scope:
+    - search
+    - settings
+  value_type: string
+  values:
+    - best
+    - minProximity
+    - sum
+  default: best
+  settings_default: null
+
 scanDistinctHitsUntilPaginationLimitedTo:
   scope:
     - search
