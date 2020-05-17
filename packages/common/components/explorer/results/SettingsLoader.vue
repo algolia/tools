@@ -33,6 +33,12 @@
             init: function () {
                 this.loadIndexSettings();
                 this.loadKeysIndexer();
+
+                this.$root.$on('shouldTriggerSearch', (indexName) => {
+                    if (this.indexName === indexName) {
+                        this.loadKeysIndexer();
+                    }
+                });
             },
             loadIndexSettings: async function () {
                 const client = await getClient(this.appId, this.apiKey);
@@ -68,7 +74,7 @@
                 this.$store.commit(`apps/${this.appId}/${this.indexName}/setAdvancedIndexSettings`, Object.freeze(advancedSettings));
             },
             loadKeysIndexer: async function () {
-                if (!this.appId || !this.apiKey);
+                if (!this.appId || !this.apiKey) return;
 
                 const signature = await getSignature(this.appId);
                 const analyze = await analyseIndex(this.appId, this.apiKey, this.indexName, this.userId, signature);
