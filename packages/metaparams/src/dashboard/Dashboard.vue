@@ -93,7 +93,7 @@
                             class="bg-white flex-1 min-w-0"
                         />
                         <facets
-                            v-show="!$store.state.panels.splitMode"
+                            v-show="!$store.state.panels.splitMode || forceOpenFacets"
                             class="xxl:min-w-260 xxl:max-w-260 min-w-152 max-w-152 border-l border-proton-grey"
                             :panel-key="panelKey"
                             :app-id="panelAppId"
@@ -191,6 +191,9 @@
                 const isTargetingMainCluster = ['dsn', '-dsn', '-1', '-2', '-3'].includes(this.panelServer);
                 return isTargetingMainCluster && (this.forceWrite || this.ownedByAlgolia(this.appId));
             },
+            forceOpenFacets: function () {
+                return this.searchParams.facets !== undefined;
+            }
         },
         methods: {
             onIndexCreated: function (indexName) {
