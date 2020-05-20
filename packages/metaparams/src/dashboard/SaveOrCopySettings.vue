@@ -11,7 +11,7 @@
             </button>
             <button
                 class="block bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out mr-8 px-16 p-8 text-sm relative group"
-                @click="displayCopyOption = true"
+                @click="displayOptions"
             >
                 {{ isIndexSettingsDirty ? 'Save in copy' : 'Copy Index' }}
                 <tooltip :position="panelKey === 'leftPanel' ? 'left' : 'right'">Display copy options.<br>Will ask for confirmation</tooltip>
@@ -185,6 +185,10 @@
             }
         },
         methods: {
+            displayOptions: function () {
+                this.displayCopyOption = true;
+                this.dstIndexName = `${this.panelIndexName}_test`;
+            },
             adminAPIKey: function (appId) {
                 return this.$store.state.apps[appId].key;
             },
