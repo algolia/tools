@@ -100,6 +100,7 @@
             'panelKey',
             'disablePagination',
             'harcodedQuery',
+            'hasNoRecords',
             ...props.credentials,
             ...props.images,
             ...props.attributes,
@@ -139,10 +140,5 @@
                 }
             });
         },
-        computed: {
-            hasNoRecords: function () {
-                return !this.query && this.searchResponse && this.searchResponse.nbHits === 0;
-            }
-        }
     }
 </script>

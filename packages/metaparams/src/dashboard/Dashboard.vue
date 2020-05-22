@@ -72,7 +72,7 @@
                     <div v-if="!ownedByAlgolia(appId)" class="text-sm text-solstice-blue-opacity-80 mr-24">
                         Read-Only <input type="checkbox" :checked="!forceWrite" @input="forceWrite = !$event.target.checked">
                     </div>
-                    <index-info v-if="indexData" :panel-key="panelKey"/>
+                    <index-info v-if="indexData" :panel-key="panelKey" @onUpdateHasNoRecord="hasNoRecords = $event"/>
                 </div>
             </div>
             <div v-if="indexData">
@@ -90,6 +90,7 @@
                             v-if="panelIndexName"
                             :panel-key="panelKey"
                             :read-only="!canWrite"
+                            :hasNoRecords="hasNoRecords"
                             class="bg-white flex-1 min-w-0"
                         />
                         <facets
@@ -168,6 +169,7 @@
         data: function () {
             return {
                 forceWrite: false,
+                hasNoRecords: false,
             }
         },
         computed: {

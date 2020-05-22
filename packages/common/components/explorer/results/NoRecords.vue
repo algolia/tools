@@ -51,7 +51,7 @@
     export default {
         name: 'NoRecords',
         components: {HitEdit, LoaderIcon},
-        props: [...props.credentials, 'harcodedQuery'],
+        props: [...props.credentials, 'harcodedQuery', 'hasNoRecords'],
         data: function () {
             return {
                 isUploadingDataset: false,

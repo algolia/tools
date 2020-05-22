@@ -54,6 +54,7 @@
                 :user-id="panelUserId"
                 :method="panelMethod"
                 :harcoded-query="false"
+                :has-no-records="hasNoRecords"
                 :query="searchParams.query !== undefined ? searchParams.query : $store.state.panels.query"
                 :display-mode="displayMode"
                 :showSearchableAttributes="$store.state.panels.showSearchableAttributes"
@@ -158,7 +159,7 @@
     export default {
         name: 'Explorer',
         components: {PanelTabs, Mcm, Checks, Fetcher, Results, PerformSearch, ErrorMessage},
-        props: ['panelKey', 'readOnly'],
+        props: ['panelKey', 'readOnly', 'hasNoRecords'],
         mixins: [indexInfoMixin, panelsMixin],
         data: function () {
             return {
