@@ -1225,15 +1225,17 @@ processingTimeoutMS:
   max: 60000
   admin_only: 1
 
-attributeCriteriaComputedByMinProximity:
-  scope:
-    - search
-    - settings
-  value_type: boolean
-  values:
-    - true
-    - false
-  default: false
+
+#attributeCriteriaComputedByMinProximity:
+#  scope:
+#    - search
+#    - settings
+#  value_type: boolean
+#  values:
+#    - true
+#    - false
+#  default: false
+#  settings_default: null
 
 attributeCriteriaComputedBy:
   scope:
