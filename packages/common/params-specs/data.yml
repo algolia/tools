@@ -1226,28 +1226,28 @@ processingTimeoutMS:
   admin_only: 1
 
 
-#attributeCriteriaComputedByMinProximity:
-#  scope:
-#    - search
-#    - settings
-#  value_type: boolean
-#  values:
-#    - true
-#    - false
-#  default: false
-#  settings_default: null
-
-attributeCriteriaComputedBy:
+attributeCriteriaComputedByMinProximity:
   scope:
     - search
     - settings
-  value_type: enum
+  value_type: boolean
   values:
-    - best
-    - minProximity
-    - sum
-  default: best
+    - true
+    - false
+  default: false
   settings_default: null
+
+#attributeCriteriaComputedBy:
+#  scope:
+#    - search
+#    - settings
+#  value_type: enum
+#  values:
+#    - best
+#    - minProximity
+#    - sum
+#  default: best
+#  settings_default: null
 
 scanDistinctHitsUntilPaginationLimitedTo:
   scope:

@@ -117,7 +117,7 @@
                         this.indexInfo = indexInfo;
                     }
                 });
-                
+
                 this.$emit('onUpdateHasNoRecord', this.indexInfo !== null && this.indexInfo.entries === 0);
             },
             fetchBuildingIndices: async function () {
