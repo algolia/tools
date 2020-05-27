@@ -980,6 +980,15 @@ enableExperimentalBlendPersonalization:
     - false
   default: true
 
+enableIBRRanking:
+  scope:
+    - search
+  value_type: boolean
+  values:
+    - true
+    - false
+  default: true
+
 experimentalDecompoundQuery:
   scope:
       - search
