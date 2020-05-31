@@ -43,7 +43,7 @@
                         </div>
                         <div v-if="intermediateRule.context" class="py-8 flex flex-wrap border-t border-proton-grey-opacity-20">
                             <div class="w-188">in context</div>
-                            <div class="ml-4 text-cosmos-black-opacity-70">"{{intermediateRule.context}}"</div>
+                            <div class="ml-4 text-cosmos-black-opacity-70" v-html="properHighlight(intermediateRule.context)"></div>
                         </div>
                     </div>
                     <div v-else class="py-8 border-t border-proton-grey-opacity-20">
@@ -137,13 +137,13 @@
                 <div v-if="Object.keys(intermediateRule.params).length > 0" class="py-8 flex border-t border-proton-grey-opacity-20">
                     <div class="w-188">apply params</div>
                     <div class="ml-4 text-cosmos-black-opacity-70">
-                        <pre v-html="JSON.stringify(intermediateRule.params, null, 2)"></pre>
+                        <pre v-html="properHighlight(JSON.stringify(intermediateRule.params, null, 2))"></pre>
                     </div>
                 </div>
                 <div v-if="intermediateRule.userData" class="py-8 flex border-t border-proton-grey-opacity-20">
                     <div class="w-188">userData</div>
                     <div class="ml-4 text-cosmos-black-opacity-70">
-                        <pre v-html="JSON.stringify(intermediateRule.userData, null, 2)"></pre>
+                        <pre v-html="properHighlight(JSON.stringify(intermediateRule.userData, null, 2))"></pre>
                     </div>
                 </div>
             </div>
