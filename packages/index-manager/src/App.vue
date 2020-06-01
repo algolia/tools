@@ -3,7 +3,7 @@
         <app-header app-name="Index Manager">
             <display-config class="mx-16 mt-0 ml-auto"/>
         </app-header>
-        <app-management />
+        <app-management @onAddedAppId="appId = $event" />
         <div class="flex" style="height: calc(100vh - 94px);">
             <div class="m-24 w-half flex flex-col min-h-0">
                 <app-selector v-model="appId" />

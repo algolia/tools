@@ -4,7 +4,7 @@
             <app-header app-name="Insights UI">
                 <display-config class="mx-16 mt-0 ml-auto"/>
             </app-header>
-            <app-management />
+            <app-management @onAddedAppId="appId = $event" />
             <div class="max-w-960 mx-auto mt-24 pb-24">
                 <div class="bg-white rounded border border-proton-grey-opacity-60">
                     <div class="flex bg-white p-8 pb-12 border-nova-grey-opacity-20 bg-proton-grey-opacity-80 text-telluric-blue">

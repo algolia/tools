@@ -8,7 +8,7 @@
                 v-if="!loadingSharingLink && $store.state.panels.shareStatePanel"
                 @onShouldClose="$store.commit('panels/setShareStatePanel', false)"
             />
-            <app-management />
+            <app-management @onAddedAppId="$store.commit(`panels/leftPanel/setPanelConfig`, {appId: $event, indexName: null})" />
             <div class="w-full" v-if="!loadingSharingLink">
                 <search-box
                     class="mt-16 mx-16 lg:mx-auto xl:mx-auto lg:max-w-half xl:max-w-half"

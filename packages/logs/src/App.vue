@@ -4,7 +4,7 @@
             <app-header app-name="Logs">
                 <display-config class="mx-16 mt-0 ml-auto"/>
             </app-header>
-            <app-management />
+            <app-management @onAddedAppId="appId = $event" />
             <div class="max-w-960 mx-auto mt-24" v-if="appId">
                 <div class="flex items-center px-16 bg-white rounded border border-proton-grey-opacity-80">
                     <search-icon class="block w-16 h-16 mr-16 text-telluric-blue fill-current"/>

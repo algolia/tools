@@ -5,7 +5,7 @@
                 <display-config class="mx-16 mt-0 ml-auto" />
             </app-header>
             <div class="px-48 mt-24">
-                <app-management />
+                <app-management @onAddedAppId="appId = $event" />
                 <div class="max-w-960 mx-auto mt-24">
                     <div class="rounded border border-proton-grey-opacity-60 mt-24">
                         <div class="flex bg-white p-8 pb-12 bg-proton-grey-opacity-40 text-telluric-blue">

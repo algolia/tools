@@ -116,6 +116,7 @@
                     this.$store.commit("apps/addAppId", this.newAppId);
                     this.$store.commit(`apps/${this.newAppId}/setKey`, { keyName: 'key', value: this.newApiKey });
                     this.$store.commit(`apps/${this.newAppId}/setKey`, { keyName: 'ukey', value: this.newUsageApiKey });
+                    this.$emit('onAddedAppId', this.newAppId);
                     this.newAppId = "";
                     this.newApiKey = "";
                     this.newUsageApiKey = "";
