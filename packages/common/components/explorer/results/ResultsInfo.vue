@@ -1,66 +1,71 @@
 <template>
     <div class="text-nova-grey bg-moon-grey-opacity-50 border border-proton-grey-opacity-20 mt-16 p-8">
-        <div class="flex justify-between">
-            <div>
-                <div>{{humanNumber(searchResponse.nbHits)}} hits in {{searchResponse.processingTimeMS}}ms.</div>
-                <div>Exhaustive Nb Hits: {{searchResponse.exhaustiveNbHits}}</div>
-                <div>Exhaustive Facets: {{searchResponse.exhaustiveFacetsCount === undefined ? true : searchResponse.exhaustiveFacetsCount }}</div>
-            </div>
-            <div>
-                <div>Index Used: {{searchResponse.indexUsed}}</div>
-                <div>Parsed query: '{{searchResponse.parsedQuery}}'</div>
-                <div>Server Used: {{searchResponse.serverUsed}}</div>
-            </div>
-        </div>
-        <div v-if="userToken" class="mt-24">
-            <div class="mb-8 text-sm tracking-wide uppercase">User perso profile:</div>
-            <div v-if="shownFilters">
+        <template v-if="!searchResponse.cursor">
+            <div class="flex justify-between">
                 <div>
-                    <div v-for="persoFilter in shownFilters">
-                        {{persoFilter}}
-                    </div>
-                    <div
-                        v-if="userPersoFilters.length > nbShowFilters"
-                        class="text-nebula-blue cursor-pointer"
-                        @click="showAllFilters = !showAllFilters"
-                    >
-                        Show {{userPersoFilters.length - nbShowFilters}} {{ showAllFilters ? 'less' : 'more' }}
-                    </div>
-                    <button
-                        @click="$emit('onSetParamValue', 'personalizationFilters', userPersoFilters)"
-                        class="mt-8 block bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out mr-8 px-16 p-8 text-sm relative group"
-                    >
-                        Set perso profile as personalizationFilters
-                    </button>
+                    <div>{{humanNumber(searchResponse.nbHits)}} hits in {{searchResponse.processingTimeMS}}ms.</div>
+                    <div>Exhaustive Nb Hits: {{searchResponse.exhaustiveNbHits}}</div>
+                    <div>Exhaustive Facets: {{searchResponse.exhaustiveFacetsCount === undefined ? true : searchResponse.exhaustiveFacetsCount }}</div>
+                </div>
+                <div>
+                    <div>Index Used: {{searchResponse.indexUsed}}</div>
+                    <div>Parsed query: '{{searchResponse.parsedQuery}}'</div>
+                    <div>Server Used: {{searchResponse.serverUsed}}</div>
                 </div>
             </div>
-            <div v-else>
-                Profile for userToken "{{userToken}}" was not found
-            </div>
-        </div>
-        <div v-if="userToken && userPersoFiltersV2" class="mt-16">
-            <div class="mb-8 text-sm tracking-wide uppercase">User perso profile v2:</div>
-            <div v-if="shownFiltersV2">
-                <div>
-                    <div v-for="persoFilter in shownFiltersV2">
-                        {{persoFilter}}
+            <div v-if="userToken" class="mt-24">
+                <div class="mb-8 text-sm tracking-wide uppercase">User perso profile:</div>
+                <div v-if="shownFilters">
+                    <div>
+                        <div v-for="persoFilter in shownFilters">
+                            {{persoFilter}}
+                        </div>
+                        <div
+                            v-if="userPersoFilters.length > nbShowFilters"
+                            class="text-nebula-blue cursor-pointer"
+                            @click="showAllFilters = !showAllFilters"
+                        >
+                            Show {{userPersoFilters.length - nbShowFilters}} {{ showAllFilters ? 'less' : 'more' }}
+                        </div>
+                        <button
+                            @click="$emit('onSetParamValue', 'personalizationFilters', userPersoFilters)"
+                            class="mt-8 block bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out mr-8 px-16 p-8 text-sm relative group"
+                        >
+                            Set perso profile as personalizationFilters
+                        </button>
                     </div>
-                    <div
-                        v-if="userPersoFiltersV2.length > nbShowFilters"
-                        class="text-nebula-blue cursor-pointer"
-                        @click="showAllFiltersV2 = !showAllFiltersV2"
-                    >
-                        Show {{userPersoFiltersV2.length - nbShowFilters}} {{ showAllFiltersV2 ? 'less' : 'more' }}
-                    </div>
-                    <button
-                        @click="$emit('onSetParamValue', 'personalizationFilters', userPersoFiltersV2)"
-                        class="mt-8 block bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out mr-8 px-16 p-8 text-sm relative group"
-                    >
-                        Set perso profile as personalizationFilters
-                    </button>
+                </div>
+                <div v-else>
+                    Profile for userToken "{{userToken}}" was not found
                 </div>
             </div>
-        </div>
+            <div v-if="userToken && userPersoFiltersV2" class="mt-16">
+                <div class="mb-8 text-sm tracking-wide uppercase">User perso profile v2:</div>
+                <div v-if="shownFiltersV2">
+                    <div>
+                        <div v-for="persoFilter in shownFiltersV2">
+                            {{persoFilter}}
+                        </div>
+                        <div
+                            v-if="userPersoFiltersV2.length > nbShowFilters"
+                            class="text-nebula-blue cursor-pointer"
+                            @click="showAllFiltersV2 = !showAllFiltersV2"
+                        >
+                            Show {{userPersoFiltersV2.length - nbShowFilters}} {{ showAllFiltersV2 ? 'less' : 'more' }}
+                        </div>
+                        <button
+                            @click="$emit('onSetParamValue', 'personalizationFilters', userPersoFiltersV2)"
+                            class="mt-8 block bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out mr-8 px-16 p-8 text-sm relative group"
+                        >
+                            Set perso profile as personalizationFilters
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </template>
+        <template v-else>
+            <h4 class="text-center">Currently in Browse mode</h4>
+        </template>
     </div>
 </template>
 

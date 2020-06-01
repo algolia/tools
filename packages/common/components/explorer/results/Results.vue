@@ -38,7 +38,7 @@
         <div>
             <template v-if="!hasNoRecords">
                 <results-info
-                    v-if="searchResponse && !searchResponse.cursor"
+                    v-if="searchResponse"
                     v-bind="$props"
                     v-on="$listeners"
                 />
