@@ -16,7 +16,7 @@
                     <span v-if="position !== undefined">
                         at pos
                         <span class="text-cosmos-black-opacity-70">
-                            {{position}}
+                            {{position + 1}}
                         </span>
                     </span>
                 </div>

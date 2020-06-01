@@ -207,9 +207,10 @@
                                     position
                                     <input
                                         type="number"
-                                        min="0"
+                                        min="1"
                                         max="1000"
-                                        v-model.number="newRule.promote[i].position"
+                                        :value="newRule.promote[i].position + 1"
+                                        @change="newRule.promote[i].position = parseInt($event.target.value) - 1"
                                         class="input-custom inline w-48"
                                     />
                                 </div>
