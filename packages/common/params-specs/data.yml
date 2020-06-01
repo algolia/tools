@@ -1246,17 +1246,17 @@ attributeCriteriaComputedByMinProximity:
   default: false
   settings_default: null
 
-#attributeCriteriaComputedBy:
-#  scope:
-#    - search
-#    - settings
-#  value_type: enum
-#  values:
-#    - best
-#    - minProximity
-#    - sum
-#  default: best
-#  settings_default: null
+attributeCriteriaComputedBy:
+  scope:
+    - search
+    - settings
+  value_type: enum
+  values:
+    - best
+    - minProximity
+    - sum
+  default: best
+  settings_default: null
 
 scanDistinctHitsUntilPaginationLimitedTo:
   scope:
