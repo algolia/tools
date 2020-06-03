@@ -106,7 +106,9 @@
                     ]),
                 ];
 
-                downloadCsv(rows, `${this.appId}.${this.indexName}.${this.attributeName}.types.xls`);
+                let fileNameStart = `${this.appId}.${this.indexName}`;
+                if (this.attributeName) fileNameStart = `${fileNameStart}.${this.attributeName}`;
+                downloadCsv(rows, `${fileNameStart}.types.csv`);
             }
         }
     }

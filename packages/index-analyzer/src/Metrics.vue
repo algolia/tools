@@ -72,7 +72,7 @@
             </div>
             <div v-if="data" class="p-16">
                 <types :app-id="appId" :index-name="indexName" :data="data" :type-filter="typeFilter" :attribute-name="attributeName" v-on="$listeners" />
-                <object-keys :data="data" :attribute-name="attributeName" :attributes="attributes" v-on="$listeners" />
+                <object-keys :app-id="appId" :index-name="indexName" :data="data" :attribute-name="attributeName" :attributes="attributes" v-on="$listeners" />
                 <boolean-values :data="data" :attribute-name="attributeName" :value-filter="valueFilter" v-on="$listeners" />
                 <numeric-values :app-id="appId" :index-name="indexName" :data="data" :attribute-name="attributeName" :type-filter="typeFilter" :value-filter="valueFilter" v-on="$listeners" />
                 <string-values :app-id="appId" :index-name="indexName" :data="data" :attribute-name="attributeName" :type-filter="typeFilter" :value-filter="valueFilter" v-on="$listeners" />
