@@ -43,7 +43,7 @@ export function getCriterionValue(item, criterion) {
         return null;
     } else if (criterion === 'perso.filtersScore') {
         if (item._rankingInfo && item._rankingInfo.personalization) {
-            return item._rankingInfo.personalization.filtersScore
+            return item._rankingInfo.personalization.filtersScore;
         }
         return null;
     } else if (criterion === 'perso.rankingScore') {

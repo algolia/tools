@@ -32,6 +32,21 @@
                     </div>
                 </div>
             </div>
+            <div v-if="item._rankingInfo && item._rankingInfo.personalization" class="mt-32">
+                <div class="w-128 text-right mb-8 uppercase tracking-wide text-xs text-nova-grey">
+                    Perso Info
+                </div>
+                <div v-for="k in Object.keys(item._rankingInfo.personalization)" class="flex text-cosmos-black-opacity-70">
+                    <div class="w-128 text-right truncate">
+                        {{k}}
+                    </div>
+                    <div class="ml-12 flex flex-wrap" style="width: calc(100% - 140px)">
+                        <div class="truncate hover:overflow-visible px-2 mr-1">
+                            {{item._rankingInfo.personalization[k]}}
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </template>

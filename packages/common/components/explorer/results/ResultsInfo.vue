@@ -39,29 +39,6 @@
                     Profile for userToken "{{userToken}}" was not found
                 </div>
             </div>
-            <div v-if="userToken && userPersoFiltersV2" class="mt-16">
-                <div class="mb-8 text-sm tracking-wide uppercase">User perso profile v2:</div>
-                <div v-if="shownFiltersV2">
-                    <div>
-                        <div v-for="persoFilter in shownFiltersV2">
-                            {{persoFilter}}
-                        </div>
-                        <div
-                            v-if="userPersoFiltersV2.length > nbShowFilters"
-                            class="text-nebula-blue cursor-pointer"
-                            @click="showAllFiltersV2 = !showAllFiltersV2"
-                        >
-                            Show {{userPersoFiltersV2.length - nbShowFilters}} {{ showAllFiltersV2 ? 'less' : 'more' }}
-                        </div>
-                        <button
-                            @click="$emit('onSetParamValue', 'personalizationFilters', userPersoFiltersV2)"
-                            class="mt-8 block bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out mr-8 px-16 p-8 text-sm relative group"
-                        >
-                            Set perso profile as personalizationFilters
-                        </button>
-                    </div>
-                </div>
-            </div>
         </template>
         <template v-else>
             <h4 class="text-center">Currently in Browse mode</h4>
@@ -79,29 +56,21 @@
             return {
                 region: 'us',
                 userPersoFilters: false,
-                userPersoFiltersV2: false,
                 showAllFilters: false,
-                showAllFiltersV2: false,
                 nbShowFilters: 5,
             }
         },
         watch: {
-            userToken: async function () { await this.fetchPersoProfil(); this.fetchPersoProfilV2(); },
-            enablePersonalization: async function () { await this.fetchPersoProfil(); this.fetchPersoProfilV2(); },
+            userToken: async function () { await this.fetchPersoProfil(); },
+            enablePersonalization: async function () { await this.fetchPersoProfil(); },
         },
         created: async function () {
             await this.fetchPersoProfil();
-            this.fetchPersoProfilV2();
         },
         computed: {
             shownFilters: function () {
                 const filters = this.userPersoFilters || [];
                 if (this.showAllFilters) return filters;
-                return filters.slice(0, this.nbShowFilters);
-            },
-            shownFiltersV2: function () {
-                const filters = this.userPersoFiltersV2 || [];
-                if (this.showAllFiltersV2) return filters;
                 return filters.slice(0, this.nbShowFilters);
             },
             userToken: function () {
@@ -153,40 +122,6 @@
                 });
                 return true;
             },
-            fetchPersoProfilV2: async function () {
-                if (!this.enablePersonalization || !this.userToken) {
-                    this.userPersoFiltersV2 = false;
-                    return;
-                }
-
-                const persoProfileQuery = await fetch(`https://recommendation.${this.region}.algolia.com/2/profiles/personalization/${this.userToken}`, {
-                    headers: {
-                        'X-Algolia-Application-Id': this.appId,
-                        'X-Algolia-API-Key': this.apiKey,
-                    }
-                });
-
-                if (!persoProfileQuery.ok) {
-                    this.userPersoFiltersV2 = false;
-                    return false;
-                }
-
-                const fetchedProfile = await persoProfileQuery.json();
-
-                const profile = [];
-                Object.keys(fetchedProfile.scores).forEach((facetName) => {
-                    Object.keys(fetchedProfile.scores[facetName]).forEach((facetValue) => {
-                        profile.push([`${facetName}:${facetValue}`, fetchedProfile.scores[facetName][facetValue]]);
-                    });
-                });
-
-                this.userPersoFiltersV2 = profile.sort((a, b) => {
-                    return b[1] - a[1];
-                }).map((profile) => {
-                    return `${profile[0]}<score=${profile[1]}>`;
-                });
-                return true;
-            }
         },
     }
 </script>
