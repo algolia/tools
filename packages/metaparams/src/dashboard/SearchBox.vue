@@ -8,7 +8,7 @@
             v-model="query"
         >
         <div class="text-telluric-blue-opacity-40" v-if="$store.state.panels.splitMode && (!panelKey || panelKey === 'leftPanel')">
-            ≠ queries <input type="checkbox" v-model="twoInputs" />
+            ≠ queries <input type="checkbox" class="align-middle ml-2" v-model="twoInputs" />
         </div>
         <custom-select
             v-model="panelMethod"
