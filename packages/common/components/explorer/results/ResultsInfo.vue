@@ -1,6 +1,6 @@
 <template>
     <div class="text-nova-grey bg-moon-grey-opacity-50 border border-proton-grey-opacity-20 mt-16 p-8">
-        <template v-if="!searchResponse.cursor">
+        <template v-if="searchResponse.parsedQuery !== undefined">
             <div class="flex justify-between">
                 <div>
                     <div>{{humanNumber(searchResponse.nbHits)}} hits in {{searchResponse.processingTimeMS}}ms.</div>
