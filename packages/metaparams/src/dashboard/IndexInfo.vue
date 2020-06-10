@@ -37,6 +37,11 @@
             >
                 Primary: {{indexSettings.primary}}
             </div>
+            <div class="border-b border-dotted border-telluric-blue-opacity-60 ml-12"
+                 v-if="this.$store.state.apps[this.panelAppId].__log_region"
+            >
+                Logs region: {{this.$store.state.apps[this.panelAppId].__log_region}}
+            </div>
         </div>
     </div>
 </template>

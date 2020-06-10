@@ -6,10 +6,9 @@ Date.prototype.addSeconds = function(s) {
     return this;
 };
 
-export default function (appId, apiKey, indexName) {
+export default function (appId, apiKey, indexName, region) {
     this.appId = appId;
     this.apiKey = apiKey;
-    this.region = 'us';
     this.indexName = indexName;
 
     this.fetchLogs = async function (allIndices) {
@@ -18,7 +17,7 @@ export default function (appId, apiKey, indexName) {
 
         const params = `?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`;
 
-        const endpoint = `https://insights.${this.region}.algolia.io/1/events`;
+        const endpoint = `https://insights.${region}.algolia.io/1/events`;
         const res = await fetch(`${endpoint}${params}`, {
             headers: {
                 'Content-Type': 'application/json',
@@ -46,7 +45,7 @@ export default function (appId, apiKey, indexName) {
                 path: rawLog.path,
                 timestamp: rawLog.receivedAt,
                 date: new Date(rawLog.receivedAt),
-                url: `https://insights.${this.region}.algolia.io/1/events`,
+                url: `https://insights.${region}.algolia.io/1/events`,
                 ip: '',
                 answer_code: rawLog.status.toString(),
                 nb_operations: 1,
@@ -89,13 +88,6 @@ export default function (appId, apiKey, indexName) {
                 getQueries: () => [],
             };
         });
-
-        if (logs.length <= 0) {
-            if (this.region === 'us') {
-                this.region = 'de';
-                return this.fetchLogs(appId, apiKey, indexName);
-            }
-        }
 
         return logs;
     }

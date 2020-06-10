@@ -12,6 +12,7 @@ export default function (appId, lastIndexName) {
             __app_name: '',
             __app_owner: '',
             __app_uid: '',
+            __log_region: '',
         },
         mutations: {
             setLastIndexName(state, payload) {
@@ -31,6 +32,9 @@ export default function (appId, lastIndexName) {
             },
             setKey: function (state, payload) {
                 Vue.set(state, payload.keyName, payload.value);
+            },
+            setLogRegion: function (state, payload) {
+                Vue.set(state, '__log_region', payload);
             },
             addIndex: function (state, payload) {
                 const indexName = payload;

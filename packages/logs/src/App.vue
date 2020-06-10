@@ -263,8 +263,11 @@
             paginatedLogs: function () {
                 return this.logs.slice(this.page * this.hitsPerPage, (this.page + 1) * this.hitsPerPage);
             },
+            region: function () {
+                return this.$store.state.apps[this.appId].__log_region || 'us';
+            },
             insightsFetcher: function () {
-                return new InsightsFetcher(this.appId, this.apiKey, this.indexName);
+                return new InsightsFetcher(this.appId, this.apiKey, this.indexName, this.region);
             },
             searchFetcher: function () {
                 return new SearchFetcher(this.appId, this.apiKey);

@@ -55,21 +55,14 @@
                 lastQuery: null,
                 lastQueryJustSaved: false,
                 topQueries: [],
-                region: 'us',
             }
         },
         mounted: function () {
             this.fetchTopQueries();
         },
         watch: {
-            panelAppId: function () {
-                this.region = 'us';
-                this.fetchTopQueries();
-            },
-            panelIndexName: function () {
-                this.region = 'us';
-                this.fetchTopQueries();
-            },
+            panelAppId: function () { this.fetchTopQueries(); },
+            panelIndexName: function () { this.fetchTopQueries(); },
             panelQuery: function (val, oldVal) {
                 if (this.lastQueryJustSaved) {
                     this.lastQueryJustSaved = false;
@@ -81,6 +74,9 @@
             }
         },
         computed: {
+            region: function () {
+                return this.$store.state.apps[this.panelAppId].__log_region || 'us';
+            },
             currentQuery: function () {
                 return this.lastQuery !== null ? this.lastQuery : this.panelQuery;
             },
@@ -108,13 +104,7 @@
 
                 const topQueries = await topQueriesQuery.json();
 
-                if (topQueries.searches === null) {
-                    if (this.region !== 'de') {
-                        this.region = 'de';
-                        this.fetchTopQueries();
-                    }
-                    return;
-                }
+                if (topQueries.searches === null) return;
 
                 this.topQueries = topQueries.searches.filter((query) => {
                     return query.search.length > 0;

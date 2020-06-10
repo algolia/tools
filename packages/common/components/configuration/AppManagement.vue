@@ -126,6 +126,16 @@
             deleteApp: function (appId) {
                 this.$store.commit('apps/deleteAppId', appId);
             },
+            getAppsDashboardInfo: async function () {
+                const backendEnpoint = process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT || 'https://tools-backend.algolia.com';
+                const res = await fetch(`${backendEnpoint}/apps/${this.appIds.join(',')}`, {
+                    credentials: 'include',
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                });
+                return await res.json();
+            },
             fetchAppsInfo: async function () {
                 const appIds = Object.keys(this.apps);
 
@@ -144,6 +154,11 @@
                     this.$store.commit(`apps/${appInfo.application_id}/setAppName`, appInfo.name);
                     this.$store.commit(`apps/${appInfo.application_id}/setAppOwner`, appInfo.user_email);
                     this.$store.commit(`apps/${appInfo.application_id}/setUId`, appInfo.user_id);
+                });
+
+                const res2 = await this.getAppsDashboardInfo();
+                res2.forEach((appInfo) => {
+                    this.$store.commit(`apps/${appInfo.application_id}/setLogRegion`, appInfo.log_region);
                 });
             }
         }

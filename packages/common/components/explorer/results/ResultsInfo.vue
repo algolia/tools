@@ -54,7 +54,6 @@
         props: ['searchResponse', 'searchParams', 'appId', 'apiKey'],
         data: function () {
             return {
-                region: 'us',
                 userPersoFilters: false,
                 showAllFilters: false,
                 nbShowFilters: 5,
@@ -78,7 +77,10 @@
             },
             enablePersonalization: function () {
                 return this.searchParams.enablePersonalization;
-            }
+            },
+            region: function () {
+                return this.$store.state.apps[this.appId].__log_region || 'us';
+            },
         },
         methods: {
             humanNumber: humanNumber,
@@ -96,12 +98,6 @@
                 });
 
                 if (!persoProfileQuery.ok) {
-                    if (this.region !== 'eu') {
-                        this.region = 'eu';
-                        const valid = await this.fetchPersoProfil();
-                        if (!valid) this.region = 'us';
-                        return valid;
-                    }
                     this.userPersoFilters = false;
                     return false;
                 }
