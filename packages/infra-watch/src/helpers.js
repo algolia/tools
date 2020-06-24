@@ -57,7 +57,7 @@ function isCluster(clusterName) {
     return clusterName.startsWith('v') || clusterName.startsWith('d');
 }
 function isDsn(clusterName) {
-    return clusterName.startsWith('t');
+    return clusterName.startsWith('t') || clusterName.startsWith('w');
 }
 
 function isShared(clusterName) {
