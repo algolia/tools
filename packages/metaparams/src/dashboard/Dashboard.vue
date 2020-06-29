@@ -6,6 +6,7 @@
         />
         <div class="mt-16 rounded bg-white border border-solid border-proton-grey-opacity-60">
             <div
+                v-if="$store.state.panels.showIndexSelector"
                 class="px-8 py-8 pb-12 border-b border-nova-grey-opacity-20"
                 :class="{
                     'bg-proton-grey-opacity-80': ownedByAlgolia(appId),
@@ -77,14 +78,17 @@
             </div>
             <div v-if="indexData">
                 <div class="flex">
-                    <div v-if="panelKey === 'leftPanel'" class="w-300 max-w-300 min-w-300">
+                    <div v-if="panelKey === 'leftPanel' && $store.state.panels.showParamsAndSettings" class="w-300 max-w-300 min-w-300">
                         <queries :panel-key="panelKey"/>
                         <dashboard-config :panel-key="panelKey" :read-only="!canWrite"/>
                     </div>
                     <div
-                        style="width: calc(100% - 300px)"
-                        :class="`${panelKey === 'leftPanel' ? 'border-l': 'border-r'} border-proton-grey `"
-                        class="flex"
+                        :style="$store.state.panels.showParamsAndSettings ? 'width: calc(100% - 300px)' : 'width: 100%'"
+                        :class="{
+                            'border-l': panelKey === 'leftPanel' && $store.state.panels.showParamsAndSettings,
+                            'border-r': panelKey === 'rightPanel' && $store.state.panels.showParamsAndSettings,
+                        }"
+                        class="flex border-proton-grey"
                     >
                         <explorer
                             v-if="panelIndexName"
@@ -105,7 +109,7 @@
                             :config-key="searchConfigKey"
                         />
                     </div>
-                    <div v-if="panelKey !== 'leftPanel'" class="w-300 max-w-300 min-w-300">
+                    <div v-if="panelKey !== 'leftPanel' && $store.state.panels.showParamsAndSettings" class="w-300 max-w-300 min-w-300">
                         <queries :panel-key="panelKey"/>
                         <dashboard-config :panel-key="panelKey" :read-only="!canWrite"/>
                     </div>

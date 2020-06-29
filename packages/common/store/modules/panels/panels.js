@@ -16,8 +16,12 @@ export default {
         showCustomRanking: true,
         showAttributesForFaceting: true,
         showOnlyMatchingAttributes: false,
+        showParamsAndSettings: true,
+        showIndexSelector: true,
+        showResultTabs: true,
+        showQueryInfo: true,
         comparePanels: false,
-        manageAppsPanel: true,
+        manageAppsPanel: false,
         expandLeftPanel: false,
         analyseMaxNbPoints: 100,
         shareStatePanel: false,
@@ -66,6 +70,18 @@ export default {
         },
         setShowOnlyMatchingAttributes(state, payload) {
             Vue.set(state, 'showOnlyMatchingAttributes', payload);
+        },
+        setShowParamsAndSettings(state, payload) {
+            Vue.set(state, 'showParamsAndSettings', payload);
+        },
+        setShowIndexSelector(state, payload) {
+            Vue.set(state, 'showIndexSelector', payload);
+        },
+        setShowResultTabs(state, payload) {
+            Vue.set(state, 'showResultTabs', payload);
+        },
+        setShowQueryInfo(state, payload) {
+            Vue.set(state, 'showQueryInfo', payload);
         },
         rightFromLeft: function (state) {
             Vue.set(state.rightPanel, 'appId', state.leftPanel.appId);

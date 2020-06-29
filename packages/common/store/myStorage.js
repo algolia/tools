@@ -37,6 +37,12 @@ export default function(options, storage, key) {
                 }
             }
 
+            for (k in store.state.panels) {
+                if (savedState.panels[k] === undefined) {
+                    savedState.panels[k] = store.state.panels[k];
+                }
+            }
+
             store.replaceState(savedState);
         }
 

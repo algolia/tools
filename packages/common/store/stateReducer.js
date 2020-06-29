@@ -7,6 +7,10 @@ export default function (state) {
         rightPanel,
         shareStatePanel,
         manageAppsPanel,
+        showParamsAndSettings,
+        showIndexSelector,
+        showResultTabs,
+        showQueryInfo,
         ...panelsRest
     } = state.panels;
 

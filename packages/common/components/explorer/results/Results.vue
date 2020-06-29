@@ -2,6 +2,7 @@
     <div>
         <div v-if="searchResponse" class="flex mt-4">
             <small-tabs
+                v-if="$store.state.panels.showResultTabs"
                 :value="displayMode"
                 @input="$emit('onUpdateDisplayMode', $event)"
                 :tabs="[
@@ -38,7 +39,7 @@
         <div>
             <template v-if="!hasNoRecords">
                 <results-info
-                    v-if="searchResponse"
+                    v-if="searchResponse && $store.state.panels.showQueryInfo"
                     v-bind="$props"
                     v-on="$listeners"
                 />

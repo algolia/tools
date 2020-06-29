@@ -1,6 +1,7 @@
 <template>
     <div>
         <panel-tabs
+            v-if="$store.state.panels.showResultTabs"
             v-model="panelCurrentTab"
             :options="[
                 {value: 'hits', label: 'Hits', labelAppend: ` (${formatHumanNumber(nbHits)})`, labelAppendCondition: !isNaN(nbHits)},
