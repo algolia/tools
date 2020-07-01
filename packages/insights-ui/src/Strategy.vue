@@ -79,12 +79,19 @@
         created: function () {
             this.initialize();
         },
+        computed: {
+            region: function () {
+                return this.$store.state.apps[this.appId].__log_region || 'us';
+            },
+        },
         methods: {
             initialize: async function () {
                 if (!this.appId) return;
 
                 const client = await getClient(this.appId, this.apiKey);
-                const reco = client.initRecommendation();
+                const reco = client.initRecommendation({
+                    region: this.region,
+                });
 
                 try {
                     const res = await reco.getPersonalizationStrategy();
