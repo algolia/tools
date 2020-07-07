@@ -281,7 +281,7 @@
                         body: this.transformer,
                     }),
                 });
-                this.savedConfig = name || 'new',
+                this.savedConfig = name || 'new';
                 this.hasBeenSaved = true;
                 setTimeout(() => {
                     this.hasBeenSaved = false;
@@ -302,7 +302,7 @@
                 });
                 const transformers = Object.freeze(await res.json());
                 if (transformers.length <= 0) {
-                    await this.saveTransformerWithTimeout('new');
+                    await this.saveTransformer('new');
                     this.fetchTransformers();
                 } else {
                     this.transformer = transformers.find((t) => t.name === 'new').body;

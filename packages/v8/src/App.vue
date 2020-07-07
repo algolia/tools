@@ -58,7 +58,7 @@
                                     <tr class="border-b border-proton-grey-opacity-40">
                                         <td class="p-8 pl-0 align-top">Nb Search Requests</td>
                                         <td class="p-8 pt-4 align-top">
-                                            <input class="input-custom p-4 inline" type="number" v-model="nbSearchRequests">
+                                            <input class="input-custom p-4 inline" type="number" v-model.number="nbSearchRequests">
                                         </td>
                                         <td class="p-8">
                                             <div>{{formatHumanNumber(nbSearchRequests, 2)}}/year</div>
@@ -70,21 +70,21 @@
                                     <tr class="border-b border-proton-grey-opacity-40">
                                         <td class="p-8 pl-0">Nb Records</td>
                                         <td class="p-8 pt-4 align-top">
-                                            <input class="input-custom p-4 inline" type="number" v-model="nbRecords">
+                                            <input class="input-custom p-4 inline" type="number" v-model.number="nbRecords">
                                         </td>
                                         <td class="p-8"></td>
                                     </tr>
                                     <tr class="border-b border-proton-grey-opacity-40">
                                         <td class="p-8 pl-0">Nb Dedicated cluster</td>
                                         <td class="p-8 pt-4 align-top">
-                                            <input class="input-custom p-4 inline" type="number" v-model="nbDedicatedCluster" :min="0">
+                                            <input class="input-custom p-4 inline" type="number" v-model.number="nbDedicatedCluster" :min="0">
                                         </td>
                                         <td class="p-8"></td>
                                     </tr>
                                     <tr class="border-b border-proton-grey-opacity-40">
                                         <td class="p-8 pl-0">Nb DSNs</td>
                                         <td class="p-8 pt-4 align-top">
-                                            <input class="input-custom p-4 inline" type="number" v-model="nbDsn" :min="0">
+                                            <input class="input-custom p-4 inline" type="number" v-model.number="nbDsn" :min="0">
                                         </td>
                                         <td class="p-8"></td>
                                     </tr>
@@ -145,7 +145,16 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="flex m-8 mb-16">
+                                <button
+                                    @click="resetScoping"
+                                    class="ml-auto block bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out mr-8 px-16 p-8 text-sm relative group"
+                                >
+                                    Reset scoping
+                                </button>
+                            </div>
                         </div>
+                        <backup :scoping="scoping" @onUpdateScoping="onUpdateScoping" />
                     </div>
                     <div class="flex-grow ml-12">
                         <div class="bg-white rounded border border-proton-grey-opacity-80">
@@ -218,14 +227,15 @@
     import {formatHumanNumber} from "common/utils/formatters";
     import {getKey} from "common/components/selectors/getClusterList";
     import algoliasearch from "algoliasearch";
+    import Backup from "./Backup";
 
     export default {
         name: 'V8Simulator',
-        components: {Cost, Tranches, InternalApp, AppHeader, SearchIcon},
+        components: {Backup, Cost, Tranches, InternalApp, AppHeader, SearchIcon},
         data: function () {
             return {
-                nbSearchRequests: 2330000,
-                nbRecords: 10000,
+                nbSearchRequests: 0,
+                nbRecords: 0,
                 hasPremium: false,
                 enterprisePackage: false,
                 nbDsn: 0,
@@ -233,6 +243,7 @@
                 discount: 0,
                 selectedAddons: [],
                 selectedPackages: [],
+
                 planInfo: Object.freeze(planInfo),
                 formatHumanNumber: formatHumanNumber,
                 appIndex: null,
@@ -246,7 +257,7 @@
             this.appIndex = client.initIndex('applications_production');
         },
         watch: {
-            enterprisePackage: function (val) {
+            'enterprisePackage': function (val) {
                 if (val) {
                     this.selectedAddons.splice(this.selectedAddons.findIndex((k) => k === 'premier_support'), 1);
                     this.selectedPackages.splice(this.selectedPackages.findIndex((k) => k === 'intro_onboarding'), 1);
@@ -303,8 +314,44 @@
             totalSalesPrice: function () {
                 return Math.ceil(this.totalListPrice - this.totalListPrice * this.discount / 100);
             },
+            scoping: function () {
+                return JSON.stringify({
+                    nbSearchRequests: this.nbSearchRequests,
+                    nbRecords: this.nbRecords,
+                    hasPremium: this.hasPremium,
+                    enterprisePackage: this.enterprisePackage,
+                    nbDsn: this.nbDsn,
+                    nbDedicatedCluster: this.nbDedicatedCluster,
+                    discount: this.discount,
+                    selectedAddons: this.selectedAddons,
+                    selectedPackages: this.selectedPackages,
+                });
+            }
         },
         methods: {
+            resetScoping: function () {
+                this.nbSearchRequests = 0;
+                this.nbRecords = 0;
+                this.hasPremium = false;
+                this.enterprisePackage = false;
+                this.nbDsn = 0;
+                this.nbDedicatedCluster = 0;
+                this.discount = 0;
+                this.selectedAddons = [];
+                this.selectedPackages = [];
+            },
+            onUpdateScoping: function (scopingString) {
+                const scoping = JSON.parse(scopingString);
+                this.nbSearchRequests = scoping.nbSearchRequests;
+                this.nbRecords = scoping.nbRecords;
+                this.hasPremium = scoping.hasPremium;
+                this.enterprisePackage = scoping.enterprisePackage;
+                this.nbDsn = scoping.nbDsn;
+                this.nbDedicatedCluster = scoping.nbDedicatedCluster;
+                this.discount = scoping.discount;
+                this.selectedAddons = scoping.selectedAddons;
+                this.selectedPackages = scoping.selectedPackages;
+            },
             nbUnitBasedOnSearch: function (isCommitted) {
                 return isCommitted ? Math.ceil(this.nbSearchRequests / 1000) : Math.ceil(this.nbSearchRequests / 1000 / 12);
             },
@@ -355,7 +402,7 @@
                         nbClusters: app.clusters_and_replicas_names.filter((c) => c.startsWith('d') || c.startsWith('v') || c.startsWith('a')).length,
                     }
                 });
-            }
+            },
         }
     }
 </script>
