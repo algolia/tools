@@ -43,7 +43,7 @@
         <div class="flex border-b border-t border-proton-grey-opacity-40">
             <div class="p-8 pl-0 align-top w-148">Discount</div>
             <div class="p-8 align-top">
-                <input type="number" v-model="currentDiscount" min="0" max="55">% (< 55%)
+                <input type="number" class="input-custom inline" v-model="currentDiscount" min="0" max="55">&nbsp;% (< 55%)
             </div>
         </div>
         <div class="flex border-b border-proton-grey-opacity-40">

@@ -5,50 +5,7 @@
             <div class="mx-24 mt-24">
                 <div class="flex">
                     <div class="w-third">
-                        <div class="mr-12 bg-white rounded border border-proton-grey-opacity-80">
-                            <div class="p-8 border-b border-proton-grey text-xs uppercase tracking-wide bg-proton-grey-opacity-40 text-telluric-blue">
-                                Load existing customer data
-                            </div>
-                            <div class="m-16">
-                                <div class="flex items-center px-16 bg-white rounded border border-proton-grey-opacity-80 h-40">
-                                    <input
-                                        class="flex-1 block h-full bg-transparent text-telluric-blue leading-normal"
-                                        placeholder="Account owner email"
-                                        ref="search"
-                                        @focus="appRes === null ? triggerAppSearch() : ''"
-                                        v-model="ownerEmail"
-                                    >
-                                </div>
-
-                                <div v-if="apps" class="mt-12">
-                                    <table class="w-full">
-                                        <tr
-                                            v-for="app in apps"
-                                            @click="app.selected = !app.selected"
-                                            class="cursor-pointer border-b border-proton-grey-opacity-40"
-                                        >
-                                            <td class="p-8">
-                                                <input type="checkbox" v-model="app.selected">
-                                            </td>
-                                            <td class="p-8">
-                                                <div>{{app.appId}}</div>
-                                                <div>{{app.appName}}</div>
-                                            </td>
-                                            <td class="p-8">
-                                                <div>{{app.nbClusters}} dedicated clusters</div>
-                                                <div>{{app.nbDsns}} DSNs</div>
-                                            </td>
-                                            <td class="p-8"></td>
-                                        </tr>
-                                    </table>
-                                    <div class="my-12 flex">
-                                        <button class="mx-auto bg-white border border-proton-grey-opacity-40 rounded shadow-sm hover:shadow transition-fast-out px-16 p-8 text-sm">
-                                            Load
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <load />
                         <div class="mt-24 mr-12 bg-white rounded border border-proton-grey-opacity-80">
                             <div class="p-8 border-b border-proton-grey text-xs uppercase tracking-wide bg-proton-grey-opacity-40 text-telluric-blue">
                                 Variables
@@ -72,7 +29,9 @@
                                         <td class="p-8 pt-4 align-top">
                                             <input class="input-custom p-4 inline" type="number" v-model.number="nbRecords">
                                         </td>
-                                        <td class="p-8"></td>
+                                        <td class="p-8">
+                                            <div>{{formatHumanNumber(nbRecords, 2)}}</div>
+                                        </td>
                                     </tr>
                                     <tr class="border-b border-proton-grey-opacity-40">
                                         <td class="p-8 pl-0">Nb Dedicated cluster</td>
@@ -228,10 +187,11 @@
     import {getKey} from "common/components/selectors/getClusterList";
     import algoliasearch from "algoliasearch";
     import Backup from "./Backup";
+    import Load from "./Load";
 
     export default {
         name: 'V8Simulator',
-        components: {Backup, Cost, Tranches, InternalApp, AppHeader, SearchIcon},
+        components: {Load, Backup, Cost, Tranches, InternalApp, AppHeader, SearchIcon},
         data: function () {
             return {
                 nbSearchRequests: 0,
@@ -246,15 +206,7 @@
 
                 planInfo: Object.freeze(planInfo),
                 formatHumanNumber: formatHumanNumber,
-                appIndex: null,
-                apps: null,
-                ownerEmail: '',
             }
-        },
-        created: async function () {
-            const key = await getKey();
-            const client = algoliasearch('X20GSLY1CL', key);
-            this.appIndex = client.initIndex('applications_production');
         },
         watch: {
             'enterprisePackage': function (val) {
@@ -263,9 +215,6 @@
                     this.selectedPackages.splice(this.selectedPackages.findIndex((k) => k === 'intro_onboarding'), 1);
                 }
             },
-            ownerEmail: function () {
-                this.triggerAppSearch();
-            }
         },
         computed: {
             unitsPerTrancheCommitted: function () {
@@ -381,25 +330,6 @@
                         unitCost: unitCost,
                         trancheCost: trancheCost,
                         totalCost: totalCost,
-                    }
-                });
-            },
-            triggerAppSearch: async function () {
-                if (this.ownerEmail.length <= 0) {
-                    this.apps = null;
-                    return;
-                }
-
-                const res = await this.appIndex.search('', {
-                    facetFilters: [`user_email:${this.ownerEmail}`],
-                });
-                this.apps = res.hits.map((app) => {
-                    return {
-                        selected: true,
-                        appId: app.application_id,
-                        appName: app.name,
-                        nbDsns: app.clusters_and_replicas_names.filter((c) => c.startsWith('c') || c.startsWith('b') || c.startsWith('s') || c.startsWith('t')).length,
-                        nbClusters: app.clusters_and_replicas_names.filter((c) => c.startsWith('d') || c.startsWith('v') || c.startsWith('a')).length,
                     }
                 });
             },
