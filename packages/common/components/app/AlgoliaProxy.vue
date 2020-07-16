@@ -56,6 +56,11 @@
                     return;
                 }
 
+                const currentAppName = window.location.pathname.split('/')[1];
+                if (!json.apps.includes('all') && !json.apps.includes(currentAppName)) {
+                    this.authorized = false;
+                }
+
                 this.currentUser = json;
             }
         }
