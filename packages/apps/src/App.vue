@@ -24,55 +24,93 @@
     import AppHeader from "common/components/header/AppHeader";
     import AppManagement from "common/components/configuration/AppManagement";
 
+    const appsGroups = [
+        {
+            name: 'Relevance tools',
+            description: 'Bootstrap, iterate, and fine tune relevance',
+            apps: [
+                {name: 'Metaparams', url: '/metaparams'},
+                {name: 'Relevance Testing', url: '/relevance-testing'},
+                {name: 'Index Differ', url: '/index-differ'},
+            ],
+        },
+        {
+            name: 'Management tools',
+            description: 'Manage your apps and indices',
+            apps: [
+                {name: 'Realtime Logs', url: '/logs'},
+                {name: 'Analyse Logs', url: 'https://logger.algolia.com/'},
+            ]
+        },
+        {
+            name: 'Data tools',
+            description: 'Play with data',
+            apps: [
+                {name: 'Transform', url: '/transform'},
+                {name: 'Index analyzer', url: '/index-analyzer'},
+                {name: 'Index size', url: '/index-size'},
+            ]
+        },
+        {
+            name: 'Info tools',
+            description: 'Get information on engine features',
+            apps: [
+                {name: 'Dictionaries', url: '/dictionaries'},
+                {name: 'Infra Watch', url: '/infra-watch'},
+            ]
+        },
+        {
+            name: 'Feature Testing tools',
+            description: 'Test features without code',
+            apps: [
+                {name: 'Insights UI', url: '/insights-ui'},
+            ]
+        },
+    ];
+
     export default {
         name: 'Home',
         components: {InternalApp, AppHeader, AppManagement},
         data: function () {
             return {
-                appsGroups: [
-                    {
-                        name: 'Relevance tools',
-                        description: 'Bootstrap, iterate, and fine tune relevance',
-                        apps: [
-                            {name: 'Metaparams', url: '/metaparams'},
-                            {name: 'Relevance Testing', url: '/relevance-testing'},
-                            {name: 'Index Differ', url: '/index-differ'},
-                        ],
-                    },
-                    {
-                        name: 'Management tools',
-                        description: 'Manage your apps and indices',
-                        apps: [
-                            {name: 'Realtime Logs', url: '/logs'},
-                            {name: 'Analyse Logs', url: 'https://logger.algolia.com/'},
-                        ]
-                    },
-                    {
-                        name: 'Data tools',
-                        description: 'Play with data',
-                        apps: [
-                            {name: 'Transform', url: '/transform'},
-                            {name: 'Index analyzer', url: '/index-analyzer'},
-                            {name: 'Index size', url: '/index-size'},
-                        ]
-                    },
-                    {
-                        name: 'Info tools',
-                        description: 'Get information on engine features',
-                        apps: [
-                            {name: 'Dictionaries', url: '/dictionaries'},
-                            {name: 'Infra Watch', url: '/infra-watch'},
-                        ]
-                    },
-                    {
-                        name: 'Feature Testing tools',
-                        description: 'Test features without code',
-                        apps: [
-                            {name: 'Insights UI', url: '/insights-ui'},
-                        ]
-                    },
-                ]
+                appsGroups: [],
             };
         },
+        created: async function () {
+            const backendEndpoint = process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT || 'https://tools-backend.algolia.com';
+            const res = await fetch(`${backendEndpoint}/user/info?redirect_to=${window.location.href}`, {
+                credentials: 'include',
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+            const json = await res.json();
+            const authorizedApps = json.apps;
+
+            const authorizedGroups = [];
+
+            if (!authorizedApps.includes('all')) {
+                appsGroups.forEach((appGroup) => {
+                    const apps = [];
+                    appGroup.apps.forEach((app) => {
+                        authorizedApps.forEach((a) => {
+                            if (app.url === `/${a}`) {
+                                apps.push(app);
+                            }
+                        })
+                    });
+                    if (apps.length > 0) {
+                        authorizedGroups.push({
+                            ...appGroup,
+                            apps: apps,
+                        })
+                    }
+                });
+                this.appsGroups = authorizedGroups;
+            } else {
+                this.appsGroups = appsGroups;
+            }
+
+        }
     }
 </script>
