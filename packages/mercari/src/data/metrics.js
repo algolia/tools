@@ -6,6 +6,7 @@ export default [
             'multi_queries_operations',
             'browse_operations',
             'get_record_operations',
+            'total_search_requests'
         ]
     },
     {
