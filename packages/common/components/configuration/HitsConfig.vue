@@ -1,6 +1,6 @@
 <template>
-    <div class="flex text-telluric-blue text-sm">
-        <div class="ml-48 mr-48" v-if="Object.keys($store.state.apps).length > 0">
+    <div class="flex flex-wrap text-telluric-blue text-sm">
+        <div class="ml-48 mb-16 mt-12" v-if="Object.keys($store.state.apps).length > 0">
             <div class="mb-8">
                 <h4>Hits Display</h4>
             </div>
@@ -25,7 +25,7 @@
                 </div>
             </div>
         </div>
-        <div class="mr-48" v-if="Object.keys($store.state.apps).length > 0">
+        <div class="ml-48 mb-16 mt-12" v-if="Object.keys($store.state.apps).length > 0">
             <div class="mb-8">
                 <h4>Attributes Display</h4>
             </div>
@@ -67,12 +67,12 @@
                 </div>
             </div>
         </div>
-        <div class="mr-48" v-if="Object.keys($store.state.apps).length > 0">
+        <div class="ml-48 mb-16 mt-12" v-if="Object.keys($store.state.apps).length > 0">
             <div class="mb-8">
                 <h4>Distraction Free</h4>
             </div>
             <div class="flex h-48">
-                <div class="w-172 flex flex-col justify-between h-full mr-16">
+                <div class="w-132 flex flex-col justify-between h-full mr-16">
                     <button
                         @click="showParamsAndSettings = !showParamsAndSettings"
                         class="w-full flex py-4 px-8 items-center text-center block bg-white rounded border border-b-0 border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out"
@@ -90,7 +90,7 @@
                         <div>Index Selector</div>
                     </button>
                 </div>
-                <div class="w-172 flex flex-col justify-between h-full">
+                <div class="w-132 flex flex-col justify-between h-full">
                     <button
                         @click="showResultTabs = !showResultTabs"
                         class="w-full flex py-4 px-8 items-center text-center block bg-white rounded border border-b-0 border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out"

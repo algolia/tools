@@ -2,7 +2,7 @@
     <internal-app>
         <div class="min-h-screen">
             <app-header app-name="Mercari">
-                <display-config class="mx-16 mt-0 ml-auto"/>
+                <display-config class="mt-0 ml-auto"/>
             </app-header>
             <app-management />
             <template v-if="apps.length > 0" v-for="app in appsWithAdminKey">

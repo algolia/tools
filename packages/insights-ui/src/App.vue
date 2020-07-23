@@ -2,7 +2,7 @@
     <internal-app>
         <div class="min-h-screen">
             <app-header app-name="Insights UI">
-                <display-config class="mx-16 mt-0 ml-auto"/>
+                <display-config class="mt-0 ml-auto"/>
             </app-header>
             <app-management @onAddedAppId="appId = $event" />
             <div class="max-w-960 mx-auto mt-24 pb-24">

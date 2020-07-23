@@ -2,7 +2,7 @@
     <internal-app>
         <div class="pb-24">
             <app-header app-name="Index Differ">
-                <display-config class="mx-16 mt-0 ml-auto"/>
+                <display-config class="mt-0 ml-auto"/>
             </app-header>
             <app-management />
             <div class="m-12">

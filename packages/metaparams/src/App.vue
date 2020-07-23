@@ -2,7 +2,7 @@
     <internal-app>
         <div class="overflow-hidden flex flex-col">
             <app-header app-name="Metaparams">
-                <display-config class="mx-16 mt-0"/>
+                <display-config class="mt-0"/>
             </app-header>
             <share-view
                 v-if="!loadingSharingLink && $store.state.panels.shareStatePanel"

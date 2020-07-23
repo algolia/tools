@@ -2,7 +2,7 @@
     <internal-app>
         <div class="min-h-screen pb-48">
             <app-header app-name="Index Analyzer">
-                <display-config class="mx-16 mt-0 ml-auto" />
+                <display-config class="mt-0 ml-auto" />
             </app-header>
             <div class="px-48 mt-24">
                 <app-management @onAddedAppId="appId = $event" />

@@ -1,5 +1,5 @@
 <template>
-    <div v-if="Object.keys($store.state.apps).length > 0" class="text-telluric-blue text-sm">
+    <div v-if="Object.keys($store.state.apps).length > 0" class="text-telluric-blue text-sm ml-auto mb-16 mt-12">
         <div class="mb-8">
             <h4>Panels</h4>
         </div>
@@ -8,7 +8,7 @@
                 class="h-full flex items-center text-center block bg-white rounded border border-b-0 border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out mr-16"
             >
                 <button
-                    class="h-full py-8 px-16"
+                    class="w-92 h-full py-8 px-16"
                     @click="comparePanels = !comparePanels"
                 >
                     <div>
@@ -18,7 +18,7 @@
                         />
                     </div>
                     <div class="mt-4">
-                        Compare Hits
+                        Hits
                     </div>
                 </button>
             </div>
@@ -27,7 +27,7 @@
                 class="h-full flex items-center text-center block bg-white rounded border border-b-0 border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out"
             >
                 <button
-                    class="h-full py-8 px-16"
+                    class="w-92 h-full py-8 px-16"
                     @click="$store.commit('panels/setSplitMode', !$store.state.panels.splitMode)"
                 >
                     <div>

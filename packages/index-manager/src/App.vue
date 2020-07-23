@@ -1,7 +1,7 @@
 <template>
     <internal-app>
         <app-header app-name="Index Manager">
-            <display-config class="mx-16 mt-0 ml-auto"/>
+            <display-config class="mt-0 ml-auto"/>
         </app-header>
         <app-management @onAddedAppId="appId = $event" />
         <div class="flex" style="height: calc(100vh - 94px);">

@@ -2,7 +2,7 @@
     <internal-app>
         <div class="min-h-screen pb-24">
             <app-header app-name="Relevance Testing" class="fixed left-0 top-0 w-full z-20">
-                <display-config class="mx-16 mt-0 ml-auto" />
+                <display-config class="mt-0 ml-auto" />
             </app-header>
             <div class="pt-112">
                 <app-management />
