@@ -88,6 +88,24 @@ function extractRemovedWordsFromQuery(rule) {
     return [];
 }
 
+function extractCondition(condition) {
+    const hasPatternAndAnchoring = condition.pattern !== undefined && condition.anchoring !== undefined;
+    return {
+        hasPatternAndAnchoring: hasPatternAndAnchoring,
+        pattern: hasPatternAndAnchoring ? condition.pattern : '',
+        anchoring: hasPatternAndAnchoring ? condition.anchoring : 'is',
+        context: condition.context ? condition.context : '',
+        alternatives: condition.alternatives ? condition.alternatives : false,
+    }
+}
+
+function extractConditions (rule) {
+    const condition = rule.condition ? [rule.condition] : [];
+    const conditions = rule.conditions || condition;
+
+    return conditions.map((condition) => extractCondition(condition));
+}
+
 export default function (rule) {
     const ruleCopy = JSON.parse(JSON.stringify(rule));
     this.objectID = ruleCopy.objectID;
@@ -96,11 +114,7 @@ export default function (rule) {
     this.description = ruleCopy.description;
     this.validity = ruleCopy.validity;
 
-    this.hasPatternAndAnchoring = ruleCopy.condition !== undefined && ruleCopy.condition.pattern !== undefined && ruleCopy.condition.anchoring !== undefined;
-    this.pattern = this.hasPatternAndAnchoring ? ruleCopy.condition.pattern : '';
-    this.anchoring = this.hasPatternAndAnchoring ? ruleCopy.condition.anchoring : 'is';
-    this.context = ruleCopy.condition && ruleCopy.condition.context ? ruleCopy.condition.context : '';
-    this.alternatives = ruleCopy.condition && ruleCopy.condition.alternatives ? ruleCopy.condition.alternatives : false;
+    this.conditions = extractConditions(ruleCopy);
 
     this.promote = ruleCopy.consequence.promote || [];
     this.filterPromotes = ruleCopy.consequence.filterPromotes || false;
@@ -138,18 +152,21 @@ export default function (rule) {
 
         if (this.validity) rule.validity = this.validity;
 
-        rule.condition = {};
-        if (this.hasPatternAndAnchoring) {
-             rule.condition.pattern = this.pattern;
-             rule.condition.anchoring = this.anchoring;
-        }
+        rule.conditions = this.conditions.map((c) => {
+            const condition = {};
+            if (c.hasPatternAndAnchoring) {
+                condition.pattern = c.pattern;
+                condition.anchoring = c.anchoring;
+            }
 
-        if (this.context.length > 0) rule.condition.context = this.context;
-        if (this.alternatives) rule.condition.alternatives = true;
+            if (c.context.length > 0) condition.context = c.context;
+            if (c.alternatives) condition.alternatives = true;
+            return condition;
+        });
 
         rule.consequence = {};
 
-        if (this.hasPatternAndAnchoring && this.hasPromote && this.promote.length > 0) {
+        if (this.conditions.every((c) => c.hasPatternAndAnchoring) && this.hasPromote && this.promote.length > 0) {
             rule.consequence.promote = JSON.parse(JSON.stringify(this.promote));
             if (this.filterPromotes) {
                 rule.consequence.filterPromotes = true;
@@ -169,7 +186,7 @@ export default function (rule) {
         if (this.hasReplacedQuery) {
             if (!rule.consequence.params) rule.consequence.params = {};
             rule.consequence.params.query = this.replacedQuery;
-        } else if (this.hasPatternAndAnchoring) {
+        } else if (this.conditions.every((c) => c.hasPatternAndAnchoring)) {
             const replacedWordsFromQuery = this.replacedWordsFromQuery.filter((word) => {
                 return word[0].length > 0 && word[1].length > 0;
             });
@@ -202,7 +219,7 @@ export default function (rule) {
             }
         }
 
-        if (this.hasPatternAndAnchoring) {
+        if (this.conditions.every((c) => c.hasPatternAndAnchoring)) {
             // Needs to be after params
             const automaticFacetFilters = this.automaticFacetFilters.filter((filter) => {
                 return this.pattern.indexOf(`{facet:${filter.facet}`) !== -1;

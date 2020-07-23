@@ -22,47 +22,41 @@
                 </div>
             </div>
             <div class="w-full p-8">
-                <div>
+                <div
+                    v-if="intermediateRule.conditions.some((c) => c.hasPatternAndAnchoring) || intermediateRule.conditions.some((c) => c.context)"
+                    v-for="(condition, i) in intermediateRule.conditions"
+                    :class="i > 0 ? 'mt-16' : ''"
+                >
                     <div class="py-8 flex flex-wrap items-center tracking-wide text-xs uppercase text-cosmos-black-opacity-70">
-                        Condition
+                        {{ i > 0 ? 'OR': ''}} Condition
                     </div>
-                    <div v-if="intermediateRule.hasPatternAndAnchoring || intermediateRule.context">
+                    <div>
                         <div
-                            v-if="intermediateRule.hasPatternAndAnchoring"
+                            v-if="condition.hasPatternAndAnchoring"
                             class="py-8 flex flex-wrap border-t border-proton-grey-opacity-20"
                         >
                             <div class="w-188">
-                                if query <span v-html="properHighlight(intermediateRule.anchoring)"></span>
+                                if query <span v-html="properHighlight(condition.anchoring)"></span>
                             </div>
                             <div class="ml-4 text-cosmos-black-opacity-70">
-                                "<span v-html="properHighlight(intermediateRule.pattern)"></span>"
+                                "<span v-html="properHighlight(condition.pattern)"></span>"
                             </div>
                         </div>
-                        <div v-if="intermediateRule.alternatives">
+                        <div v-if="condition.alternatives">
                             <div class="w-188">match with alternatives</div>
                         </div>
-                        <div v-if="intermediateRule.context" class="py-8 flex flex-wrap border-t border-proton-grey-opacity-20">
+                        <div v-if="condition.context" class="py-8 flex flex-wrap border-t border-proton-grey-opacity-20">
                             <div class="w-188">in context</div>
-                            <div class="ml-4 text-cosmos-black-opacity-70" v-html="properHighlight(intermediateRule.context)"></div>
+                            <div class="ml-4 text-cosmos-black-opacity-70" v-html="properHighlight(condition.context)"></div>
                         </div>
                     </div>
-                    <div v-else class="py-8 border-t border-proton-grey-opacity-20">
+                </div>
+                <div v-else>
+                    <div class="py-8 flex flex-wrap items-center tracking-wide text-xs uppercase text-cosmos-black-opacity-70">
+                        Conditions
+                    </div>
+                    <div class="py-8 border-t border-proton-grey-opacity-20">
                         No condition - Always active
-                    </div>
-                    <div v-if="intermediateRule.validity && intermediateRule.validity.length > 0" class="py-8 flex flex-wrap border-t border-proton-grey-opacity-20">
-                        <div class="w-188">validity periods</div>
-                        <div class="ml-4">
-                            <div v-for="validityPeriod in intermediateRule.validity">
-                                from
-                                <span class="text-cosmos-black-opacity-70">
-                            {{new Date(validityPeriod.from * 1000).toLocaleDateString('en-US', {day: 'numeric', month: 'short', year: 'numeric'})}}
-                        </span>
-                                to
-                                <span class="text-cosmos-black-opacity-70">
-                            {{new Date(validityPeriod.until * 1000).toLocaleDateString('en-US', {day: 'numeric', month: 'short', year: 'numeric'})}}
-                        </span>
-                            </div>
-                        </div>
                     </div>
                 </div>
                 <div class="mt-16 py-8 flex flex-wrap items-center tracking-wide text-xs uppercase text-cosmos-black-opacity-70">
@@ -121,6 +115,9 @@
                 </div>
                 <div v-if="intermediateRule.filterPromotes > 0" class="py-8 flex border-t border-proton-grey-opacity-20">
                     <div class="w-188">promote follow filters</div>
+                    <div class="ml-4 text-cosmos-black-opacity-70">
+                        true
+                    </div>
                 </div>
                 <div v-if="intermediateRule.hide.length > 0" class="py-8 flex border-t border-proton-grey-opacity-20">
                     <div class="w-188">hide</div>
@@ -144,6 +141,21 @@
                     <div class="w-188">userData</div>
                     <div class="ml-4 text-cosmos-black-opacity-70">
                         <pre v-html="properHighlight(JSON.stringify(intermediateRule.userData, null, 2))"></pre>
+                    </div>
+                </div>
+                <div v-if="intermediateRule.validity && intermediateRule.validity.length > 0" class="py-8 flex flex-wrap border-t border-proton-grey-opacity-20">
+                    <div class="w-188">validity periods</div>
+                    <div class="ml-4">
+                        <div v-for="validityPeriod in intermediateRule.validity">
+                            from
+                            <span class="text-cosmos-black-opacity-70">
+                            {{new Date(validityPeriod.from * 1000).toLocaleDateString('en-US', {day: 'numeric', month: 'short', year: 'numeric'})}}
+                        </span>
+                            to
+                            <span class="text-cosmos-black-opacity-70">
+                            {{new Date(validityPeriod.until * 1000).toLocaleDateString('en-US', {day: 'numeric', month: 'short', year: 'numeric'})}}
+                        </span>
+                        </div>
                     </div>
                 </div>
             </div>

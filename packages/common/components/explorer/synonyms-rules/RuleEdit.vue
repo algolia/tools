@@ -13,68 +13,70 @@
                         <option :value="false">disabled</option>
                     </select>
                 </div>
-                <div class="mt-16 py-8 flex flex-wrap items-center tracking-wide text-xs uppercase text-cosmos-black-opacity-70">
-                    Condition
-                </div>
-                <div v-if="newRule.validity && newRule.validity.length > 0" class="py-8 flex flex-wrap items-center border-t border-proton-grey-opacity-20">
-                    <div class="w-212">validity periods</div>
-                    <div v-for="validityPeriod in newRule.validity">
-                        from
-                        <span>
-                                {{new Date(validityPeriod.from * 1000).toLocaleDateString('en-US', {day: 'numeric', month: 'short', year: 'numeric'})}}
-                        </span>
-                        to
-                        <span>
-                                {{new Date(validityPeriod.until * 1000).toLocaleDateString('en-US', {day: 'numeric', month: 'short', year: 'numeric'})}}
-                        </span>
+                <div v-for="(condition, i) in newRule.conditions">
+                    <div class="mt-16 py-8 flex flex-wrap items-center tracking-wide text-xs uppercase text-cosmos-black-opacity-70">
+                        {{ i > 0 ? 'OR': ''}} Condition
+                        <trash-icon
+                            v-if="newRule.conditions.length > 1"
+                            class="ml-8 w-12 h-12 cursor-pointer"
+                            @click="$delete(newRule.conditions, i)"
+                        />
                     </div>
-                </div>
-                <div class="py-8 flex flex-wrap items-center border-t border-proton-grey-opacity-20">
-                    <div class="flex flex-wrap items-center w-212">
-                        <div>
-                            <input type="checkbox" v-model="newRule.hasPatternAndAnchoring" />
-                            query
+                    <div class="py-8 flex flex-wrap items-center border-t border-proton-grey-opacity-20">
+                        <div class="flex flex-wrap items-center w-212">
+                            <div>
+                                <input type="checkbox" v-model="newRule.conditions[i].hasPatternAndAnchoring" />
+                                query
+                            </div>
+                            <div v-if="newRule.conditions[i].hasPatternAndAnchoring">
+                                <div class="mx-4">
+                                    <select v-model="newRule.conditions[i].anchoring" class="bg-white input-custom inline">
+                                        <option value="contains">contains</option>
+                                        <option value="is">is</option>
+                                        <option value="startsWith">startsWith</option>
+                                        <option value="endsWith">endsWith</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
-                        <div v-if="newRule.hasPatternAndAnchoring">
-                            <div class="mx-4">
-                                <select v-model="newRule.anchoring" class="bg-white input-custom inline">
-                                    <option value="contains">contains</option>
-                                    <option value="is">is</option>
-                                    <option value="startsWith">startsWith</option>
-                                    <option value="endsWith">endsWith</option>
-                                </select>
+                        <div v-if="newRule.conditions[i].hasPatternAndAnchoring">
+                            <div>
+                                <input
+                                    v-model="newRule.conditions[i].pattern"
+                                    v-autowidth="{comfortZone: 10, maxWidth: '100%'}"
+                                    class="input-custom inline w-full "
+                                />
                             </div>
                         </div>
                     </div>
-                    <div v-if="newRule.hasPatternAndAnchoring">
+                    <div class="py-8 flex flex-wrap items-center border-t border-proton-grey-opacity-20">
+                        <div>
+                            <input type="checkbox" v-model="newRule.conditions[i].alternatives" /> match with alternatives
+                        </div>
+                    </div>
+                    <div class="py-8 flex flex-wrap items-center border-t border-proton-grey-opacity-20">
+                        <div class="w-212">context</div>
                         <div>
                             <input
-                                v-model="newRule.pattern"
+                                v-model="newRule.conditions[i].context"
                                 v-autowidth="{comfortZone: 10, maxWidth: '100%'}"
                                 class="input-custom inline w-full "
                             />
                         </div>
                     </div>
                 </div>
-                <div class="py-8 flex flex-wrap items-center border-t border-proton-grey-opacity-20">
-                    <div>
-                        <input type="checkbox" v-model="newRule.alternatives" /> match with alternatives
-                    </div>
+                <div>
+                    <button
+                        class="mt-16 bg-white rounded border border-b-0 border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out mr-8 px-16 p-8 text-sm"
+                        @click="newRule.conditions.push({hasPatternAndAnchoring: false, pattern: '', anchoring: 'is', context: '',alternatives: false})"
+                    >
+                        Add condition
+                    </button>
                 </div>
-                <div class="py-8 flex flex-wrap items-center border-t border-proton-grey-opacity-20">
-                    <div class="w-212">context</div>
-                    <div>
-                        <input
-                            v-model="newRule.context"
-                            v-autowidth="{comfortZone: 10, maxWidth: '100%'}"
-                            class="input-custom inline w-full "
-                        />
-                    </div>
-                </div>
-                <div class="mt-16 py-8 flex flex-wrap items-center tracking-wide text-xs uppercase text-cosmos-black-opacity-70">
+                <div class="mt-48 py-8 flex flex-wrap items-center tracking-wide text-xs uppercase text-cosmos-black-opacity-70">
                     Consequences
                 </div>
-                <div v-if="newRule.hasPatternAndAnchoring && facetsInQuery.length > 0" class="py-8 flex flex-wrap items-center border-t border-proton-grey-opacity-20">
+                <div v-if="newRule.conditions.every((c) => c.hasPatternAndAnchoring) && facetsInQuery.length > 0" class="py-8 flex flex-wrap items-center border-t border-proton-grey-opacity-20">
                     <div class="w-212">
                         <input type="checkbox" v-model="newRule.hasAutomaticFilters" class="mr-1"/>
                         filter automatically on
@@ -102,7 +104,7 @@
                         </div>
                     </div>
                 </div>
-                <div v-if="newRule.hasPatternAndAnchoring && facetsInQuery.length > 0" class="py-8 flex flex-wrap items-center border-t border-proton-grey-opacity-20">
+                <div v-if="newRule.conditions.every((c) => c.hasPatternAndAnchoring) && facetsInQuery.length > 0" class="py-8 flex flex-wrap items-center border-t border-proton-grey-opacity-20">
                     <div class="w-212">
                         <input type="checkbox" v-model="newRule.hasAutomaticOptionalFilters" class="mr-1"/>
                         optionalFilter automatically on
@@ -130,7 +132,7 @@
                         </div>
                     </div>
                 </div>
-                <div v-if="newRule.hasPatternAndAnchoring" class="py-8 flex flex-wrap items-center border-t border-proton-grey-opacity-20">
+                <div v-if="newRule.conditions.every((c) => c.hasPatternAndAnchoring)" class="py-8 flex flex-wrap items-center border-t border-proton-grey-opacity-20">
                     <div class="w-212">
                         <input type="checkbox" v-model="newRule.hasReplacedQuery" class="mr-1"/>
                         replace query by
@@ -144,7 +146,7 @@
                         />
                     </div>
                 </div>
-                <div v-if="newRule.hasPatternAndAnchoring" class="py-8 flex flex-wrap items-center border-t border-proton-grey-opacity-20">
+                <div v-if="newRule.conditions.every((c) => c.hasPatternAndAnchoring)" class="py-8 flex flex-wrap items-center border-t border-proton-grey-opacity-20">
                     <div class="w-212" :class="newRule.hasReplacedQuery ? 'text-cosmos-black-opacity-30' : ''">
                         <input :disabled="newRule.hasReplacedQuery" type="checkbox" v-model="newRule.hasRemovedWordsFromQuery"/>
                         remove from query
@@ -162,7 +164,7 @@
                         </span>
                     </div>
                 </div>
-                <div v-if="newRule.hasPatternAndAnchoring" class="py-8 flex flex-wrap items-center border-t border-proton-grey-opacity-20">
+                <div v-if="newRule.conditions.every((c) => c.hasPatternAndAnchoring)" class="py-8 flex flex-wrap items-center border-t border-proton-grey-opacity-20">
                     <div class="w-212" :class="newRule.hasReplacedQuery ? 'text-cosmos-black-opacity-30' : ''">
                         <input :disabled="newRule.hasReplacedQuery" type="checkbox" v-model="newRule.hasReplacedWordsFromQuery"/>
                         replace in query
@@ -189,7 +191,7 @@
                         </div>
                     </div>
                 </div>
-                <div v-if="newRule.hasPatternAndAnchoring">
+                <div v-if="newRule.conditions.every((c) => c.hasPatternAndAnchoring)">
                     <div class="py-8 flex border-t border-proton-grey-opacity-20">
                         <div class="w-212">
                             <input type="checkbox" v-model="newRule.hasPromote" class="mr-1"/>
@@ -307,6 +309,19 @@
                         />
                     </div>
                 </div>
+                <div v-if="newRule.validity && newRule.validity.length > 0" class="py-8 flex flex-wrap items-center border-t border-proton-grey-opacity-20">
+                    <div class="w-212">validity periods</div>
+                    <div v-for="validityPeriod in newRule.validity">
+                        from
+                        <span>
+                                {{new Date(validityPeriod.from * 1000).toLocaleDateString('en-US', {day: 'numeric', month: 'short', year: 'numeric'})}}
+                        </span>
+                        to
+                        <span>
+                                {{new Date(validityPeriod.until * 1000).toLocaleDateString('en-US', {day: 'numeric', month: 'short', year: 'numeric'})}}
+                        </span>
+                    </div>
+                </div>
             </div>
             <div class="flex justify-end my-16">
                 <div v-if="saveError" class="border border-mars-1 mr-8 p-8 rounded">
@@ -378,12 +393,14 @@
         },
         computed: {
             facetsInQuery: function () {
-                if (this.newRule.pattern) {
-                    return Array.from(this.newRule.pattern.matchAll(/{facet:(.*?)}/g)).map((match) => {
+                const allFacets = [];
+                this.newRule.conditions.forEach((condition) => {
+                    const facets = Array.from(condition.pattern.matchAll(/{facet:(.*?)}/g)).map((match) => {
                         return match[1];
-                    })
-                }
-                return [];
+                    });
+                    allFacets.push(...facets);
+                });
+                return allFacets;
             },
             potentialFilters: function () {
                 const potentialFilters = {};
@@ -407,8 +424,10 @@
             },
             canBeSaved: function () {
                 if (this.newRule.objectID.length <= 0) return false;
-                if (this.newRule.hasPatternAndAnchoring) {
-                    if (this.newRule.pattern && this.newRule.pattern.length === 0 && this.newRule.anchoring !== 'is') return false;
+
+                for (let i = 0; i < this.newRule.conditions.length; i++) {
+                    const condition = this.newRule.conditions[i];
+                    if (condition.pattern && condition.pattern.length === 0 && condition.anchoring !== 'is') return false;
                 }
 
                 if (this.newRule.hasUserData && this.nbErrorsUserData > 0) return false;
