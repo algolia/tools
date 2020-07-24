@@ -221,8 +221,11 @@ export default function (rule) {
 
         if (this.conditions.every((c) => c.hasPatternAndAnchoring)) {
             // Needs to be after params
-            const automaticFacetFilters = this.automaticFacetFilters.filter((filter) => {
-                return this.pattern.indexOf(`{facet:${filter.facet}`) !== -1;
+            const automaticFacetFilters = [];
+            this.conditions.forEach((c) => {
+                automaticFacetFilters.push(...this.automaticFacetFilters.filter((filter) => {
+                    return c.pattern.indexOf(`{facet:${filter.facet}`) !== -1;
+                }));
             });
             if (this.hasAutomaticFilters && automaticFacetFilters.length > 0) {
                 if (!rule.consequence.params) rule.consequence.params = {};
@@ -230,8 +233,11 @@ export default function (rule) {
             }
 
             // Needs to be after params
-            const automaticOptionalFacetFilters = this.automaticOptionalFacetFilters.filter((filter) => {
-                return this.pattern.indexOf(`{facet:${filter.facet}`) !== -1;
+            const automaticOptionalFacetFilters = [];
+            this.conditions.forEach((c) => {
+                automaticOptionalFacetFilters.push(...this.automaticOptionalFacetFilters.filter((filter) => {
+                    return c.pattern.indexOf(`{facet:${filter.facet}`) !== -1;
+                }));
             });
             if (this.hasAutomaticOptionalFilters && automaticOptionalFacetFilters.length > 0) {
                 if (!rule.consequence.params) rule.consequence.params = {};

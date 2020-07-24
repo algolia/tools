@@ -2,7 +2,7 @@
     <div>
         <div class="flex flex-wrap items-center">
             <input
-                v-model="query"
+                v-model="queryFilter"
                 :placeholder="placeholder"
                 class="px-8 bg-proton-grey-opacity-20 rounded py-8 text-telluric-blue"
             />
@@ -100,12 +100,13 @@
             ...props.actions,
             ...props.images,
             ...props.attributes,
+            ...props.paramsAndSettings,
         ],
         data: function () {
             return {
                 objs: [],
                 allObjs: [],
-                query: '',
+                queryFilter: '',
                 page: 0,
                 nbPages: 0,
                 isAdding: false,
@@ -174,7 +175,7 @@
             });
         },
         watch: {
-            query: function () { this.search(this.page, false);},
+            queryFilter: function () { this.search(this.page, false);},
             page: function () { this.search(this.page, false);},
             rulesStatus: function () { this.search(this.page, false);},
             appId: function (o, n) { if (o !== n) this.search(0, true); this.search(0, false); },
@@ -190,7 +191,7 @@
 
                 const index = await getSearchIndex(this.appId, this.apiKey, this.indexName, this.server, this.userId);
                 const hitsPerPage = loadAll ? 1000 : 20;
-                const res = await index[this.methodName](this.query, {
+                const res = await index[this.methodName](this.queryFilter, {
                     page: page,
                     hitsPerPage: hitsPerPage,
                     ...this.extraParams,

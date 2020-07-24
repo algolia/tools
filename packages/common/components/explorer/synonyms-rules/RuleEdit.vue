@@ -78,17 +78,21 @@
                 </div>
                 <div v-if="newRule.conditions.every((c) => c.hasPatternAndAnchoring) && facetsInQuery.length > 0" class="py-8 flex flex-wrap items-center border-t border-proton-grey-opacity-20">
                     <div class="w-212">
-                        <input type="checkbox" v-model="newRule.hasAutomaticFilters" class="mr-1"/>
-                        filter automatically on
+                        <label class="cursor-pointer">
+                            <input type="checkbox" v-model="newRule.hasAutomaticFilters" class="mr-1"/>
+                            filter automatically on
+                        </label>
                     </div>
                     <div v-if="newRule.hasAutomaticFilters">
                         <div v-for="(filter, facetName) in potentialFilters">
-                            <input
-                                type="checkbox"
-                                :checked="filter"
-                                @input="onAutomaticFilterChange(newRule.automaticFacetFilters, facetName, $event.target.checked)"
-                            />
-                            {{facetName}}
+                            <label class="cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    :checked="filter"
+                                    @input="onAutomaticFilterChange(newRule.automaticFacetFilters, facetName, $event.target.checked)"
+                                />
+                                {{facetName}}
+                            </label>
                             <span v-if="filter">
                                 &lt;score=
                                 <input type="number" min="1" max="10"
@@ -106,17 +110,21 @@
                 </div>
                 <div v-if="newRule.conditions.every((c) => c.hasPatternAndAnchoring) && facetsInQuery.length > 0" class="py-8 flex flex-wrap items-center border-t border-proton-grey-opacity-20">
                     <div class="w-212">
-                        <input type="checkbox" v-model="newRule.hasAutomaticOptionalFilters" class="mr-1"/>
-                        optionalFilter automatically on
+                        <label class="cursor-pointer">
+                            <input type="checkbox" v-model="newRule.hasAutomaticOptionalFilters" class="mr-1"/>
+                            optionalFilter automatically on
+                        </label>
                     </div>
                     <div v-if="newRule.hasAutomaticOptionalFilters">
                         <div v-for="(filter, facetName) in potentialOptionalFilters">
-                            <input
-                                type="checkbox"
-                                :checked="filter"
-                                @input="onAutomaticFilterChange(newRule.automaticOptionalFacetFilters, facetName, $event.target.checked)"
-                            />
-                            {{facetName}}
+                            <label class="cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    :checked="filter"
+                                    @input="onAutomaticFilterChange(newRule.automaticOptionalFacetFilters, facetName, $event.target.checked)"
+                                />
+                                {{facetName}}
+                            </label>
                             <span v-if="filter">
                                 &lt;score=
                                 <input type="number" min="1" max="10"
@@ -134,8 +142,10 @@
                 </div>
                 <div v-if="newRule.conditions.every((c) => c.hasPatternAndAnchoring)" class="py-8 flex flex-wrap items-center border-t border-proton-grey-opacity-20">
                     <div class="w-212">
-                        <input type="checkbox" v-model="newRule.hasReplacedQuery" class="mr-1"/>
-                        replace query by
+                        <label class="cursor-pointer">
+                            <input type="checkbox" v-model="newRule.hasReplacedQuery" class="mr-1"/>
+                            replace query by
+                        </label>
                     </div>
                     <div v-if="newRule.hasReplacedQuery">
                         <input
@@ -148,8 +158,10 @@
                 </div>
                 <div v-if="newRule.conditions.every((c) => c.hasPatternAndAnchoring)" class="py-8 flex flex-wrap items-center border-t border-proton-grey-opacity-20">
                     <div class="w-212" :class="newRule.hasReplacedQuery ? 'text-cosmos-black-opacity-30' : ''">
-                        <input :disabled="newRule.hasReplacedQuery" type="checkbox" v-model="newRule.hasRemovedWordsFromQuery"/>
-                        remove from query
+                        <label class="cursor-pointer">
+                            <input :disabled="newRule.hasReplacedQuery" type="checkbox" v-model="newRule.hasRemovedWordsFromQuery"/>
+                            remove from query
+                        </label>
                     </div>
                     <div v-if="!newRule.hasReplacedQuery && newRule.hasRemovedWordsFromQuery">
                         <span v-for="(word, i) in newRule.removedWordsFromQuery">
@@ -166,8 +178,10 @@
                 </div>
                 <div v-if="newRule.conditions.every((c) => c.hasPatternAndAnchoring)" class="py-8 flex flex-wrap items-center border-t border-proton-grey-opacity-20">
                     <div class="w-212" :class="newRule.hasReplacedQuery ? 'text-cosmos-black-opacity-30' : ''">
-                        <input :disabled="newRule.hasReplacedQuery" type="checkbox" v-model="newRule.hasReplacedWordsFromQuery"/>
-                        replace in query
+                        <label class="cursor-pointer">
+                            <input :disabled="newRule.hasReplacedQuery" type="checkbox" v-model="newRule.hasReplacedWordsFromQuery"/>
+                            replace in query
+                        </label>
                     </div>
                     <div v-if="!newRule.hasReplacedQuery && newRule.hasReplacedWordsFromQuery">
                         <div v-for="(word, i) in newRule.replacedWordsFromQuery">
@@ -194,8 +208,10 @@
                 <div v-if="newRule.conditions.every((c) => c.hasPatternAndAnchoring)">
                     <div class="py-8 flex border-t border-proton-grey-opacity-20">
                         <div class="w-212">
-                            <input type="checkbox" v-model="newRule.hasPromote" class="mr-1"/>
-                            promote
+                            <label class="cursor-pointer">
+                                <input type="checkbox" v-model="newRule.hasPromote" class="mr-1"/>
+                                promote
+                            </label>
                         </div>
                         <div v-if="newRule.hasPromote" class="flex-grow">
                             <div v-for="(promoted, i) in newRule.promote" :key="promoted.objectID" class="flex w-full mb-12">
@@ -238,15 +254,19 @@
                     </div>
                     <div v-if="newRule.hasPromote" class="py-8 flex border-t border-proton-grey-opacity-20">
                         <div class="w-212">
-                            <input type="checkbox" v-model="newRule.filterPromotes" class="mr-1"/>
-                            promote follow filters
+                            <label class="cursor-pointer">
+                                <input type="checkbox" v-model="newRule.filterPromotes" class="mr-1"/>
+                                promote follow filters
+                            </label>
                         </div>
                     </div>
                 </div>
                 <div class="py-8 flex border-t border-proton-grey-opacity-20">
                     <div class="w-212">
-                        <input type="checkbox" v-model="newRule.hasHide" class="mr-1"/>
-                        hide
+                        <label class="cursor-pointer">
+                            <input type="checkbox" v-model="newRule.hasHide" class="mr-1"/>
+                            hide
+                        </label>
                     </div>
                     <div v-if="newRule.hasHide">
                         <div v-for="(hide, i) in newRule.hide" class="flex w-full mb-12">
@@ -278,8 +298,10 @@
                 </div>
                 <div class="py-8 flex border-t border-proton-grey-opacity-20">
                     <div class="w-212">
-                        <input type="checkbox" v-model="newRule.hasParams" class="mr-1"/>
-                        apply params
+                        <label class="cursor-pointer">
+                            <input type="checkbox" v-model="newRule.hasParams" class="mr-1"/>
+                            apply params
+                        </label>
                     </div>
                     <div v-if="newRule.hasParams" class="flex-grow">
                         <params
@@ -296,8 +318,10 @@
                 </div>
                 <div class="py-8 flex border-t border-proton-grey-opacity-20">
                     <div class="w-212">
-                        <input type="checkbox" v-model="newRule.hasUserData" class="mr-1"/>
-                        userData
+                        <label class="cursor-pointer">
+                            <input type="checkbox" v-model="newRule.hasUserData" class="mr-1"/>
+                            userData
+                        </label>
                     </div>
                     <div v-if="newRule.hasUserData" class=" flex-grow">
                         <ace-editor
@@ -580,7 +604,7 @@
                     this.$root.$emit('shouldTriggerSearch', this.indexName);
                     this.$root.$emit('shouldTriggerRulesSearch', this.indexName);
                 } catch (e) {
-                    this.saveError = e.message;
+                    //this.saveError = e.message;
                 }
             },
         }

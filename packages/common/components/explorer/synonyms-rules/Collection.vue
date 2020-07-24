@@ -105,6 +105,7 @@
             ...props.actions,
             ...props.images,
             ...props.attributes,
+            ...props.paramsAndSettings,
         ],
         data: function () {
             return {

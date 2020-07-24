@@ -117,6 +117,7 @@
                 :app-id="panelAppId"
                 :api-key="panelAdminAPIKey"
                 :index-name="panelIndexName"
+                :index-settings="refIndexSettings"
                 :server="panelServer"
                 :user-id="panelUserId"
                 :ignore-image-proxy="indexIgnoreImageProxy"
