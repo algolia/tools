@@ -604,7 +604,7 @@
                     this.$root.$emit('shouldTriggerSearch', this.indexName);
                     this.$root.$emit('shouldTriggerRulesSearch', this.indexName);
                 } catch (e) {
-                    //this.saveError = e.message;
+                    this.saveError = e.message;
                 }
             },
         }
