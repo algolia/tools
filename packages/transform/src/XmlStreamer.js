@@ -7,6 +7,7 @@ export default function (userRootItem, onHit) {
 
     const getFinalNodeName = function (name) {
         const n = name.toLowerCase();
+        if (n === 'value') return '_value';
         if (n.startsWith('g:') || n.startsWith('c:')) return n.slice(2);
         return n;
     };
