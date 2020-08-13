@@ -291,8 +291,16 @@
                     let i = 0;
                     stream.start((data) => {
                         if (i >= 10) {
-                            this.xmlError = `No node &lt;${this.xmlRootNode}&gt; found in the first 10MB of the file.<br>Change it and press enter`;
-                            this.isLoadingFile = false;
+                            if (hits.length > 0) {
+                                this.xmlFile = this.file;
+                                this.dataset = Object.freeze(hits);
+                                this.isLoadingFile = false;
+                                this.sample = true;
+                            } else  {
+                                this.xmlError = `No node &lt;${this.xmlRootNode}&gt; found in the first 10MB of the file.<br>Change it and press enter`;
+                                this.isLoadingFile = false;
+                            }
+
                             stream.pause();
                             parser.close();
                             return;
