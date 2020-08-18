@@ -14,7 +14,7 @@
                             target="_blank"
                             class="text-nebula-blue cursor-pointer hover:underline py-2"
                         >
-                            Wavefront
+                            WaveFront
                         </a>
                     </div>
                 </div>
@@ -29,13 +29,20 @@
                             :href="generateWaveFrontLink([machine])"
                             target="_blank"
                             class="text-nebula-blue cursor-pointer hover:underline py-2"
-                        >Wavefront</a>
+                        >WaveFront</a>
                         <a
                             :href="generateInfraBookingLink(machine)"
                             target="_blank"
                             class="ml-12 text-nebula-blue cursor-pointer hover:underline py-2"
                         >
                             InfraBooking
+                        </a>
+                        <a
+                            :href="generateChefLink(machine)"
+                            target="_blank"
+                            class="ml-12 text-nebula-blue cursor-pointer hover:underline py-2"
+                        >
+                            Chef
                         </a>
                     </div>
                 </div>
@@ -97,6 +104,9 @@
             },
             generateInfraBookingLink: function (machine) {
                 return `https://infrabooking.algolia.com/infra/clusters?query=${machine.replace(/<\/?em>/g, '')}`;
+            },
+            generateChefLink: function (machine) {
+                return `https://github.com/algolia/chef/blob/master/data_bags/cluster-custom/${machine.replace(/<\/?em>/g, '')}.json`;
             },
             shortcuts: function (infra) {
                 const shortcuts = [];

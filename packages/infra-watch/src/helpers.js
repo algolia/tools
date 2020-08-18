@@ -30,6 +30,25 @@ export async function getInfras(clusterNames, query) {
     });
     await Promise.all(promises);
 
+    const userWeight = {};
+    infras.__keys__.forEach((a) => {
+        const email = Object.keys(infras[a].users)[0];
+        userWeight[email] = userWeight[email] || 1;
+        userWeight[email] += infras[a].allMachines.length;
+    });
+    infras.__keys__.sort((a, b) => {
+        const userA = Object.keys(infras[a].users)[0];
+        const userB = Object.keys(infras[b].users)[0];
+
+        const wdiff = userWeight[userB] - userWeight[userA];
+        if (wdiff !== 0) return wdiff;
+
+        const mdiff = infras[b].allMachines.length - infras[a].allMachines.length;
+        if (mdiff !== 0) return mdiff;
+
+        return infras[b].users[userB].apps.length - infras[a].users[userA].apps.length;
+    });
+
     return infras;
 }
 
