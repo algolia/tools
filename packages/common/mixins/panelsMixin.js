@@ -33,6 +33,14 @@ export default {
                 this.$store.commit(`panels/setTrackedObjects`, value);
             }
         },
+        compareKey: {
+            get () {
+                return this.$store.state.panels.compareKey;
+            },
+            set (value) {
+                this.$store.commit(`panels/setCompareKey`, value);
+            }
+        },
         analyseMaxNbPoints: {
             get () {
                 return this.$store.state.panels.analyseMaxNbPoints;

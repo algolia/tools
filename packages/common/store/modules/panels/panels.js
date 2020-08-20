@@ -25,6 +25,7 @@ export default {
         expandLeftPanel: false,
         analyseMaxNbPoints: 100,
         shareStatePanel: false,
+        compareKey: 'objectID',
         trackedObjects: [],
     },
     mutations: {
@@ -52,6 +53,9 @@ export default {
         },
         setAnalyseMaxNbPoints(state, payload) {
             Vue.set(state, 'analyseMaxNbPoints', payload);
+        },
+        setCompareKey(state, payload) {
+            Vue.set(state, 'compareKey', payload);
         },
         setComparePanels(state, payload) {
             Vue.set(state, 'comparePanels', payload);

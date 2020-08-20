@@ -2,7 +2,10 @@
     <div v-if="enabled && leftHits && rightHits" class="mt-16">
         <div class="text-solstice-blue-opacity-80">
             <div class="font-bold">
-                Nb of points : <input type="number" v-model="analyseMaxNbPoints" min="1" style="width: 50px;"/>
+                Nb of points : <input type="number" v-model="analyseMaxNbPoints" min="1" class="w-48 px-2 py-1 input-custom inline"/>
+            </div>
+            <div class="font-bold mt-12 mb-4">
+                Compare key : <input v-model="compareKey" class="w-80 px-2 py-1 input-custom inline" placeholder="objectID" />
             </div>
             <div class="font-bold mt-12 mb-4">
                 Tracked objectIDs/facetFilters:
@@ -154,6 +157,9 @@
             forcedTracked: function () {
                 this.compute();
             },
+            compareKey: function () {
+                this.compute();
+            }
         },
         computed: {
             splitMode: function () {
@@ -185,7 +191,9 @@
 
                     for (let i = 0; i < hits.length; i++) {
                         if (panel === 'left') {
-                            leftOnOther[i] = this.rightHits.findIndex((hit) => hit.objectID === hits[i].objectID);
+                            leftOnOther[i] = this.rightHits.findIndex((hit) => {
+                                return hit[this.compareKey] !== undefined && hit[this.compareKey] === hits[i][this.compareKey];
+                            });
                             if (leftOnOther[i] !== -1) rightOnOther[leftOnOther[i]] = i;
                         }
 
@@ -195,7 +203,8 @@
                             const facetName = parts[0];
                             const facetValue = parts.length > 1 ? parts[1] : '';
 
-                            if (hits[i].objectID === needle || (parts.length > 1 && hits[i][facetName] == facetValue)) { // We don't want strict equality
+                            if ((hits[i][this.compareKey] !== undefined && hits[i][this.compareKey] === needle)
+                                || (parts.length > 1 && hits[i][facetName] == facetValue)) { // We don't want strict equality
                                 if (hitsTracked[i] === -1) hitsTracked[i] = needleIndex;
                                 if (trackedPositions[needleIndex] === -1) trackedPositions[needleIndex] = i;
                             }
