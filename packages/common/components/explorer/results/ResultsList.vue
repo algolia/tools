@@ -6,16 +6,25 @@
             <applied-rules v-bind="$props" v-on="$listeners" />
         </div>
         <div v-if="searchResponse.hits.length > 0">
-            <div v-if="(displayMode === 'list' && needTitleAttribute) || displayMode === 'images'" class="mt-24 text-solstice-blue-opacity-70">
+            <div
+                v-if="$store.state.panels.showQueryInfo
+                && !this.searchParams.attributesToRetrieve
+                && ((displayMode === 'list' && needTitleAttribute) || displayMode === 'images')"
+                class="mt-24 text-solstice-blue-opacity-70"
+            >
                 <div>
                     Extra attribute to display:
                     <input
                         class="w-128 bg-proton-grey-opacity-20 text-xs p-4"
                         :value="titleAttributeName"
                         @input="$emit('onUpdateTitleAttributeName', $event.target.value)"
-                        placeholder="attribute_name"/>
+                        placeholder="attribute_name"
+                    />
                 </div>
-                <div>(default to first string attribute in searchableAttribute)</div>
+                <div class="mt-8" v-if="!titleAttributeName && autoTitleAttributeName">
+                    "{{autoTitleAttributeName}}" has been automatically choosen as the default title attribute
+                </div>
+                <div>To display more than one you can set attributesToRetrieve</div>
             </div>
             <div class="w-full" :class="displayMode === 'list' ? '' : 'flex flex-wrap'">
                 <hit v-for="(hit, i) in searchResponse.hits"

@@ -27,7 +27,9 @@
                 />
                 <div v-if="imageMode && imageSize >= 120" class="mb-8" :class="`w-${imageSize}`">
                     <div class="truncate">{{hit.objectID}}</div>
-                    <div class="truncate" v-if="title" v-html="title" />
+                    <div v-for="attribute in imageAttributes">
+                        <div class="truncate" v-if="attribute" v-html="attribute" />
+                    </div>
                 </div>
                 <div v-if="personalized || promoted" class="flex mb-12">
                     <div v-if="personalized" class="border border-nova-grey-opacity-80 px-8 py-4 rounded text-center text-xs uppercase tracking-wide text-solstice-blue">
@@ -172,14 +174,11 @@
             hitNumber: function () {
                 return this.searchResponse.hitsPerPage * this.searchResponse.page + this.hitPosition + 1;
             },
-            title: function () {
-                if (this.hit._highlightResult && this.hit._highlightResult[this.titleAttribute] && this.hit._highlightResult[this.titleAttribute].value) {
-                    return this.hit._highlightResult[this.titleAttribute].value;
-                }
+            imageAttributes: function () {
+                let attributes = (this.searchParams.attributesToRetrieve || []).filter((attribute) => attribute && attribute !== this.imageAttribute);
+                if (attributes.length <= 0) attributes = [this.titleAttribute];
 
-                if (this.flattenHit[this.titleAttribute]) return this.flattenHit[this.titleAttribute];
-
-                return this.hit[this.titleAttribute];
+                return attributes.map(this.attributeValue);
             },
             hitsTransformer: function () {
                 const excludedAttributes = ['_highlightResult', '_snippetResult', '_distinctSeqID'];
@@ -199,6 +198,15 @@
                 this.$root.$emit(`${this.jumpTo}HitJumping`, this.hit);
                 window.scrollTo(0, 0);
             },
+            attributeValue: function (attributeName) {
+                if (this.hit._highlightResult && this.hit._highlightResult[attributeName] && this.hit._highlightResult[attributeName].value) {
+                    return this.hit._highlightResult[attributeName].value;
+                }
+
+                if (this.flattenHit[attributeName]) return this.flattenHit[attributeName];
+
+                return this.hit[attributeName];
+            }
         }
     }
 </script>
