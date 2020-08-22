@@ -177,7 +177,9 @@
                     return this.hit._highlightResult[this.titleAttribute].value;
                 }
 
-                return this.flattenHit[this.titleAttribute];
+                if (this.flattenHit[this.titleAttribute]) return this.flattenHit[this.titleAttribute];
+
+                return this.hit[this.titleAttribute];
             },
             hitsTransformer: function () {
                 const excludedAttributes = ['_highlightResult', '_snippetResult', '_distinctSeqID'];

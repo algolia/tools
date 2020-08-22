@@ -25,7 +25,7 @@
                      :previous-hit="i > 0 ? searchResponse.hits[i - 1] : hit"
                      :top-attributes="topAttributes"
                      :searchable-attributes="searchableAttributes"
-                     :title-attribute="autoTitleAttributeName"
+                     :title-attribute="titleAttributeName || autoTitleAttributeName"
                      v-bind="$props"
                      v-on="$listeners"
                 />
@@ -51,7 +51,7 @@
                 :previous-hit="searchResponse.object"
                 :top-attributes="topAttributes"
                 :searchable-attributes="searchableAttributes"
-                :title-attribute="autoTitleAttributeName"
+                :title-attribute="titleAttributeName || autoTitleAttributeName"
                 v-bind="$props"
                 v-on="$listeners"
             />
