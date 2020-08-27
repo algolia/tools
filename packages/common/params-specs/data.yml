@@ -989,6 +989,12 @@ enableIBRRanking:
     - false
   default: true
 
+IBRPromoteExclusionFilter:
+  scope:
+    - search
+  value_type: string
+  default: ""
+
 experimentalDecompoundQuery:
   scope:
       - search
