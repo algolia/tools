@@ -107,8 +107,8 @@
                             <promoted-hit
                                 v-bind="$props"
                                 v-on="$listeners"
-                                :id="promoted.objectID"
                                 :position="promoted.position"
+                                :ids="promoted.objectIDs"
                             />
                         </div>
                     </div>
@@ -126,7 +126,7 @@
                             <promoted-hit
                                 v-bind="$props"
                                 v-on="$listeners"
-                                :id="hide.objectID"
+                                :ids="[hide.objectID]"
                             />
                         </div>
                     </div>

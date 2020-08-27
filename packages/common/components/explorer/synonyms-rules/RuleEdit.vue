@@ -214,15 +214,9 @@
                             </label>
                         </div>
                         <div v-if="newRule.hasPromote" class="flex-grow">
-                            <div v-for="(promoted, i) in newRule.promote" :key="promoted.objectID" class="flex w-full mb-12">
-                                <promoted-hit
-                                    :id="newRule.promote[i].objectID"
-                                    class="w-200"
-                                    v-bind="$props"
-                                    v-on="$listeners"
-                                />
-                                <div class="ml-12">
-                                    position
+                            <div v-for="(promoted, i) in newRule.promote" :key="promoted.objectID" class="mb-12">
+                                <div>
+                                    at pos
                                     <input
                                         type="number"
                                         min="1"
@@ -231,23 +225,50 @@
                                         @change="newRule.promote[i].position = parseInt($event.target.value) - 1"
                                         class="input-custom inline w-48"
                                     />
-                                </div>
-                                <div class="ml-4 w-12 h-12">
                                     <trash-icon
-                                        class="w-full h-full ml-4 cursor-pointer text-cosmos-black-opacity-70"
-                                        @click="deletePromote(i)"
+                                        class="w-12 h-12 ml-8 mt-1 cursor-pointer text-cosmos-black-opacity-70"
+                                        @click="newRule.promote.splice(i, 1)"
                                     />
+                                </div>
+                                <div>
+                                    <div class="flex w-full" :key="objectID" v-for="(objectID, j) in newRule.promote[i].objectIDs">
+                                        <promoted-hit
+                                            :ids="[objectID]"
+                                            class="w-200"
+                                            v-bind="$props"
+                                            v-on="$listeners"
+                                        />
+                                        <div class="mt-16 ml-4 w-12 h-12" v-if="newRule.promote[i].objectIDs.length > 1">
+                                            <trash-icon
+                                                class="w-full h-full ml-4 cursor-pointer text-cosmos-black-opacity-70"
+                                                @click="newRule.promote[i].objectIDs.splice(j, 1)"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div class="ml-16 mt-8">
+                                        <hit-autocomplete
+                                            :params="{hitsPerPage: 4, enableRules: false}"
+                                            input-classes="input input-custom min-w-184 px-8 py-2"
+                                            value=""
+                                            :placeholder="`New hit to promote at pos ${newRule.promote[i].position + 1}`"
+                                            :display-empty-query="true"
+                                            v-bind="$props"
+                                            v-on="$listeners"
+                                            @onSelected="addPromote($event, newRule.promote[i])"
+                                        />
+                                    </div>
                                 </div>
                             </div>
                             <div class="mt-24 mb-12">
                                 <hit-autocomplete
                                     :params="{hitsPerPage: 4, enableRules: false}"
+                                    input-classes="input input-custom min-w-184 px-8 py-2"
                                     value=""
-                                    placeholder="Search for a new hit to promote"
+                                    placeholder="New hit to promote at new pos"
                                     :display-empty-query="true"
                                     v-bind="$props"
                                     v-on="$listeners"
-                                    @onSelected="addPromote"
+                                    @onSelected="addPromote($event)"
                                 />
                             </div>
                         </div>
@@ -271,7 +292,7 @@
                     <div v-if="newRule.hasHide">
                         <div v-for="(hide, i) in newRule.hide" class="flex w-full mb-12">
                             <promoted-hit
-                                :id="newRule.hide[i].objectID"
+                                :ids="[newRule.hide[i].objectID]"
                                 class="w-200"
                                 v-bind="$props"
                                 v-on="$listeners"
@@ -287,7 +308,7 @@
                             <hit-autocomplete
                                 :params="{hitsPerPage: 4, enableRules: false}"
                                 value=""
-                                placeholder="Search for a new hit to hide"
+                                placeholder="New hit to hide"
                                 :display-empty-query="true"
                                 v-bind="$props"
                                 v-on="$listeners"
@@ -494,20 +515,22 @@
             onValidateUserData: function (annotations) {
                 this.nbErrorsUserData = annotations.length;
             },
-            addPromote: function (hit) {
+            addPromote: function (hit, currentPromote) {
                 const sameExistingHit = this.newRule.promote.find((p) => {
                     return p.objectID === hit.objectID;
                 });
 
                 if (!sameExistingHit) {
                     const objectID = hit.objectID || hit;
+
                     if (objectID && objectID.length > 0) {
-                        this.newRule.promote.push({objectID, position: 0});
+                        if (currentPromote) { // group promote
+                            currentPromote.objectIDs.push(objectID);
+                        } else {
+                            this.newRule.promote.push({objectID, position: 0});
+                        }
                     }
                 }
-            },
-            deletePromote: function (i) {
-                this.$delete(this.newRule.promote, i);
             },
             addHide: function (hit) {
                 const sameExistingHit = this.newRule.promote.find((p) => {

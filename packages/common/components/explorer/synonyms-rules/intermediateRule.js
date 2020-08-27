@@ -106,6 +106,16 @@ function extractConditions (rule) {
     return conditions.map((condition) => extractCondition(condition));
 }
 
+function extractPromotes (ruleCopy) {
+    const promotes = ruleCopy.consequence.promote || [];
+    return promotes.map((promote) => {
+        return {
+            objectIDs: promote.objectIDs || [promote.objectID],
+            position: promote.position,
+        }
+    })
+}
+
 export default function (rule) {
     const ruleCopy = JSON.parse(JSON.stringify(rule));
     this.objectID = ruleCopy.objectID;
@@ -116,7 +126,7 @@ export default function (rule) {
 
     this.conditions = extractConditions(ruleCopy);
 
-    this.promote = ruleCopy.consequence.promote || [];
+    this.promote = extractPromotes(ruleCopy);
     this.filterPromotes = ruleCopy.consequence.filterPromotes || false;
     this.hide = ruleCopy.consequence.hide || [];
     this.userData = ruleCopy.consequence.userData;

@@ -1,26 +1,24 @@
 <template>
     <div>
-        <div class="flex">
-            <hit-image
-                v-if="hitOrFetched"
-                :forced-image-size="40"
-                :flatten-hit="flattenHit"
-                display-mode="autocomplete"
-                v-bind="$props"
-                v-on="$listeners"
-            />
-            <div class="flex-grow ml-12">
-                <div>
-                    <span v-if="hitOrFetched">{{objectID}}</span>
-                    <span v-if="!hitOrFetched" class="text-cosmos-black-opacity-70" v-html="properHighlight(id)"></span>
-                    <span v-if="position !== undefined">
-                        at pos
-                        <span class="text-cosmos-black-opacity-70">
-                            {{position + 1}}
-                        </span>
-                    </span>
+        <div v-if="position !== undefined">
+            at pos
+            <span class="text-cosmos-black-opacity-70">{{position + 1}}</span>:
+        </div>
+        <div class="mt-4 ml-16" v-for="(hit, i) in hitsOrFetched">
+            <div class="flex">
+                <hit-image
+                    v-if="hit"
+                    :forced-image-size="40"
+                    :flatten-hit="flattenHits[i]"
+                    display-mode="autocomplete"
+                    v-bind="$props"
+                    v-on="$listeners"
+                />
+                <div class="flex-grow ml-12">
+                    <div v-if="hit">{{objectIDs[i]}}</div>
+                    <div v-if="!hit" class="text-cosmos-black-opacity-70" v-html="properHighlight(ids[i])"></div>
+                    <div v-if="titles[i] && titles[i] !== objectIDs[i]" v-html="titles[i]"></div>
                 </div>
-                <div v-if="title && title !== objectID" v-html="title"></div>
             </div>
         </div>
     </div>
@@ -37,7 +35,7 @@
         name: 'PromotedHit',
         components: {HitImage},
         props: [
-            'hit', 'id', 'position',
+            'hit', 'ids', 'position',
             ...props.credentials,
             ...props.images,
             ...props.attributes,
@@ -47,40 +45,50 @@
                 fetched: null,
             };
         },
-        created: async function () {
-            if (!this.hit) {
-                const index = await getSearchIndex(this.appId, this.apiKey, this.indexName, this.server, this.userId);
-                try {
-                    this.fetched = await index.getObject(this.id);
-                } catch (e) {}
-            }
+        created: function () {
+            this.fetch();
+        },
+        watch: {
+          ids: function () {
+              this.fetch();
+          }
         },
         computed: {
-            hitOrFetched: function () {
-                return this.hit || this.fetched;
+            hitsOrFetched: function () {
+                return this.hit ? [this.hit] : this.fetched;
             },
-            flattenHit: function () {
-                return this.flattenRecord(this.hitOrFetched);
+            flattenHits: function () {
+                return this.hitsOrFetched.map((hit) => this.flattenRecord(hit));
             },
-            objectID: function () {
-                return this.hitOrFetched ? this.hitOrFetched.objectID : this.id;
+            objectIDs: function () {
+                return this.hitsOrFetched ? this.hitsOrFetched.map((h) => h.objectID) : this.ids;
             },
-            title: function () {
-                if (!this.hitOrFetched) return this.id;
+            titles: function () {
+                return this.hitsOrFetched.map((hit) => {
+                    if (!hit) return this.id;
 
-                if (this.hitOrFetched._highlightResult &&
-                    this.hitOrFetched._highlightResult[this.autoTitleAttributeName] &&
-                    this.hitOrFetched._highlightResult[this.autoTitleAttributeName].value
-                ) {
-                    return this.hitOrFetched._highlightResult[this.autoTitleAttributeName].value;
-                }
+                    if (hit._highlightResult &&
+                        hit._highlightResult[this.autoTitleAttributeName] &&
+                        hit._highlightResult[this.autoTitleAttributeName].value
+                    ) {
+                        return hit._highlightResult[this.autoTitleAttributeName].value;
+                    }
 
-                return this.hitOrFetched[this.autoTitleAttributeName];
+                    return hit[this.autoTitleAttributeName];
+                });
             }
         },
         methods: {
             flattenRecord,
             properHighlight,
+            fetch: async function () {
+                if (!this.hit) {
+                    const index = await getSearchIndex(this.appId, this.apiKey, this.indexName, this.server, this.userId);
+                    try {
+                        this.fetched = (await index.getObjects(this.ids)).results;
+                    } catch (e) {}
+                }
+            }
         }
     }
 </script>
