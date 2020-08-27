@@ -67,14 +67,16 @@
                 return this.hitsOrFetched.map((hit) => {
                     if (!hit) return this.id;
 
+                    const attributeName = this.titleAttributeName || this.autoTitleAttributeName;
+
                     if (hit._highlightResult &&
-                        hit._highlightResult[this.autoTitleAttributeName] &&
-                        hit._highlightResult[this.autoTitleAttributeName].value
+                        hit._highlightResult[attributeName] &&
+                        hit._highlightResult[attributeName].value
                     ) {
-                        return hit._highlightResult[this.autoTitleAttributeName].value;
+                        return hit._highlightResult[attributeName].value;
                     }
 
-                    return hit[this.autoTitleAttributeName];
+                    return hit[attributeName];
                 });
             }
         },
