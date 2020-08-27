@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-if="currentTab === 'synonyms' || currentTab === 'rules'">
         <div class="flex flex-wrap items-center">
             <input
                 v-model="queryFilter"
@@ -96,6 +96,7 @@
         props: [
             'methodName',
             'panelKey',
+            'currentTab',
             ...props.credentials,
             ...props.actions,
             ...props.images,

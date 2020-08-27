@@ -90,6 +90,7 @@
             />
             <fetcher
                 v-show="panelCurrentTab === 'synonyms'"
+                :current-tab="panelCurrentTab"
                 method-name="searchSynonyms"
                 :panel-key="panelKey"
                 @onFetch="onFetchSynonyms"
@@ -111,6 +112,7 @@
             />
             <fetcher
                 v-show="panelCurrentTab === 'rules'"
+                :current-tab="panelCurrentTab"
                 method-name="searchRules"
                 :panel-key="panelKey"
                 @onFetch="onFetchRules"
