@@ -25,6 +25,8 @@ function extractSeries(series) {
 
 export async function getInfras(clusterNames, query) {
     const infras = {};
+    if (clusterNames.length <= 0) return infras;
+
     const promises = clusterNames.map(async (clusterName, i) => {
         return getInfraFromMachine(infras, clusterName, query)
     });
