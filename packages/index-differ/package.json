@@ -17,7 +17,6 @@
     "dedent": "^0.7.0",
     "diff": "^4.0.1",
     "diff2html": "^2.11.3",
-    "express": "^4.16.4",
     "js-yaml-loader": "^1.0.1",
     "moment": "^2.24.0",
     "prismjs": "^1.15.0",

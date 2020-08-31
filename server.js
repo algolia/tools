@@ -2,8 +2,12 @@
 const express = require('express');
 const serveStatic = require('serve-static');
 const history = require('./customHistory');
+const expressGoogleAnalytics = require('express-google-analytics');
 
 const app = express();
+
+const analytics = expressGoogleAnalytics('UA-32446386-39');
+app.use(analytics);
 
 app.use((req, res, next) => {
     if (process.env.NODE_ENV === 'production') {
