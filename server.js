@@ -2,12 +2,29 @@
 const express = require('express');
 const serveStatic = require('serve-static');
 const history = require('./customHistory');
-const expressGoogleAnalytics = require('express-google-analytics');
 
 const app = express();
 
-const analytics = expressGoogleAnalytics('UA-32446386-39');
-app.use(analytics);
+const ua = require('universal-analytics')
+
+app.use(function (req, res, next) {
+    const visitor = ua('UA-32446386-39');
+
+    const cookie = req.headers.cookie || '';
+    if (req.url.length > 0 && cookie.includes('laravel_session')) {
+        visitor.pageview({
+            dp: req.url,
+            dh: req.headers.host,
+            uip: req.headers['x-forwarded-for'] || req.connection.remoteAddress,
+            ua: req.headers['user-agent'],
+            dr: req.headers.referrer || req.headers.referer,
+            de: req.headers['accept-encoding'],
+            ul: req.headers['accept-language']
+        }).send();
+    }
+
+    next();
+});
 
 app.use((req, res, next) => {
     if (process.env.NODE_ENV === 'production') {

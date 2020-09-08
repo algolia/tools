@@ -3,7 +3,7 @@
   "private": true,
   "dependencies": {
     "express": "^4.16.4",
-    "express-google-analytics": "^1.0.2"
+    "universal-analytics": "^0.4.23"
   },
   "devDependencies": {
     "@fullhuman/postcss-purgecss": "^1.0.1",
