@@ -5,6 +5,7 @@ node_modules
 .env.local
 .env.*.local
 .env
+packages/**/dist
 **/dist
 dist/
 
