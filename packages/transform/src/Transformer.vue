@@ -198,31 +198,46 @@
             reset: function () {
                 this.transformer = defaultTransformer;
             },
+            getFinalKeyName: function (key) {
+                if (key.includes('-') || key.includes('.')) return `'${key}'`;
+                return key;
+            },
+            getFinalVarName: function (varNames) {
+                let finalVarName = varNames[0];
+                for (let i = 1; i < varNames.length; i++) {
+                    if (varNames[i].includes('-') || varNames[i].includes('.')) {
+                        finalVarName += `['${varNames[i]}']`;
+                    } else {
+                        finalVarName += `.${varNames[i]}`;
+                    }
+                }
+
+                return finalVarName;
+            },
+            getValue: function(key, varNames, value) {
+                const finalVarName = this.getFinalVarName(varNames);
+                if (isString(value) && isNumeric(value)) {
+                    if (varNames.length <= 2) {
+                        return `${varNames[0]} !== undefined ? parseFloat(${finalVarName}) : undefined,\n`;
+                    } else {
+                        return `parseFloat(${finalVarName}),\n`;
+                    }
+                } else if (Array.isArray(value)) {
+                    return `(${finalVarName} || []).map((el) => {\n    return el;  \n  }),\n`;
+                } else {
+                    if (varNames.length <= 2) {
+                        return `${varNames[0]} !== undefined ? ${finalVarName} : undefined,\n`;
+                    } else {
+                        return `${finalVarName},\n`;
+                    }
+                }
+            },
             generatedConfig: function () {
                 const hit = this.srcObjectExample;
                 let s = 'return {\n';
 
-                function getValue(key, varNames, value) {
-                    const finalVarName = varNames.join('.');
-                    if (isString(value) && isNumeric(value)) {
-                        if (varNames.length <= 2) {
-                            return `${varNames[0]} !== undefined ? parseFloat(${finalVarName}) : undefined,\n`;
-                        } else {
-                            return `parseFloat(${finalVarName}),\n`;
-                        }
-                    } else if (Array.isArray(value)) {
-                        return `(${finalVarName} || []).map((el) => {\n    return el;  \n  }),\n`;
-                    } else {
-                        if (varNames.length <= 2) {
-                            return `${varNames[0]} !== undefined ? ${finalVarName} : undefined,\n`;
-                        } else {
-                            return `${finalVarName},\n`;
-                        }
-                    }
-                }
-
                 Object.keys(hit).forEach((key) => {
-                    let refObjVarName = `refObj.${key}`;
+                    let refObjVarName = this.getFinalVarName(['refObj', key]);
                     let value = hit[key];
 
                     if (isObject(value)) {
@@ -232,27 +247,27 @@
                             const hasAttrs = keys.includes('attrs');
 
                             if (keys.length === 1 && !hasAttrs) {
-                                s += `  ${key}: ${getValue(key, [refObjVarName, keys[0]], value[keys[0]])}`;
+                                s += `  ${this.getFinalKeyName(key)}: ${this.getValue(key, [refObjVarName, keys[0]], value[keys[0]])}`;
                                 return;
                             }
 
-                            s += `  ${key}: {\n`;
+                            s += `  ${this.getFinalKeyName(key)}: {\n`;
                             if (hasAttrs) {
                                 const attrKeys = Object.keys(value.attrs);
                                 attrKeys.forEach((k) => {
-                                    s += `    ${k}: ${getValue(k, [refObjVarName, 'attrs', k], value[k])}`;
+                                    s += `    ${this.getFinalKeyName(k)}: ${this.getValue(k, [refObjVarName, 'attrs', k], value[k])}`;
                                 });
                             }
 
                             keys.filter((k) => k !== 'attrs' && (k !== 'value' || value[k])).forEach((k) => {
-                                s += `    ${k}: ${getValue(k, [refObjVarName, k], value[k])}`;
+                                s += `    ${this.getFinalKeyName(k)}: ${this.getValue(k, [refObjVarName, k], value[k])}`;
                             });
                             s += `  },\n`;
                             return;
                         }
                     }
 
-                    s += `  ${key}: ${getValue(key, [refObjVarName], value)}`;
+                    s += `  ${this.getFinalKeyName(key)}: ${this.getValue(key, [refObjVarName], value)}`;
                 });
 
                 s += '}';

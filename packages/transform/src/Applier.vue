@@ -23,7 +23,7 @@
                 v-if="tasksGroup"
                 :tasks-group="tasksGroup"
             />
-            <div v-if="!tasksGroup && (!indexInfo || (indexName.length > 0 && indexName !== indexInfo.indexName))">
+            <div v-if="!tasksGroup && (!indexInfo || (indexName.length > 0 && (indexName !== indexInfo.indexName || appId !== indexInfo.appId)))">
                 <div>
                     <div>
                         <label class="cursor-pointer">
@@ -33,6 +33,15 @@
                     <div class="mt-4">
                         <label class="cursor-pointer">
                             <input type="radio" v-model="method" value="partialUpdateObjects" /> partialUpdateObjects
+                        </label>
+                    </div>
+                    <div class="ml-16 mt-4" v-if="method === 'partialUpdateObjects'">
+                        <label class="cursor-pointer">
+                            createIfNotExists:
+                            <select v-model="createIfNotExists">
+                                <option :value="true">true</option>
+                                <option :value="false">false</option>
+                            </select>
                         </label>
                     </div>
                 </div>
@@ -80,6 +89,7 @@
                 errorMessage: '',
                 showAllApps: false,
                 method: 'saveObjects',
+                createIfNotExists: true,
             }
         },
         methods: {
@@ -103,7 +113,7 @@
                     })
                 } else {
                     return index.partialUpdateObjects(newHits, {
-                        createIfNotExists: true,
+                        createIfNotExists: this.createIfNotExists,
                     })
                 }
             },
@@ -118,7 +128,7 @@
                     try {
                         const newHit = await this.transformer.call(context, hits[i]);
 
-                        if (newHit === null) return;
+                        if (newHit === null) continue;
 
                         if (Array.isArray(newHit)) {
                             newHits.push(...newHit);
