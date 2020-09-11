@@ -11,7 +11,7 @@ app.use(function (req, res, next) {
     const visitor = ua('UA-32446386-39');
 
     const cookie = req.headers.cookie || '';
-    if (req.url.length > 0 && cookie.includes('laravel_session')) {
+    if (req.url.length > 0 && cookie.includes('laravel_session') && !req.url.includes('css') && !req.url.includes('js')) {
         visitor.pageview({
             dp: req.url,
             dh: req.headers.host,
