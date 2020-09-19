@@ -223,7 +223,7 @@
                         return `parseFloat(${finalVarName}),\n`;
                     }
                 } else if (Array.isArray(value)) {
-                    return `(${finalVarName} || []).map((el) => {\n    return el;  \n  }),\n`;
+                    return `(${finalVarName} !== undefined) ? (Array.isArray(${finalVarName})) ? (${finalVarName} || []).map((el) => {\n    return el;  \n  }) : ${finalVarName} : undefined,\n`;
                 } else {
                     if (varNames.length <= 2) {
                         return `${varNames[0]} !== undefined ? ${finalVarName} : undefined,\n`;
