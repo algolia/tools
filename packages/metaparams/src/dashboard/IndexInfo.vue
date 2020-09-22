@@ -68,6 +68,7 @@
         watch: {
             panelAppId: function (o, n) { if (o !== n) this.fetchIndexData(this.panelIndexName); },
             panelIndexName: function (o, n) { if (o !== n) this.fetchIndexData(this.panelIndexName); },
+            panelServer: function (o, n) { if (o !== n) this.fetchIndexData(this.panelIndexName); },
         },
         created: function () {
             this.fetchBuildingIndices();
@@ -110,7 +111,7 @@
             fetchIndexData: async function (indexName) {
                 if (!this.indexData) return;
 
-                const client = await getClient(this.panelAppId, this.panelAdminAPIKey);
+                const client = await getClient(this.panelAppId, this.panelAdminAPIKey, this.panelServer);
                 const res = await client.listIndices({
                     queryParameters: {
                         page: 0, prefix: indexName
@@ -128,7 +129,7 @@
             fetchBuildingIndices: async function () {
                 if (!this.indexData) return;
 
-                const client = await getClient(this.panelAppId, this.panelAdminAPIKey);
+                const client = await getClient(this.panelAppId, this.panelAdminAPIKey, this.panelServer);
                 const data = await client.transporter.write({
                     method: 'GET',
                     path: '1/indexes/*/stats',
