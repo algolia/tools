@@ -58,6 +58,7 @@ const colors = Object.assign(
 );
 
 module.exports = {
+    purge: false,
     theme: {
         /*
         |-----------------------------------------------------------------------------
