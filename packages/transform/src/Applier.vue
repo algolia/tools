@@ -71,11 +71,11 @@
     import TaskGroupView from "common/components/TasksGroup";
     import {getClient} from "common/utils/algoliaHelpers";
     import {Task, TasksGroup} from "common/utils/tasks";
-    import algoliasearch from 'algoliasearch';
     import Papa from "papaparse";
     import oboe from 'oboe';
     import FileStreamer from "./FileStreamer";
     import XmlStreamer from "./XmlStreamer";
+    import transformContext from "./transformContext";
 
     export default {
         name: 'Applier',
@@ -120,13 +120,9 @@
             getNewHits: async function (hits) {
                 const newHits = [];
 
-                const context = {
-                    algoliasearch: algoliasearch,
-                };
-
                 for (let i = 0; i < hits.length; i++) {
                     try {
-                        const newHit = await this.transformer.call(context, hits[i]);
+                        const newHit = await this.transformer.call(transformContext, hits[i]);
 
                         if (newHit === null) continue;
 

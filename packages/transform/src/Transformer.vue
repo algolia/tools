@@ -142,8 +142,8 @@
     import TrashIcon from "common/icons/trash.svg";
     import MaximizeIcon from "common/icons/maximize.svg";
     import MinimizeIcon from "common/icons/minimize.svg";
-    import algoliasearch from 'algoliasearch';
     import {isNumeric, isObject, isString} from "common/utils/types";
+    import transformContext from "./transformContext";
 
     const defaultTransformer = 'return {\n  ...refObj,\n\n};';
 
@@ -223,7 +223,7 @@
                         return `parseFloat(${finalVarName}),\n`;
                     }
                 } else if (Array.isArray(value)) {
-                    return `!Array.isArray(${finalVarName}) ? undefined : ${finalVarName}.map((el) => {\n    return el;  \n  }),\n`;
+                    return `${finalVarName} === undefined ? undefined : this.getArrayValue(${finalVarName}).map((el) => {\n    return el;  \n  }),\n`;
                 } else {
                     if (varNames.length <= 2) {
                         return `${varNames[0]} !== undefined ? ${finalVarName} : undefined,\n`;
@@ -340,12 +340,8 @@
             },
             transformExample: async function () {
                 try {
-                    const context = {
-                        algoliasearch: algoliasearch,
-                    };
-
                     const func = new Function(`return async function (refObj) {\n ${this.transformer} \n}`)();
-                    this.dstObjectExample = await func.call(context, Object.freeze(JSON.parse(JSON.stringify(this.srcObjectExample))));
+                    this.dstObjectExample = await func.call(transformContext, Object.freeze(JSON.parse(JSON.stringify(this.srcObjectExample))));
                     this.error = null;
                     this.$emit('onUpdateTransformer', func);
                 } catch (e) {
