@@ -11,14 +11,14 @@
         <div class="flex">
             <div
                     v-for="language in languages"
-                    :class="`mx-8 ${language === currentLanguage ? 'underline': ''}`"
+                    :class="`mt-8 mb-12 mr-8 ${language === currentLanguage ? 'underline': ''}`"
                     @click="currentLanguage = language"
             >
                 {{language}}
             </div>
         </div>
         <div>
-            <pre v-html="snippet"></pre>
+            <pre class="text-mono text-sm leading-tight" v-html="snippet"></pre>
         </div>
     </div>
 </template>
