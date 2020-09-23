@@ -15,10 +15,8 @@ module.exports = ({file, options, env}) => {
             content: ['../**/*.vue'],
             extractors: [
                 {
-                    extractor: class {
-                        static extract(content) {
-                            return content.match(/[A-z0-9-:\/]+/g) || []
-                        }
+                    extractor: (content) => {
+                        return content.match(/[A-z0-9-:\/]+/g) || []
                     },
                     extensions: ['vue', 'html']
                 }
