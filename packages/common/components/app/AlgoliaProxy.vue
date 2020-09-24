@@ -62,6 +62,8 @@
                 }
 
                 this.currentUser = json;
+
+                this.$store.commit('panels/setCurrentUserEmail', this.currentUser.user.email);
             }
         }
     }

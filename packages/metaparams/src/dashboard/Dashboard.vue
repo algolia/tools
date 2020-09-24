@@ -9,9 +9,9 @@
                 v-if="$store.state.panels.showIndexSelector"
                 class="px-8 py-8 pb-12 border-b border-nova-grey-opacity-20"
                 :class="{
-                    'bg-proton-grey-opacity-80': ownedByAlgolia(appId),
-                    'bg-saturn-5': !ownedByAlgolia(appId) && !forceWrite,
-                    'bg-mars-1-opacity-50': !ownedByAlgolia(appId) && forceWrite,
+                    'bg-proton-grey-opacity-80': isOwner(appId),
+                    'bg-saturn-5': !isOwner(appId) && !forceWrite,
+                    'bg-mars-1-opacity-50': !isOwner(appId) && forceWrite,
                 }"
             >
                 <div class="flex flex-wrap justify-start items-center">
@@ -70,7 +70,7 @@
                     </button>
                 </div>
                 <div class="flex flex-wrap">
-                    <div v-if="!ownedByAlgolia(appId)" class="text-sm text-solstice-blue-opacity-80 mr-24">
+                    <div v-if="!isOwner(appId)" class="text-sm text-solstice-blue-opacity-80 mr-24">
                         Read-Only <input type="checkbox" :checked="!forceWrite" @input="forceWrite = !$event.target.checked">
                     </div>
                     <index-info v-if="indexData" :panel-key="panelKey" @onUpdateHasNoRecord="hasNoRecords = $event"/>
@@ -195,7 +195,7 @@
             },
             canWrite: function () {
                 const isTargetingMainCluster = ['dsn', '-dsn', '-1', '-2', '-3'].includes(this.panelServer);
-                return isTargetingMainCluster && (this.forceWrite || this.ownedByAlgolia(this.appId));
+                return isTargetingMainCluster && (this.forceWrite || this.isOwner(this.appId));
             },
             forceOpenFacets: function () {
                 return this.searchParams.facets !== undefined;

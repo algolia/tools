@@ -26,9 +26,13 @@ export default {
         analyseMaxNbPoints: 100,
         shareStatePanel: false,
         compareKey: 'objectID',
+        currentUserEmail: null,
         trackedObjects: [],
     },
     mutations: {
+        setCurrentUserEmail: function (state, payload) {
+            Vue.set(state, 'currentUserEmail', payload);
+        },
         setTrackedObjects: function (state, payload) {
             Vue.set(state, 'trackedObjects', payload);
         },

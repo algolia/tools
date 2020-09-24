@@ -11,6 +11,7 @@ export default function (state) {
         showIndexSelector,
         showResultTabs,
         showQueryInfo,
+        currentUserEmail,
         ...panelsRest
     } = state.panels;
 

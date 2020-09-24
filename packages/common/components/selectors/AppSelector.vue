@@ -50,7 +50,7 @@
             },
             appIds: function () {
                 const appIds = Object.keys(this.apps).filter((appId) => {
-                    if (this.onlyAlgolia) return this.ownedByAlgolia(appId);
+                    if (this.onlyAlgolia) return this.isOwner(appId);
                     return true;
                 });
 
