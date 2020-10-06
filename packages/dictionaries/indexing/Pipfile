@@ -6,7 +6,6 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-algoliasearch = "*"
 
 [requires]
-python_version = "3.8.6"
+python_version = "2.7"

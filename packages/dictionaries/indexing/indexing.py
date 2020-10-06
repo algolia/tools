@@ -74,7 +74,7 @@ print('%s compounds processed' % nb_compounds)
 
 # SEGMENTATION
 nb_words = 0
-with open('./dictionaries/out/segmentation/cjkt-words.txt') as f:
+with open('./dictionaries/out/segmentation/segmentation.txt') as f:
     for line in f:
         if len(line) == 0 or line.startswith('#') or line == '\n':
             continue
