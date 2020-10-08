@@ -194,7 +194,7 @@
         },
         methods: {
             sendEvent: function () {
-                aa.sendEvent(this.eventType, this.eventJson);
+                aa('sendEvent', this.eventType, this.eventJson);
             },
         }
     }

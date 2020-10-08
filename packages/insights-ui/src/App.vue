@@ -114,7 +114,7 @@
                 return this.$store.state.apps[this.appId] ? this.$store.state.apps[this.appId].key : '';
             },
             aa: function () {
-                aa.init({
+                aa('init', {
                     appId: this.appId,
                     apiKey: this.apiKey,
                 });

@@ -138,7 +138,7 @@
                 this.searchResponse = response;
             },
             sendEvent: function (eventType, objectID, position) {
-                this.aa.sendEvent(eventType, {
+                this.aa('sendEvent', eventType, {
                     objectIDs: [objectID],
                     positions: [position + 1],
                     eventName: 'clickOnResultsFromInsightsUI',
