@@ -527,7 +527,7 @@
                         if (currentPromote) { // group promote
                             currentPromote.objectIDs.push(objectID);
                         } else {
-                            this.newRule.promote.push({objectID, position: 0});
+                            this.newRule.promote.push({objectIDs: [objectID], position: 0});
                         }
                     }
                 }
@@ -540,7 +540,7 @@
                 if (!sameExistingHit) {
                     const objectID = hit.objectID || hit;
                     if (objectID && objectID.length > 0) {
-                        this.newRule.hide.push(objectID);
+                        this.newRule.hide.push({objectID});
                     }
                 }
             },
