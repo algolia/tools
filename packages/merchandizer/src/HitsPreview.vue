@@ -37,14 +37,26 @@
             />
             <div v-if="indexData && searchResponse">
                 <div class="w-full flex flex-wrap">
-                    <div v-for="(hit, i) in searchResponse.hits" :key="hit.objectID" :style="`width: calc(100% / ${config.gridSize})`">
+                    <template v-for="(hit, i) in searchResponse.hits">
+                        <div
+                            v-if="bannersPerPosition[i]"
+                            class="mt-24"
+                            :style="`width: calc(100% / ${config.gridSize} * ${bannersPerPosition[i].size})`"
+                        >
+                            <img
+                                :src="bannersPerPosition[i].image_url"
+                                :style="`max-height: ${bannersPerPosition[i].height}px;`"
+                                class="w-full"
+                            />
+                        </div>
                         <merchandize-hit
+                            :style="`width: calc(100% / ${config.gridSize})`"
                             :search-response="searchResponse"
                             :hit="hit"
                             :hit-position="i"
                             :config="config"
                         />
-                    </div>
+                    </template>
                 </div>
                 <div class="flex justify-center">
                     <pagination
@@ -88,6 +100,19 @@
         computed: {
             params: function () {
                 return {...this.config.defaultSearchParams, page: this.page};
+            },
+            bannersPerPosition: function () {
+                const bannersPerPosition = {};
+
+                (this.searchResponse.userData || []).forEach((userData) => {
+                    if (userData.cms && Array.isArray(userData.cms.banner)) {
+                        userData.cms.banner.forEach((bloc) => {
+                            bannersPerPosition[bloc.position - 1] = bloc;
+                        });
+                    }
+                });
+
+                return bannersPerPosition;
             }
         },
         methods: {

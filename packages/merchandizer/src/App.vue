@@ -38,17 +38,26 @@
                             </div>
                         </div>
                     </div>
-                    <div class="rounded border border-proton-grey-opacity-60 mt-88 ml-24 w-512 min-w-512">
-                        <div class="bg-white p-8 bg-proton-grey-opacity-40 text-telluric-blue">
-                            Applied Rule
+                    <div class="ml-24 w-512 min-w-512 mt-24">
+                        <div class="flex">
+                            <div class="mr-12 p-8 bg-white rounded border border-proton-grey-opacity-60">Pin</div>
+                            <div class="mr-12 p-8 bg-white rounded border border-proton-grey-opacity-60">Hide</div>
+                            <div class="mr-12 p-8 bg-white rounded border border-proton-grey-opacity-60">Boost</div>
+                            <div class="mr-12 p-8 bg-white rounded border border-proton-grey-opacity-60">Bury</div>
+                            <div class="mr-12 p-8 bg-white rounded border border-proton-grey-opacity-60">Filter</div>
                         </div>
-                        <div class="bg-white text-nova-grey p-8">
-                            <merch-applied-rules
-                                :appId="appId"
-                                :indexName="indexName"
-                                :apiKey="apiKey"
-                                :config="config"
-                            />
+                        <div class="rounded border border-proton-grey-opacity-60 mt-32">
+                            <div class="bg-white p-8 bg-proton-grey-opacity-40 text-telluric-blue">
+                                Applied Rules
+                            </div>
+                            <div class="bg-white text-nova-grey p-8">
+                                <merch-applied-rules
+                                    :appId="appId"
+                                    :indexName="indexName"
+                                    :apiKey="apiKey"
+                                    :config="config"
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>

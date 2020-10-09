@@ -130,6 +130,26 @@
                         <pre v-html="properHighlight(JSON.stringify(intermediateRule.userData, null, 2))"></pre>
                     </div>
                 </div>
+                <div
+                    class="py-8 flex border-t border-proton-grey-opacity-20"
+                    v-for="bloc in config.cms" v-if="intermediateRule.cms[bloc.name] !== undefined"
+                >
+                    <div class="min-w-188 w-188">{{ bloc.label }}</div>
+                    <div class="ml-4 text-cosmos-black-opacity-70 min-w-0">
+                        <div v-for="(el, i) in intermediateRule.cms[bloc.name]" class="mb-16 overflow-hidden">
+                            <table>
+                                <tr v-if="bloc.list">
+                                    <td class="px-4 py-2 px-0">#{{ i }}</td>
+                                    <td class="px-4 py-2 truncate"></td>
+                                </tr>
+                                <tr v-for="(specs, attr) in bloc.fields">
+                                    <td class="px-4 py-2 px-0">{{ attr }}</td>
+                                    <td class="px-4 py-2 truncate">{{ el[attr] }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
                 <div v-if="intermediateRule.validity && intermediateRule.validity.length > 0" class="py-8 flex flex-wrap border-t border-proton-grey-opacity-20">
                     <div class="w-188">validity periods</div>
                     <div class="ml-4">
@@ -165,7 +185,7 @@
                 </div>
             </div>
         </div>
-        <rule-edit
+        <merch-rule-edit
             v-if="editMode"
             :rule="rule"
             v-bind="$props"
@@ -193,8 +213,8 @@ import HitsTransformer from "common/components/explorer/hits/hitsTransformer";
 import {highlightJsonObject, properHighlight} from 'common/utils/formatters';
 import Tooltip from "common/components/Tooltip";
 import RuleDelete from "common/components/explorer/synonyms-rules/RuleDelete";
-import RuleEdit from "common/components/explorer/synonyms-rules/RuleEdit";
-import IntermediateRule from "common/components/explorer/synonyms-rules/intermediateRule";
+import MerchRuleEdit from './MerchRuleEdit';
+import IntermediateRule from "./intermediateRule";
 import PromotedHit from "common/components/explorer/synonyms-rules/PromotedHit";
 import props from "common/components/explorer/props";
 
@@ -204,13 +224,14 @@ export default {
     name: 'MerchRule',
     props: [
         'rule',
+        'config',
         ...props.credentials,
         ...props.actions,
         ...props.images,
         ...props.attributes,
         ...props.paramsAndSettings,
     ],
-    components: {PromotedHit, RuleEdit, RuleDelete, Tooltip, EditIcon, TrashIcon, FlipLeftIcon, FlipRightIcon},
+    components: {PromotedHit, MerchRuleEdit, RuleDelete, Tooltip, EditIcon, TrashIcon, FlipLeftIcon, FlipRightIcon},
     data: function () {
         return {
             editMode: false,
