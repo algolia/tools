@@ -124,6 +124,33 @@
                         <pre v-html="properHighlight(JSON.stringify(intermediateRule.params, null, 2))"></pre>
                     </div>
                 </div>
+                <div v-if="intermediateRule.filters.length > 0" class="py-8 flex border-t border-proton-grey-opacity-20">
+                    <div class="w-188">Filters</div>
+                    <div class="ml-4 text-cosmos-black-opacity-70">
+                        <div v-for="boost in intermediateRule.filters">
+                            <span v-if="boost.operator === ':'">"{{boost.facet}}" is "{{boost.facetValue}}"</span>
+                            <span v-else-if="boost.operator === ':-'">"{{boost.facet}}" is not "{{boost.facetValue}}"</span>
+                            <span v-else>"{{boost.facet}}" {{ boost.operator }} "{{boost.facetValue}}"</span>
+                            <span v-if="boost.score > 1">score={{boost.score}}</span>
+                        </div>
+                    </div>
+                </div>
+                <div v-if="intermediateRule.boosts.length > 0" class="py-8 flex border-t border-proton-grey-opacity-20">
+                    <div class="w-188">Boost</div>
+                    <div class="ml-4 text-cosmos-black-opacity-70">
+                        <div v-for="boost in intermediateRule.boosts">
+                            "{{boost.facet}}" is "{{boost.facetValue}}" <span v-if="boost.score > 1">score={{boost.score}}</span>
+                        </div>
+                    </div>
+                </div>
+                <div v-if="intermediateRule.buries.length > 0" class="py-8 flex border-t border-proton-grey-opacity-20">
+                    <div class="w-188">Bury</div>
+                    <div class="ml-4 text-cosmos-black-opacity-70">
+                        <div v-for="boost in intermediateRule.buries">
+                            "{{boost.facet}}" is "{{boost.facetValue}}" <span v-if="boost.score > 1">score={{boost.score}}</span>
+                        </div>
+                    </div>
+                </div>
                 <div v-if="intermediateRule.userData" class="py-8 flex border-t border-proton-grey-opacity-20">
                     <div class="w-188">userData</div>
                     <div class="ml-4 text-cosmos-black-opacity-70">

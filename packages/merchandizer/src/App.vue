@@ -38,14 +38,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="ml-24 w-512 min-w-512 mt-24">
-                        <div class="flex">
-                            <div class="mr-12 p-8 bg-white rounded border border-proton-grey-opacity-60">Pin</div>
-                            <div class="mr-12 p-8 bg-white rounded border border-proton-grey-opacity-60">Hide</div>
-                            <div class="mr-12 p-8 bg-white rounded border border-proton-grey-opacity-60">Boost</div>
-                            <div class="mr-12 p-8 bg-white rounded border border-proton-grey-opacity-60">Bury</div>
-                            <div class="mr-12 p-8 bg-white rounded border border-proton-grey-opacity-60">Filter</div>
-                        </div>
+                    <div class="ml-24 w-512 min-w-512 mt-56 p-2">
                         <div class="rounded border border-proton-grey-opacity-60 mt-32">
                             <div class="bg-white p-8 bg-proton-grey-opacity-40 text-telluric-blue">
                                 Applied Rules
@@ -88,7 +81,7 @@
             return {
                 appId: null,
                 indexName: null,
-                query: 'london',
+                query: 'london drama',
                 config: config,
             }
         },

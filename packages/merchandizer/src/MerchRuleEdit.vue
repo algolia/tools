@@ -338,6 +338,84 @@
                     </div>
                 </div>
                 <div class="py-8 flex border-t border-proton-grey-opacity-20">
+                    <div class="w-188">
+                        <label class="cursor-pointer">
+                            <input
+                                type="checkbox"
+                                :checked="newRule.filters.length > 0"
+                                @input="$event.target.checked ? newRule.filters.push({facet: '', facetValue: '', operator: ':', score: 1}) : $set(newRule, 'filters', [])"
+                                class="mr-1"
+                            />
+                            Filters
+                        </label>
+                    </div>
+                    <div class="ml-4 text-cosmos-black-opacity-70" v-if="newRule.filters.length > 0">
+                        <div v-for="(filter, i) in newRule.filters" class="mt-4">
+                            <input v-model="newRule.filters[i].facet" class="input-custom p-4 w-72 inline" placeholder="attribute"/>
+                            <select v-model="newRule.filters[i].operator" class="ml-8 p-0 input-custom text-sm inline">
+                                <option value=":">is</option>
+                                <option value=":-">is not</option>
+                                <option value="=">=</option>
+                                <option value="!=">!=</option>
+                                <option value=">">&gt;</option>
+                                <option value="<">&lt;</option>
+                                <option value=">=">&gt;=</option>
+                                <option value="<=">&lt;=</option>
+                            </select>
+                            <input
+                                v-model="newRule.filters[i].facetValue"
+                                :type="[':', ':-'].includes(newRule.filters[i].operator) ? 'text' : 'number'"
+                                class="ml-8 input-custom p-4 w-72 inline"
+                                placeholder="value"
+                            />
+                        </div>
+                    </div>
+                </div>
+                <div class="py-8 flex border-t border-proton-grey-opacity-20">
+                    <div class="w-188">
+                        <label class="cursor-pointer">
+                            <input
+                                type="checkbox"
+                                :checked="newRule.boosts.length > 0"
+                                @input="$event.target.checked ? newRule.boosts.push({facet: '', facetValue: '', operator: ':', score: 1}) : $set(newRule, 'boosts', [])"
+                                class="mr-1"
+                            />
+                            Boost
+                        </label>
+                    </div>
+                    <div class="ml-4 text-cosmos-black-opacity-70" v-if="newRule.boosts.length > 0">
+                        <div v-for="(boost, i) in newRule.boosts" class="mt-4">
+                            <input v-model="newRule.boosts[i].facet" class="input-custom p-4 w-72 inline" placeholder="attribute"/>
+                            <span class="ml-8">is</span>
+                            <input v-model="newRule.boosts[i].facetValue" class="ml-8 input-custom p-4 w-72 inline" placeholder="value"/>
+                            <span class="ml-8">score=</span>
+                            <input v-model="newRule.boosts[i].score" type="number" min="1" class="input-custom p-4 w-48 inline" />
+                        </div>
+                    </div>
+                </div>
+                <div class="py-8 flex border-t border-proton-grey-opacity-20">
+                    <div class="w-188">
+                        <label class="cursor-pointer">
+                            <input
+                                type="checkbox"
+                                :checked="newRule.buries.length > 0"
+                                @input="$event.target.checked ? newRule.buries.push({facet: '', facetValue: '', operator: ':-', score: 1}) : $set(newRule, 'buries', [])"
+                                class="mr-1"
+                            />
+                            Bury
+                        </label>
+                    </div>
+                    <div class="ml-4 text-cosmos-black-opacity-70" v-if="newRule.buries.length > 0">
+                        <div v-for="(bury, i) in newRule.buries" class="mt-4">
+                            <input v-model="newRule.buries[i].facet" class="input-custom p-4 w-72 inline" placeholder="attribute"/>
+                            <span class="ml-8">is</span>
+                            <input v-model="newRule.buries[i].facetValue" class="ml-8 input-custom p-4 w-72 inline" placeholder="value"/>
+                            <span class="ml-8">score=</span>
+                            <input v-model="newRule.buries[i].score" type="number" min="1" class="input-custom p-4 w-48 inline" />
+                        </div>
+                    </div>
+                </div>
+                <div class="py-8 flex border-t border-proton-grey-opacity-20">
                     <div class="w-212">
                         <label class="cursor-pointer">
                             <input type="checkbox" v-model="newRule.hasUserData" class="mr-1"/>

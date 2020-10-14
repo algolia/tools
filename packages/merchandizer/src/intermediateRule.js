@@ -1,31 +1,94 @@
 function formatFilters(filters) {
-    return filters.map((filter) => {
+    const formattedFilters = [];
+
+    filters.forEach((filter) => {
         if (typeof filter === 'string' || filter instanceof String) {
-            const matches = 'language'.match(/([^<]*)(?:<score=(.*?)>)?/);
+            const matches = filter.match(/"?([^<:]*)"?(:-?)?"?([^<]*)"?(?:<score=(.*?)>)?/);
 
             const filterFormatted = {};
             filterFormatted.facet = matches[1];
-            if (matches[2] !== undefined) {
-                filterFormatted.score = parseInt(matches[2]);
+            filterFormatted.facetValue = matches[3];
+            filterFormatted.operator = matches[2];
+
+            if (matches[4] !== undefined) {
+                filterFormatted.score = parseInt(matches[4]);
             } else {
                 filterFormatted.score = 1;
             }
             filterFormatted.disjunctive = false;
 
-            return filterFormatted;
+            formattedFilters.push(filterFormatted);
+        } else if (Array.isArray(filter)) {
+            formattedFilters.push(...formatFilters(filter));
+        } else {
+            formattedFilters.push(filter);
         }
-
-        return filter;
     });
+
+    return formattedFilters;
+}
+
+function formatNumericFilters(filters) {
+    const formattedFilters = [];
+
+    filters.forEach((filter) => {
+        if (typeof filter === 'string' || filter instanceof String) {
+            const matches = filter.match(/([^\s]*)\s*(>=|<=|<|>|!=|=)\s*([^\s]*)/);
+
+            const filterFormatted = {};
+            filterFormatted.facet = matches[1];
+            filterFormatted.facetValue = matches[3];
+            filterFormatted.operator = matches[2];
+
+            formattedFilters.push(filterFormatted);
+        } else if (Array.isArray(filter)) {
+            formattedFilters.push(...formatFilters(filter));
+        } else {
+            formattedFilters.push(filter);
+        }
+    });
+
+    return formattedFilters;
 }
 
 function extractParamsWithoutSpecial(rule) {
     const params = rule.consequence.params || {};
-    const {query, automaticFacetFilters, automaticOptionalFacetFilters, ...paramsWithoutSpecial} = params;
+    const {query, facetFilters, numericFilters, optionalFilters, automaticFacetFilters, automaticOptionalFacetFilters, ...paramsWithoutSpecial} = params;
 
     if (Object.keys(paramsWithoutSpecial).length <= 0) return {};
 
     return paramsWithoutSpecial;
+}
+
+function extractBoosts(ruleCopy) {
+    const params = ruleCopy.consequence.params || {};
+    const { optionalFilters } = params;
+    if (!optionalFilters || optionalFilters.length <= 0) return [];
+
+    return formatFilters(optionalFilters).filter((f) => f.operator !== ':-');
+}
+function extractBuries(ruleCopy) {
+    const params = ruleCopy.consequence.params || {};
+    const { optionalFilters } = params;
+    if (!optionalFilters || optionalFilters.length <= 0) return [];
+
+    return formatFilters(optionalFilters).filter((f) => f.operator === ':-');
+}
+
+function extractFilters(ruleCopy) {
+    const params = ruleCopy.consequence.params || {};
+    const { facetFilters } = params;
+    if (!facetFilters || facetFilters.length <= 0) return [];
+
+    return formatFilters(facetFilters);
+}
+
+function extractNumericFilters(ruleCopy) {
+    const params = ruleCopy.consequence.params || {};
+    const { numericFilters } = params;
+    if (!numericFilters || numericFilters.length <= 0) return [];
+
+    return formatNumericFilters(numericFilters);
 }
 
 function extractReplacedWordsFromQuery(rule) {
@@ -144,6 +207,9 @@ export default function (rule) {
     this.cms = extractCms(ruleCopy);
 
     this.params = extractParamsWithoutSpecial(ruleCopy);
+    this.boosts = extractBoosts(ruleCopy);
+    this.buries = extractBuries(ruleCopy);
+    this.filters = [...extractFilters(ruleCopy), ...extractNumericFilters(ruleCopy)];
     this.replacedWordsFromQuery = extractReplacedWordsFromQuery(ruleCopy);
     this.replacedQuery = extractReplacedQuery(ruleCopy);
     this.removedWordsFromQuery = extractRemovedWordsFromQuery(ruleCopy);
@@ -204,6 +270,36 @@ export default function (rule) {
             rule.consequence.params = JSON.parse(JSON.stringify(params));
         }
 
+        const encodeFilter = function (filter) {
+            let s = `${filter.facet}${filter.operator}${filter.facetValue}`;
+            if (s.score > 1) s += `<score=${filter.score}>`;
+
+            return s;
+        }
+        // Needs to be after params
+        if (this.boosts.length > 0 || this.buries.length > 0) {
+            rule.consequence.params = rule.consequence.params || {};
+            rule.consequence.params.optionalFilters = [
+                ...this.boosts.map((filter) => encodeFilter(filter)),
+                ...this.buries.map((filter) => encodeFilter(filter)),
+            ];
+        }
+
+        // Needs to be after params
+        if (this.filters.length > 0) {
+            rule.consequence.params = rule.consequence.params || {};
+
+            this.filters.forEach((filter) => {
+                if ([':', ':-'].includes(filter.operator)) {
+                    rule.consequence.params.facetFilters = rule.consequence.params.facetFilters || [];
+                    rule.consequence.params.facetFilters.push(encodeFilter(filter));
+                } else {
+                    rule.consequence.params.numericFilters = rule.consequence.params.numericFilters || [];
+                    rule.consequence.params.numericFilters.push(encodeFilter(filter));
+                }
+            });
+        }
+
         // Needs to be after params
         if (this.hasReplacedQuery) {
             if (!rule.consequence.params) rule.consequence.params = {};
@@ -249,6 +345,7 @@ export default function (rule) {
                     return c.pattern.indexOf(`{facet:${filter.facet}`) !== -1;
                 }));
             });
+
             if (this.hasAutomaticFilters && automaticFacetFilters.length > 0) {
                 if (!rule.consequence.params) rule.consequence.params = {};
                 rule.consequence.params.automaticFacetFilters = JSON.parse(JSON.stringify(automaticFacetFilters));

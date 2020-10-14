@@ -36,27 +36,31 @@
                 panel-key="leftPanel"
             />
             <div v-if="indexData && searchResponse">
-                <div class="w-full flex flex-wrap">
-                    <template v-for="(hit, i) in searchResponse.hits">
-                        <div
-                            v-if="bannersPerPosition[i]"
-                            class="mt-24"
-                            :style="`width: calc(100% / ${config.gridSize} * ${bannersPerPosition[i].size})`"
-                        >
-                            <img
-                                :src="bannersPerPosition[i].image_url"
-                                :style="`max-height: ${bannersPerPosition[i].height}px;`"
-                                class="w-full"
-                            />
-                        </div>
-                        <merchandize-hit
-                            :style="`width: calc(100% / ${config.gridSize})`"
-                            :search-response="searchResponse"
-                            :hit="hit"
-                            :hit-position="i"
-                            :config="config"
-                        />
-                    </template>
+                <div class="w-full">
+                    <draggable v-model="hits" @start="drag = true" @end="drag = false" @change="onDrag" class="w-full">
+                        <transition-group type="transition" :name="!drag ? 'flip-list' : null" class="block w-full flex flex-wrap">
+                            <div
+                                v-for="(hit) in hits"
+                                :key="hit.objectID"
+                                :style="hit.__style__"
+                            >
+                                <div v-if="hit.is_banner">
+                                    <img
+                                        :src="hit.image_url"
+                                        :style="`max-height: ${hit.height}px;`"
+                                        class="w-full"
+                                    />
+                                </div>
+                                <merchandize-hit
+                                    v-else
+                                    :search-response="searchResponse"
+                                    :hit="hit"
+                                    :hit-position="hit.__i__"
+                                    :config="config"
+                                />
+                            </div>
+                        </transition-group>
+                    </draggable>
                 </div>
                 <div class="flex justify-center">
                     <pagination
@@ -81,9 +85,11 @@
     import indexInfoMixin from "common/mixins/indexInfoMixin";
     import MerchandizeHit from "./MerchandizeHit";
 
+    import draggable from "vuedraggable";
+
     export default {
         name: 'HitsPreview',
-        components: {MerchandizeHit, Results, PerformSearch, ErrorMessage, Pagination, Facets},
+        components: {MerchandizeHit, Results, PerformSearch, ErrorMessage, Pagination, Facets, draggable},
         mixins: [indexInfoMixin],
         props: ['appId', 'indexName', 'apiKey', 'query', 'config'],
         data: function () {
@@ -95,6 +101,7 @@
                 panelKey: 'leftPanel',
                 searchConfigKey: 'searchParams',
                 page: 0,
+                drag: false,
             }
         },
         computed: {
@@ -113,6 +120,30 @@
                 });
 
                 return bannersPerPosition;
+            },
+            hits: {
+                get () {
+                    const hits = [];
+
+                    this.searchResponse.hits.forEach((hit, i) => {
+                        if (this.bannersPerPosition[i]) {
+                            hits.push({
+                                is_banner: true,
+                                objectID: `banner-${i}`,
+                                __style__: `margin-top: 24px; width: calc(100% / ${this.config.gridSize} * ${this.bannersPerPosition[i].size})`,
+                                ...this.bannersPerPosition[i],
+                            });
+                        }
+
+                        hits.push({
+                            __style__: `width: calc(100% / ${this.config.gridSize}); max-width: calc(100% / ${this.config.gridSize})`,
+                            __i__: i,
+                            ...hit,
+                        });
+                    })
+                    return hits;
+                },
+                set () {}
             }
         },
         methods: {
@@ -126,7 +157,36 @@
                     value: apiKey,
                 });
             },
+            onDrag: function ($event) {
+                let newIndex = $event.moved.newIndex;
+                for (let i = newIndex; i >= 0; i--) {
+                    if (this.bannersPerPosition[i]) {
+                        newIndex--;
+                    }
+                }
+
+                if ($event.moved.element.is_banner) {
+                    this.$root.$emit('onWantToMoveBannerAtPosition', {
+                        objectID: $event.moved.element.image_url,
+                        position: newIndex + 1,
+                    });
+                } else {
+                    this.$root.$emit('onWantToPromoteAtPosition', {
+                       objectID: $event.moved.element.objectID,
+                       position: newIndex + 1,
+                    });
+                }
+            }
         }
 
     }
 </script>
+
+<style>
+    .flip-list-move {
+        transition: transform 0.5s;
+    }
+    .no-move {
+        transition: transform 0s;
+    }
+</style>

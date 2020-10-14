@@ -18,6 +18,14 @@
                 </div>
             </div>
             <div v-if="!editMode">
+                <div v-if="personalized || promoted" class="flex mb-12">
+                    <div v-if="personalized" class="border border-nova-grey-opacity-80 px-8 py-4 rounded text-center text-xs uppercase tracking-wide text-solstice-blue">
+                        Personalized
+                    </div>
+                    <div v-if="promoted" class="border border-nova-grey-opacity-80 px-8 py-4 rounded text-center text-xs uppercase tracking-wide text-solstice-blue">
+                        Promoted
+                    </div>
+                </div>
                 <hit-image
                     :flatten-hit="flattenHit"
                     :display-mode="displayMode"
@@ -31,32 +39,19 @@
                     v-bind="$props"
                     v-on="$listeners"
                 />
-                <div class="mb-8" :class="`w-${imageSize}`">
-                    <attributes
-                        :top-attributes="config.attributesToRetrieve"
-                        :searchable-attributes="[]"
-                        :item="transformedItem"
-                        :search-params="{attributesToRetrieve: config.attributesToRetrieve}"
-                        v-bind="$props"
-                        v-on="$listeners"
-                    />
-                </div>
-                <div v-if="personalized || promoted" class="flex mb-12">
-                    <div v-if="personalized" class="border border-nova-grey-opacity-80 px-8 py-4 rounded text-center text-xs uppercase tracking-wide text-solstice-blue">
-                        Personalized
-                    </div>
-                    <div v-if="promoted" class="border border-nova-grey-opacity-80 px-8 py-4 rounded text-center text-xs uppercase tracking-wide text-solstice-blue">
-                        Promoted
-                    </div>
-                </div>
-
             </div>
+        </div>
+        <div class="mb-8 w-full">
+            <attributes
+                :top-attributes="config.attributesToRetrieve"
+                :attributes="Object.keys(hit)"
+                :hit="hit"
+            />
         </div>
     </div>
 </template>
 
 <script>
-import Attributes from 'common/components/explorer/hits/Attributes';
 import RankingInfo from 'common/components/explorer/hits/RankingInfo';
 import HitsTransformer from 'common/components/explorer/hits/hitsTransformer';
 import flattenRecord from 'common/utils/flattenRecordForImagePreview';
@@ -71,18 +66,20 @@ import FlipRightIcon from "common/icons/flip-right.svg";
 import MaximizeIcon from "common/icons/maximize.svg";
 import MinimizeIcon from "common/icons/minimize.svg";
 import props from "common/components/explorer/props";
+import Attributes from "./Attributes";
 
 export default {
     name: 'MerchandizeHit',
     components: {
-        HitImage, HitDelete, HitEdit, RankingInfo, Attributes, EditIcon, TrashIcon, FlipLeftIcon, FlipRightIcon, MaximizeIcon, MinimizeIcon},
+        Attributes,
+        HitImage, HitDelete, HitEdit, RankingInfo, EditIcon, TrashIcon, FlipLeftIcon, FlipRightIcon, MaximizeIcon, MinimizeIcon},
     props: [
-        'panelKey', 'hit', 'previousHit', 'topAttributes', 'searchableAttributes', 'hitPosition', 'titleAttribute',
+        'hit', 'previousHit', 'topAttributes', 'searchableAttributes', 'hitPosition', 'titleAttribute',
         ...props.credentials,
         ...props.attributes,
         ...props.actions,
         ...props.display,
-        ...props.images,
+        ...['imageAttribute', 'imageBaseUrl', 'imageSuffixUrl', 'ignoreImageProxy'],
         ...props.response,
         ...props.paramsAndSettings,
         'searchResponse',
@@ -94,6 +91,8 @@ export default {
             editMode: false,
             expandImage: false,
             expandable: false,
+            imageSize: this.config.imageSize,
+            panelKey: 'leftPanel'
         }
     },
     computed: {

@@ -1,7 +1,7 @@
 function formatFilters(filters) {
     return filters.map((filter) => {
         if (typeof filter === 'string' || filter instanceof String) {
-            const matches = 'language'.match(/([^<]*)(?:<score=(.*?)>)?/);
+            const matches = filter.match(/([^<]*)(?:<score=(.*?)>)?/);
 
             const filterFormatted = {};
             filterFormatted.facet = matches[1];
