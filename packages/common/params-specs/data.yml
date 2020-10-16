@@ -980,8 +980,9 @@ enableExperimentalBlendPersonalization:
     - false
   default: true
 
-enableIBRRanking:
+enableReRanking:
   scope:
+    - settings
     - search
   value_type: boolean
   values:
@@ -989,8 +990,9 @@ enableIBRRanking:
     - false
   default: true
 
-IBRPromoteExclusionFilter:
+reRankingApplyFilter:
   scope:
+    - settings
     - search
   value_type: string
   default: ""
