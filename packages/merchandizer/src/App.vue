@@ -59,6 +59,19 @@
                                 />
                             </div>
                         </div>
+                        <div v-if="config.mainIndexName === this.indexName" class="rounded border border-proton-grey-opacity-60 mt-32">
+                            <div class="bg-white p-8 bg-proton-grey-opacity-40 text-telluric-blue">
+                                Forward to index
+                            </div>
+                            <div class="bg-white text-nova-grey p-8">
+                                <forward-to-index
+                                    :appId="appId"
+                                    :indexName="indexName"
+                                    :apiKey="apiKey"
+                                    :config="config"
+                                />
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -77,10 +90,12 @@
     import HitsPreview from "./HitsPreview";
     import config from "./config";
     import MerchAppliedRules from "./MerchAppliedRules";
+    import ForwardToIndex from "./ForwardToIndex";
 
     export default {
         name: 'App',
         components: {
+            ForwardToIndex,
             MerchAppliedRules,
             HitsPreview,
             InternalApp, AppHeader, AppManagement, DisplayConfig, AppSelector, IndexSelector, SearchIcon},
