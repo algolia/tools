@@ -1,4 +1,6 @@
 export default {
+    mainIndexName: 'movies_fr',
+    countryIndices: ['movies_en', 'movies_es'],
     imageAttribute: 'image',
     gridSize: 3,
     imageSize: 160,
