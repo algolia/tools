@@ -2,17 +2,16 @@
   <div>
     <div v-if="!saving" class="py-8 flex">
       <div class="w-212">
-        <label class="cursor-pointer">
-          <input type="checkbox" v-model="hasRulesForward" class="mr-1" />
+        <label class="cursor-pointer flex">
+          <input type="checkbox" v-model="hasRulesForward" class="mr-4" />
           Forward rules to indices
         </label>
       </div>
       <div v-if="hasRulesForward">
         <div v-for="index in indices" class="text-cosmos-black-opacity-70">
-          <label class="cursor-pointer">
-            <input type="checkbox" v-model="index.value" class="mr-3" />{{
-              index.name
-            }}
+          <label class="cursor-pointer flex">
+            <input type="checkbox" v-model="index.value" class="mr-4" />
+            {{index.name }}
           </label>
         </div>
         <div class="flex justify-end my-16">
@@ -56,7 +55,7 @@ export default {
   props: [...props.credentials],
   data: function () {
     return {
-      indices: config.countryIndices.map((index) => {
+      indices: config.indices.countryIndices.map((index) => {
         return { name: index, value: false };
       }),
       saving: false,

@@ -29,10 +29,12 @@
                         </div>
                         <div class="rounded border border-proton-grey-opacity-60 mt-24">
                             <div class="flex bg-white p-8 pb-12 bg-proton-grey-opacity-40 text-telluric-blue">
-                                <app-selector v-model="appId" />
+                                <app-selector v-model="appId" :forced-apps="config.credentials.appIds" />
                                 <index-selector
                                     v-model="indexName"
                                     :app-id="appId"
+                                    :no-fetch="true"
+                                    :forced-indices="[config.indices.mainIndexName, ...config.indices.countryIndices].map((i) => ({name: i}))"
                                     class="ml-24"
                                 />
                             </div>
@@ -64,7 +66,7 @@
                                 />
                             </div>
                         </div>
-                        <div v-if="config.mainIndexName === this.indexName" class="rounded border border-proton-grey-opacity-60 mt-32">
+                        <div v-if="config.indices.mainIndexName === this.indexName" class="rounded border border-proton-grey-opacity-60 mt-32">
                             <div class="bg-white p-8 bg-proton-grey-opacity-40 text-telluric-blue">
                                 Forward to index
                             </div>
@@ -92,6 +94,7 @@
     import AppSelector from "common/components/selectors/AppSelector";
     import IndexSelector from "common/components/selectors/IndexSelector";
     import SearchIcon from 'common/icons/search.svg';
+    import BoxIcon from 'common/icons/box.svg';
     import HitsPreview from "./HitsPreview";
     import config from "./config";
     import MerchAppliedRules from "./MerchAppliedRules";
@@ -103,11 +106,11 @@
             ForwardToIndex,
             MerchAppliedRules,
             HitsPreview,
-            InternalApp, AppHeader, AppManagement, DisplayConfig, AppSelector, IndexSelector, SearchIcon},
+            InternalApp, AppHeader, AppManagement, DisplayConfig, AppSelector, IndexSelector, SearchIcon, BoxIcon},
         data: function () {
             return {
-                appId: null,
-                indexName: null,
+                appId: config.credentials.appIds[0],
+                indexName: config.indices.mainIndexName,
                 query: 'london drama',
                 context: '',
                 config: config,

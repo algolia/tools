@@ -33,7 +33,7 @@
     export default {
         name: "IndexSelector",
         components: {AppSelector, CustomSelect, BoxIcon, ListIcon},
-        props: ["appId", "value", "forcedIndices", "allowFreeText"],
+        props: ["appId", "value", "forcedIndices", "allowFreeText", "noFetch"],
         data: function () {
             return {
                 allIndices: [],
@@ -137,7 +137,7 @@
                 }
             },
             updateIndices: async function (shouldSetIndex) {
-                if (!this.appId || !this.adminAPIKey) return; // onboarding
+                if (!this.appId || !this.adminAPIKey || this.noFetch) return; // onboarding
 
                 const client = await getClient(this.appId, this.adminAPIKey);
 

@@ -1,7 +1,13 @@
 export default {
-    mainIndexName: 'movies',
-    countryIndices: ['movies_en', 'movies_es'],
-    gridSize: 3,
+    credentials: {
+        appIds: [
+            'AJ0P3S7DWQ',
+        ]
+    },
+    indices: {
+        mainIndexName: 'movies',
+        countryIndices: ['movies_en', 'movies_es'],
+    },
     images: {
         imageSize: 160,
         imageBaseUrl: '',
@@ -10,6 +16,7 @@ export default {
         ignoreImageProxy: '',
         titleAttributeName: 'title',
     },
+    gridSize: 3,
     attributesToDisplay: ['objectID', 'title', 'genre'],
     defaultSearchParams: {
         hitsPerPage: 24,

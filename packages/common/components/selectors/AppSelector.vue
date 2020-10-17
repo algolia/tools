@@ -34,7 +34,7 @@
     export default {
         name: 'AppSelector',
         components: {CustomSelect, BoxIcon},
-        props: ['value', 'onlyAlgolia'],
+        props: ['value', 'onlyAlgolia', 'forcedApps'],
         data: function () {
             return {
                 query: '',
@@ -46,6 +46,15 @@
                 return this.$store.state.apps[this.appId] ? this.$store.state.apps[this.appId].key : '';
             },
             apps: function () {
+                if (this.forcedApps) {
+                    const apps = {};
+                    Object.keys(this.$store.state.apps).forEach((appId) => {
+                        if (this.forcedApps.includes(appId)) {
+                            apps[appId] = this.$store.state.apps[appId];
+                        }
+                    });
+                    return apps;
+                }
                 return this.$store.state.apps;
             },
             appIds: function () {

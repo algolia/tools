@@ -37,8 +37,20 @@
             />
             <div v-if="indexData && searchResponse">
                 <div class="w-full">
-                    <draggable v-model="hits" @start="drag = true" @end="drag = false" @change="onDrag" class="w-full">
-                        <transition-group type="transition" :name="!drag ? 'flip-list' : null" class="block w-full flex flex-wrap">
+                    <draggable
+                        v-model="hits"
+                        @start="drag = true"
+                        @end="drag = false"
+                        @change="onDrag"
+                        class="w-full"
+                        v-bind="{ animation: 200}"
+                    >
+                        <transition-group
+                            type="transition"
+                            tag="div"
+                            :name="drag ? 'flip-list' : null"
+                            class="w-full flex flex-wrap"
+                        >
                             <div
                                 v-for="(hit) in hits"
                                 :key="hit.objectID"
@@ -184,7 +196,7 @@
 
 <style>
     .flip-list-move {
-        transition: transform 0.5s;
+        transition: transform 2s;
     }
     .no-move {
         transition: transform 0s;
