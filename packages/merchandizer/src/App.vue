@@ -10,13 +10,22 @@
             <div class="flex">
                 <div class="flex mx-auto">
                     <div class="max-w-960 mt-24">
-                        <div class="flex items-center px-16 bg-white rounded border border-proton-grey-opacity-80">
-                            <search-icon class="block w-16 h-16 mr-16 text-telluric-blue fill-current"/>
-                            <input
-                                class="flex-1 block h-full py-8 bg-transparent text-telluric-blue leading-normal"
-                                placeholder="Search query"
-                                v-model="query"
-                            >
+                        <div class="flex">
+                            <div class="flex flex-grow items-center px-16 bg-white rounded border border-proton-grey-opacity-80">
+                                <search-icon class="block w-16 h-16 mr-16 text-telluric-blue fill-current"/>
+                                <input
+                                    class="flex-1 block h-full py-8 bg-transparent text-telluric-blue leading-normal"
+                                    placeholder="Search query"
+                                    v-model="query"
+                                >
+                            </div>
+                            <div class="ml-24 flex items-center px-16 bg-white rounded border border-proton-grey-opacity-80">
+                                <input
+                                    class="flex-1 block h-full py-8 bg-transparent text-telluric-blue leading-normal"
+                                    placeholder="Context"
+                                    v-model="context"
+                                >
+                            </div>
                         </div>
                         <div class="rounded border border-proton-grey-opacity-60 mt-24">
                             <div class="flex bg-white p-8 pb-12 bg-proton-grey-opacity-40 text-telluric-blue">
@@ -33,6 +42,7 @@
                                     :indexName="indexName"
                                     :apiKey="apiKey"
                                     :query="query"
+                                    :context="context"
                                     :config="config"
                                 />
                             </div>
@@ -49,6 +59,8 @@
                                     :indexName="indexName"
                                     :apiKey="apiKey"
                                     :config="config"
+                                    :query="query"
+                                    :context="context"
                                 />
                             </div>
                         </div>
@@ -97,6 +109,7 @@
                 appId: null,
                 indexName: null,
                 query: 'london drama',
+                context: '',
                 config: config,
             }
         },

@@ -91,7 +91,7 @@
         name: 'HitsPreview',
         components: {MerchandizeHit, Results, PerformSearch, ErrorMessage, Pagination, Facets, draggable},
         mixins: [indexInfoMixin],
-        props: ['appId', 'indexName', 'apiKey', 'query', 'config'],
+        props: ['appId', 'indexName', 'apiKey', 'query', 'context', 'config'],
         data: function () {
             return {
                 searchResponse: null,
@@ -106,7 +106,7 @@
         },
         computed: {
             params: function () {
-                return {...this.config.defaultSearchParams, page: this.page};
+                return {...this.config.defaultSearchParams, page: this.page, ruleContexts: this.context || undefined};
             },
             bannersPerPosition: function () {
                 const bannersPerPosition = {};
@@ -173,7 +173,7 @@
                 } else {
                     this.$root.$emit('onWantToPromoteAtPosition', {
                        objectID: $event.moved.element.objectID,
-                       position: newIndex + 1,
+                       position: newIndex,
                     });
                 }
             }

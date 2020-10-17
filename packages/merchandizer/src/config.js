@@ -1,14 +1,16 @@
 export default {
-    mainIndexName: 'movies_fr',
+    mainIndexName: 'movies',
     countryIndices: ['movies_en', 'movies_es'],
-    imageAttribute: 'image',
     gridSize: 3,
-    imageSize: 160,
-    imageBaseUrl: '',
-    imageSuffixUrl: '',
-    ignoreImageProxy: '',
-    attributesToRetrieve: ['objectID', 'title', 'genre'],
-    titleAttributeName: 'title',
+    images: {
+        imageSize: 160,
+        imageBaseUrl: '',
+        imageAttribute: 'image',
+        imageSuffixUrl: '',
+        ignoreImageProxy: '',
+        titleAttributeName: 'title',
+    },
+    attributesToDisplay: ['objectID', 'title', 'genre'],
     defaultSearchParams: {
         hitsPerPage: 24,
         facets: ['genre', 'actors'],
@@ -23,12 +25,6 @@ export default {
                     type: 'string',
                     default: '',
                 },
-            },
-            merge: function (rule, data) {
-                rule.userData = {
-                    ...rule.userData,
-                    redirect_url: data.url,
-                }
             }
         },
         {

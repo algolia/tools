@@ -30,12 +30,12 @@
                     :flatten-hit="flattenHit"
                     :display-mode="displayMode"
                     :list-mode="listMode"
-                    :imageSize="config.imageSize"
-                    :forcedImageSize="config.imageSize"
-                    :imageAttribute="config.imageAttribute"
-                    :imageBaseUrl="config.imageBaseUrl"
-                    :imageSuffixUrl="config.imageSuffixUrl"
-                    :ignoreImageProxy="config.ignoreImageProxy"
+                    :imageSize="config.images.imageSize"
+                    :forcedImageSize="config.images.imageSize"
+                    :imageAttribute="config.images.imageAttribute"
+                    :imageBaseUrl="config.images.imageBaseUrl"
+                    :imageSuffixUrl="config.images.imageSuffixUrl"
+                    :ignoreImageProxy="config.images.ignoreImageProxy"
                     v-bind="$props"
                     v-on="$listeners"
                 />
@@ -43,7 +43,7 @@
         </div>
         <div class="mb-8 w-full">
             <attributes
-                :top-attributes="config.attributesToRetrieve"
+                :top-attributes="config.attributesToDisplay"
                 :attributes="Object.keys(hit)"
                 :hit="hit"
             />
@@ -91,7 +91,7 @@ export default {
             editMode: false,
             expandImage: false,
             expandable: false,
-            imageSize: this.config.imageSize,
+            imageSize: this.config.images.imageSize,
             panelKey: 'leftPanel'
         }
     },

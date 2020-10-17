@@ -214,6 +214,7 @@
         </div>
         <merch-rule-edit
             v-if="editMode"
+            ref="merch-rule-edit"
             :rule="rule"
             v-bind="$props"
             v-on="$listeners"

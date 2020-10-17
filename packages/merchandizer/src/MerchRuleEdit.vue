@@ -651,21 +651,23 @@
             onValidateUserData: function (annotations) {
                 this.nbErrorsUserData = annotations.length;
             },
-            addPromote: function (hit, currentPromote) {
-                const sameExistingHit = this.newRule.promote.find((p) => {
-                    return p.objectID === hit.objectID;
+            addPromote: function (hit, currentPromote, position) {
+                const sameExistingHitIndex = this.newRule.promote.findIndex((p) => {
+                    return p.objectIDs.includes(hit.objectID);
                 });
 
-                if (!sameExistingHit) {
+                if (sameExistingHitIndex === -1) {
                     const objectID = hit.objectID || hit;
 
                     if (objectID && objectID.length > 0) {
                         if (currentPromote) { // group promote
                             currentPromote.objectIDs.push(objectID);
                         } else {
-                            this.newRule.promote.push({objectIDs: [objectID], position: 0});
+                            this.newRule.promote.push({objectIDs: [objectID], position: position || 0});
                         }
                     }
+                } else if (position !== undefined) {
+                    this.$set(this.newRule.promote[sameExistingHitIndex], 'position', position);
                 }
             },
             addHide: function (hit) {
