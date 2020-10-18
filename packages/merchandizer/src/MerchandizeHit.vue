@@ -9,8 +9,8 @@
                     {{hitNumber}}
                 </div>
             </div>
-            <div v-if="!editMode">
-                <div v-if="personalized || promoted" class="flex mb-12">
+            <div>
+                <div class="flex mb-12">
                     <div v-if="personalized" class="border border-nova-grey-opacity-80 px-8 py-4 rounded text-center text-xs uppercase tracking-wide text-solstice-blue">
                         Personalized
                     </div>
@@ -23,6 +23,13 @@
                             @click="$root.$emit('onWantToUnpromote', hit.objectID)"
                         />
                         <tooltip>Unpin</tooltip>
+                    </div>
+                    <div class="ml-4 relative group cursor-pointer">
+                        <eye-off-icon
+                            class="w-16 h-16 mt-2 text-solstice-blue-opacity-60 hover:text-solstice-blue-opacity-80"
+                            @click="$root.$emit('onWantToHide', hit.objectID)"
+                        />
+                        <tooltip>Hide result</tooltip>
                     </div>
                 </div>
                 <hit-image
@@ -64,6 +71,7 @@ import TrashIcon from 'common/icons/trash.svg';
 import FlipLeftIcon from "common/icons/flip-left.svg";
 import FlipRightIcon from "common/icons/flip-right.svg";
 import UnpinIcon from "common/icons/unpin.svg";
+import EyeOffIcon from "common/icons/eye-off.svg";
 import props from "common/components/explorer/props";
 import Attributes from "./Attributes";
 
@@ -71,7 +79,7 @@ export default {
     name: 'MerchandizeHit',
     components: {
         Attributes,
-        HitImage, HitDelete, HitEdit, RankingInfo, EditIcon, TrashIcon, FlipLeftIcon, FlipRightIcon, UnpinIcon, Tooltip},
+        HitImage, HitDelete, HitEdit, RankingInfo, EditIcon, TrashIcon, FlipLeftIcon, FlipRightIcon, UnpinIcon, EyeOffIcon, Tooltip},
     props: [
         'hit', 'previousHit', 'topAttributes', 'searchableAttributes', 'hitPosition', 'titleAttribute',
         ...props.credentials,
@@ -87,7 +95,6 @@ export default {
     data: function () {
         return {
             confirmDelete: false,
-            editMode: false,
             expandImage: false,
             expandable: false,
             imageSize: this.config.images.imageSize,

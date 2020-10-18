@@ -178,9 +178,12 @@
                 }
 
                 if ($event.moved.element.is_banner) {
-                    this.$root.$emit('onWantToMoveBannerAtPosition', {
-                        objectID: $event.moved.element.image_url,
-                        position: newIndex + 1,
+                    this.$root.$emit('onWantToUpdateCms', {
+                        type: 'banner',
+                        condition_attribute: 'image_url',
+                        condition_value: $event.moved.element.image_url,
+                        set_attribute: 'position',
+                        set_value: newIndex + 1,
                     });
                 } else {
                     this.$root.$emit('onWantToPromoteAtPosition', {
