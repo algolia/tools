@@ -124,6 +124,40 @@ export default {
                 newMerchRuleEdit.addPromote($event, undefined, $event.position);
             });
         });
+
+        this.$root.$on('onWantToUnpromote', (objectID) => {
+            for (let i = 0; i < this.rules.length; i++) {
+                const merchRule = this.$refs[`rule-${i}`][0];
+
+                if (merchRule.editMode) {
+                    const merchRuleEdit = merchRule.$refs['merch-rule-edit'];
+                    const newRule = merchRuleEdit.newRule;
+
+                    // If we find the promote in a rule currently being edited
+                    for (let j = 0; j < newRule.promote.length; j++) {
+                        const pos = newRule.promote[j].objectIDs.findIndex((id) => id === objectID);
+                        if (pos !== -1) {
+                            newRule.promote[j].objectIDs.splice(pos, 1)
+                            if (newRule.promote[j].objectIDs.length <= 0) {
+                                newRule.promote.splice(j, 1)
+                            }
+                            if (newRule.promote.length <= 0) {
+                                newRule.hasPromote = false;
+                            }
+                            return;
+                        }
+                    }
+                }
+
+                if (merchRule.intermediateRule.promote.find((promote) => promote.objectIDs.includes(objectID))) {
+                    merchRule.editMode = true;
+                    this.$nextTick(() => {
+                        this.$root.$emit('onWantToUnpromote', objectID);
+                    });
+                    return;
+                }
+            }
+        });
     },
     watch: {
         ruleIds: function () {

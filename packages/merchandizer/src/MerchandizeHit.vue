@@ -8,14 +8,6 @@
                 >
                     {{hitNumber}}
                 </div>
-                <div
-                    v-if="displayMode === 'images' && expandable"
-                    class="flex items-center justify-center mt-12 border border-proton-grey hover:border-nova-grey-opacity-80 p-4 w-24 rounded cursor-pointer"
-                    @click="expandImage = !expandImage"
-                >
-                    <maximize-icon v-if="!expandImage" class="w-12 h-12 text-nova-grey" />
-                    <minimize-icon v-if="expandImage" class="w-12 h-12 text-nova-grey" />
-                </div>
             </div>
             <div v-if="!editMode">
                 <div v-if="personalized || promoted" class="flex mb-12">
@@ -23,7 +15,14 @@
                         Personalized
                     </div>
                     <div v-if="promoted" class="border border-nova-grey-opacity-80 px-8 py-4 rounded text-center text-xs uppercase tracking-wide text-solstice-blue">
-                        Promoted
+                        Pinned
+                    </div>
+                    <div v-if="promoted" class="mt-2 pt-1 ml-8 relative group cursor-pointer">
+                        <unpin-icon
+                            class="w-12 h-16 text-solstice-blue-opacity-60 hover:text-solstice-blue-opacity-80"
+                            @click="$root.$emit('onWantToUnpromote', hit.objectID)"
+                        />
+                        <tooltip>Unpin</tooltip>
                     </div>
                 </div>
                 <hit-image
@@ -58,13 +57,13 @@ import flattenRecord from 'common/utils/flattenRecordForImagePreview';
 import HitEdit from 'common/components/explorer/hits/HitEdit';
 import HitDelete from 'common/components/explorer/hits/HitDelete';
 import HitImage from 'common/components/explorer/hits/HitImage';
+import Tooltip from "common/components/Tooltip";
 
 import EditIcon from 'common/icons/edit.svg';
 import TrashIcon from 'common/icons/trash.svg';
 import FlipLeftIcon from "common/icons/flip-left.svg";
 import FlipRightIcon from "common/icons/flip-right.svg";
-import MaximizeIcon from "common/icons/maximize.svg";
-import MinimizeIcon from "common/icons/minimize.svg";
+import UnpinIcon from "common/icons/unpin.svg";
 import props from "common/components/explorer/props";
 import Attributes from "./Attributes";
 
@@ -72,7 +71,7 @@ export default {
     name: 'MerchandizeHit',
     components: {
         Attributes,
-        HitImage, HitDelete, HitEdit, RankingInfo, EditIcon, TrashIcon, FlipLeftIcon, FlipRightIcon, MaximizeIcon, MinimizeIcon},
+        HitImage, HitDelete, HitEdit, RankingInfo, EditIcon, TrashIcon, FlipLeftIcon, FlipRightIcon, UnpinIcon, Tooltip},
     props: [
         'hit', 'previousHit', 'topAttributes', 'searchableAttributes', 'hitPosition', 'titleAttribute',
         ...props.credentials,
