@@ -37,7 +37,7 @@
             />
         </div>
         <div>
-            <template v-if="!hasNoRecords">
+            <template v-if="!hasNoRecords || searchResponse.hits.length > 0">
                 <results-info
                     v-if="searchResponse && $store.state.panels.showQueryInfo"
                     v-bind="$props"
