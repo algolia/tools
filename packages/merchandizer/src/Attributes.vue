@@ -31,8 +31,6 @@
                     _snippetResult: true,
                     _rankingInfo: true,
                     _distinctSeqID: true,
-                    __style__: true,
-                    __i__: true,
                 }
             }
         },

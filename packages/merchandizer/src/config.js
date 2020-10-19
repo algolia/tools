@@ -43,21 +43,27 @@ export default {
                     type: 'string',
                     default: '',
                 },
-                position: {
+                position_x: {
                     type: 'integer',
                     min: 1,
                     default: 1,
                 },
-                size: {
+                position_y: {
+                    type: 'integer',
+                    min: 1,
+                    default: 1,
+                },
+                size_x: {
+                    type: 'integer',
+                    min: 1,
+                    max: 3,
+                    default: 3,
+                },
+                size_y: {
                     type: 'integer',
                     min: 1,
                     max: 3,
                     default: 1,
-                },
-                height: {
-                    type: 'integer',
-                    min: 50,
-                    default: 50,
                 },
             },
         }

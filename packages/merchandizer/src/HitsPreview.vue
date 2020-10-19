@@ -42,36 +42,37 @@
                         @start="drag = true"
                         @end="drag = false"
                         @change="onDrag"
-                        class="w-full"
-                        v-bind="{ animation: 200}"
+                        class="w-full grid flex-wrap"
+                        draggable=".dragitem"
+                        :style="`grid-template-columns: repeat(${config.gridSize}, ${100/config.gridSize}%); grid-template-rows: repeat(auto, auto)`"
+                        v-bind="{ animation: 200 }"
                     >
-                        <transition-group
-                            type="transition"
-                            tag="div"
-                            :name="drag ? 'flip-list' : null"
-                            class="w-full flex flex-wrap"
+                        <div
+                            v-for="(hit, i) in hits"
+                            :key="hit.objectID"
+                            class="dragitem"
+                            style="grid-area: auto / auto / auto / span 1"
                         >
+                            <merchandize-hit
+                                :search-response="searchResponse"
+                                :hit="hit"
+                                :hit-position="i"
+                                :config="config"
+                            />
+                        </div>
+                        <template slot="header">
                             <div
-                                v-for="(hit) in hits"
-                                :key="hit.objectID"
-                                :style="hit.__style__"
+                                v-for="(banner, i) in bannersPerPosition"
+                                :key="`banner-${i}`"
+                                :style="`grid-area: ${banner.position_y} / ${banner.position_x} / span ${banner.size_y} / span ${banner.size_x}`"
+                                class="px-8 py-24"
                             >
-                                <div v-if="hit.is_banner">
-                                    <img
-                                        :src="hit.image_url"
-                                        :style="`max-height: ${hit.height}px;`"
-                                        class="w-full"
-                                    />
-                                </div>
-                                <merchandize-hit
-                                    v-else
-                                    :search-response="searchResponse"
-                                    :hit="hit"
-                                    :hit-position="hit.__i__"
-                                    :config="config"
+                                <img
+                                    :src="banner.image_url"
+                                    class="w-full h-full"
                                 />
                             </div>
-                        </transition-group>
+                        </template>
                     </draggable>
                 </div>
                 <div class="flex justify-center">
@@ -126,7 +127,7 @@
                 (this.searchResponse.userData || []).forEach((userData) => {
                     if (userData.cms && Array.isArray(userData.cms.banner)) {
                         userData.cms.banner.forEach((bloc) => {
-                            bannersPerPosition[bloc.position - 1] = bloc;
+                            bannersPerPosition[(bloc.position_y - 1) * this.config.gridSize - (bloc.position_x - 1)] = bloc;
                         });
                     }
                 });
@@ -135,25 +136,7 @@
             },
             hits: {
                 get () {
-                    const hits = [];
-
-                    this.searchResponse.hits.forEach((hit, i) => {
-                        if (this.bannersPerPosition[i]) {
-                            hits.push({
-                                is_banner: true,
-                                objectID: `banner-${i}`,
-                                __style__: `margin-top: 24px; width: calc(100% / ${this.config.gridSize} * ${this.bannersPerPosition[i].size})`,
-                                ...this.bannersPerPosition[i],
-                            });
-                        }
-
-                        hits.push({
-                            __style__: `width: calc(100% / ${this.config.gridSize}); max-width: calc(100% / ${this.config.gridSize})`,
-                            __i__: i,
-                            ...hit,
-                        });
-                    })
-                    return hits;
+                    return this.searchResponse.hits;
                 },
                 set () {}
             }
@@ -170,25 +153,10 @@
                 });
             },
             onDrag: function ($event) {
-                let newIndex = $event.moved.newIndex;
-                for (let i = newIndex; i >= 0; i--) {
-                    if (this.bannersPerPosition[i]) {
-                        newIndex--;
-                    }
-                }
-
-                if ($event.moved.element.is_banner) {
-                    this.$root.$emit('onWantToUpdateCms', {
-                        type: 'banner',
-                        condition_attribute: 'image_url',
-                        condition_value: $event.moved.element.image_url,
-                        set_attribute: 'position',
-                        set_value: newIndex + 1,
-                    });
-                } else {
+                if ($event.moved && $event.moved.element && $event.moved.element.objectID) {
                     this.$root.$emit('onWantToPromoteAtPosition', {
                        objectID: $event.moved.element.objectID,
-                       position: newIndex,
+                       position: $event.moved.newIndex,
                     });
                 }
             }
@@ -196,12 +164,3 @@
 
     }
 </script>
-
-<style>
-    .flip-list-move {
-        transition: transform 2s;
-    }
-    .no-move {
-        transition: transform 0s;
-    }
-</style>

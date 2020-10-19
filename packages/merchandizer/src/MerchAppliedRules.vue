@@ -199,40 +199,6 @@ export default {
                 });
             })
         });
-
-        this.$root.$on('onWantToUpdateCms', ($event) => {
-            const {type, condition_attribute, condition_value, set_attribute, set_value} = $event;
-
-            for (let i = 0; i < this.rules.length; i++) {
-                const merchRule = this.$refs[`rule-${i}`][0];
-
-                if (merchRule.editMode) {
-                    const merchRuleEdit = merchRule.$refs['merch-rule-edit'];
-                    const newRule = merchRuleEdit.newRule;
-
-                    if (newRule.cms[type]) {
-                        for (let j = 0; j < newRule.cms[type].length; j++) {
-                            if (newRule.cms[type][j][condition_attribute] === condition_value) {
-                                // If we find a rule in editMode matching the condition
-                                this.$set(newRule.cms[type][j], set_attribute, set_value);
-                                return;
-                            }
-                        }
-                    }
-                }
-
-                // If we find a rule matching the condition, we put it in editMode and re-trigger the event
-                if (merchRule.intermediateRule.cms[type]
-                    && merchRule.intermediateRule.cms[type].some((bloc) => bloc[condition_attribute] === condition_value)
-                ) {
-                    merchRule.editMode = true;
-                    this.$nextTick(() => {
-                        this.$root.$emit('onWantToUpdateCms', $event);
-                    });
-                    return;
-                }
-            }
-        });
     },
     watch: {
         ruleIds: function () {
