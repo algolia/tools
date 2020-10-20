@@ -119,7 +119,12 @@
         },
         computed: {
             params: function () {
-                return {...this.config.defaultSearchParams, page: this.page, ruleContexts: this.context || undefined};
+                return {
+                    ...this.config.defaultSearchParams,
+                    page: this.page,
+                    ruleContexts: this.context || undefined,
+                    facetFilters: this.searchParams.facetFilters || [],
+                };
             },
             bannersPerPosition: function () {
                 const bannersPerPosition = {};
