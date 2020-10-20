@@ -54,6 +54,38 @@
                             <input type="checkbox" v-model="newRule.conditions[i].alternatives" /> match with alternatives
                         </div>
                     </div>
+                    <div class="py-8 flex flex-wrap border-t border-proton-grey-opacity-20">
+                        <div class="w-188">
+                            <input type="checkbox" v-model="newRule.conditions[i].hasFilters" /> filters are
+                        </div>
+                        <div class="ml-4 text-cosmos-black-opacity-70">
+                            <div>
+                                <div v-for="(group, j) in newRule.conditions[i].filters" class="mb-4">
+                                    <input
+                                        class="input-custom inline w-full"
+                                        v-model="newRule.conditions[i].filters[j].attributeName"
+                                        v-autowidth="{comfortZone: 10, maxWidth: '100%'}"
+                                    />
+                                    =
+                                    <input
+                                        class="input-custom inline w-full"
+                                        v-model="newRule.conditions[i].filters[j].attributeValue"
+                                        v-autowidth="{comfortZone: 10, maxWidth: '100%'}"
+                                    />
+                                    <trash-icon
+                                        class="w-12 h-12 ml-8 mt-1 cursor-pointer text-cosmos-black-opacity-70"
+                                        @click="newRule.conditions[i].filters.splice(j, 1)"
+                                    />
+                                </div>
+                                <button
+                                    class="mt-12 bg-white border border-b-0 border-proton-grey-opacity-40 rounded shadow-sm hover:shadow transition-fast-out px-16 p-8 text-sm"
+                                    @click="newRule.conditions[i].filters.push({attributeName: '', attributeValue: ''})"
+                                >
+                                    Add filter
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                     <div class="py-8 flex flex-wrap items-center border-t border-proton-grey-opacity-20">
                         <div class="w-212">context</div>
                         <div>
