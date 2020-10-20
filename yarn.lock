@@ -2333,7 +2333,7 @@ ajv@^6.1.0, ajv@^6.10.0, ajv@^6.10.2, ajv@^6.12.3, ajv@^6.12.4:
     json-schema-traverse "^0.4.1"
     uri-js "^4.2.2"
 
-algolia-filters-js-syntax-validator@^1.0.1:
+algolia-filters-js-syntax-validator@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/algolia-filters-js-syntax-validator/-/algolia-filters-js-syntax-validator-1.0.2.tgz#e74b283560252aa77165e4338a9e2a80d70db983"
   integrity sha512-DcceG/1oKFKURcgu+9Vd2+nrq80ZVFTwQt3nrH7JBtMhlYyKxFkVQ0S58rxZEp88cyCHzTZbvlwyHeDVjEJStQ==

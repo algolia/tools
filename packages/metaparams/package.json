@@ -9,7 +9,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "algolia-filters-js-syntax-validator": "^1.0.1",
+    "algolia-filters-js-syntax-validator": "^1.0.2",
     "algoliasearch": "^4.1.0",
     "bash-parser": "^0.5.0",
     "chart.js": "^2.8.0",
