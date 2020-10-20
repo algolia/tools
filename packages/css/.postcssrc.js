@@ -22,7 +22,7 @@ module.exports = ({file, options, env}) => {
                 }
             ],
             whitelistPatterns: [/html/, /body/,/ais-.*/, /em/, /token/, /language/, /w-40/, /w-80/, /w-120/, /w-160/, /h-40/, /h-80/, /h-120/, /h-160/],
-            whitelistPatternsChildren: [/filter/, /token/],
+            whitelistPatternsChildren: [/filter/, /token/, /Token.*/, /token.*/],
         })
     ]
     return {
