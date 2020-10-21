@@ -1,4 +1,3 @@
-//import panelsMixin from "./panelsMixin";
 import {algoliaParams} from '../utils/algoliaHelpers';
 
 export default {
