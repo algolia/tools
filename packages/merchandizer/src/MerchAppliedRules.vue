@@ -26,7 +26,7 @@
                 v-on="$listeners"
                 :rule="{
                         objectID: `rule-${Math.random().toString(36).substr(2, 9)}`,
-                        condition: {pattern: query, anchoring: 'is', context: context || undefined, alternatives: true},
+                        condition: {pattern: query, anchoring: 'is', context: context || undefined, alternatives: true, filters: currentActiveFilters},
                         consequence: {}
                     }"
             />
@@ -68,6 +68,7 @@ export default {
         'keysIndexer',
         'config',
         'query',
+        'searchParams',
         'context',
     ],
     data: function () {
@@ -209,7 +210,24 @@ export default {
         ruleIds: function () {
             if (!this.searchResponse || !this.searchResponse.appliedRules) return [];
             return this.searchResponse.appliedRules.map((r) => r.objectID);
-        }
+        },
+        currentActiveFilters: function () {
+            if (!this.searchParams.facetFilters || this.searchParams.facetFilters.length <= 0) {
+                return '';
+            }
+
+            return this.searchParams.facetFilters.map((f) => {
+                if (Array.isArray(f)) {
+                    return f.map((filter) => {
+                        const parts = filter.split(':');
+                        return `"${parts[0]}":"${parts[1]}"`;
+                    }).join(' OR ');
+                }
+                const parts2 = f.split(':');
+                return `"${parts2[0]}":"${parts2[1]}"`;
+
+            }).join(' AND ');
+        },
     },
     methods: {
         loadRules: async function () {

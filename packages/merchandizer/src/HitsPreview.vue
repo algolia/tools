@@ -8,34 +8,31 @@
             @onUpdateApiKey="onUpdateApiKey"
         />
         <perform-search
-            v-if="indexData"
             :app-id="appId"
             :api-key="apiKey"
             :index-name="indexName"
             method="search"
             :search-params="params"
             :query="query"
-            :title-attribute-name="indexTitleAttribute"
+            :title-attribute-name="config.images.titleAttributeName"
             :fetch-explain="false"
             :fetchFacets="true"
             :analyse-hits-per-page="0"
-            @onUpdateAutoTitleAttributeName="indexAutoTitleAttributeName = $event"
             @onFetchHits="onFetchHits"
             @onUpdateError="errorMessage = $event"
         />
         <div class="flex">
             <facets
-                v-if="indexData"
                 class="mr-24"
                 :app-id="appId"
                 :index-name="indexName"
                 :search-params="searchParams || {}"
                 :index-settings="indexSettings"
                 :query="query"
-                :config-key="searchConfigKey"
+                config-key="searchParams"
                 panel-key="leftPanel"
             />
-            <div v-if="indexData && searchResponse">
+            <div v-if="searchResponse">
                 <div class="w-full">
                     <draggable
                         v-model="hits"
@@ -95,7 +92,6 @@
     import Pagination from "common/components/explorer/results/Pagination";
     import Facets from "common/components/explorer/facets/Facets";
 
-    import indexInfoMixin from "common/mixins/indexInfoMixin";
     import MerchandizeHit from "./MerchandizeHit";
 
     import draggable from "vuedraggable";
@@ -103,16 +99,13 @@
     export default {
         name: 'HitsPreview',
         components: {MerchandizeHit, Results, PerformSearch, ErrorMessage, Pagination, Facets, draggable},
-        mixins: [indexInfoMixin],
-        props: ['appId', 'indexName', 'apiKey', 'query', 'context', 'config'],
+        props: ['appId', 'indexName', 'apiKey', 'query', 'context', 'config', 'searchParams', 'indexSettings'],
         data: function () {
             return {
                 searchResponse: null,
                 analyseResponse: null,
                 errorMessage: null,
                 displayMode: 'list',
-                panelKey: 'leftPanel',
-                searchConfigKey: 'searchParams',
                 page: 0,
                 drag: false,
             }

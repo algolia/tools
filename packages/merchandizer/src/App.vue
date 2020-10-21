@@ -40,12 +40,15 @@
                             </div>
                             <div class="bg-white text-nova-grey p-8">
                                 <hits-preview
+                                    v-if="indexData"
                                     :appId="appId"
                                     :indexName="indexName"
                                     :apiKey="apiKey"
                                     :query="query"
                                     :context="context"
                                     :config="config"
+                                    :search-params="searchParams"
+                                    :index-settings="indexSettings"
                                 />
                             </div>
                         </div>
@@ -62,6 +65,7 @@
                                     :apiKey="apiKey"
                                     :config="config"
                                     :query="query"
+                                    :search-params="searchParams"
                                     :context="context"
                                 />
                             </div>
@@ -99,6 +103,7 @@
     import config from "./config";
     import MerchAppliedRules from "./MerchAppliedRules";
     import ForwardToIndex from "./ForwardToIndex";
+    import indexInfoMixin from "common/mixins/indexInfoMixin";
 
     export default {
         name: 'App',
@@ -107,6 +112,7 @@
             MerchAppliedRules,
             HitsPreview,
             InternalApp, AppHeader, AppManagement, DisplayConfig, AppSelector, IndexSelector, SearchIcon, BoxIcon},
+        mixins: [indexInfoMixin],
         data: function () {
             return {
                 appId: config.credentials.appIds[0],
@@ -114,6 +120,8 @@
                 query: 'london drama',
                 context: '',
                 config: config,
+                panelKey: 'leftPanel',
+                searchConfigKey: 'searchParams',
             }
         },
         computed: {
