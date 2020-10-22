@@ -1,3 +1,21 @@
+import Parser from 'algolia-filters-js-syntax-validator';
+
+function groupBy(collection, property) {
+    let i = 0, val, index,
+        values = [], result = [];
+    for (; i < collection.length; i++) {
+        val = collection[i][property];
+        index = values.indexOf(val);
+        if (index > -1)
+            result[index].push(collection[i]);
+        else {
+            values.push(val);
+            result.push([collection[i]]);
+        }
+    }
+    return result;
+}
+
 function formatFilters(filters) {
     return filters.map((filter) => {
         if (typeof filter === 'string' || filter instanceof String) {
@@ -88,14 +106,36 @@ function extractRemovedWordsFromQuery(rule) {
     return [];
 }
 
+function extractFiltersCondition(filters) {
+    const parser = new Parser();
+    const tokens = parser.parse(filters).tokens;
+
+    if (tokens.length <= 2) return [];
+
+    const groups = [];
+
+    while (tokens[0].type !== 'Token_EOF') {
+        while (tokens[0].type !== 'Token_String' && tokens[0].type !== 'Token_EOF') tokens.shift();
+        const attributeName = tokens.shift().value;
+        while (tokens[0].type !== 'Token_String' && tokens[0].type !== 'Token_EOF') tokens.shift();
+        const attributeValue = tokens.shift().value;
+        groups.push({attributeName, attributeValue});
+    }
+
+    return groups;
+}
+
 function extractCondition(condition) {
     const hasPatternAndAnchoring = condition.pattern !== undefined && condition.anchoring !== undefined;
+    const hasFilters = condition.filters && condition.filters.length > 0;
     return {
         hasPatternAndAnchoring: hasPatternAndAnchoring,
+        hasFilters: hasFilters,
         pattern: hasPatternAndAnchoring ? condition.pattern : '',
         anchoring: hasPatternAndAnchoring ? condition.anchoring : 'is',
         context: condition.context ? condition.context : '',
         alternatives: condition.alternatives ? condition.alternatives : false,
+        filters: condition.filters ? extractFiltersCondition(condition.filters) : [],
     }
 }
 
@@ -171,6 +211,14 @@ export default function (rule) {
 
             if (c.context.length > 0) condition.context = c.context;
             if (c.alternatives) condition.alternatives = true;
+
+            if (c.hasFilters && c.filters.length > 0) {
+                const filters = c.filters.filter((f) => f.attributeName.length > 0 && f.attributeValue.length > 0);
+                condition.filters = groupBy(filters, 'attributeName').map((group) => {
+                    return group.map((filter) => `"${filter.attributeName}":"${filter.attributeValue}"`).join(' OR ');
+                }).join(' AND ');
+            }
+
             return condition;
         });
 

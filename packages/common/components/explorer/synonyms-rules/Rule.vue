@@ -45,6 +45,14 @@
                         <div v-if="condition.alternatives">
                             <div class="w-188">match with alternatives</div>
                         </div>
+                        <div v-if="condition.hasFilters" class="py-8 flex flex-wrap border-t border-proton-grey-opacity-20">
+                            <div class="w-188">filters are</div>
+                            <div class="ml-4 text-cosmos-black-opacity-70">
+                                <div v-for="(group) in condition.filters">
+                                    {{group.attributeName}} = "{{ group.attributeValue }}"
+                                </div>
+                            </div>
+                        </div>
                         <div v-if="condition.context" class="py-8 flex flex-wrap border-t border-proton-grey-opacity-20">
                             <div class="w-188">in context</div>
                             <div class="ml-4 text-cosmos-black-opacity-70" v-html="properHighlight(condition.context)"></div>

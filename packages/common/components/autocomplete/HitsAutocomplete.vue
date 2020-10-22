@@ -58,7 +58,7 @@
                 if (res.hits.length === 0) {
                     const res2 = await index.getObjects([query]);
                     if (res2.results.length > 0 && res2.results[0] !== null) {
-                        const items = res2.results || [];
+                        const items = res2.results || [];
                         this.items = Object.freeze(items);
                         this.searchResponse = Object.freeze({hits: items});
                         return;
