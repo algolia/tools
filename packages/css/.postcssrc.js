@@ -24,6 +24,7 @@ module.exports = ({file, options, env}) => {
             whitelistPatternsChildren: [/filter/, /token/, /Token.*/, /token.*/],
         })
     ]
+
     return {
         plugins: [...baseConfig, ...(env === 'production' ? prodConfig : [])],
     }

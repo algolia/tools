@@ -19,7 +19,7 @@ module.exports = ({ file, options, env }) => {
                 extensions: ['vue', 'html']
             }
         ],
-        whitelistPatterns: [/html/, /body/,/ais-.*/, /em/, /token/, /language/, /d2h-.*/, /w-40/, /w-80/, /w-120/, /w-160/, /h-40/, /h-80/, /h-120/, /h-160/],
+        whitelistPatterns: [/html/, /body/,/ais-.*/, /em/, /token/, /Token.*/, /token.*/, /language/, /d2h-.*/, /w-40/, /w-80/, /w-120/, /w-160/, /h-40/, /h-80/, /h-120/, /h-160/],
         whitelistPatternsChildren: [/filter/, /token/, /Token.*/, /token.*/],
     })
   ]

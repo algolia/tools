@@ -3,7 +3,7 @@
     "version": "0.1.0",
     "private": true,
     "scripts": {
-        "build": "postcss main.scss -o dist/all.css; cp favicon.ico dist/favicon.ico"
+        "build": "postcss --env=production main.scss -o dist/all.css; cp favicon.ico dist/favicon.ico"
     },
     "devDependencies": {
         "@csstools/postcss-sass": "^4.0.0",
