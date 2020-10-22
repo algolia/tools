@@ -79,6 +79,9 @@ export default function () {
             deleteParam(state, payload) {
                 Vue.delete(state[payload.configKey], payload.inputKey);
             },
+            resetParams(state, payload) {
+                Vue.set(state, payload.configKey, {});
+            },
             deleteArrayElement(state, payload) {
                 Vue.delete(state[payload.configKey][payload.inputKey].value, payload.positionKey);
             },

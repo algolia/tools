@@ -39,6 +39,17 @@
                     Profile for userToken "{{userToken}}" was not found
                 </div>
             </div>
+            <div v-if="abTest" class="mt-24">
+                <div class="mb-8 text-sm tracking-wide uppercase">
+                    Running A/B test detected
+                </div>
+                <button
+                    @click="applyVariantB()"
+                    class="mt-8 block bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out mr-8 px-16 p-8 text-sm relative group"
+                >
+                    Apply Variant B configuration
+                </button>
+            </div>
         </template>
         <template v-else>
             <h4 class="text-center">Currently in Browse mode</h4>
@@ -48,27 +59,47 @@
 
 <script>
     import {humanNumber} from '../../../../common/utils/formatters';
+    import {algoliaParams, getClient} from "../../../utils/algoliaHelpers";
 
     export default {
         name: 'ResultsInfo',
-        props: ['searchResponse', 'searchParams', 'appId', 'apiKey'],
+        props: ['searchResponse', 'searchParams', 'appId', 'apiKey', 'indexName', 'panelKey'],
         data: function () {
             return {
                 userPersoFilters: false,
                 showAllFilters: false,
                 nbShowFilters: 5,
+                abTest: null,
             }
         },
         watch: {
             userToken: async function () { await this.fetchPersoProfil(); },
             enablePersonalization: async function () { await this.fetchPersoProfil(); },
+            abTestId: {
+                immediate: true,
+                handler: async function () {
+                    if (this.abTestId) {
+                        const client = await getClient(this.appId, this.apiKey);
+                        const analytics = client.initAnalytics();
+                        this.abTest = Object.freeze(await analytics.getABTest(this.abTestId));
+                    } else {
+                        this.abTest = null;
+                    }
+                }
+            }
         },
         created: async function () {
             await this.fetchPersoProfil();
         },
         computed: {
+            abTestId: function () {
+                if (this.searchResponse && this.searchResponse.abTestID) {
+                    return this.searchResponse.abTestID;
+                }
+                return null;
+            },
             shownFilters: function () {
-                const filters = this.userPersoFilters || [];
+                const filters = this.userPersoFilters || [];
                 if (this.showAllFilters) return filters;
                 return filters.slice(0, this.nbShowFilters);
             },
@@ -83,6 +114,67 @@
             },
         },
         methods: {
+            applyVariantB: function () {
+                const otherPanelKey = this.panelKey === 'leftPanel' ? 'rightPanel': 'leftPanel';
+                const appId = this.$store.state.panels[this.panelKey].appId;
+                const indexName = this.$store.state.panels[this.panelKey].indexName;
+                const otherAppId = this.$store.state.panels[otherPanelKey].appId;
+                const otherIndexName = this.$store.state.panels[otherPanelKey].indexName;
+                const isSameIndexOnBothPanels = appId === otherAppId && indexName === otherIndexName;
+                const searchConfigKey = isSameIndexOnBothPanels && this.panelKey === 'rightPanel' ? 'searchParams2' : 'searchParams';
+
+                if (this.abTest.variants[1].index === this.indexName) {
+                    Object.keys(this.abTest.variants[1].customSearchParameters).forEach((key) => {
+                        this.$store.commit(`apps/${this.appId}/${this.indexName}/setParamValue`, {
+                            configKey: searchConfigKey,
+                            key: key,
+                            value: this.abTest.variants[1].customSearchParameters[key],
+                        });
+                    });
+
+                    this.$store.commit(`apps/${this.appId}/${this.indexName}/setParamValue`, {
+                        configKey: searchConfigKey,
+                        key: 'enableABTest',
+                        value: false,
+                    });
+                } else {
+                    const backupParams = algoliaParams(this.$store.state.apps[this.appId][this.indexName][searchConfigKey]);
+
+                    const newIndexName = this.abTest.variants[1].index;
+
+                    this.$store.commit(`panels/${this.panelKey}/setPanelConfig`, {
+                        appId: this.appId,
+                        indexName: newIndexName,
+                    });
+
+                    this.$nextTick(() => {
+                        const appId = this.$store.state.panels[this.panelKey].appId;
+                        const indexName = this.$store.state.panels[this.panelKey].indexName;
+                        const otherAppId = this.$store.state.panels[otherPanelKey].appId;
+                        const otherIndexName = this.$store.state.panels[otherPanelKey].indexName;
+                        const isSameIndexOnBothPanels = appId === otherAppId && indexName === otherIndexName;
+                        const searchConfigKey = isSameIndexOnBothPanels && this.panelKey === 'rightPanel' ? 'searchParams2' : 'searchParams';
+
+                        this.$store.commit(`apps/${this.appId}/${newIndexName}/resetParams`, {
+                            configKey: searchConfigKey,
+                        });
+
+                        Object.keys(backupParams).forEach((key) => {
+                            this.$store.commit(`apps/${this.appId}/${newIndexName}/setParamValue`, {
+                                configKey: searchConfigKey,
+                                key: key,
+                                value: backupParams[key],
+                            });
+                        });
+
+                        this.$store.commit(`apps/${this.appId}/${newIndexName}/setParamValue`, {
+                            configKey: searchConfigKey,
+                            key: 'enableABTest',
+                            value: false,
+                        });
+                    });
+                }
+            },
             humanNumber: humanNumber,
             fetchPersoProfil: async function () {
                 if (!this.enablePersonalization || !this.userToken) {
