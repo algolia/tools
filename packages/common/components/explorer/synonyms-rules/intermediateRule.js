@@ -153,7 +153,7 @@ function extractPromotes (ruleCopy) {
             objectIDs: promote.objectIDs || [promote.objectID],
             position: promote.position,
         }
-    })
+    }).sort((a, b) => a.position - b.position);
 }
 
 export default function (rule) {
