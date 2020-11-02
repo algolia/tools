@@ -244,7 +244,7 @@
                         </div>
                     </div>
                 </div>
-                <div v-if="newRule.conditions.every((c) => c.hasPatternAndAnchoring)">
+                <div v-if="newRule.conditions.every((c) => c.hasPatternAndAnchoring || c.context || c.hasFilters)">
                     <div class="py-8 flex border-t border-proton-grey-opacity-20">
                         <div class="w-212">
                             <label class="cursor-pointer">

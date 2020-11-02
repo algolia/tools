@@ -224,7 +224,7 @@ export default function (rule) {
 
         rule.consequence = {};
 
-        if (this.conditions.every((c) => c.hasPatternAndAnchoring) && this.hasPromote && this.promote.length > 0) {
+        if (this.conditions.every((c) => c.hasPatternAndAnchoring || c.context || c.hasFilters) && this.hasPromote && this.promote.length > 0) {
             rule.consequence.promote = JSON.parse(JSON.stringify(this.promote));
             if (this.filterPromotes) {
                 rule.consequence.filterPromotes = true;

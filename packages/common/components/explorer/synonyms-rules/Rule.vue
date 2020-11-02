@@ -23,7 +23,7 @@
             </div>
             <div class="w-full p-8">
                 <div
-                    v-if="intermediateRule.conditions.some((c) => c.hasPatternAndAnchoring) || intermediateRule.conditions.some((c) => c.context)"
+                    v-if="intermediateRule.conditions.some((c) => c.hasPatternAndAnchoring || c.context || c.hasFilters)"
                     v-for="(condition, i) in intermediateRule.conditions"
                     :class="i > 0 ? 'mt-16' : ''"
                 >
