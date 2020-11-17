@@ -120,7 +120,7 @@
                 return this.attributesForFaceting.slice(0, 50);
             },
             topAttributes: function () {
-                const topAttributes = ['objectID', this.autoTitleAttributeName || 'objectID'];
+                const topAttributes = ['objectID'];
 
                 if (this.showSearchableAttributes) topAttributes.push(...this.searchableAttributes);
                 if (this.showCustomRanking) topAttributes.push(...this.customRankingAttributes);
@@ -131,6 +131,8 @@
                     topAttributes.push(...this.searchParams.attributesToRetrieve);
                 }
                 if (this.searchParams.getRankingInfo === true) topAttributes.push('_rankingInfo');
+
+                topAttributes.push(this.autoTitleAttributeName || 'objectID');
 
                 return [...new Set(topAttributes)].map(cleanAttributeName).map(cleanDeepAttributeName);
             },
