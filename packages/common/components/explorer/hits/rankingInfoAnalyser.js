@@ -76,16 +76,17 @@ export default function (indexSettings) {
 
     this.getSimilarity = function (firstItem, currentHit, searchParams, appId, indexName) {
         const criteria = this.getActualCriteria(searchParams);
+        const actualvec = this.buildRankingVector(criteria, currentHit, appId, indexName);
         const ref = this.buildRankingVector(criteria, firstItem, appId, indexName);
         return this.cosinesime(ref,actualvec);
     };
 
     this.buildRankingVector = function(criteria, item, appId, indexName){
-        var ret = [];
+        let ret = [];
         criteria.forEach((criterionName) => {
             if(["typo","geo","words","filters","proximity", "attribute", "exact"].includes(criterionName))
             {
-                var val = this.getCriterionValue(item, criterionName);
+                const val = this.getCriterionValue(item, criterionName);
                 if (Number.isInteger(val))
                 {
                     // adding weight to the criteria to have a weighted cosine similarity
@@ -97,17 +98,17 @@ export default function (indexSettings) {
     };
 
     this.cosinesime = function (A,B) {
-        var dotproduct=0;
-        var mA=0;
-        var mB=0;
-        for(var i = 0; i < A.length; i++){
+        let dotproduct=0;
+        let mA=0;
+        let mB=0;
+        for(let i = 0; i < A.length; i++){
             dotproduct += (A[i] * B[i]);
             mA += (A[i]*A[i]);
             mB += (B[i]*B[i]);
         }
         mA = Math.sqrt(mA);
         mB = Math.sqrt(mB);
-        var similarity = (dotproduct)/((mA)*(mB));
+        let similarity = (dotproduct)/((mA)*(mB));
 
         if(similarity == 1){
             return similarity;
