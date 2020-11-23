@@ -50,11 +50,14 @@
                 <ranking-info
                     class="mt-48"
                     v-if="hit._rankingInfo && displayRankingInfo && listMode"
+                    :first-hit="firstHit"
                     :item="hit"
                     :previous-item="previousHit"
                     :i="hitPosition"
                     :index-settings="indexSettings"
                     :search-params="searchParams"
+                    :app-id="appId"
+                    :index-name="indexName"
                 />
                 <div class="clearfix"></div>
                 <div v-if="listMode" class="flex justify-end items-center text-nova-grey-opacity-80">
@@ -173,6 +176,9 @@
             },
             hitNumber: function () {
                 return this.searchResponse.hitsPerPage * this.searchResponse.page + this.hitPosition + 1;
+            },
+            firstHit: function () {
+                return this.searchResponse.hits[0];
             },
             imageAttributes: function () {
                 let attributes = (this.searchParams.attributesToRetrieve || []).filter((attribute) => attribute && attribute !== this.imageAttribute);

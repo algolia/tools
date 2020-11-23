@@ -980,6 +980,15 @@ enableExperimentalBlendPersonalization:
     - false
   default: true
 
+experimentalBucketingDebugging:
+  scope:
+    - search
+  value_type: boolean
+  values:
+    - true
+    - false
+  default: true
+
 enableReRanking:
   scope:
     - settings

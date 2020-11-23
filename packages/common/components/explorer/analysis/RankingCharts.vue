@@ -39,7 +39,7 @@
     export default {
         name: 'RankingCharts',
         components: {LineChart},
-        props: ['analyseResponse', 'indexSettings', 'searchParams', 'analyseMaxNbPoints'],
+        props: ['analyseResponse', 'indexSettings', 'searchParams', 'analyseMaxNbPoints', 'indexName', 'appId'],
         data: function () {
             return {
                 criteriaStatus: {},
@@ -198,7 +198,7 @@
                     scales: {
                         yAxes: [{
                             ticks: {
-                                beginAtZero: ['typo', 'words', 'proximity', 'attribute', 'position', 'exact', 'filters', 'perso.rankingScore', 'perso.filtersScore'].indexOf(criterion) !== -1,
+                                beginAtZero: ['similarity', 'typo', 'words', 'proximity', 'attribute', 'position', 'exact', 'filters', 'perso.rankingScore', 'perso.filtersScore'].indexOf(criterion) !== -1,
                                 stepSize: ['typo', 'words', 'proximity', 'attribute', 'exact', 'filters'].indexOf(criterion) !== -1 ? 1 : undefined,
                                 max: criterion === 'attribute' ? this.searchableAttributes.length - 1 : undefined,
                                 precision: criterion === 'position' ? 0 : undefined,
@@ -232,7 +232,11 @@
 
                 const points = new Array(this.hits.length);
                 for(let i = 0; i < this.hits.length; i++){
-                    points[i] = this.rankingInfoAnalyzer.getCriterionValue(this.hits[i], criterion);
+                    if (criterion === 'similarity') {
+                        points[i] = this.rankingInfoAnalyzer.getSimilarity(this.hits[0], this.hits[i], this.searchParams, this.appId, this.indexName);
+                    } else {
+                        points[i] = this.rankingInfoAnalyzer.getCriterionValue(this.hits[i], criterion);
+                    }
 
                     if (criterion === 'attribute') {
                         points[i] = this.searchableAttributes.length - 1 - points[i];

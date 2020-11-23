@@ -57,7 +57,7 @@
 
     export default {
         name: 'RankingInfo',
-        props: ['item', 'previousItem', 'i', 'indexSettings', 'searchParams'],
+        props: ['firstHit', 'item', 'previousItem', 'i', 'indexSettings', 'searchParams',  'appId', 'indexName'],
         computed: {
             rankingInfoAnalyzer: function () {
                 return new RankingInfoAnalyser(this.indexSettings, this.searchParams);
@@ -95,6 +95,10 @@
                         criterion.oldVal = this.getBestMatchingAttribute(criterion.oldVal);
                     }
 
+                    if (criterionName === 'similarity') {
+                        criterion.val = this.rankingInfoAnalyzer.getSimilarity(this.firstHit, this.item, this.searchParams, this.appId, this.indexName);
+                        criterion.oldVal = this.rankingInfoAnalyzer.getSimilarity(this.firstHit, this.previousItem, this.searchParams, this.appId, this.indexName);
+                    }
                     criterias.push(criterion);
                 });
 
