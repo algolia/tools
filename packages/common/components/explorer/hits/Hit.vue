@@ -50,7 +50,7 @@
                 <ranking-info
                     class="mt-48"
                     v-if="hit._rankingInfo && displayRankingInfo && listMode"
-                    :first-hit="firstHit"
+                    :first-item="firstItem"
                     :item="hit"
                     :previous-item="previousHit"
                     :i="hitPosition"
@@ -177,7 +177,7 @@
             hitNumber: function () {
                 return this.searchResponse.hitsPerPage * this.searchResponse.page + this.hitPosition + 1;
             },
-            firstHit: function () {
+            firstItem: function () {
                 return this.searchResponse.hits[0];
             },
             imageAttributes: function () {

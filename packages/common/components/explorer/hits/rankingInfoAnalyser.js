@@ -74,10 +74,9 @@ export default function (indexSettings) {
         return getCriterionValue(item, criterion);
     };
 
-    this.getSimilarity = function (firstHit, currentHit, searchParams, appId, indexName) {
+    this.getSimilarity = function (firstItem, currentHit, searchParams, appId, indexName) {
         const criteria = this.getActualCriteria(searchParams);
-        var actualvec = this.buildRankingVector(criteria, currentHit, appId, indexName);
-        var ref = this.buildRankingVector(criteria, firstHit, appId, indexName);
+        const ref = this.buildRankingVector(criteria, firstItem, appId, indexName);
         return this.cosinesime(ref,actualvec);
     };
 
