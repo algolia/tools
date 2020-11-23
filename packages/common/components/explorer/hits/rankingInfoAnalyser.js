@@ -83,8 +83,7 @@ export default function (indexSettings) {
     this.buildRankingVector = function(criteria, item, appId, indexName){
         var ret = [];
         criteria.forEach((criterionName) => {
-            if(criterionName == "typo" || criterionName == "geo" || criterionName == "words" || criterionName == "filters"
-               || criterionName == "proximity" || criterionName == "attribute" || criterionName == "exact")
+            if(["typo","geo","words","filters","proximity", "attribute", "exact"].includes(criterionName))
             {
                 var val = this.getCriterionValue(item, criterionName);
                 if (Number.isInteger(val))
