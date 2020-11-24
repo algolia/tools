@@ -43,41 +43,6 @@
                 Virtual: {{isVirtual}}
             </div>
             <div class="border-b border-dotted border-telluric-blue-opacity-60 ml-12"
-                 v-if="indexSettings.primary && isVirtual"
-            >
-                Weight-typo: <input type="number" v-model="weightTypo" min="0" max="10" style="width: 25px;"/>
-            </div>
-            <div class="border-b border-dotted border-telluric-blue-opacity-60 ml-12"
-                 v-if="indexSettings.primary && isVirtual"
-            >
-                Weight-attributes: <input type="number" v-model="weightAttributes" min="0" max="10" style="width: 25px;"/>
-            </div>
-            <div class="border-b border-dotted border-telluric-blue-opacity-60 ml-12"
-                 v-if="indexSettings.primary && isVirtual"
-            >
-                Weight-words: <input type="number" v-model="weightWords" min="0" max="10" style="width: 25px;"/>
-            </div>
-            <div class="border-b border-dotted border-telluric-blue-opacity-60 ml-12"
-                 v-if="indexSettings.primary && isVirtual"
-            >
-                Weight-proximity: <input type="number" v-model="weightProximity" min="0" max="10" style="width: 25px;"/>
-            </div>
-            <div class="border-b border-dotted border-telluric-blue-opacity-60 ml-12"
-                 v-if="indexSettings.primary && isVirtual"
-            >
-                Weight-exact: <input type="number" v-model="weightExact" min="0" max="10" style="width: 25px;"/>
-            </div>
-            <div class="border-b border-dotted border-telluric-blue-opacity-60 ml-12"
-                 v-if="indexSettings.primary && isVirtual"
-            >
-                Weight-filters: <input type="number" v-model="weightFilters" min="0" max="10" style="width: 25px;"/>
-            </div>
-            <div class="border-b border-dotted border-telluric-blue-opacity-60 ml-12"
-                 v-if="indexSettings.primary && isVirtual"
-            >
-                Weight-geo: <input type="number" v-model="weightGeo" min="0" max="10" style="width: 25px;"/>
-            </div>
-            <div class="border-b border-dotted border-telluric-blue-opacity-60 ml-12"
                  v-if="this.$store.state.apps[this.panelAppId].__log_region"
             >
                 Logs region: {{this.$store.state.apps[this.panelAppId].__log_region}}
@@ -148,62 +113,6 @@
             },
             isVirtual: function(){
                 return this.indexInfo.virtual == 1;
-            },
-            weightTypo : {
-                get () {
-                    return this.$store.state.apps[this.appId][this.indexName]["weights"]["typo"];
-                },
-                set (value) {
-                    this.$store.commit(`apps/${this.appId}/${this.indexName}/setTypoWeight`, value);
-                }
-            },
-            weightAttributes: {
-                get () {
-                    return this.$store.state.apps[this.appId][this.indexName]["weights"]["attributes"];
-                },
-                set (value) {
-                    this.$store.commit(`apps/${this.appId}/${this.indexName}/setAttributesWeight`, value);
-                }
-            },
-            weightWords: {
-                get () {
-                    return this.$store.state.apps[this.appId][this.indexName]["weights"]["words"];
-                },
-                set (value) {
-                    this.$store.commit(`apps/${this.appId}/${this.indexName}/setWordsWeight`, value);
-                }
-            },
-            weightProximity:{
-                get () {
-                    return this.$store.state.apps[this.appId][this.indexName]["weights"]["proximity"];
-                },
-                set (value) {
-                    this.$store.commit(`apps/${this.appId}/${this.indexName}/setProximityWeight`, value);
-                }
-            },
-            weightExact: {
-                get () {
-                    return this.$store.state.apps[this.appId][this.indexName]["weights"]["exact"];
-                },
-                set (value) {
-                    this.$store.commit(`apps/${this.appId}/${this.indexName}/setEaxtWeight`, value);
-                }
-            },
-            weightFilters: {
-                get () {
-                    return this.$store.state.apps[this.appId][this.indexName]["weights"]["filters"];
-                },
-                set (value) {
-                    this.$store.commit(`apps/${this.appId}/${this.indexName}/setFiltersWeight`, value);
-                }
-            },
-            weightGeo: {
-                get () {
-                    return this.$store.state.apps[this.appId][this.indexName]["weights"]["geo"];
-                },
-                set (value) {
-                    this.$store.commit(`apps/${this.appId}/${this.indexName}/setGeoWeight`, value);
-                }
             }
         },
         methods: {

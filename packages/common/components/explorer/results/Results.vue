@@ -43,15 +43,18 @@
                     v-bind="$props"
                     v-on="$listeners"
                 />
+                <weights v-model="weights" v-on="$listeners" v-if="indexSettings.primary && searchParams.experimentalBucketingDebugging" />
                 <results-list
                     v-if="searchResponse && (displayMode === 'list' || displayMode === 'images')"
                     v-on="$listeners"
                     v-bind="$props"
+                    :weights="weights"
                 />
                 <ranking-charts
                     v-if="analyseResponse && displayMode === 'charts'"
                     v-on="$listeners"
                     v-bind="$props"
+                    :weights="weights"
                 />
             </template>
             <no-records v-else-if="!displayMode !== 'raw'"
@@ -94,6 +97,7 @@
     import props from '../props';
     import SmallTabs from "../../tabs/SmallTabs";
     import NoRecords from "./NoRecords";
+    import Weights from "./Weights";
 
     export default {
         name: 'Results',
@@ -116,7 +120,8 @@
             ResultsInfo,
             PerformSearch,
             Tooltip,
-            HitEdit, ExportParams, RawResponse, RankingCharts, ResultsList, PlusCircleIcon},
+            HitEdit, ExportParams, RawResponse, RankingCharts, ResultsList, PlusCircleIcon,
+            Weights},
         data: function () {
             return {
                 isAddingRecord: false,
@@ -126,6 +131,15 @@
                 CodeIcon: CodeIcon,
                 BarChartIcon: BarChartIcon,
                 jumpedToReadOnly: false,
+                weights : {
+                    typo: 10,
+                    attributes: 10,
+                    words: 9,
+                    proximity: 2,
+                    exact: 2,
+                    filters: 1,
+                    geo: 1
+                }
             }
         },
         created: function () {

@@ -39,11 +39,11 @@
     export default {
         name: 'RankingCharts',
         components: {LineChart},
-        props: ['analyseResponse', 'indexSettings', 'searchParams', 'analyseMaxNbPoints', 'indexName', 'appId'],
+        props: ['analyseResponse', 'indexSettings', 'searchParams', 'analyseMaxNbPoints', 'weights'],
         data: function () {
             return {
                 criteriaStatus: {},
-                forceUpdateInteger: 0,
+                forceUpdateInteger: 0
             }
         },
         created: function () {
@@ -70,7 +70,7 @@
                 }
             },
             rankingInfoAnalyzer: function () {
-                return new RankingInfoAnalyser(this.indexSettings);
+                return new RankingInfoAnalyser(this.indexSettings, this.weights);
             },
             criteria: function () {
                 return [
@@ -232,11 +232,7 @@
 
                 const points = new Array(this.hits.length);
                 for(let i = 0; i < this.hits.length; i++){
-                    if (criterion === 'similarity') {
-                        points[i] = this.rankingInfoAnalyzer.getSimilarity(this.hits[0], this.hits[i], this.searchParams, this.appId, this.indexName);
-                    } else {
-                        points[i] = this.rankingInfoAnalyzer.getCriterionValue(this.hits[i], criterion);
-                    }
+                    points[i] = this.rankingInfoAnalyzer.getCriterionValue(this.hits[i], criterion, this.hits[0], this.searchParams);
 
                     if (criterion === 'attribute') {
                         points[i] = this.searchableAttributes.length - 1 - points[i];

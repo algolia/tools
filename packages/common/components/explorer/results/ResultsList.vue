@@ -35,6 +35,7 @@
                      :top-attributes="topAttributes"
                      :searchable-attributes="searchableAttributes"
                      :title-attribute="titleAttributeName || autoTitleAttributeName"
+                     :weights="weights"
                      v-bind="$props"
                      v-on="$listeners"
                 />
@@ -96,6 +97,7 @@
             'panelKey',
             'disablePagination',
             'harcodedQuery',
+            'weights',
             ...props.credentials,
             ...props.images,
             ...props.attributes,

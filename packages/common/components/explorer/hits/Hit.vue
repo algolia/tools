@@ -56,8 +56,7 @@
                     :i="hitPosition"
                     :index-settings="indexSettings"
                     :search-params="searchParams"
-                    :app-id="appId"
-                    :index-name="indexName"
+                    :weights="weights"
                 />
                 <div class="clearfix"></div>
                 <div v-if="listMode" class="flex justify-end items-center text-nova-grey-opacity-80">
@@ -141,7 +140,7 @@
             Tooltip,
             HitImage, HitDelete, HitEdit, RankingInfo, Attributes, EditIcon, TrashIcon, FlipLeftIcon, FlipRightIcon, MaximizeIcon, MinimizeIcon},
         props: [
-            'panelKey', 'hit', 'previousHit', 'topAttributes', 'searchableAttributes', 'hitPosition', 'titleAttribute',
+            'panelKey', 'hit', 'previousHit', 'topAttributes', 'searchableAttributes', 'hitPosition', 'titleAttribute', 'weights',
             ...props.credentials,
             ...props.attributes,
             ...props.actions,

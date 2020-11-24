@@ -1,8 +1,8 @@
 import {getCriterionValue} from 'common/utils/rankingInfo';
 import paramsSpecs from 'common/params-specs';
-import store from 'common/store/store';
 
-export default function (indexSettings) {
+export default function (indexSettings, weights) {
+    this.weights = weights;
     this.indexSettings = indexSettings;
     this.ranking = indexSettings.ranking ? indexSettings.ranking : paramsSpecs.ranking.settings_default;
     this.customRanking = indexSettings.customRanking ? indexSettings.customRanking : paramsSpecs.customRanking.default;
@@ -19,7 +19,7 @@ export default function (indexSettings) {
 
         const ranking = [...this.ranking];
 
-        if(searchParams.experimentalBucketingDebugging && searchParams.getRankingInfo){
+        if(searchParams.experimentalBucketingDebugging && searchParams.getRankingInfo && this.weights){
             actualCriteria.push("similarity");
             actualCriteria.push("textualRelevanceBucket");
         }
@@ -70,18 +70,22 @@ export default function (indexSettings) {
         return actualCriteria;
     };
 
-    this.getCriterionValue = function (item, criterion) {
-        return getCriterionValue(item, criterion);
+    this.getCriterionValue = function (item, criterion, firstItem, searchParams) {
+        if (criterion === "similarity" && searchParams.experimentalBucketingDebugging && searchParams.getRankingInfo && this.weights) {
+            return this.getSimilarity(item, firstItem, searchParams)
+        } else {
+            return getCriterionValue(item, criterion);
+        }
     };
 
-    this.getSimilarity = function (firstItem, currentHit, searchParams, appId, indexName) {
+    this.getSimilarity = function (firstItem, item, searchParams) {
         const criteria = this.getActualCriteria(searchParams);
-        const actualvec = this.buildRankingVector(criteria, currentHit, appId, indexName);
-        const ref = this.buildRankingVector(criteria, firstItem, appId, indexName);
+        const actualvec = this.buildRankingVector(criteria, item);
+        const ref = this.buildRankingVector(criteria, firstItem);
         return this.cosinesime(ref,actualvec);
     };
 
-    this.buildRankingVector = function(criteria, item, appId, indexName){
+    this.buildRankingVector = function(criteria, item){
         let ret = [];
         criteria.forEach((criterionName) => {
             if(["typo","geo","words","filters","proximity", "attribute", "exact"].includes(criterionName))
@@ -90,7 +94,7 @@ export default function (indexSettings) {
                 if (Number.isInteger(val))
                 {
                     // adding weight to the criteria to have a weighted cosine similarity
-                    ret.push(this.getCriterionWeight(criterionName, appId, indexName) * val)
+                    ret.push(this.getCriterionWeight(criterionName) * val)
                 }
             }
         });
@@ -117,34 +121,37 @@ export default function (indexSettings) {
         return similarity.toFixed(3);
     };
 
-    this.getCriterionWeight =  function(criterion, appId, indexName){
+    this.getCriterionWeight =  function(criterion){
         var weight = 0;
-        switch (criterion) {
-            case "typo":
-                 weight = store.state.apps[appId][indexName]["weights"]["typo"];
-                break;
-            case "attributes":
-                weight = store.state.apps[appId][indexName]["weights"]["attributes"];
-                break;
-            case "words":
-                weight = store.state.apps[appId][indexName]["weights"]["words"];
-                break;
-            case "proximity":
-                weight = store.state.apps[appId][indexName]["weights"]["proximity"];
-                break;
-            case "exact":
-                weight = store.state.apps[appId][indexName]["weights"]["exact"];
-                break;
-            case "filters":
-                weight = store.state.apps[appId][indexName]["weights"]["filters"];
-                break;
-            case "geo":
-                weight = store.state.apps[appId][indexName]["weights"]["geo"];
-                break;
-            default:
-                weight =0;
-                break;
+        if (this.weights) {
+            switch (criterion) {
+                case "typo":
+                    weight = this.weights.typo;
+                    break;
+                case "attributes":
+                    weight = this.weights.attributes;
+                    break;
+                case "words":
+                    weight = this.weights.words;
+                    break;
+                case "proximity":
+                    weight = this.weights.proximity;
+                    break;
+                case "exact":
+                    weight = this.weights.exact;
+                    break;
+                case "filters":
+                    weight = this.weights.filters;
+                    break;
+                case "geo":
+                    weight = this.weights.geo;
+                    break;
+                default:
+                    weight =0;
+                    break;
+            }
         }
+
         return weight;
     };
 }
