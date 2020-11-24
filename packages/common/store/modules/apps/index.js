@@ -16,16 +16,6 @@ export default function () {
             imageSize: 40,
             imageBaseUrl: '',
             imageSuffixUrl: '',
-            weights:
-            {
-                "typo": 10,
-                "attributes": 10,
-                "words": 9,
-                "proximity": 2,
-                "exact": 2,
-                "filters": 1,
-                "geo": 1
-            },
             lastUsed: new Date().getTime(),
         },
         mutations: {
@@ -100,28 +90,7 @@ export default function () {
             },
             setIndexAnalyzer(state, payload) {
                 Vue.set(state, 'indexAnalyzer', payload);
-            },
-            setTypoWeight(state, value) {
-                state.weights["typo"] = value;
-            },
-            setAttributesWeight(state, value) {
-                state.weights["attributes"] = value;
-            },
-            setWordsWeight(state, value) {
-                state.weights["words"] = value;
-            },
-            setProximityWeight(state, value) {
-                state.weights["proximity"] = value;
-            },
-            setExactWeight(state, value) {
-                state.weights["exact"] = value;
-            },
-            setFiltersWeight(state, value) {
-                state.weights["filters"] = value;
-            },
-            setGeoWeight(state, value) {
-                state.weights["geo"] = value;
-            },
+            }
         },
     }
 }
