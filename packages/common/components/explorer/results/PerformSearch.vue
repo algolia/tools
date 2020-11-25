@@ -215,7 +215,7 @@
                     if (this.requestNumberAnalysisReceived > requestNumberAnalysis) return;
                     this.requestNumberAnalysisReceived = requestNumberAnalysis;
 
-                    if (this.searchParamsWithDefaults.experimentalBucketingDebugging) {
+                    if (this.searchParamsForAnalysis.experimentalBucketingDebugging) {
                         for (let i = 0; i < res.hits.length; i++) {
                             res.hits[i]._rankingInfo.similarity = getSimilarity(res.hits[i], res.hits[0], this.weights);
                         }

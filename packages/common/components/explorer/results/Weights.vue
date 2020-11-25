@@ -35,9 +35,12 @@
 </template>
 
 <script>
+    import panelsMixin from "../../../mixins/panelsMixin";
+
     export default {
         name: 'weights',
         props: ['panelKey'],
+        mixins: [panelsMixin],
         data: function () {
             return {
                 weights: {
@@ -54,9 +57,9 @@
         watch: {
             weights: {
                 deep: true,
-                immediate: true,
                 handler: function () {
                     this.$root.$emit(`${this.panelKey}OnUpdateWeights`, JSON.parse(JSON.stringify(this.weights)));
+                    this.$root.$emit('shouldTriggerSearch', this.panelIndexName);
                 }
             }
         },

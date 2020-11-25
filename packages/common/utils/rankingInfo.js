@@ -38,6 +38,8 @@ export function getCriterionValue(item, criterion) {
         return item._rankingInfo.nbExactWords;
     } else if (criterion === 'textualRelevanceBucket') {
         return item._rankingInfo.textualRelevanceBucket;
+    } else if (criterion === 'similarity') {
+        return item._rankingInfo.similarity;
     } else if (criterion === 'perso') {
         if (item._rankingInfo && item._rankingInfo.personalization) {
             return item._rankingInfo.personalization.score
