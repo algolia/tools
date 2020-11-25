@@ -7,8 +7,8 @@
                     <td><input type="number" v-model="weights.typo" min="0" max="10" class="input-custom ml-8"></td>
                 </tr>
                 <tr>
-                    <td>attributes</td>
-                    <td><input type="number" v-model="weights.attributes" min="0" max="10" class="input-custom ml-8"></td>
+                    <td>attribute</td>
+                    <td><input type="number" v-model="weights.attribute" min="0" max="10" class="input-custom ml-8"></td>
                 </tr>
                 <tr>
                     <td>words</td>
@@ -45,7 +45,7 @@
             return {
                 weights: {
                     typo: 10,
-                    attributes: 10,
+                    attribute: 10,
                     words: 9,
                     proximity: 2,
                     exact: 2,
