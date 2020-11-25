@@ -90,7 +90,7 @@ export default function () {
             },
             setIndexAnalyzer(state, payload) {
                 Vue.set(state, 'indexAnalyzer', payload);
-            },
+            }
         },
     }
 }

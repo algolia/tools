@@ -16,6 +16,7 @@
     import {goToAnchor} from "common/utils/domHelpers";
     import titleAttribute from "../../../mixins/titleAttribute";
     import SettingsLoader from "./SettingsLoader";
+    import getSimilarity from "./similarity";
 
     export default {
         components: {SettingsLoader},
@@ -26,7 +27,8 @@
             'titleAttributeName',
             'fetchExplain',
             'analyseHitsPerPage',
-            'fetchFacets'
+            'fetchFacets',
+            'panelKey',
         ],
         mixins: [titleAttribute],
         data: function () {
@@ -38,6 +40,7 @@
                 requestNumberReceived: 0,
                 requestNumberAnalysis: 0,
                 requestNumberAnalysisReceived: 0,
+                weights: {typo: 10, attributes: 10, words: 9, proximity: 2, exact: 2, filters: 1, geo: 1},
             }
         },
         created: async function () {
@@ -51,6 +54,9 @@
 
             this.$root.$on('wantsToGoToAnchorAtNext', (anchor) => {
                 this.anchor = anchor;
+            });
+            this.$root.$on(`${this.panelKey}OnUpdateWeights`, (weights) => {
+                this.weights = weights;
             });
         },
         watch: {
@@ -169,6 +175,12 @@
                         res.hits[0]._rankingInfo.merge = res.merge;
                     }
 
+                    if (this.searchParamsWithDefaults.experimentalBucketingDebugging) {
+                        for (let i = 0; i < res.hits.length; i++) {
+                            res.hits[i]._rankingInfo.similarity = getSimilarity(res.hits[i], res.hits[0], this.weights);
+                        }
+                    }
+
                     const response = Object.freeze(res);
                     this.searchResponse = response;
                     this.$emit('onFetchHits', response);
@@ -202,6 +214,12 @@
                 index[method](this.searchParamsForAnalysis).then((res) => {
                     if (this.requestNumberAnalysisReceived > requestNumberAnalysis) return;
                     this.requestNumberAnalysisReceived = requestNumberAnalysis;
+
+                    if (this.searchParamsForAnalysis.experimentalBucketingDebugging) {
+                        for (let i = 0; i < res.hits.length; i++) {
+                            res.hits[i]._rankingInfo.similarity = getSimilarity(res.hits[i], res.hits[0], this.weights);
+                        }
+                    }
 
                     if (res.hits.length > 1) {
                         let currentRelevanceSignature = JSON.stringify(this.textualCriteria.map((criterion) => this.rankingInfoAnalyzer.getCriterionValue(res.hits[0], criterion)));

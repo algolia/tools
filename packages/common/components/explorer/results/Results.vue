@@ -43,6 +43,10 @@
                     v-bind="$props"
                     v-on="$listeners"
                 />
+                <weights
+                    v-if="searchResponse && ['list', 'charts'].includes(displayMode) && indexSettings.primary && searchParams.experimentalBucketingDebugging"
+                    :panel-key="panelKey"
+                />
                 <results-list
                     v-if="searchResponse && (displayMode === 'list' || displayMode === 'images')"
                     v-on="$listeners"
@@ -94,6 +98,7 @@
     import props from '../props';
     import SmallTabs from "../../tabs/SmallTabs";
     import NoRecords from "./NoRecords";
+    import Weights from "./Weights";
 
     export default {
         name: 'Results',
@@ -116,7 +121,9 @@
             ResultsInfo,
             PerformSearch,
             Tooltip,
-            HitEdit, ExportParams, RawResponse, RankingCharts, ResultsList, PlusCircleIcon},
+            HitEdit, ExportParams, RawResponse, RankingCharts, ResultsList, PlusCircleIcon,
+            Weights
+        },
         data: function () {
             return {
                 isAddingRecord: false,

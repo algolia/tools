@@ -18,6 +18,11 @@ export default function (indexSettings) {
 
         const ranking = [...this.ranking];
 
+        if (searchParams.experimentalBucketingDebugging) {
+            actualCriteria.push("similarity");
+            actualCriteria.push("textualRelevanceBucket");
+        }
+
         if (this.isTypoStrictOrMin(searchParams)) {
             actualCriteria.push('typo');
         }

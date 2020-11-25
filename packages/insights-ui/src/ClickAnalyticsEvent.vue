@@ -39,6 +39,7 @@
             :analyse-hits-per-page="0"
             :fetch-facets="false"
             :no-signature="trackQueryInAnalytics"
+            panel-key="leftPanel"
             @onUpdateAutoTitleAttributeName="indexAutoTitleAttributeName = $event"
             @onFetchHits="onFetchHits"
             @onUpdateError="errorMessage = $event"
