@@ -17,6 +17,7 @@
             :title-attribute-name="indexTitleAttribute"
             :fetch-explain="$store.state.panels.displayRankingInfo"
             :analyse-hits-per-page="maxNbPoints"
+            panel-key="leftPanel"
             @onUpdateAutoTitleAttributeName="indexAutoTitleAttributeName = $event"
             @onFetchHits="searchResponse = $event"
             @onFetchAnalyseHits="onFetchAnalyticsHits"

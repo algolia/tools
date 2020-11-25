@@ -57,10 +57,10 @@
 
     export default {
         name: 'RankingInfo',
-        props: ['firstItem', 'item', 'previousItem', 'i', 'indexSettings', 'searchParams', 'weights'],
+        props: ['firstItem', 'item', 'previousItem', 'i', 'indexSettings', 'searchParams', 'panelKey'],
         computed: {
             rankingInfoAnalyzer: function () {
-                return new RankingInfoAnalyser(this.indexSettings, this.weights);
+                return new RankingInfoAnalyser(this.indexSettings);
             },
             searchableAttributes: function () {
                 return this.indexSettings.searchableAttributes || this.indexSettings.attributesToIndex || paramsSpecs.searchableAttributes.default;
@@ -74,11 +74,12 @@
             criteria: function () {
                 const criterias = [];
 
-                this.rankingInfoAnalyzer.getActualCriteria(this.searchParams).forEach((criterionName) => {
+                const actualCriteria = this.rankingInfoAnalyzer.getActualCriteria(this.searchParams);
+                actualCriteria.forEach((criterionName) => {
                     const criterion = {
                         label: criterionName,
-                        val: this.rankingInfoAnalyzer.getCriterionValue(this.item, criterionName,  this.firstItem, this.searchParams),
-                        oldVal: this.rankingInfoAnalyzer.getCriterionValue(this.previousItem, criterionName, this.firstItem, this.searchParams)
+                        val: this.rankingInfoAnalyzer.getCriterionValue(this.item, criterionName),
+                        oldVal: this.rankingInfoAnalyzer.getCriterionValue(this.previousItem, criterionName),
                     };
 
                     if (this.isTypoStrictOrMin && criterionName === 'typo') {

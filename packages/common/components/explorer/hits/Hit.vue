@@ -56,7 +56,7 @@
                     :i="hitPosition"
                     :index-settings="indexSettings"
                     :search-params="searchParams"
-                    :weights="weights"
+                    :panel-key="panelKey"
                 />
                 <div class="clearfix"></div>
                 <div v-if="listMode" class="flex justify-end items-center text-nova-grey-opacity-80">
@@ -140,7 +140,7 @@
             Tooltip,
             HitImage, HitDelete, HitEdit, RankingInfo, Attributes, EditIcon, TrashIcon, FlipLeftIcon, FlipRightIcon, MaximizeIcon, MinimizeIcon},
         props: [
-            'panelKey', 'hit', 'previousHit', 'topAttributes', 'searchableAttributes', 'hitPosition', 'titleAttribute', 'weights',
+            'panelKey', 'hit', 'previousHit', 'topAttributes', 'searchableAttributes', 'hitPosition', 'titleAttribute',
             ...props.credentials,
             ...props.attributes,
             ...props.actions,
@@ -177,7 +177,8 @@
                 return this.searchResponse.hitsPerPage * this.searchResponse.page + this.hitPosition + 1;
             },
             firstItem: function () {
-                return this.searchResponse.hits[0];
+                if (this.searchResponse && this.searchResponse.hits.length > 0) return this.searchResponse.hits[0];
+                return null;
             },
             imageAttributes: function () {
                 let attributes = (this.searchParams.attributesToRetrieve || []).filter((attribute) => attribute && attribute !== this.imageAttribute);

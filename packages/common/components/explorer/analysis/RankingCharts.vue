@@ -39,11 +39,11 @@
     export default {
         name: 'RankingCharts',
         components: {LineChart},
-        props: ['analyseResponse', 'indexSettings', 'searchParams', 'analyseMaxNbPoints', 'weights'],
+        props: ['analyseResponse', 'indexSettings', 'searchParams', 'analyseMaxNbPoints', 'panelKey'],
         data: function () {
             return {
                 criteriaStatus: {},
-                forceUpdateInteger: 0
+                forceUpdateInteger: 0,
             }
         },
         created: function () {
@@ -70,11 +70,14 @@
                 }
             },
             rankingInfoAnalyzer: function () {
-                return new RankingInfoAnalyser(this.indexSettings, this.weights);
+                return new RankingInfoAnalyser(this.indexSettings);
+            },
+            actualCriteria: function () {
+                return this.rankingInfoAnalyzer.getActualCriteria(this.searchParams);
             },
             criteria: function () {
                 return [
-                    ...this.rankingInfoAnalyzer.getActualCriteria(this.searchParams),
+                    ...this.actualCriteria,
                     ...(this.searchParams.extraChartsAttributes || []),
                 ];
             },
@@ -232,7 +235,7 @@
 
                 const points = new Array(this.hits.length);
                 for(let i = 0; i < this.hits.length; i++){
-                    points[i] = this.rankingInfoAnalyzer.getCriterionValue(this.hits[i], criterion, this.hits[0], this.searchParams);
+                    points[i] = this.rankingInfoAnalyzer.getCriterionValue(this.hits[i], criterion);
 
                     if (criterion === 'attribute') {
                         points[i] = this.searchableAttributes.length - 1 - points[i];

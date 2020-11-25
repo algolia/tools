@@ -1,8 +1,7 @@
 import {getCriterionValue} from 'common/utils/rankingInfo';
 import paramsSpecs from 'common/params-specs';
 
-export default function (indexSettings, weights) {
-    this.weights = weights;
+export default function (indexSettings) {
     this.indexSettings = indexSettings;
     this.ranking = indexSettings.ranking ? indexSettings.ranking : paramsSpecs.ranking.settings_default;
     this.customRanking = indexSettings.customRanking ? indexSettings.customRanking : paramsSpecs.customRanking.default;
@@ -19,7 +18,7 @@ export default function (indexSettings, weights) {
 
         const ranking = [...this.ranking];
 
-        if(searchParams.experimentalBucketingDebugging && searchParams.getRankingInfo && this.weights){
+        if (searchParams.experimentalBucketingDebugging) {
             actualCriteria.push("similarity");
             actualCriteria.push("textualRelevanceBucket");
         }
@@ -70,88 +69,7 @@ export default function (indexSettings, weights) {
         return actualCriteria;
     };
 
-    this.getCriterionValue = function (item, criterion, firstItem, searchParams) {
-        if (criterion === "similarity" && searchParams.experimentalBucketingDebugging && searchParams.getRankingInfo && this.weights) {
-            return this.getSimilarity(item, firstItem, searchParams)
-        } else {
-            return getCriterionValue(item, criterion);
-        }
-    };
-
-    this.getSimilarity = function (firstItem, item, searchParams) {
-        const criteria = this.getActualCriteria(searchParams);
-        const actualvec = this.buildRankingVector(criteria, item);
-        const ref = this.buildRankingVector(criteria, firstItem);
-        return this.cosinesime(ref,actualvec);
-    };
-
-    this.buildRankingVector = function(criteria, item){
-        let ret = [];
-        criteria.forEach((criterionName) => {
-            if(["typo","geo","words","filters","proximity", "attribute", "exact"].includes(criterionName))
-            {
-                const val = this.getCriterionValue(item, criterionName);
-                if (Number.isInteger(val))
-                {
-                    // adding weight to the criteria to have a weighted cosine similarity
-                    ret.push(this.getCriterionWeight(criterionName) * val)
-                }
-            }
-        });
-        return ret;
-    };
-
-    this.cosinesime = function (A,B) {
-        let dotproduct=0;
-        let mA=0;
-        let mB=0;
-        for(let i = 0; i < A.length; i++){
-            dotproduct += (A[i] * B[i]);
-            mA += (A[i]*A[i]);
-            mB += (B[i]*B[i]);
-        }
-        mA = Math.sqrt(mA);
-        mB = Math.sqrt(mB);
-        let similarity = (dotproduct)/((mA)*(mB));
-
-        if(similarity == 1){
-            return similarity;
-        }
-
-        return similarity.toFixed(3);
-    };
-
-    this.getCriterionWeight =  function(criterion){
-        var weight = 0;
-        if (this.weights) {
-            switch (criterion) {
-                case "typo":
-                    weight = this.weights.typo;
-                    break;
-                case "attributes":
-                    weight = this.weights.attributes;
-                    break;
-                case "words":
-                    weight = this.weights.words;
-                    break;
-                case "proximity":
-                    weight = this.weights.proximity;
-                    break;
-                case "exact":
-                    weight = this.weights.exact;
-                    break;
-                case "filters":
-                    weight = this.weights.filters;
-                    break;
-                case "geo":
-                    weight = this.weights.geo;
-                    break;
-                default:
-                    weight =0;
-                    break;
-            }
-        }
-
-        return weight;
+    this.getCriterionValue = function (item, criterion) {
+        return getCriterionValue(item, criterion);
     };
 }
