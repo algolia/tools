@@ -57,7 +57,7 @@
 
     export default {
         name: 'RankingInfo',
-        props: ['firstItem', 'item', 'previousItem', 'i', 'indexSettings', 'searchParams', 'panelKey'],
+        props: ['item', 'previousItem', 'i', 'indexSettings', 'searchParams'],
         computed: {
             rankingInfoAnalyzer: function () {
                 return new RankingInfoAnalyser(this.indexSettings);
@@ -74,12 +74,11 @@
             criteria: function () {
                 const criterias = [];
 
-                const actualCriteria = this.rankingInfoAnalyzer.getActualCriteria(this.searchParams);
-                actualCriteria.forEach((criterionName) => {
+                this.rankingInfoAnalyzer.getActualCriteria(this.searchParams).forEach((criterionName) => {
                     const criterion = {
                         label: criterionName,
                         val: this.rankingInfoAnalyzer.getCriterionValue(this.item, criterionName),
-                        oldVal: this.rankingInfoAnalyzer.getCriterionValue(this.previousItem, criterionName),
+                        oldVal: this.rankingInfoAnalyzer.getCriterionValue(this.previousItem, criterionName)
                     };
 
                     if (this.isTypoStrictOrMin && criterionName === 'typo') {

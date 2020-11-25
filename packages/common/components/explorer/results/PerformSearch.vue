@@ -177,7 +177,7 @@
 
                     if (this.searchParamsWithDefaults.experimentalBucketingDebugging) {
                         for (let i = 0; i < res.hits.length; i++) {
-                            res.hits[i]._rankingInfo.similarity = getSimilarity(res.hits[i], res.hits[0], this.weights)
+                            res.hits[i]._rankingInfo.similarity = getSimilarity(res.hits[i], res.hits[0], this.weights);
                         }
                     }
 
@@ -214,6 +214,12 @@
                 index[method](this.searchParamsForAnalysis).then((res) => {
                     if (this.requestNumberAnalysisReceived > requestNumberAnalysis) return;
                     this.requestNumberAnalysisReceived = requestNumberAnalysis;
+
+                    if (this.searchParamsWithDefaults.experimentalBucketingDebugging) {
+                        for (let i = 0; i < res.hits.length; i++) {
+                            res.hits[i]._rankingInfo.similarity = getSimilarity(res.hits[i], res.hits[0], this.weights);
+                        }
+                    }
 
                     if (res.hits.length > 1) {
                         let currentRelevanceSignature = JSON.stringify(this.textualCriteria.map((criterion) => this.rankingInfoAnalyzer.getCriterionValue(res.hits[0], criterion)));

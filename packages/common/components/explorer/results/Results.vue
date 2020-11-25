@@ -44,7 +44,7 @@
                     v-on="$listeners"
                 />
                 <weights
-                    v-if="searchResponse && ['list', 'images', 'charts'].includes(displayMode) && indexSettings.primary && searchParams.experimentalBucketingDebugging"
+                    v-if="searchResponse && ['list', 'charts'].includes(displayMode) && indexSettings.primary && searchParams.experimentalBucketingDebugging"
                     :panel-key="panelKey"
                 />
                 <results-list
