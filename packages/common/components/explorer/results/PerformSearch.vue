@@ -40,7 +40,7 @@
                 requestNumberReceived: 0,
                 requestNumberAnalysis: 0,
                 requestNumberAnalysisReceived: 0,
-                weights: {typo: 10, attributes: 10, words: 9, proximity: 2, exact: 2, filters: 1, geo: 1},
+                weights: {typo: 10, attribute: 10, words: 9, proximity: 2, exact: 2, filters: 1, geo: 1},
             }
         },
         created: async function () {
