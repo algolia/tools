@@ -5,10 +5,13 @@
             <table class="border-collapse bg-white border border-proton-grey-opacity-50 text-center w-full mt-8">
                 <tr>
                     <td
-                        v-for="original in originals"
+                        v-for="(original, i) in originals"
+                        :colspan="original.length"
                         class="p-8 border border-proton-grey-opacity-50 bg-moon-grey-opacity-50 align-top"
                     >
-                        <div>{{original.words[0]}}</div>
+                        <div>
+                            <span v-if="original.words.length > 0">"</span>{{original.words.join(' ')}}<span v-if="original.words.length > 0">"</span>
+                        </div>
                         <div class="text-nova-grey" v-for="type in original.types">
                             {{type}}
                         </div>
@@ -65,7 +68,7 @@
                 }).sort((a, b) => {return a.offset - b.offset}).sort((a, b) => {return a.length - b.length});
             },
             originals: function () {
-                return this.alternatives.filter((alternative) => {
+                const originals = this.alternatives.filter((alternative) => {
                     for (let i = 0; i < alternative.types.length; i++) {
                         if (this.originalTypes.includes(alternative.types[i])) {
                             return true;
@@ -73,6 +76,20 @@
                     }
                     return false;
                 }).sort((a, b) => a.offset - b.offset);
+
+                let prevSeqExpr = -1;
+                for (let i = 0; i < originals.length; i++) {
+                    const currentSeqExpr = originals[i].seqExpr;
+                    if (prevSeqExpr !== null && prevSeqExpr === currentSeqExpr) {
+                        originals[i - 1].words.push(...originals[i].words)
+                        originals[i - 1].length += originals[i - 1].length;
+                        originals.splice(i, 1);
+                        i--;
+                    }
+                    prevSeqExpr = currentSeqExpr;
+                }
+
+                return originals;
             },
             getRows: function () {
                 const rows = [];
