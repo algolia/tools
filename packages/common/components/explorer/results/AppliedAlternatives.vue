@@ -7,13 +7,17 @@
                     <td
                         v-for="(original, i) in originals"
                         :colspan="original.length"
-                        class="p-8 border border-proton-grey-opacity-50 bg-moon-grey-opacity-50 align-top"
+                        class="p-8 border-t border-b border-proton-grey-opacity-50 bg-moon-grey-opacity-50 align-top"
+                        :class="{'border-r': !original.isSeqRight, 'border-l': !original.isSeqLeft}"
                     >
                         <div>
-                            <span v-if="original.words.length > 0">"</span>{{original.words.join(' ')}}<span v-if="original.words.length > 0">"</span>
+                            {{original.words[0]}}
                         </div>
                         <div class="text-nova-grey" v-for="type in original.types">
                             {{type}}
+                        </div>
+                        <div class="text-nova-grey" v-if="original.isSeqLeft || original.isSeqRight">
+                            expr
                         </div>
                     </td>
                 </tr>
@@ -81,10 +85,8 @@
                 for (let i = 0; i < originals.length; i++) {
                     const currentSeqExpr = originals[i].seqExpr;
                     if (prevSeqExpr !== null && prevSeqExpr === currentSeqExpr) {
-                        originals[i - 1].words.push(...originals[i].words)
-                        originals[i - 1].length += originals[i - 1].length;
-                        originals.splice(i, 1);
-                        i--;
+                        originals[i - 1].isSeqRight = true;
+                        originals[i].isSeqLeft = true;
                     }
                     prevSeqExpr = currentSeqExpr;
                 }
