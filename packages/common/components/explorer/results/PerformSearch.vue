@@ -99,7 +99,6 @@
                     query: this.query,
                     attributesToSnippet: ['*:10'],
                     snippetEllipsisText: '…',
-                    attributesToRetrieve: ['*'],
                     responseFields: ['*'],
                     analytics: false,
                     enableABTest: false,
@@ -113,6 +112,7 @@
                     getRankingInfo: true,
                     highlightPreTag: '<ais-highlight-0000000000>',
                     highlightPostTag: '</ais-highlight-0000000000>',
+                    attributesToRetrieve: [...(this.searchParams.attributesToRetrieve || ['*']), '_geoloc'],
                 };
 
                 if (this.fetchFacets) {
