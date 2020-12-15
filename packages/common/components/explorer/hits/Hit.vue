@@ -31,12 +31,15 @@
                         <div class="truncate" v-if="attribute" v-html="attribute" />
                     </div>
                 </div>
-                <div v-if="personalized || promoted" class="flex mb-12">
+                <div v-if="personalized || promoted || reranked" class="flex mb-12">
                     <div v-if="personalized" class="border border-nova-grey-opacity-80 px-8 py-4 rounded text-center text-xs uppercase tracking-wide text-solstice-blue">
                         Personalized
                     </div>
                     <div v-if="promoted" class="border border-nova-grey-opacity-80 px-8 py-4 rounded text-center text-xs uppercase tracking-wide text-solstice-blue">
                         Promoted
+                    </div>
+                    <div v-if="reranked" class="border border-nova-grey-opacity-80 px-8 py-4 rounded text-center text-xs uppercase tracking-wide text-solstice-blue">
+                        Reranked
                     </div>
                 </div>
                 <attributes
@@ -169,7 +172,10 @@
                 return this.hit._rankingInfo && this.hit._rankingInfo.personalization && this.hit._rankingInfo.personalization.filtersScore > 0;
             },
             promoted: function () {
-                return this.hit._rankingInfo && this.hit._rankingInfo.promoted;
+                return this.hit._rankingInfo && this.hit._rankingInfo.promoted && !this.hit._rankingInfo.promotedByReRanking;
+            },
+            reranked: function () {
+                return this.hit._rankingInfo && this.hit._rankingInfo.promotedByReRanking;
             },
             hitNumber: function () {
                 return this.searchResponse.hitsPerPage * this.searchResponse.page + this.hitPosition + 1;

@@ -38,7 +38,7 @@
                 Primary: {{indexSettings.primary}}
             </div>
             <div class="border-b border-dotted border-telluric-blue-opacity-60 ml-12"
-                 v-if="indexSettings.primary"
+                 v-if="indexSettings.primary && isVirtual"
             >
                 Virtual: {{isVirtual}}
             </div>

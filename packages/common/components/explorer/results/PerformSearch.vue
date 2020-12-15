@@ -181,6 +181,11 @@
                         }
                     }
 
+                    // Bug fix because the engine sometimes returns it even if not needed
+                    if (!this.searchParamsWithDefaults.explain) {
+                        delete res.explain;
+                    }
+
                     const response = Object.freeze(res);
                     this.searchResponse = response;
                     this.$emit('onFetchHits', response);
