@@ -1243,6 +1243,16 @@ personalizationImpact:
   min: 0
   default: 100
 
+relevancyStrictness:
+  scope:
+    - search
+    - settings
+  value_type: integer_slider
+  max: 100
+  min: 0
+  default: 100
+  settings_default: null
+
 processingTimeoutMS:
   scope:
     - search
