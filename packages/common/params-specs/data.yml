@@ -1246,7 +1246,6 @@ personalizationImpact:
 relevancyStrictness:
   scope:
     - search
-    - settings
   value_type: integer_slider
   max: 100
   min: 0
