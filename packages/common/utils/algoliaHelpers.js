@@ -46,7 +46,9 @@ export async function getClient(appId, apiKey, server, userId, noSignature) {
 
     if (!isLocalAppId(appId) && apiKey && noSignature !== true) {
         const signature = await getSignature(appId);
-        headers['X-Algolia-Signature'] = signature;
+        if (signature) {
+            headers['X-Algolia-Signature'] = signature;
+        }
     }
 
     const logger = createConsoleLogger(1);

@@ -41,7 +41,9 @@ export default greenlet((appId, apiKey, indexName, userId, signature) => new Pro
 
     self.importScripts('https://cdn.jsdelivr.net/npm/algoliasearch@3.33.0/dist/algoliasearchLite.min.js');
     const client = algoliasearch(appId, apiKey);
-    client.setExtraHeader('X-Algolia-Signature', signature);
+    if (signature) {
+        client.setExtraHeader('X-Algolia-Signature', signature);
+    }
     if (userId) {
         client.setExtraHeader('X-Algolia-User-ID', userId);
     }

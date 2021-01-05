@@ -108,7 +108,8 @@
                 // valid
                 if (this.newObjectID.length <= 0) return false;
                 if (this.newInput.length <= 0) return false;
-                if (this.newSynonyms[0].length <= 0) return false;
+                const newSynonyms = this.newSynonyms.filter((s) => {return s.length > 0});
+                if (newSynonyms.length <= 0) return false;
 
                 if (this.allowSaveWithoutEdit) return true;
 
@@ -116,7 +117,6 @@
                 if (this.newObjectID !== this.synonym.objectID) return true;
                 if (this.newType !== this.type) return true;
                 if (this.newInput !== this.input) return true;
-                const newSynonyms = this.newSynonyms.filter((s) => {return s.length > 0});
                 if (JSON.stringify(newSynonyms) !== JSON.stringify(this.synonyms)) return true;
 
                 return false;
@@ -130,7 +130,7 @@
                 };
 
                 if (synonym.type === 'synonym') {
-                    synonym.synonyms = [this.newInput, ...this.newSynonyms];
+                    synonym.synonyms = [this.newInput, ...this.newSynonyms].filter((s) => {return s.length > 0});
                 } else if (synonym.type === 'onewaysynonym') {
                     synonym.input = this.newInput;
                     synonym.synonyms = this.newSynonyms;

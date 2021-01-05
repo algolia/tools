@@ -62,6 +62,9 @@
                 }
 
                 this.currentUser = json;
+                if (this.currentUser.signature) {
+                    window.signature = this.currentUser.signature;
+                }
 
                 this.$store.commit('panels/setCurrentUserEmail', this.currentUser.user.email);
             }
