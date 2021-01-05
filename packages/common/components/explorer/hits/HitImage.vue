@@ -70,7 +70,6 @@
     import props from "../props";
     import createHmac from 'create-hmac';
 
-
     const imageRegex = /(?:https?:)?\/\/.+\.(?:jpe?g|png|svg|webp)(?:\?.*)?$/i;
     const urlSafeBase64 = (string) => Buffer.from(string).toString('base64').replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
     const hexDecode = (hex) => Buffer.from(hex, 'hex');
@@ -82,9 +81,6 @@
 
         return urlSafeBase64(hmac.digest());
     };
-
-    const signingKey = '736C756D2D6665726E2D64726F7070696E672D7A65627261';
-    const signingSalt = '63616464792D656C6C69707369732D706C616E65742D666F69626C65';
 
     export default {
         name: 'HitImage',
@@ -105,7 +101,9 @@
                 return `${this.imageBaseUrl}${this.image}${this.imageSuffixUrl}`;
             },
             proxyUrl: function () {
-                if (this.shouldIgnoreImageProxy) {
+                const proxy = window.imageProxy;
+
+                if (this.shouldIgnoreImageProxy || !proxy) {
                     return this.fullUrl;
                 }
 
@@ -121,7 +119,7 @@
                 const smodifiers = Object.keys(modifiers).map(modifierKey => `${modifierKey}:${modifiers[modifierKey]}`).join('/');
                 const path = `/${smodifiers}/${urlSafeBase64(this.fullUrl)}.jpg`;
 
-                return `https://user-content.algolia.com/${signedProxyImageUrl(signingSalt, path, signingKey)}${path}`;
+                return `${proxy.baseUrl}${signedProxyImageUrl(proxy.signingSalt, path, proxy.signingKey)}${path}`;
             },
             size: {
                 get () {

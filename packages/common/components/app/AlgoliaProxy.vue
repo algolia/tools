@@ -61,12 +61,13 @@
                     this.authorized = false;
                 }
 
-                this.currentUser = json;
-                if (this.currentUser.signature) {
-                    window.signature = this.currentUser.signature;
-                }
+                window.currentUserEmail = json.user.email;
+                window.signature = json.signature;
+                window.imageProxy = json.imageProxy;
 
-                this.$store.commit('panels/setCurrentUserEmail', this.currentUser.user.email);
+                this.$store.commit('panels/setCurrentUserEmail', json.user.email);
+
+                this.currentUser = json;
             }
         }
     }
