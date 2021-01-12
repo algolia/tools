@@ -36,9 +36,9 @@ app.use('/infra-watch', (req, res) => res.redirect(`${toolsInternalEndpoint}/inf
 app.use('/index-size', (req, res) => res.redirect(`${toolsInternalEndpoint}/index-size`));
 app.use('/dictionaries', (req, res) => res.redirect(`${toolsInternalEndpoint}/dictionaries`));
 
-//app.use((req, res) => {
-    //res.redirect("https://tools.algolia.com/apps");
-//});
+app.use((req, res) => {
+    res.redirect("https://tools.algolia.com/apps");
+});
 
 const port = process.env.PORT || 80;
 app.listen(port);

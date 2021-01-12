@@ -48,15 +48,6 @@
             apps: [
                 {name: 'Transform', url: '/transform'},
                 {name: 'Index analyzer', url: '/index-analyzer'},
-                {name: 'Index size', url: '/index-size'},
-            ]
-        },
-        {
-            name: 'Info tools',
-            description: 'Get information on engine features',
-            apps: [
-                {name: 'Dictionaries', url: '/dictionaries'},
-                {name: 'Infra Watch', url: '/infra-watch'},
             ]
         },
         {
