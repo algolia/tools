@@ -8,9 +8,15 @@ export default {
         },
         appOwner(appId) {
             const app = this.$store.state.apps[appId];
+            if (process.env.VUE_APP_PROXY_ENABLED !== 'true') {
+                return 'tricks@algolia.com';
+            }
             return app && app.__app_owner && app.__app_owner.length > 0 ? app.__app_owner : 'not_exisiting_owner';
         },
         connectedEmail() {
+            if (process.env.VUE_APP_PROXY_ENABLED !== 'true') {
+                return 'tricks@algolia.com';
+            }
             return this.$store.state.panels.currentUserEmail ? this.$store.state.panels.currentUserEmail : 'not_existing_email';
         },
         isAlgoliaUser() {

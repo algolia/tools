@@ -142,24 +142,26 @@
                 if (appIds.length <= 0) return; // Avoid registering first apps of index.
 
                 const key = await getKey();
-                const client = algoliasearch('X20GSLY1CL', key);
-                const index = client.initIndex('applications_production');
+                if (key) {
+                    const client = algoliasearch('X20GSLY1CL', key);
+                    const index = client.initIndex('applications_production');
 
-                const res = await index.search('', {
-                    facetFilters: [appIds.map((appId) => `application_id:${appId}`)],
-                });
+                    const res = await index.search('', {
+                        facetFilters: [appIds.map((appId) => `application_id:${appId}`)],
+                    });
 
-                res.hits.forEach((appInfo) => {
-                    this.$store.commit("apps/addAppId", appInfo.application_id);
-                    this.$store.commit(`apps/${appInfo.application_id}/setAppName`, appInfo.name);
-                    this.$store.commit(`apps/${appInfo.application_id}/setAppOwner`, appInfo.user_email);
-                    this.$store.commit(`apps/${appInfo.application_id}/setUId`, appInfo.user_id);
-                });
+                    res.hits.forEach((appInfo) => {
+                        this.$store.commit("apps/addAppId", appInfo.application_id);
+                        this.$store.commit(`apps/${appInfo.application_id}/setAppName`, appInfo.name);
+                        this.$store.commit(`apps/${appInfo.application_id}/setAppOwner`, appInfo.user_email);
+                        this.$store.commit(`apps/${appInfo.application_id}/setUId`, appInfo.user_id);
+                    });
 
-                const res2 = await this.getAppsDashboardInfo();
-                res2.forEach((appInfo) => {
-                    this.$store.commit(`apps/${appInfo.application_id}/setLogRegion`, appInfo.log_region);
-                });
+                    const res2 = await this.getAppsDashboardInfo();
+                    res2.forEach((appInfo) => {
+                        this.$store.commit(`apps/${appInfo.application_id}/setLogRegion`, appInfo.log_region);
+                    });
+                }
             }
         }
     }

@@ -1,6 +1,6 @@
 <template>
     <div id="app" class="bg-moon-grey text-base font-sans-alt min-h-screen">
-        <algolia-proxy :enabled="isProduction || true">
+        <algolia-proxy :enabled="isProduction">
             <slot slot="loggedIn" />
             <div slot="loggedOut" class="h-screen flex justify-center items-center">
                 <div class="flex flex-col justify-center items-center">
@@ -22,7 +22,7 @@
     import LoaderIcon from "common/icons/loader.svg";
     import AlgoliaProxy from "common/components/app/AlgoliaProxy";
 
-    const isProduction = process.env.NODE_ENV === 'production';
+    const isProduction = process.env.NODE_ENV === 'production' && process.env.VUE_APP_PROXY_ENABLED === 'true';
 
     export default {
         name: 'InternalApp',

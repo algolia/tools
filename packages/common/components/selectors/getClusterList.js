@@ -32,20 +32,22 @@ export default async function (appId, getListWithoutDsn) {
         key = await getKey();
     }
 
-    const client = algoliasearch('X20GSLY1CL', key);
-    const index = client.initIndex('applications_production');
+    cache[appId] = ['-dsn'];
 
-    const res = await index.search('', {filters: `application_id:${appId}`});
+    if (key) {
+        const client = algoliasearch('X20GSLY1CL', key);
+        const index = client.initIndex('applications_production');
 
-    if (res.hits.length > 0 && res.hits[0].clusters_and_replicas_names && res.hits[0].clusters_and_replicas_names.length >= 0) {
-        if (getListWithoutDsn) {
-            cache[appId] = res.hits[0].clusters_and_replicas_names;
-        } else {
-            const replicas = res.hits[0].clusters_and_replicas_names.slice(1);
-            cache[appId] =  ['-dsn', ...replicas];
+        const res = await index.search('', {filters: `application_id:${appId}`});
+
+        if (res.hits.length > 0 && res.hits[0].clusters_and_replicas_names && res.hits[0].clusters_and_replicas_names.length >= 0) {
+            if (getListWithoutDsn) {
+                cache[appId] = res.hits[0].clusters_and_replicas_names;
+            } else {
+                const replicas = res.hits[0].clusters_and_replicas_names.slice(1);
+                cache[appId] =  ['-dsn', ...replicas];
+            }
         }
-    } else {
-        cache[appId] = ['-dsn'];
     }
 
     lock[appId] = false;
