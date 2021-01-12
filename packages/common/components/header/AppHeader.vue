@@ -5,7 +5,7 @@
                 <div class="flex w-full">
                     <div class="flex items-center text-telluric-blue mr-16 text-lg">
                         <algolia-logo-experimental class="w-20 h-20 mr-8"/>
-                        <div class="mr-4 mt-2"><a href="/apps">Tools</a></div>
+                        <div class="mr-4 mt-2"><a :href="`${hostUrl}/apps`">Tools</a></div>
                         <chevron-left v-if="appName" class="w-12 h-12 rotate-180 mr-4" />
                         <div v-if="appName" class="mt-2 font-bold">{{appName}}</div>
                     </div>
@@ -24,5 +24,13 @@
         name: 'AppHeader',
         props: ['appName'],
         components: {AlgoliaLogoExperimental, ChevronLeft},
+        computed: {
+            hostUrl: function () {
+                if (process.env.NODE_ENV === "production" && process.env.VUE_APP_TOOLS_INTERNAL_ENDPOINT && window.currentUserEmail.endsWith('@algolia.com')) {
+                    return process.env.VUE_APP_TOOLS_INTERNAL_ENDPOINT;
+                }
+                return '';
+            }
+        }
     }
 </script>

@@ -23,20 +23,22 @@ app.use(history({
     ]
 }));
 
-const apps = ['css', 'apps', 'logs', 'metaparams', 'index-manager', 'perso-formula', 'relevance-testing', 'index-differ', 'index-analyzer', 'dictionaries', 'index-size', 'infra-watch', 'transform', 'insights-ui', 'mercari', 'v8', 'attribute-proximity'];
+const apps = ['css', 'apps', 'logs', 'metaparams', 'index-manager', 'relevance-testing', 'index-differ', 'index-analyzer', 'transform', 'insights-ui'];
 
 apps.forEach((appName) => {
     const serveStaticFunc = serveStatic(__dirname + `/packages/${appName}/dist`);
     app.use(`/${appName}`, (req, res, next) => serveStaticFunc(req, res, next));
 });
 
-// Legacy
-app.use('/mlock-alerts', (req, res) => res.redirect('/infra-watch'));
-app.use('/busted', (req, res) => res.redirect('/infra-watch'));
+const toolsInternalEndpoint = process.env.TOOLS_INTERNAL_ENDPOINT || 'http://127.0.0.1:8090';
+// Private
+app.use('/infra-watch', (req, res) => res.redirect(`${toolsInternalEndpoint}/infra-watch`));
+app.use('/index-size', (req, res) => res.redirect(`${toolsInternalEndpoint}/index-size`));
+app.use('/dictionaries', (req, res) => res.redirect(`${toolsInternalEndpoint}/dictionaries`));
 
-app.use((req, res) => {
-    res.redirect("https://tools.algolia.com/apps");
-});
+//app.use((req, res) => {
+    //res.redirect("https://tools.algolia.com/apps");
+//});
 
 const port = process.env.PORT || 80;
 app.listen(port);

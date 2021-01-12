@@ -60,6 +60,9 @@
                 if (!json.apps.includes('all') && !json.apps.includes(currentAppName)) {
                     this.authorized = false;
                 }
+                if (window.location.pathname.startsWith('/apps') && process.env.NODE_ENV === "production" && process.env.VUE_APP_TOOLS_INTERNAL_ENDPOINT && json.user.email.endsWith('@algolia.com')) {
+                    window.location.href = `${process.env.VUE_APP_TOOLS_INTERNAL_ENDPOINT}${window.location.pathname}`;
+                }
 
                 window.currentUserEmail = json.user.email;
                 window.signature = json.signature;
