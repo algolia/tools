@@ -64,44 +64,8 @@
         components: {InternalApp, AppHeader, AppManagement},
         data: function () {
             return {
-                appsGroups: [],
+                appsGroups: appsGroups,
             };
-        },
-        created: async function () {
-            const backendEndpoint = process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT || 'https://tools-backend.algolia.com';
-            const res = await fetch(`${backendEndpoint}/user/info?redirect_to=${window.location.href}`, {
-                credentials: 'include',
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
-            const json = await res.json();
-            const authorizedApps = json.apps;
-
-            const authorizedGroups = [];
-
-            if (!authorizedApps.includes('all')) {
-                appsGroups.forEach((appGroup) => {
-                    const apps = [];
-                    appGroup.apps.forEach((app) => {
-                        authorizedApps.forEach((a) => {
-                            if (app.url === `/${a}`) {
-                                apps.push(app);
-                            }
-                        })
-                    });
-                    if (apps.length > 0) {
-                        authorizedGroups.push({
-                            ...appGroup,
-                            apps: apps,
-                        })
-                    }
-                });
-                this.appsGroups = authorizedGroups;
-            } else {
-                this.appsGroups = appsGroups;
-            }
-
         }
     }
 </script>
