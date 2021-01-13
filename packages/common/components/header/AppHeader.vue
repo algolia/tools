@@ -26,7 +26,7 @@
         components: {AlgoliaLogoExperimental, ChevronLeft},
         computed: {
             hostUrl: function () {
-                if (process.env.NODE_ENV === "production" && process.env.VUE_APP_TOOLS_INTERNAL_ENDPOINT && window.currentUserEmail.endsWith('@algolia.com')) {
+                if (process.env.NODE_ENV === "production" && process.env.VUE_APP_TOOLS_INTERNAL_ENDPOINT && window.currentUserEmail && window.currentUserEmail.endsWith('@algolia.com')) {
                     return process.env.VUE_APP_TOOLS_INTERNAL_ENDPOINT;
                 }
                 return '';
