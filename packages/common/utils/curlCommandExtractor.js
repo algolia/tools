@@ -65,16 +65,9 @@ export function parseCurlCommand (command) {
         let appId = '';
         let indexName = '';
         let machine = '';
-
+        
         for (let i = 0; i < suffixes.length; i++) {
-            if (suffixes[i].text === '-H' || suffixes[i].text === '--header') {
-                i++;
-                const headerString = suffixes[i].text;
-                const split = headerString.split(': ');
-                if (split[0] === 'x-algolia-user-token') params.userToken = split[1];
-                continue;
-            }
-            if (suffixes[i].text.startsWith('http')) {
+            if (suffixes[i].text.startsWith('http')) { // Needs to be first so the application id header can overwrite the url app id
                 url = suffixes[i].text;
                 const urlObj = new URL(url);
                 pathName = urlObj.pathname;
@@ -84,6 +77,14 @@ export function parseCurlCommand (command) {
                     appId = matches[1].toUpperCase();
                     machine = `-${matches[2]}`;
                 }
+            }
+            if (suffixes[i].text === '-H' || suffixes[i].text === '--header') {
+                i++;
+                const headerString = suffixes[i].text;
+                const split = headerString.split(': ');
+                if (split[0] === 'x-algolia-user-token') params.userToken = split[1];
+                if (split[0] === 'x-algolia-application-id') appId = split[1];
+                continue;
             }
             if (['d', '--data', '--data-binary', '--data-raw'].includes(suffixes[i].text)) {
                 i++;
