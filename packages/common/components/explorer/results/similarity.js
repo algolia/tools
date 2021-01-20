@@ -5,7 +5,7 @@ function buildRankingVector(item, weights) {
     ["typo", "geo", "words", "filters", "proximity", "attribute", "exact"].forEach((criterionName) => {
 
         // for attributes we need the original value from the engine
-        const val = criterionName == "attribute" ? item._rankingInfo.firstMatchedWord :  getCriterionValue(item, criterionName);
+        const val = criterionName == "attribute" ? Math.floor(item._rankingInfo.firstMatchedWord / 1000.) :  getCriterionValue(item, criterionName);
 
         if (Number.isInteger(val)) {
             // adding weight to the criteria to have a weighted cosine similarity
