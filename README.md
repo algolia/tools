@@ -23,6 +23,10 @@ After making sure that node and yarn are install, at the root of the repo run:
 yarn install
 ```
 
+- Go to `packages/css`;
+- Run `yarn run build`;
+- Run `./copy-css.sh`
+
 ## Run a tool
 
 1. Go to `packages/__tool_name__`
