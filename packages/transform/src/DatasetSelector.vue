@@ -237,7 +237,7 @@
                     let count = 0;
                     Papa.parse(this.file, {
                         header: true,
-                        delimitersToGuess: [',', ';', '\t', '#'],
+                        delimitersToGuess: [',', ';', '\t', '#', '|'],
                         preview: 100,
                         step: async (lineObject, parser) => {
                             hits.push(lineObject.data);
