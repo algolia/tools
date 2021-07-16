@@ -13,6 +13,7 @@
                     @onUpdateJsonFile="jsonFile = $event"
                     @onUpdateXmlFile="xmlFile = $event"
                     @onUpdateXmlRootNode="xmlRootNode = $event"
+                    @onUpdateJsonAttribute="jsonAttributeName = $event"
                 />
                 <transformer
                     v-if="dataset"
@@ -28,6 +29,7 @@
                     :json-file="jsonFile"
                     :xml-file="xmlFile"
                     :xml-root-node="xmlRootNode"
+                    :json-attribute-name="jsonAttributeName"
                 />
             </div>
         </div>
@@ -55,6 +57,7 @@
                 jsonFile: null,
                 xmlFile: null,
                 xmlRootNode: 'item',
+                jsonAttributeName: '',
             }
         }
     }

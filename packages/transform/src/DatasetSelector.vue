@@ -58,9 +58,19 @@
                         <input
                             ref=""
                             type="text"
-                            v-model="xmlRootNode"
+                            :value="xmlRootNode"
+                            @input="updateXmlRootNode($event.target.value)"
                             class="input-custom ml-8 w-124"
-                            @keyup.enter="updateXmlRootNode()"
+                        />
+                    </div>
+                    <div v-if="type === 'json'" class="flex mt-24">
+                        Attribute Name for records (should stay empty if json file is an array of records):
+                        <input
+                            ref=""
+                            type="text"
+                            :value="jsonAttributeName"
+                            @input="updateJsonAttributeName($event.target.value)"
+                            class="input-custom ml-8 w-124"
                         />
                     </div>
                     <div v-if="xmlError" class="flex mt-16">
@@ -131,6 +141,7 @@
                 sample: false,
                 xmlError: '',
                 xmlRootNode: 'item',
+                jsonAttributeName: '',
                 indexInfo: {
                     appId: null,
                     indexName: null,
@@ -167,8 +178,15 @@
             },
         },
         methods: {
-            updateXmlRootNode: function () {
-                this.$emit('onUpdateXmlRootNode', this.xmlRootNode);
+            updateJsonAttributeName: function (val) {
+                this.jsonAttributeName = val;
+                this.$emit('onUpdateJsonAttribute', val);
+                this.reset();
+                this.loadFile();
+            },
+            updateXmlRootNode: function (val) {
+                this.xmlRootNode = val;
+                this.$emit('onUpdateXmlRootNode', val);
                 this.reset();
                 this.loadFile();
             },
@@ -212,7 +230,8 @@
                     });
 
                     const oboeStream = oboe();
-                    oboeStream.node('!.[*]', (node) => {
+                    const attribute = this.jsonAttributeName ? this.jsonAttributeName : '!';
+                    oboeStream.node(`${attribute}.[*]`, (node) => {
                         if (!this.isLoadingFile) return;
 
                         hits.push(node);

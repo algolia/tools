@@ -67,7 +67,6 @@
 
 <script>
     import AppSelector from 'common/components/selectors/AppSelector';
-    import IndexSelector from 'common/components/selectors/IndexSelector';
     import TaskGroupView from "common/components/TasksGroup";
     import {getClient} from "common/utils/algoliaHelpers";
     import {Task, TasksGroup} from "common/utils/tasks";
@@ -79,8 +78,8 @@
 
     export default {
         name: 'Applier',
-        props: ['dataset', 'indexInfo', 'transformer', 'csvFile', 'jsonFile', 'xmlFile', 'xmlRootNode'],
-        components: {AppSelector, IndexSelector, TaskGroupView},
+        props: ['dataset', 'indexInfo', 'transformer', 'csvFile', 'jsonFile', 'xmlFile', 'xmlRootNode', 'jsonAttributeName'],
+        components: {AppSelector, TaskGroupView},
         data: function () {
             return {
                 appId: null,
@@ -197,7 +196,9 @@
                             });
 
                             const oboeStream = oboe();
-                            oboeStream.node('!.[*]', async (node) => {
+                            const attribute = this.jsonAttributeName ? this.jsonAttributeName : '!';
+                            
+                            oboeStream.node(`${attribute}.[*]`, async (node) => {
                                 hits.push(node);
                                 count++;
                                 if (hits.length >= 1000) {
