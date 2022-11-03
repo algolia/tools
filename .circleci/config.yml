@@ -1,0 +1,32 @@
+version: 2.1
+
+executors:
+  base:
+    docker:
+      - image: cimg/base:current
+
+jobs:
+  deploy:
+    parameters:
+      env:
+        type: string
+        default: production
+    executor: base
+    steps:
+      - checkout
+      - run:
+          name: Download Algolia Platform appcli util
+          command: curl -sS -L https://platform.algolia.net/public/install.sh | bash
+      - run:
+          name: Deploy to Algolia Platform
+          command: appcli environment deploy --environment $APP_PLATFORM_ENVIRONMENT
+
+workflows:
+  deploy:
+    jobs:
+      - deploy:
+          name: deploy-production
+          filters:
+            branches:
+              only:
+                - master
