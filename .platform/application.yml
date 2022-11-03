@@ -1,0 +1,9 @@
+http:
+  - target: web
+
+build:
+  - name: web
+
+compute:
+  - name: web
+    port: 80
