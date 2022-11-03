@@ -11,4 +11,6 @@ RUN yarn build
 RUN chown -R node:node /base/
 USER node
 
+ENV PORT 8080
+
 ENTRYPOINT ["yarn", "start"]
