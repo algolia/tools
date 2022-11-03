@@ -7,3 +7,6 @@ build:
 compute:
   - name: web
     port: 8080
+    environment:
+      - name: VUE_APP_METAPARAMS_BACKEND_ENDPOINT
+        secretName: vue-app-metaparams-backend-endpoint
