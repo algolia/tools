@@ -39,4 +39,5 @@ app.use((req, res) => {
 
 const port = process.env.PORT || 80;
 app.listen(port);
+console.log('[VP]', 'Server envs', process.env)
 console.log('server started http://localhost:'+ port);

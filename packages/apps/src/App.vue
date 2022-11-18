@@ -58,6 +58,8 @@
         },
     ];
 
+    console.log('[VP]', { appsGroups, env: process.env })
+
     export default {
         name: 'Home',
         components: {InternalApp, AppHeader, AppManagement},
