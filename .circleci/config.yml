@@ -18,8 +18,11 @@ jobs:
           name: Download Algolia Platform appcli util
           command: curl -sS -L https://platform.algolia.net/public/install.sh | bash
       - run:
+          name: Prepare Algolia Platform Manifest
+          command: sed -i.orig "s/__VUE_APP_METAPARAMS_BACKEND_ENDPOINT__/${VUE_APP_METAPARAMS_BACKEND_ENDPOINT}/" .platform/application.yml
+      - run:
           name: Deploy to Algolia Platform
-          command: appcli environment deploy --environment $APP_PLATFORM_ENVIRONMENT
+          command: appcli environment deploy --environment $APP_PLATFORM_ENVIRONMENT --manifest-file .platform/application.yml
 
 workflows:
   deploy:
