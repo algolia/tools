@@ -3,6 +3,21 @@ http:
 
 build:
   - name: web
+    buildArgs:
+      - name: TOOLS_ENDPOINT
+        value: REPLACE_ME_TOOLS_ENDPOINT
+      - name: TOOLS_INTERNAL_ENDPOINT
+        value: REPLACE_ME_TOOLS_INTERNAL_ENDPOINT
+      - name: VUE_APP_APP_ID
+        value: REPLACE_ME_VUE_APP_APP_ID
+      - name: VUE_APP_METAPARAMS_BACKEND_ENDPOINT
+        value: REPLACE_ME_VUE_APP_METAPARAMS_BACKEND_ENDPOINT
+      - name: VUE_APP_PROXY_ENABLED
+        value: 'true'
+      - name: VUE_APP_SEARCH_ONLY_API_KEY
+        value: REPLACE_ME_VUE_APP_SEARCH_ONLY_API_KEY
+      - name: VUE_APP_TOOLS_INTERNAL_ENDPOINT
+        value: REPLACE_ME_VUE_APP_TOOLS_INTERNAL_ENDPOINT
 
 compute:
   - name: web
@@ -12,17 +27,13 @@ compute:
         value: en_US.UTF-8
       - name: NODE_ENV
         value: production
-      - name: TOOLS_ENDPOINT
-        secretName: tools-endpoint
-      - name: TOOLS_INTERNAL_ENDPOINT
-        secretName: tools-internal-endpoint
-      - name: VUE_APP_APP_ID
-        secretName: vue-app-app-id
-      - name: VUE_APP_METAPARAMS_BACKEND_ENDPOINT
-        secretName: vue-app-metaparams-backend-endpoint
-      - name: VUE_APP_PROXY_ENABLED
-        value: 'true'
-      - name: VUE_APP_SEARCH_ONLY_API_KEY
-        secretName: vue-app-search-only-api-key
-      - name: VUE_APP_TOOLS_INTERNAL_ENDPOINT
-        secretName: vue-app-tools-internal-endpoint
+#      - name: VUE_APP_APP_ID
+#        secretName: vue-app-app-id
+#      - name: VUE_APP_METAPARAMS_BACKEND_ENDPOINT
+#        secretName: vue-app-metaparams-backend-endpoint
+#      - name: VUE_APP_PROXY_ENABLED
+#        value: 'true'
+#      - name: VUE_APP_SEARCH_ONLY_API_KEY
+#        secretName: vue-app-search-only-api-key
+#      - name: VUE_APP_TOOLS_INTERNAL_ENDPOINT
+#        secretName: vue-app-tools-internal-endpoint

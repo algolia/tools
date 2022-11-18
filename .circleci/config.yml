@@ -18,8 +18,18 @@ jobs:
           name: Download Algolia Platform appcli util
           command: curl -sS -L https://platform.algolia.net/public/install.sh | bash
       - run:
-          name: Deploy to Algolia Platform
-          command: appcli environment deploy --environment $APP_PLATFORM_ENVIRONMENT
+          name: Replace environment variables
+          command: |
+            sed -i "s@REPLACE_ME_TOOLS_ENDPOINT@${TOOLS_ENDPOINT}@g" .platform/application.yml
+            sed -i "s@REPLACE_ME_TOOLS_INTERNAL_ENDPOINT@${TOOLS_INTERNAL_ENDPOINT}@g" .platform/application.yml
+            sed -i "s@REPLACE_ME_VUE_APP_APP_ID@${VUE_APP_APP_ID}@g" .platform/application.yml
+            sed -i "s@REPLACE_ME_VUE_APP_METAPARAMS_BACKEND_ENDPOINT@${VUE_APP_METAPARAMS_BACKEND_ENDPOINT}@g" .platform/application.yml
+            sed -i "s@REPLACE_ME_VUE_APP_SEARCH_ONLY_API_KEY@${VUE_APP_SEARCH_ONLY_API_KEY}@g" .platform/application.yml
+            sed -i "s@REPLACE_ME_VUE_APP_TOOLS_INTERNAL_ENDPOINT@${VUE_APP_TOOLS_INTERNAL_ENDPOINT}@g" .platform/application.yml
+            cat .platform/application.yml
+      - run:
+          name: Deploy with Algolia Platform
+          command: appcli environment deploy --environment $APP_PLATFORM_ENVIRONMENT --manifest-file .platform/application.yml
 
 workflows:
   deploy:
