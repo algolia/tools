@@ -1317,3 +1317,11 @@ decompoundedAttributes:
   default: {'': []}
   settings_default: null
 
+enableNeuralSearchPOV:
+  scope:
+    - search
+  value_type: boolean
+  values:
+    - true
+    - false
+  default: true
