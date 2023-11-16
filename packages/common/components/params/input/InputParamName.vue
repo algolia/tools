@@ -59,6 +59,7 @@
                                 this.setParamValue(key, params[key]);
                             });
                             return this.inputState.setInput('none');
+                            // eslint-disable-next-line
                         } catch (e) {}
                     }
 

@@ -1,5 +1,5 @@
 <template>
-    <div :class="statusClasses.length === 0 ? (['number', 'boolean'].indexOf(typeof param.value) === -1 ? 'text-cosmos-black-opacity-70' : 'text-neptune-1') : statusClasses">
+    <div :class="getStatusClasses(param.value)">
         <div v-if="!isEditable && !isForwardableComponent" @click="makeEditable()" class="break-all">
             <slot name="default">
                 {{ displayValue || JSON.stringify(value)}}
@@ -51,7 +51,6 @@
         },
         computed: {
             getComponent: function () {
-                console.log("getComponent", this.value)
                 if (this.isForwardableComponent) {
                     return this.paramValueComponents[this.paramSpec.object_type];
                 }
@@ -70,6 +69,12 @@
         methods: {
             makeEditable: function () {
                 this.inputState.setInput(this.inputKey, this.currentIndex);
+            },
+            getStatusClasses: function (val) {
+                if (!this.statusClasses || this.statusClasses.length === 0) {
+                    return ['number', 'boolean'].indexOf(typeof val) === -1 ? 'text-cosmos-black-opacity-70' : 'text-neptune-1';
+                }
+                return this.statusClasses;
             }
         }
     }

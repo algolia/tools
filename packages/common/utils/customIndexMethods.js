@@ -41,9 +41,13 @@ const _getSearchParams = function(args, params) {
         return params;
     }
     for (var key in args) {
-        if (key !== null && args[key] !== undefined && args.hasOwnProperty(key)) {
+        if (key !== null && args[key] !== undefined && Object.hasOwn(args, key)) {
             params += params === '' ? '' : '&';
-            params += key + '=' + encodeURIComponent(Object.prototype.toString.call(args[key]) === '[object Array]' ? safeJSONStringify(args[key]) : args[key]);
+            const argAsString = Object.prototype.toString.call(args[key]);
+            params += key + '=' + encodeURIComponent(
+                argAsString === '[object Array]' || argAsString === '[object Object]'
+                    ? safeJSONStringify(args[key]) : args[key]
+            );
         }
     }
     return params;

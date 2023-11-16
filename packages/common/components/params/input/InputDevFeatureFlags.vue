@@ -7,7 +7,7 @@
                     v-if="inputState.positionKey === k"
                     :get-value="k"
                     :set-value="setFlag"
-                    :param-spec="getParamSpec(k)"
+                    :param-spec="getFlagSpec(k)"
                     :prevent-next-input="true"
                     :custom-on-blur="onBlur"
                 />
@@ -15,16 +15,16 @@
                     {{JSON.stringify(k)}}
                 </div>
                 <div class="ml-1">: </div>
-                <div :class="statusClasses.length === 0 ? (['number', 'boolean'].indexOf(typeof v) === -1 ? 'text-cosmos-black-opacity-70' : 'text-neptune-1') : statusClasses">
+                <div :class="getStatusClasses(v)">
                     <component
                         v-if="inputState.inputKey === inputKey && inputState.positionKey === `${k}-value`"
                         v-bind="$props"
                         v-bind:is="getFlagComponent(k)"
                         class="ml-4 max-w-full cursor-pointer"
                         :class="`param-${id}-${inputKeySlug}`"
-                        :get-value="v || getParamSpec(k).default"
+                        :get-value="v || getFlagSpec(k).default"
                         :set-value="setFlagValue(k)"
-                        :param-spec="getParamSpec(k)"
+                        :param-spec="getFlagSpec(k)"
                         :custom-on-blur="onBlur"
                         :input-key="k"
                     />
@@ -122,8 +122,14 @@ export default {
                 this.setParamValue(this.inputKey, obj);
             }
         },
-        getParamSpec: function (flag) {
+        getFlagSpec: function (flag) {
             return paramsSpecs[flag];
+        },
+        getStatusClasses: function (val) {
+            if (!this.statusClasses || this.statusClasses.length === 0) {
+                return ['number', 'boolean'].indexOf(typeof val) === -1 ? 'text-cosmos-black-opacity-70' : 'text-neptune-1';
+            }
+            return this.statusClasses;
         }
     }
 }
