@@ -11,10 +11,10 @@
                 <div class="ml-4" v-if="isObject(param.value)">{</div>
                 <input-value
                     class="ml-4 max-w-full cursor-pointer"
-                    :class="statusClasses.length === 0 ? (['number', 'boolean'].indexOf(typeof param.value) === -1 ? 'text-cosmos-black-opacity-70' : 'text-neptune-1') : statusClasses"
                     v-bind="$props"
                     :value="param.value"
                     :param-spec="paramSpec"
+                    :status-classes="statusClasses"
                     v-if="!Array.isArray(param.value) && !isObject(param.value)"
                 />
             </div>
@@ -44,6 +44,7 @@
                     :value="param.value"
                     :param-spec="paramSpec"
                     :status="status"
+                    :status-classes="statusClasses"
                     v-bind="$props"
                     class="break-words cursor-pointer"
                 />

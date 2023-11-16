@@ -1325,3 +1325,66 @@ enableNeuralSearchPOV:
     - true
     - false
   default: true
+
+devFeatureFlags:
+  scope:
+    - search
+  values:
+    - neuralSearchAlpha
+    - neuralSearchRRFFiltersWeight
+    - neuralSearchRRFGeoWeight
+    - neuralSearchMinSemanticScoreThreshold
+    - queryLogDir
+    - debug
+  value_type: object
+  object_type: dev_feature_flags
+  default: {}
+
+neuralSearchAlpha:
+  scope:
+    - devFeatureFlags
+  value_type: integer
+  min: 0
+  max: 1
+  step: 0.1
+  default: 0.2
+
+neuralSearchRRFFiltersWeight:
+  scope:
+    - devFeatureFlags
+  value_type: integer
+  min: 0
+  max: 999
+  default: 4.0
+
+neuralSearchRRFGeoWeight:
+  scope:
+    - devFeatureFlags
+  value_type: integer
+  min: 0
+  max: 999
+  default: 5.0
+
+neuralSearchMinSemanticScoreThreshold:
+  scope:
+    - devFeatureFlags
+  value_type: integer
+  min: 0
+  max: 1
+  step: 0.01
+  default: 0.64
+
+queryLogDir:
+  scope:
+    - devFeatureFlags
+  value_type: string
+  default: ""
+
+debug:
+  scope:
+    - devFeatureFlags
+  values:
+    - true
+    - false
+  value_type: boolean
+  default: false

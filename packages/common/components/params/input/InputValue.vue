@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div :class="statusClasses.length === 0 ? (['number', 'boolean'].indexOf(typeof param.value) === -1 ? 'text-cosmos-black-opacity-70' : 'text-neptune-1') : statusClasses">
         <div v-if="!isEditable && !isForwardableComponent" @click="makeEditable()" class="break-all">
             <slot name="default">
                 {{ displayValue || JSON.stringify(value)}}
@@ -25,6 +25,7 @@
     import inputMixin from "../scripts/inputMixin";
     import InputDecompoundedAttributes from "./InputDecompoundedAttributes";
     import InputIntegerSlider from "./InputIntegerSlider";
+    import InputDevFeatureFlags from "./InputDevFeatureFlags.vue";
 
     export default {
         name: 'InputValue',
@@ -44,11 +45,13 @@
                     filters: InputFilters,
                     param_name: InputParamName,
                     decompounded_attributes: InputDecompoundedAttributes,
+                    dev_feature_flags: InputDevFeatureFlags
                 }
             }
         },
         computed: {
             getComponent: function () {
+                console.log("getComponent", this.value)
                 if (this.isForwardableComponent) {
                     return this.paramValueComponents[this.paramSpec.object_type];
                 }

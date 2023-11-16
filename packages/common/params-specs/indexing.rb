@@ -25,7 +25,7 @@ params.each do |name, object|
             label = "#{object['name']}: #{label}"
 
             objects.push({
-                'objectID': "#{object['name']}_#{value.to_s}",
+                'objectID': "#{object['name']}_#{name.to_s}",
                 'name': name,
                 'display_name': name.to_s,
                 'label': label,

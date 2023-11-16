@@ -9,6 +9,7 @@ export default {
         'id', 'param', 'configKey', 'inputKey', 'currentIndex', 'displayValue',
         'setInput', 'setParamValue', 'addArrayElement', 'deleteArrayElement', 'deleteKey', 'restoreKey',
         'keysIndexer', 'getValue', 'setValue', 'paramSpec', 'status', 'preventNextInput', 'customOnBlur',
+        'statusClasses'
     ],
     data: function () {
         return {
@@ -34,6 +35,7 @@ export default {
                 return this.param.value;
             },
             set (value) {
+                console.log('set value', this.setValue)
                 if (this.setValue !== undefined) return this.setValue(value, this.value);
                 let newVal = value;
                 if (Array.isArray(this.param.value)) {
@@ -46,6 +48,7 @@ export default {
     },
     methods: {
         onBlur: function () {
+            console.log('onBlur', this.canBlur)
             if (this.canBlur) {
                 this.removeEmptyElementInArray();
                 this.inputState.setInput('none');
@@ -68,6 +71,7 @@ export default {
             return this.inputState.setInput('none');
         },
         nextInput: function (e) {
+            console.log("nextInput", this.inputState.inputKey, this.inputKey)
             if (e && e.keyCode === 9 && e.shiftKey) return this.prevInput(e); // Shift tab = reverse
 
             if (this.inputState.inputKey === 'none') return;
@@ -83,7 +87,10 @@ export default {
             }
 
             if (isObject(this.param.value)) {
-                return;
+                if (this.inputState.inputKey === this.inputKey) {
+                    return;
+                }
+                return this.inputState.setInput(this.inputState.inputKey, null);
             }
 
             return this.inputState.setInput('root');

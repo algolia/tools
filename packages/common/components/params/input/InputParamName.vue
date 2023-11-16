@@ -62,10 +62,6 @@
                         } catch (e) {}
                     }
 
-                    if (selected.value_type === 'object') {
-                        selected.type = 'param';
-                    }
-
                     if (selected.type === 'value') {
                         if (['enum', 'boolean'].indexOf(selected.value_type) !== -1) {
                             return this.setParamValue(selected.param_name, selected.name);
@@ -73,6 +69,16 @@
                         if (selected.value_type === 'enum_list') {
                             this.setParamValue(selected.param_name, [selected.name, '']);
                             return this.inputState.setInput(selected.param_name, 1);
+                        }
+                        if (selected.value_type === 'object') {
+                            let defaultValue = JSON.parse(JSON.stringify(paramsSpecs[selected.param_name].default));
+                            let positionKey = null;
+                            if (Object.hasOwn(paramsSpecs, selected.name)) {
+                                defaultValue[selected.name] = paramsSpecs[selected.name].default;
+                                positionKey = `${selected.name}-value`;
+                            }
+                            this.setParamValue(selected.param_name, defaultValue);
+                            return this.inputState.setInput(selected.param_name, positionKey);
                         }
                     } else if (selected.value_type === 'integer') {
                         this.setParamValue(selected.name, selected.default);

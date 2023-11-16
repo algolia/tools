@@ -7,6 +7,7 @@
             v-model.number="value"
             :min="paramSpec.min !== undefined ? paramSpec.min : ''"
             :max="paramSpec.max !== undefined ? paramSpec.max : ''"
+            :step="paramSpec.step !== undefined ? paramSpec.step : ''"
             v-on:keydown.enter.prevent="canBlur = false"
             v-on:keydown.tab.prevent="canBlur = false"
             v-on:keyup.enter.prevent="nextInput"
