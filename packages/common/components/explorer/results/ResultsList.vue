@@ -83,7 +83,6 @@
 <script>
     import AppliedRules from "./AppliedRules";
     import Pagination from "./Pagination";
-    import ResultsInfo from "./ResultsInfo";
     import Hit from "../hits/Hit";
     import {cleanAttributeName, cleanDeepAttributeName} from '../../../utils/formatters'
     import AppliedAlternatives from "./AppliedAlternatives";
@@ -104,7 +103,7 @@
             ...props.display,
             ...props.actions,
         ],
-        components: {AppliedParams, AppliedAlternatives, Hit, ResultsInfo, Pagination, AppliedRules},
+        components: {AppliedParams, AppliedAlternatives, Hit, Pagination, AppliedRules},
         computed: {
             attributesForFaceting: function () {
                 return this.indexSettings.attributesForFaceting || [];
