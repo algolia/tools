@@ -34,6 +34,17 @@
                 </div>
             </div>
         </div>
+        <div v-if="item._rankingInfo.hasOwnProperty('semanticScore')" class="flex text-cosmos-black-opacity-70 mt-8">
+            <div class="w-128 text-right truncate">
+                vector score
+            </div>
+            <div class="ml-12 flex flex-wrap" style="width: calc(100% - 140px)">
+                <div class="truncate hover:overflow-visible px-2 mr-1 relative group">
+                    {{formatFloat(item._rankingInfo.semanticScore)}}
+                    <tooltip position="right">similarity score computed by vector engine</tooltip>
+                </div>
+            </div>
+        </div>
         <div v-if="item._rankingInfo && item._rankingInfo.personalization" class="mt-16">
             <div class="w-128 text-right mb-8 uppercase tracking-wide text-xs text-nova-grey">
                 Perso Info
@@ -60,8 +71,9 @@
                     {{ mergeInfo.label }}
                 </div>
                 <div class="ml-12 flex flex-wrap" style="width: calc(100% - 140px)">
-                    <div class="truncate hover:overflow-visible px-2 mr-1">
+                    <div class="truncate hover:overflow-visible px-2 mr-1 relative group">
                         {{ mergeInfo.val }}
+                        <tooltip v-if="mergeInfo.description !== undefined" position="right">{{mergeInfo.description}}</tooltip>
                     </div>
                 </div>
             </div>
@@ -72,10 +84,17 @@
 <script>
     import RankingInfoAnalyser from "./rankingInfoAnalyser"
     import paramsSpecs from '../../../params-specs';
+    import Tooltip from "../../Tooltip";
 
     export default {
         name: 'RankingInfo',
-        props: ['item', 'previousItem', 'i', 'indexSettings', 'searchParams'],
+        components: {Tooltip},
+        props: ['item', 'previousItem', 'i', 'indexSettings', 'searchParams', 'neuralSearchInfo'],
+        data: function() {
+            return {
+                active: {},
+            }
+        },
         computed: {
             rankingInfoAnalyzer: function () {
                 return new RankingInfoAnalyser(this.indexSettings);
@@ -119,68 +138,50 @@
                 return criterias.filter((criterion) => { return criterion.val !== null || criterion.oldVal !== null });
             },
             hasNeuralScores: function () {
-                return ['keywordScore', 'neuralScore', 'semanticScore'].some(
-                    (scoreType) => Object.hasOwn(this.item._rankingInfo, scoreType)
-                )
+                return Object.hasOwn(this.item._rankingInfo, 'neuralScore') && this.neuralSearchInfo;
             },
             neuralMergeInfo: function () {
-                const position = (rankingInfo, key) => {
-                    let position;
-                    if (rankingInfo.mergeInfo !== undefined && rankingInfo.mergeInfo[key] !== undefined) {
-                        position = parseInt(rankingInfo.mergeInfo[key]) + 1;
-                    }
-                    return position;
+                const value = (position, score, weight) => {
+                    return `position: ${isNaN(position) ? "-" : position} , score: ${score}, weight: ${weight}`;
                 }
 
-                const score = (rankingInfo, key) => {
-                    let score;
-                    if (rankingInfo[key] !== undefined) {
-                        score = Math.round(parseFloat(rankingInfo[key])*10000)/10000;
-                        if (Number.isInteger(score)) {
-                            score = score.toFixed(1);
-                        }
-                    }
-                    return score
-                }
+                const inputInfo = this.neuralSearchInfo.inputs.map((input) => {
+                    const position = parseInt(this.item._rankingInfo.mergeInfo[input]) + 1;
+                    return {
+                        name: input,
+                        position: position,
+                        score: this.formatFloat(!position ? 0 : 1 / Math.sqrt(position)),
+                        weight: this.formatFloat(this.neuralSearchInfo.rrfWeights[input])
+                    };
+                });
+                const numeratorDetails = inputInfo.map(data => `(${data.weight} * ${data.score})`).join(" + ");
+                const denominatorDetails = inputInfo.map(data => data.weight).join(" + ");
 
-                const value = (position, score) => {
-                    let value = position === undefined ? "" : "position: " + position;
-                    value += score === undefined ? "" : (value === "" ? "score: " + score : " (score: " + score + ")")
-                    return value === "" ? undefined : value;
-                }
-
-                const mergeInfo = [
-                    {
-                        label: 'keyword',
-                        val: value(
-                            position(this.item._rankingInfo, 'keyword'),
-                            score(this.item._rankingInfo, 'keywordScore')
-                        )
-                    },
-                    {
-                        label: 'vector',
-                        val: value(
-                            position(this.item._rankingInfo, 'semantic'),
-                            score(this.item._rankingInfo, 'semanticScore')
-                        )
-                    },
-                    {
-                        label: 'filters',
-                        val: value(position(this.item._rankingInfo, 'filters'))
-                    },
-                    {
-                        label: 'geo',
-                        val: value(position(this.item._rankingInfo, 'geo'))
-                    },
-                    {
-                        label: 'final',
-                        val: value(this.i + 1, score(this.item._rankingInfo, 'neuralScore'))
-                    }
-                ];
-                return mergeInfo.filter((ranking) => ranking.val !== undefined);
+                const mergeInfo = inputInfo.map((info) => ({
+                    label: info.name,
+                    val: value(info.position, info.score, info.weight),
+                    description: isNaN(info.position)
+                        ? "hit did not appear in the input list, score = 0.0"
+                        : `score = 1/√position = 1/${this.formatFloat(Math.sqrt(info.position))}`
+                }));
+                mergeInfo.push({
+                    label: 'final',
+                    val: value(
+                        this.i + 1,
+                        this.formatFloat(this.item._rankingInfo['neuralScore']),
+                        this.formatFloat(this.neuralSearchInfo.inputs.reduce(
+                            (a, input) => a + this.neuralSearchInfo.rrfWeights[input], 0)),
+                    ),
+                    description: `score = weighted average of scores = (${numeratorDetails} / (${denominatorDetails}))`
+                });
+                return mergeInfo;
             }
         },
         methods: {
+            formatFloat: function (score) {
+                score = Math.round(parseFloat(score)*10000)/10000;
+                return Number.isInteger(score) ? score.toFixed(1) : score;
+            },
             getBestMatchingAttribute: function (attributePosition) {
                 if (this.searchableAttributes.length <= 0) return 'No searchable attributes';
                 return this.searchableAttributes[attributePosition]

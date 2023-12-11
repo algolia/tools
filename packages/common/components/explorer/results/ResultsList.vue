@@ -35,6 +35,7 @@
                      :top-attributes="topAttributes"
                      :searchable-attributes="searchableAttributes"
                      :title-attribute="titleAttributeName || autoTitleAttributeName"
+                     :neural-search-info="neuralSearchInfo"
                      v-bind="$props"
                      v-on="$listeners"
                 />
@@ -140,6 +141,21 @@
                     && !this.showCustomRanking
                     && !this.showAttributesForFaceting;
             },
+            neuralSearchInfo: function() {
+                if (!this.searchResponse.explain || !this.searchResponse.explain.neural) {
+                    return null;
+                }
+                const inputs = ['keyword', 'semantic'];
+                if (this.searchResponse.hits.some(hit => hit._rankingInfo.mergeInfo && hit._rankingInfo.mergeInfo.hasOwnProperty('filters'))) {
+                    inputs.push('filters');
+                }
+                if (this.searchResponse.hits.some(hit => hit._rankingInfo.mergeInfo && hit._rankingInfo.mergeInfo.hasOwnProperty('geo'))) {
+                    inputs.push('geo');
+                }
+                const info = this.searchResponse.explain.neural.neuralSearchInfo;
+                info['inputs'] = inputs
+                return info
+            }
         },
         methods: {
             getAllSearchableAttributes: function (attributes) {
