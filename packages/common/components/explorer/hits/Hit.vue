@@ -27,7 +27,7 @@
                 />
                 <div v-if="imageMode && imageSize >= 120" class="mb-8" :class="`w-${imageSize}`">
                     <div class="truncate">{{hit.objectID}}</div>
-                    <div v-for="attribute in imageAttributes">
+                    <div v-for="attribute in imageAttributes" :key="attribute">
                         <div class="truncate" v-if="attribute" v-html="attribute" />
                     </div>
                 </div>
@@ -58,6 +58,7 @@
                     :i="hitPosition"
                     :index-settings="indexSettings"
                     :search-params="searchParams"
+                    :neural-search-info="neuralSearchInfo"
                 />
                 <div class="clearfix"></div>
                 <div v-if="listMode" class="flex justify-end items-center text-nova-grey-opacity-80">
@@ -142,6 +143,7 @@
             HitImage, HitDelete, HitEdit, RankingInfo, Attributes, EditIcon, TrashIcon, FlipLeftIcon, FlipRightIcon, MaximizeIcon, MinimizeIcon},
         props: [
             'panelKey', 'hit', 'previousHit', 'topAttributes', 'searchableAttributes', 'hitPosition', 'titleAttribute',
+            'neuralSearchInfo',
             ...props.credentials,
             ...props.attributes,
             ...props.actions,
