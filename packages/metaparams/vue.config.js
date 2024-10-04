@@ -26,6 +26,6 @@ module.exports = {
             .loader("js-yaml-loader");
 
         // Webpack alias configuration
-        config.resolve.alias.set("@", path.resolve(__dirname, "src")); // Change this to your folder path
+        config.resolve.alias.set("@", path.resolve(__dirname, "src"));
     },
 };
