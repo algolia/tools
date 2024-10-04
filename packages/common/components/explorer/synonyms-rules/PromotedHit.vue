@@ -16,8 +16,10 @@
                 />
                 <div class="flex-grow ml-12">
                     <div v-if="hit">{{objectIDs[i]}}</div>
+                    <!-- XSS Check: properHighlight removes entity decl symbols -->
                     <div v-if="!hit" class="text-cosmos-black-opacity-70" v-html="properHighlight(ids[i])"></div>
-                    <div v-if="titles[i] && titles[i] !== objectIDs[i]" v-html="titles[i]"></div>
+                    <!-- XSS Check: all html entities are escaped using `escapeHtml` -->
+                    <div v-if="titles[i] && titles[i] !== objectIDs[i]" v-html="escapeHtml(titles[i])"></div>
                 </div>
             </div>
         </div>
@@ -27,7 +29,7 @@
 <script>
     import flattenRecord from '../../../utils/flattenRecordForImagePreview';
     import HitImage from "../hits/HitImage";
-    import {properHighlight} from "common/utils/formatters";
+    import {properHighlight, escapeHtml} from "common/utils/formatters";
     import {getSearchIndex} from "../../../utils/algoliaHelpers";
     import props from "../props";
 
@@ -90,7 +92,8 @@
                         this.fetched = (await index.getObjects(this.ids)).results;
                     } catch (e) {}
                 }
-            }
+            },
+            escapeHtml,
         }
     }
 </script>

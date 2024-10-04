@@ -6,6 +6,7 @@
                     <div v-if="canExand" class="absolute left-0 -ml-12 cursor-pointer" @click="collapsed = !collapsed">{{collapsed ? '+' : '-'}}</div>
                     <div v-if="parentKey" class="mr-4">{{parentKey}}:</div>
                     <div v-if="!isCollapsed">[</div>
+                    <!-- XSS Check: highlightedValue is constructed by calling escapeHtml -->
                     <div v-if="isCollapsed" v-html="highlightedValue" class="whitespace-pre truncate"></div>
                 </div>
                 <div v-if="!isCollapsed" class="ml-36">
@@ -21,6 +22,7 @@
                     <div v-if="canExand" class="absolute left-0 -ml-12 cursor-pointer" @click="collapsed = !collapsed">{{collapsed ? '+' : '-'}}</div>
                     <div v-if="parentKey" class="mr-4">{{parentKey}}:</div>
                     <div v-if="!isCollapsed">{</div>
+                        <!-- XSS Check: highlightedValue is constructed by calling escapeHtml -->
                     <div v-if="isCollapsed" v-html="highlightedValue" class="whitespace-pre truncate"></div>
                 </div>
                 <div v-if="!isCollapsed" class="ml-36">
@@ -41,9 +43,10 @@
             <div class="flex relative">
                 <div v-if="isLong" class="absolute left-0 -ml-12 cursor-pointer" @click="collapsed = !collapsed">{{collapsed ? '+' : '-'}}</div>
                 <div v-if="parentKey" class="mr-4">{{parentKey}}:</div>
-
+                <!-- XSS Check: highlightedValue is constructed by calling escapeHtml -->
                 <div v-if="collapsed" v-html="highlightedValue" class="whitespace-pre truncate"></div>
-                <div v-if="!collapsed" class="json-token string break-words w-full"><span v-html="escapeAndHighlightHit(rawStringValue)"></span></div>
+                <!-- XSS Check: all html entities are escaped using `escapeHtml` -->
+                <div v-if="!collapsed" class="json-token string break-words w-full"><span v-html="escapeHtml(rawStringValue)"></span></div>
             </div>
         </div>
     </div>
@@ -51,8 +54,8 @@
 
 <script>
     import {syntaxHighlight} from 'common/utils/formatters';
-    import {isString as isStringFunc} from "../../../utils/types";
-    import {escapeAndHighlightHit} from "../../../utils/formatters";
+    import {isString as isStringFunc} from "common/utils/types";
+    import {escapeAndHighlightHit, escapeHtml} from "common/utils/formatters";
 
     export default {
         name: 'Attribute',
@@ -104,5 +107,8 @@
                 return this.item._v_ == null;
             }
         },
+        methods: {
+            escapeHtml,
+        }
     }
 </script>

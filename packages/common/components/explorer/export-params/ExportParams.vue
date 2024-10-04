@@ -18,6 +18,7 @@
             </div>
         </div>
         <div>
+            <!-- XSS Check: Snippets are generated with Prism -->
             <pre class="text-mono text-sm leading-tight" v-html="snippet"></pre>
         </div>
     </div>
@@ -25,7 +26,7 @@
 
 <script>
     import SnippetGenerator from './snippet-generator';
-    import {getClient} from "../../../utils/algoliaHelpers";
+    import {getClient} from "common/utils/algoliaHelpers";
 
     export default {
         name: 'ExportParams',

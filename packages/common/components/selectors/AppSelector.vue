@@ -10,15 +10,18 @@
         <template v-slot:default="{option, inDropDown, isSelected, highlightString}">
             <div>
                 <div class="flex">
-                    <div v-html="inDropDown ? highlightString(option) : option"></div>
+                    <!-- XSS Check: all html entities are escaped using `escapeHtml` -->
+                    <div v-html="inDropDown ? highlightString(escapeHtml(option)) : escapeHtml(option)"></div>
                     <span v-if="inDropDown && apps[option].__app_name">
-                        &nbsp;- <span v-html="highlightString(apps[option].__app_name)"></span>
+                        <!-- XSS Check: all html entities are escaped using `escapeHtml` -->
+                        &nbsp;- <span v-html="highlightString(escapeHtml(apps[option].__app_name))"></span>
                         </span>
                 </div>
+                <!-- XSS Check: all html entities are escaped using `escapeHtml` -->
                 <div
                     v-if="inDropDown && apps[option].__app_owner"
                     :class="!isSelected ? 'text-solstice-blue-opacity-60' : ''"
-                    v-html="highlightString(apps[option].__app_owner)"
+                    v-html="highlightString(escapeHtml(apps[option].__app_owner))"
                 >
                 </div>
             </div>
@@ -30,6 +33,7 @@
     import CustomSelect from './CustomSelect';
     import BoxIcon from '../../icons/box.svg';
     import ownedByAlgoliaMixin from "../../mixins/ownedByAlgolia";
+    import {escapeHtml} from '../../utils/formatters';
 
     export default {
         name: 'AppSelector',
@@ -92,6 +96,7 @@
                 this.$emit('input', e);
                 this.$store.commit("apps/addAppId", e);
             },
+            escapeHtml,
         }
     }
 </script>

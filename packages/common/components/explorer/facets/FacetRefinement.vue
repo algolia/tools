@@ -1,10 +1,11 @@
 <template>
     <div class="flex mb-4">
+        <!-- XSS Check: highlighted is escaped using `escapeHtml` -->
         <div
             class="truncate cursor-pointer hover:underline mr-8 hit"
             :class="refinement.isActive ? 'font-bold underline' : ''"
             @click="toggleRefinement(refinement.value)"
-            v-html="refinement.highlighted"
+            v-html="unescapeEm(escapeHtml(refinement.highlighted))"
         >
         </div>
         <div
@@ -17,6 +18,8 @@
 </template>
 
 <script>
+    import {escapeHtml, unescapeEm} from "common/utils/formatters";
+
     export default {
         name: 'FacetRefinement',
         props: ['facetName', 'refinement', 'appId', 'indexName', 'searchParams', 'configKey'],
@@ -43,6 +46,8 @@
                     value: newFacetFilters,
                 });
             },
+            escapeHtml,
+            unescapeEm
         }
     }
 </script>

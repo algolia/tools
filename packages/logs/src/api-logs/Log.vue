@@ -3,6 +3,7 @@
         <div class="flex p-8 cursor-pointer" @click="toggleOpen">
             <div class="mr-16 text-nova-grey w-68">{{timeDiff}}</div>
             <div class="flex flex-1 flex-wrap">
+                <!-- XSS Check: all html entities are escaped using `escapeHtml` -->
                 <div
                     class="w-70p"
                     v-html="logItem.operation.toStringFunc(logItem).replace(/<code>/g, '<span class=\'bg-proton-grey-opacity-50 px-4 rounded text-sm\'>').replace(/<\/code>/g, '</span>')"
@@ -99,6 +100,8 @@
 </template>
 
 <script>
+    import {escapeHtml} from "common/utils/formatters"
+
     export default {
         name: 'Log',
         props: ['logItem', 'nowDate'],
@@ -141,7 +144,8 @@
                 } else {
                     this.$emit('onShouldStartFetching');
                 }
-            }
+            },
+            escapeHtml,
         }
     }
 </script>

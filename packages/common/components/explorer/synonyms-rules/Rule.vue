@@ -36,9 +36,11 @@
                             class="py-8 flex flex-wrap border-t border-proton-grey-opacity-20"
                         >
                             <div class="w-188">
+                                <!-- XSS Check: properHighlight removes entity decl symbols -->
                                 if query <span v-html="properHighlight(condition.anchoring)"></span>
                             </div>
                             <div class="ml-4 text-cosmos-black-opacity-70">
+                                <!-- XSS Check: properHighlight removes entity decl symbols -->
                                 "<span v-html="properHighlight(condition.pattern)"></span>"
                             </div>
                         </div>
@@ -55,6 +57,7 @@
                         </div>
                         <div v-if="condition.context" class="py-8 flex flex-wrap border-t border-proton-grey-opacity-20">
                             <div class="w-188">in context</div>
+                            <!-- XSS Check: properHighlight removes entity decl symbols -->
                             <div class="ml-4 text-cosmos-black-opacity-70" v-html="properHighlight(condition.context)"></div>
                         </div>
                     </div>
@@ -74,6 +77,7 @@
                     <div class="w-188">filter automatically on</div>
                     <div class="ml-4">
                         <div class="text-cosmos-black-opacity-70" v-for="filter in intermediateRule.automaticFacetFilters">
+                            <!-- XSS Check: properHighlight removes entity decl symbols -->
                             <span v-html="properHighlight(filter.facet)"></span><span v-if="filter.score !== 1">&lt;score="{{filter.score}}"&gt;</span>
                             <span class="ml-4" v-if="filter.disjunctive">disjunctive (OR)</span>
                         </div>
@@ -83,6 +87,7 @@
                     <div class="w-188">optionalFilter automatically on</div>
                     <div class="ml-4">
                         <div class="text-cosmos-black-opacity-70" v-for="filter in intermediateRule.automaticOptionalFacetFilters">
+                            <!-- XSS Check: properHighlight removes entity decl symbols -->
                             <span v-html="properHighlight(filter.facet)"></span><span v-if="filter.score !== 1">&lt;score="{{filter.score}}"&gt;</span>
                             <span class="ml-4" v-if="filter.disjunctive">disjunctive (OR)</span>
                         </div>
@@ -91,12 +96,14 @@
                 <div v-if="intermediateRule.replacedQuery !== false" class="py-8 flex flex-wrap border-t border-proton-grey-opacity-20">
                     <div class="w-188">replace query by</div>
                     <div class="ml-4 text-cosmos-black-opacity-70">
+                        <!-- XSS Check: properHighlight removes entity decl symbols -->
                         "<span v-html="properHighlight(intermediateRule.replacedQuery)"></span>"
                     </div>
                 </div>
                 <div v-if="intermediateRule.removedWordsFromQuery.length > 0" class="py-8 flex flex-wrap border-t border-proton-grey-opacity-20">
                     <div class="w-188">remove from query</div>
                     <div class="ml-4 mr-8 text-cosmos-black-opacity-70" v-for="word in intermediateRule.removedWordsFromQuery">
+                        <!-- XSS Check: properHighlight removes entity decl symbols -->
                         "<span v-html="properHighlight(word)"></span>"
                     </div>
                 </div>
@@ -104,6 +111,7 @@
                     <div class="w-188">replace in query</div>
                     <div class="ml-4">
                         <div class="mr-4 text-cosmos-black-opacity-70" v-for="word in intermediateRule.replacedWordsFromQuery">
+                            <!-- XSS Check: properHighlight removes entity decl symbols -->
                             "<span v-html="properHighlight(word[0])"></span>" => "<span v-html="properHighlight(word[1])"></span>"
                         </div>
                     </div>
@@ -142,12 +150,14 @@
                 <div v-if="Object.keys(intermediateRule.params).length > 0" class="py-8 flex border-t border-proton-grey-opacity-20">
                     <div class="w-188">apply params</div>
                     <div class="ml-4 text-cosmos-black-opacity-70">
+                        <!-- XSS Check: properHighlight removes entity decl symbols -->
                         <pre v-html="properHighlight(JSON.stringify(intermediateRule.params, null, 2))"></pre>
                     </div>
                 </div>
                 <div v-if="intermediateRule.userData" class="py-8 flex border-t border-proton-grey-opacity-20">
                     <div class="w-188">userData</div>
                     <div class="ml-4 text-cosmos-black-opacity-70">
+                        <!-- XSS Check: properHighlight removes entity decl symbols -->
                         <pre v-html="properHighlight(JSON.stringify(intermediateRule.userData, null, 2))"></pre>
                     </div>
                 </div>
@@ -225,7 +235,7 @@
     import FlipRightIcon from "common/icons/flip-right.svg";
     import HitsTransformer from "../hits/hitsTransformer";
 
-    import {highlightJsonObject, properHighlight} from 'common/utils/formatters';
+    import {highlightJsonObject, properHighlight, escapeHtml} from 'common/utils/formatters';
     import Tooltip from "../../Tooltip";
     import RuleDelete from "./RuleDelete";
     import RuleEdit from "./RuleEdit";
@@ -264,7 +274,8 @@
                 this.$root.$emit(`${this.jumpTo}RuleJumping`, this.rule);
                 window.scrollTo(0, 0);
             },
-            properHighlight: properHighlight
+            properHighlight: properHighlight,
+            escapeHtml,
         }
     }
 </script>

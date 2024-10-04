@@ -11,8 +11,9 @@
         >
             <template slot="item" slot-scope="{ index, item }">
                 <slot v-bind:index="index" v-bind:item="item">
+                    <!-- XSS Check: all values are being constructed using `escapeHtml` -->
                     <div
-                        v-html="item._highlightResult[displayAttributeName] ? item._highlightResult[displayAttributeName].value: item[displayAttributeName]"
+                        v-html="item._highlightResult[displayAttributeName] ? unescapeEm(escapeHtml(item._highlightResult[displayAttributeName].value)): escapeHtml(item[displayAttributeName])"
                     >
                     </div>
                 </slot>
@@ -24,6 +25,7 @@
 <script>
 import Autocomplete from "./Autocomplete";
 import algoliasearch from "algoliasearch";
+import {escapeHtml, unescapeEm} from "common/utils/formatters";
 
 export default {
     name: 'AlgoliaAutocomplete',
@@ -43,7 +45,9 @@ export default {
         refine: async function (query) {
             const data = await this.algoliaIndex.search(query, this.searchParams || {});
             this.items = data.hits;
-        }
+        },
+        escapeHtml,
+        unescapeEm,
     },
     created: function () {
         this.refine('');

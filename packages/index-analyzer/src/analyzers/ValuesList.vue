@@ -15,11 +15,12 @@
             </tr>
             <tr v-for="k in paginatedValues" class="border-t border-proton-grey-opacity-30">
                 <td class="p-8">
+                    <!-- XSS Check: all html entities are escaped using `escapeHtml` -->
                     <span
                         v-if="valueFilter.length === 0 && k.length > 0"
                         class="hit link cursor-pointer text-nebula-blue hover:underline"
                         @click="$emit('onUpdateValueFilter', `${k.length > 0 ? k : '&lt;empty&gt;'}`)"
-                        v-html="highlightStringBaseOnQuery(k, query)"
+                        v-html="highlightStringBaseOnQuery(escapeHtml(k), query)"
                     ></span>
                     <span
                         v-else-if="valueFilter.length === 0"
@@ -43,7 +44,7 @@
 
 <script>
     import Pagination from "common/components/explorer/results/Pagination";
-    import {highlightStringBaseOnQuery} from "common/utils/formatters";
+    import {highlightStringBaseOnQuery, escapeHtml} from "common/utils/formatters";
     import {downloadCsv, percent} from "../helpers";
     import DownloadIcon from "common/icons/download.svg";
 
@@ -88,7 +89,8 @@
                 let fileNameStart = `${this.appId}.${this.indexName}`;
                 if (this.attributeName) fileNameStart = `${fileNameStart}.${this.attributeName}`;
                 downloadCsv(rows, `${fileNameStart}.values.csv`);
-            }
+            },
+            escapeHtml,
         }
     }
 </script>

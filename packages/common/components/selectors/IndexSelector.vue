@@ -9,7 +9,8 @@
     >
         <template slot="icon"><list-icon class="block w-12 h-12 mr-8 -mt-1 fill-current"/></template>
         <template v-slot:default="{option, inDropDown, isSelected, highlightString}">
-            <div v-html="inDropDown ? highlightString(option.name) : option.name"></div>
+            <!-- XSS Check: all html entities are escaped using `escapeHtml` -->
+            <div v-html="inDropDown ? highlightString(escapeHtml(option.name)) : escapeHtml(option.name)"></div>
             <div v-if="inDropDown" class="ml-auto"></div>
             <div
                 v-if="inDropDown && option.entries !== undefined"
@@ -29,6 +30,7 @@
     import CustomSelect from "./CustomSelect";
     import AppSelector from "./AppSelector";
     import {getClient} from "../../utils/algoliaHelpers";
+    import {escapeHtml} from "../../utils/formatters";
 
     export default {
         name: "IndexSelector",
@@ -166,6 +168,7 @@
                     this.$emit('input', this.indexInfo.name);
                 }
             },
+            escapeHtml,
         }
     };
 </script>
