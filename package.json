@@ -2,8 +2,7 @@
     "name": "experimental-apps-monorepo",
     "private": true,
     "dependencies": {
-        "express": "^4.16.4",
-        "universal-analytics": "^0.4.23"
+        "express": "^4.16.4"
     },
     "devDependencies": {
         "@fullhuman/postcss-purgecss": "^3.0.0",
