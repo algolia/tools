@@ -1,3 +1,5 @@
+# Algolia Tools
+
 This repo contains a set of tools that helps working on algolia related topics like data or relevance.
 
 > :warning: While being functional/stable and used daily, these tools are not part of the Algolia product offering and need to be used with caution. We highly encourage to use them only on non-production data
@@ -24,28 +26,28 @@ yarn install
 ```
 
 - Go to `packages/css`;
-- Run `yarn run build`;
+- Run `yarn build`;
 - Run `./copy-css.sh`
 
 ## Run a tool
 
 1. Go to `packages/__tool_name__`
-2. run `yarn run serve`
+2. run `yarn serve`
 
-If you wish to run the relevance testing tool, you will also need to have https://github.com/algolia/tools-backend repo setup and running.
+If you wish to run the relevance testing tool, you will also need to have <https://github.com/algolia/tools-backend> repo setup and running.
 
 ## Build and host all tools
 
 At the root of the repo run:
 
 ```sh
-yarn run build
+yarn build
 ```
 
 Then launch the server:
 
 ```sh
-node server.js
+yarn start
 ```
 
 ## Getting Help
