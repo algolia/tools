@@ -35,8 +35,10 @@
                     <td class="py-8 pr-32">Data Size</td>
                 </tr>
                 <tr v-for="user in users" class="border-t border-proton-grey-opacity-20 hit">
-                    <td class="py-8 pr-32" v-html="user.userID"></td>
-                    <td class="py-8 pr-32" v-html="user.clusterName"></td>
+                    <!-- XSS Check: all html entities are escaped using `escapeHtml` -->
+                    <td class="py-8 pr-32" v-html="escapeHtml(user.userID)"></td>
+                    <!-- XSS Check: all html entities are escaped using `escapeHtml` -->
+                    <td class="py-8 pr-32" v-html="escapeHtml(user.clusterName)"></td>
                     <td class="py-8 pr-32">{{numberWithCommas(user.nbRecords)}}</td>
                     <td class="py-8 pr-32">{{formatHumanNumber(user.dataSize, 2, ['B', 'KB', 'MB', 'GB'], 1000)}}</td>
                 </tr>
@@ -58,7 +60,7 @@
 </template>
 
 <script>
-    import {formatHumanNumber, numberWithCommas} from 'common/utils/formatters'
+    import {formatHumanNumber, numberWithCommas, escapeHtml} from 'common/utils/formatters'
     import {getClient} from "common/utils/algoliaHelpers";
     import panelsMixin from "common/mixins/panelsMixin";
     import Pagination from "common/components/explorer/results/Pagination";
@@ -117,6 +119,7 @@
                     this.nbHits = res.nbHits;
                 }
             },
+            escapeHtml,
         }
     }
 </script>

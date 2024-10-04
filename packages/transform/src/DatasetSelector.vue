@@ -64,6 +64,7 @@
                         />
                     </div>
                     <div v-if="xmlError" class="flex mt-16">
+                        <!-- XSS Check: all xmlError values are being constructed using `escapeHtml` -->
                         <div
                             class="border border-mars-1-opacity-60 bg-mars-1-opacity-20 p-8 rounded"
                             v-html="xmlError"
@@ -107,6 +108,7 @@
     import AppSelector from 'common/components/selectors/AppSelector';
     import IndexSelector from 'common/components/selectors/IndexSelector';
     import {getSearchIndex} from "common/utils/algoliaHelpers";
+    import {escapeHtml} from 'common/utils/formatters';
     import Papa from 'papaparse';
     import FileStreamer from "./FileStreamer";
     import oboe from 'oboe';
@@ -279,7 +281,7 @@
 
                     const stream = new FileStreamer(this.file, () => {
                         if (hits.length <= 0) {
-                            this.xmlError = `No node &lt;${this.xmlRootNode}&gt; found in the first 10MB of the file.<br>Change it and press enter`;
+                            this.xmlError = `No node &lt;${escapeHtml(this.xmlRootNode)}&gt; found in the first 10MB of the file.<br>Change it and press enter`;
                         } else {
                             this.xmlFile = this.file;
                             this.dataset = Object.freeze(hits);
@@ -297,7 +299,7 @@
                                 this.isLoadingFile = false;
                                 this.sample = true;
                             } else  {
-                                this.xmlError = `No node &lt;${this.xmlRootNode}&gt; found in the first 10MB of the file.<br>Change it and press enter`;
+                                this.xmlError = `No node &lt;${escapeHtml(this.xmlRootNode)}&gt; found in the first 10MB of the file.<br>Change it and press enter`;
                                 this.isLoadingFile = false;
                             }
 

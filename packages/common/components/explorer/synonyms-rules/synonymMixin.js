@@ -31,7 +31,10 @@ export default {
                 if (this.synonym._highlightResult.placeholder) return properHighlight(this.synonym._highlightResult.placeholder.value);
                 return properHighlight(this.synonym._highlightResult.synonyms[0].value);
             }
-            return this.input;
+            // Based on observations, the API always returns a _highlightResult
+            // object, so this should never be reached.
+            // For safety, we return the input value, with highlighting and html escaping.
+            return properHighlight(this.input);
         },
         synonyms: function () {
             return this.synonym.corrections
@@ -48,7 +51,10 @@ export default {
                     return this.synonym._highlightResult.synonyms.map((o) => properHighlight(o.value));
                 }
             }
-            return this.synonyms;
+            // Based on observations, the API always returns a _highlightResult
+            // object, so this should never be reached.
+            // For safety, we return the input value, with highlighting and html escaping.
+            return this.synonyms.map((o) => properHighlight(o));
         }
     },
     methods: {

@@ -23,10 +23,11 @@
                 class="border-t border-proton-grey-opacity-30 align-top"
             >
                 <td class="p-8">
+                    <!-- XSS Check: all html entities are escaped using `escapeHtml` -->
                     <span
                         class="hit link cursor-pointer text-nebula-blue hover:underline"
                         @click="$emit('onUpdateAttributeName', `${attributeName}${attributeName.length > 0 ? '.': ''}${key}`)"
-                        v-html="highlightStringBaseOnQuery(key, query)"
+                        v-html="highlightStringBaseOnQuery(escapeHtml(key), query)"
                     ></span>
                 </td>
                 <td class="p-8">{{data.object.keysUniqueWithCount[key]}}</td>
@@ -62,7 +63,7 @@
 
 <script>
     import {downloadCsv, percent} from "../helpers";
-    import {highlightStringBaseOnQuery} from "common/utils/formatters";
+    import {highlightStringBaseOnQuery, escapeHtml} from "common/utils/formatters";
     import DownloadIcon from "common/icons/download.svg";
 
     export default {
@@ -109,7 +110,8 @@
                 let fileNameStart = `${this.appId}.${this.indexName}`;
                 if (this.attributeName) fileNameStart = `${fileNameStart}.${this.attributeName}`;
                 downloadCsv(rows, `${fileNameStart}.types.csv`);
-            }
+            },
+            escapeHtml,
         }
     }
 </script>

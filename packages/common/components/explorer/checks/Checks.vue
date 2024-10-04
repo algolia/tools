@@ -2,6 +2,7 @@
     <div>
         <div v-for="report in reports" class="mb-24">
             <div>{{ report.severity }}</div>
+            <!-- XSS Check: report.message always calls escapeHtml when constructing the messages -->
             <div v-html="report.message"></div>
         </div>
     </div>

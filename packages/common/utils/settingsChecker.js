@@ -1,3 +1,5 @@
+import {escapeHtml} from './formatters';
+
 const params = {
     searchableAttributes: [
         ['danger', 'nonConfiguredParam'],
@@ -61,10 +63,10 @@ function cleanAttribute(attr) {
     while (attr !== tmp) {
         tmp = attr;
         attr = attr
-            .replace(/^\s*/, '')
-            .replace(/\s*$/, '')
-            .replace(/^[^(]*\((.*)\)[^)]*$/, '$1')
-            .replace(/^(.*):[0-9]+?$/, '$1');
+            .replace(/^\s*/, '') // remove leading whitespaces
+            .replace(/\s*$/, '') // remove trailing whitespaces
+            .replace(/^[^(]*\((.*)\)[^)]*$/, '$1') // extract content between the first and last parenthesis
+            .replace(/^(.*):[0-9]+?$/, '$1'); // remove the :[0-9]+ at the end of the string
     }
     return attr.split(',');
 }
@@ -129,6 +131,7 @@ const SettingsChecker = function() {
         if (attributesList.length >= maxSize) {
             this.reports.push(new Report(
                 severity,
+                // maxSize and forParam are not user input, no need to escape them.
                 `It's recommended not to have more than <code>${maxSize}</code> for ${forParam}`
             ));
         }
@@ -163,7 +166,9 @@ const SettingsChecker = function() {
         if ((operator === '<=' && currentVal <= value) || (operator === '>=' && currentVal >= value)) {
             this.reports.push(new Report(
                 severity,
-                `It's recommended not to have <code>${forParam}</code> ${operator} ${value}`
+                // forParam and operator are not user input, no need to escape them.
+                // value _should be safe_ based on search API schema, but we escape it just in case.
+                `It's recommended not to have <code>${forParam}</code> ${operator} ${escapeHtml(value)}`
             ));
         }
     };
@@ -173,6 +178,7 @@ const SettingsChecker = function() {
         if (!Array.isArray(paramValue) || paramValue.length <= 0) {
             this.reports.push(new Report(
                 severity,
+                // forParam is not user input, no need to escape them.
                 `Non configured ${forParam}`
             ));
         }
@@ -207,7 +213,7 @@ const SettingsChecker = function() {
                     if (typeCheckFunc(attributeValues[j])) {
                         this.reports.push(new Report(
                             severity,
-                            `Some records contains ${type_label} values in attribute ${attributesList[i]} and param ${forParam}`
+                            `Some records contains ${escapeHtml(type_label)} values in attribute ${escapeHtml(attributesList[i])} and param ${escapeHtml(forParam)}`
                         ));
                         return;
                     }
@@ -224,7 +230,9 @@ const SettingsChecker = function() {
             if (inParamsValues.indexOf(forParamValues[i]) === -1) {
                 this.reports.push(new Report(
                     severity,
-                    `<code>${forParamValues[i]}</code> is in ${forParam} and should also be in ${inParamName}`
+                    // forParam is not user input, no-need to escape them.
+                    // getParamAttributeList returns user input, values are escaped.
+                    `<code>${escapeHtml(forParamValues[i])}</code> is in ${forParam} and should also be in ${escapeHtml(inParamName)}`
                 ));
             }
         }
@@ -239,7 +247,7 @@ const SettingsChecker = function() {
             if (this.indexAnalyzer.keys.indexOf(attributeName) === -1) {
                 this.reports.push(new Report(
                     severity,
-                    `Unknown attribute ${attributeName} in <code>${forParam}</code>. <code>${attributeName}</code> was not found in a small sample of your records; there might be a typo.`
+                    `Unknown attribute ${escapeHtml(attributeName)} in <code>${forParam}</code>. <code>${escapeHtml(attributeName)}</code> was not found in a small sample of your records; there might be a typo.`
                 ));
             }
         });
