@@ -5,8 +5,8 @@
         "express": "^4.16.4"
     },
     "devDependencies": {
+        "@babel/eslint-parser": "7.12.16",
         "@fullhuman/postcss-purgecss": "^3.0.0",
-        "babel-eslint": "^10.0.1",
         "eslint": "^7.32.0",
         "eslint-loader": "^4.0.2",
         "eslint-plugin-vue": "^7.20.0",
