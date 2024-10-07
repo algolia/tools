@@ -2,20 +2,18 @@
     "name": "experimental-apps-monorepo",
     "private": true,
     "dependencies": {
-        "express": "^4.16.4",
-        "universal-analytics": "^0.4.23"
+        "express": "^4.16.4"
     },
     "devDependencies": {
+        "@babel/eslint-parser": "7.12.16",
         "@fullhuman/postcss-purgecss": "^3.0.0",
-        "babel-eslint": "^10.0.1",
         "eslint": "^7.32.0",
-        "eslint-loader": "^4.0.2",
         "eslint-plugin-vue": "^7.20.0",
         "lerna": "^8.1.8",
         "ts-loader": "8.2.0",
         "typescript": "^5.6.2",
-        "vue-svg-loader": "^0.12.0",
-        "vue-template-compiler": "^2.6"
+        "vue-svg-loader": "^0.16.0",
+        "vue-template-compiler": "^2.7.16"
     },
     "workspaces": [
         "packages/*"
