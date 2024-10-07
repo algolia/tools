@@ -20,7 +20,7 @@
                         <th class="p-8 text-xs uppercase tracking-wide font-normal">App owner</th>
                         <th class="p-8 text-xs uppercase tracking-wide font-normal"></th>
                     </tr>
-                    <tr v-for="(app, appId) in apps">
+                    <tr v-for="(app, appId) in apps" v-bind:key="appId">
                         <td class="p-8">
                             <a
                                 v-if="app.__app_uid"
