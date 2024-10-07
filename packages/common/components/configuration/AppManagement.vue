@@ -1,7 +1,7 @@
 <template>
     <div v-if="$store.state.panels.manageAppsPanel || Object.keys($store.state.apps).length <= 0" class="flex">
         <div class="rounded bg-white m-16 mr-64 border border-solid border-proton-grey-opacity-60">
-            <div class="text-telluric-blue text-xs uppercase tracking-wide flex items-center border-b border-t-0 border-proton-grey bg-white p-8 bg-proton-grey-opacity-80">
+            <div class="text-telluric-blue text-xs uppercase tracking-wide flex items-center border-b border-t-0 border-proton-grey p-8 bg-proton-grey-opacity-80">
                 <div>Manage AppIDs</div>
                 <close-icon
                     class="cursor-pointer ml-auto w-12 h-12"
