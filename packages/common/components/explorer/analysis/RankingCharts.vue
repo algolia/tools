@@ -33,7 +33,7 @@
 </template>
 
 <script>
-    import LineChart from "./LineChart";
+    import LineChart from "./LineChart.vue";
     import RankingInfoAnalyser from "../hits/rankingInfoAnalyser"
 
     export default {

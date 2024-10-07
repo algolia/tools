@@ -63,7 +63,7 @@
     import {formatHumanNumber, numberWithCommas, escapeHtml} from 'common/utils/formatters'
     import {getClient} from "common/utils/algoliaHelpers";
     import panelsMixin from "common/mixins/panelsMixin";
-    import Pagination from "common/components/explorer/results/Pagination";
+    import Pagination from "common/components/explorer/results/Pagination.vue";
 
     export default {
         name: 'Mcm',

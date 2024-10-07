@@ -8,7 +8,7 @@
 </template>
 
 <script>
-    import ParamsPanel from "@/dashboard/ParamsPanel";
+    import ParamsPanel from "@/dashboard/ParamsPanel.vue";
     import panelsMixin from "common/mixins/panelsMixin";
 
     export default {

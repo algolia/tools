@@ -25,7 +25,7 @@
 </template>
 
 <script>
-    import AlgoliaAutocomplete from "../../autocomplete/AlgoliaAutocomplete";
+    import AlgoliaAutocomplete from "../../autocomplete/AlgoliaAutocomplete.vue";
     import paramsSpecs from '../../../params-specs';
     import inputMixin from "../scripts/inputMixin";
 

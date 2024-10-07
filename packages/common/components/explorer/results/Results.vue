@@ -87,7 +87,7 @@
     import GridIcon from 'common/icons/grid.svg'
     import PlusCircleIcon from "common/icons/plus-circle.svg";
 
-    import ResultsList from "./ResultsList";
+    import ResultsList from "./ResultsList.vue";
     import RankingCharts from "../analysis/RankingCharts";
     import RawResponse from "../raw/RawResponse";
     import ExportParams from "../export-params/ExportParams";

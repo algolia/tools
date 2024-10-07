@@ -20,7 +20,7 @@
 </template>
 
 <script>
-    import Facet from "./Facet";
+    import Facet from "./Facet.vue";
 
     export default {
         name: 'Facets',

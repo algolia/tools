@@ -57,8 +57,8 @@
     import BoxIcon from "common/icons/box.svg";
     import ShareIcon from "common/icons/share.svg";
 
-    import HitsConfig from "common/components/configuration/HitsConfig";
-    import PanelsConfig from "common/components/configuration/PanelsConfig";
+    import HitsConfig from "common/components/configuration/HitsConfig.vue";
+    import PanelsConfig from "common/components/configuration/PanelsConfig.vue";
 
     export default {
         name: 'DisplayConfig',

@@ -120,14 +120,14 @@
 </template>
 
 <script>
-    import Attributes from './Attributes';
-    import RankingInfo from './RankingInfo';
+    import Attributes from './Attributes.vue';
+    import RankingInfo from './RankingInfo.vue';
     import HitsTransformer from './hitsTransformer';
     import flattenRecord from 'common/utils/flattenRecordForImagePreview';
     import {escapeHtml} from "common/utils/formatters";
-    import HitEdit from './HitEdit';
-    import HitDelete from './HitDelete';
-    import HitImage from "./HitImage";
+    import HitEdit from './HitEdit.vue';
+    import HitDelete from './HitDelete.vue';
+    import HitImage from "./HitImage.vue";
 
     import EditIcon from 'common/icons/edit.svg';
     import TrashIcon from 'common/icons/trash.svg';
@@ -135,7 +135,7 @@
     import FlipRightIcon from "common/icons/flip-right.svg";
     import MaximizeIcon from "common/icons/maximize.svg";
     import MinimizeIcon from "common/icons/minimize.svg";
-    import Tooltip from "../../Tooltip";
+    import Tooltip from "../../Tooltip.vue";
     import props from "../props";
 
     export default {

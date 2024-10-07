@@ -35,9 +35,9 @@
 
 <script>
     import indexInfoMixin from "common/mixins/indexInfoMixin";
-    import ParamsHeader from "@/dashboard/ParamsHeader";
-    import Params from "common/components/params/Params";
-    import SaveOrCopySettings from "@/dashboard/SaveOrCopySettings";
+    import ParamsHeader from "@/dashboard/ParamsHeader.vue";
+    import Params from "common/components/params/Params.vue";
+    import SaveOrCopySettings from "@/dashboard/SaveOrCopySettings.vue";
     import panelsMixin from "common/mixins/panelsMixin";
 
     export default {

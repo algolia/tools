@@ -436,11 +436,11 @@
 <script>
     import VueInputAutowidth from 'vue-input-autowidth';
 
-    import AceEditor from "../../editor/AceEditor";
-    import Params from "../../params/Params";
+    import AceEditor from "../../editor/AceEditor.vue";
+    import Params from "../../params/Params.vue";
     import IntermediateRule from "./intermediateRule";
-    import HitAutocomplete from "../../autocomplete/HitsAutocomplete";
-    import PromotedHit from "./PromotedHit";
+    import HitAutocomplete from "../../autocomplete/HitsAutocomplete.vue";
+    import PromotedHit from "./PromotedHit.vue";
 
     import TrashIcon from 'common/icons/trash.svg';
     import LoaderIcon from 'common/icons/loader.svg'

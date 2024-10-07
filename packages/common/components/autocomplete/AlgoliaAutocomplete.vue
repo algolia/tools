@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import Autocomplete from "./Autocomplete";
+import Autocomplete from "./Autocomplete.vue";
 import algoliasearch from "algoliasearch";
 import {escapeHtml, unescapeEm} from "common/utils/formatters";
 

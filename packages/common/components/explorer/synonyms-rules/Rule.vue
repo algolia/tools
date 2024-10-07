@@ -236,11 +236,11 @@
     import HitsTransformer from "../hits/hitsTransformer";
 
     import {highlightJsonObject, properHighlight, escapeHtml} from 'common/utils/formatters';
-    import Tooltip from "../../Tooltip";
-    import RuleDelete from "./RuleDelete";
-    import RuleEdit from "./RuleEdit";
+    import Tooltip from "../../Tooltip.vue";
+    import RuleDelete from "./RuleDelete.vue";
+    import RuleEdit from "./RuleEdit.vue";
     import IntermediateRule from "./intermediateRule";
-    import PromotedHit from "./PromotedHit";
+    import PromotedHit from "./PromotedHit.vue";
     import props from "../props";
 
     const hitsTransformer = new HitsTransformer(['_highlightResult']);

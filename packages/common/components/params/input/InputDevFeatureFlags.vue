@@ -66,8 +66,8 @@
 </template>
 
 <script>
-import InputParamValue from "./InputParamValue";
-import InputInteger from "./InputInteger";
+import InputParamValue from "./InputParamValue.vue";
+import InputInteger from "./InputInteger.vue";
 import TrashIcon from "../../../icons/trash.svg"
 import InputString from "./InputString.vue";
 import inputMixin from "../scripts/inputMixin";

@@ -15,7 +15,7 @@
 
     import {goToAnchor} from "common/utils/domHelpers";
     import titleAttribute from "../../../mixins/titleAttribute";
-    import SettingsLoader from "./SettingsLoader";
+    import SettingsLoader from "./SettingsLoader.vue";
     import getSimilarity from "./similarity";
 
     export default {

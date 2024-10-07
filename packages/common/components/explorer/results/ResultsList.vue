@@ -82,13 +82,13 @@
 </template>
 
 <script>
-    import AppliedRules from "./AppliedRules";
-    import Pagination from "./Pagination";
-    import Hit from "../hits/Hit";
+    import AppliedRules from "./AppliedRules.vue";
+    import Pagination from "./Pagination.vue";
+    import Hit from "../hits/Hit.vue";
     import {cleanAttributeName, cleanDeepAttributeName} from '../../../utils/formatters'
-    import AppliedAlternatives from "./AppliedAlternatives";
+    import AppliedAlternatives from "./AppliedAlternatives.vue";
     import props from "../props";
-    import AppliedParams from "./AppliedParams";
+    import AppliedParams from "./AppliedParams.vue";
 
     export default {
         name: 'ResultsList',

@@ -28,7 +28,7 @@
 
 <script>
     import flattenRecord from '../../../utils/flattenRecordForImagePreview';
-    import HitImage from "../hits/HitImage";
+    import HitImage from "../hits/HitImage.vue";
     import {properHighlight, escapeHtml} from "common/utils/formatters";
     import {getSearchIndex} from "../../../utils/algoliaHelpers";
     import props from "../props";

@@ -16,15 +16,15 @@
 </template>
 
 <script>
-    import InputParamName from './InputParamName';
-    import InputParamValue from './InputParamValue';
-    import InputInteger from './InputInteger';
-    import InputString from './InputString';
-    import InputFilters from './InputFilters';
-    import InputAttribute from "./InputAttribute";
+    import InputParamName from './InputParamName.vue';
+    import InputParamValue from './InputParamValue.vue';
+    import InputInteger from './InputInteger.vue';
+    import InputString from './InputString.vue';
+    import InputFilters from './InputFilters.vue';
+    import InputAttribute from "./InputAttribute.vue";
     import inputMixin from "../scripts/inputMixin";
-    import InputDecompoundedAttributes from "./InputDecompoundedAttributes";
-    import InputIntegerSlider from "./InputIntegerSlider";
+    import InputDecompoundedAttributes from "./InputDecompoundedAttributes.vue";
+    import InputIntegerSlider from "./InputIntegerSlider.vue";
     import InputDevFeatureFlags from "./InputDevFeatureFlags.vue";
 
     export default {

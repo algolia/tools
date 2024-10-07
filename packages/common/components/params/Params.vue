@@ -34,8 +34,8 @@
 </template>
 
 <script>
-    import ParamValue from "./ParamValue";
-    import InputParamName from "./input/InputParamName";
+    import ParamValue from "./ParamValue.vue";
+    import InputParamName from "./input/InputParamName.vue";
     import paramsInputState from "./scripts/paramsInputState";
 
     export default {

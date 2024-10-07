@@ -25,8 +25,8 @@
 </template>
 
 <script>
-    import Autocomplete from "./Autocomplete";
-    import PromotedHit from "../explorer/synonyms-rules/PromotedHit";
+    import Autocomplete from "./Autocomplete.vue";
+    import PromotedHit from "../explorer/synonyms-rules/PromotedHit.vue";
     import {getSearchIndex} from "../../utils/algoliaHelpers";
     import props from "../explorer/props";
     import titleAttribute from "../../mixins/titleAttribute";

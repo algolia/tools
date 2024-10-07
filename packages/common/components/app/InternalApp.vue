@@ -20,7 +20,7 @@
 
 <script>
     import LoaderIcon from "common/icons/loader.svg";
-    import AlgoliaProxy from "common/components/app/AlgoliaProxy";
+    import AlgoliaProxy from "common/components/app/AlgoliaProxy.vue";
 
     const isProduction = process.env.NODE_ENV === 'production' && process.env.VUE_APP_PROXY_ENABLED === 'true';
 

@@ -79,13 +79,13 @@
 </template>
 
 <script>
-    import Collection from "./Collection";
+    import Collection from "./Collection.vue";
 
     import PlusCircleIcon from "../../../icons/plus-circle.svg";
-    import Tooltip from "../../Tooltip";
-    import SynonymEdit from "./SynonymEdit";
-    import RuleEdit from "./RuleEdit";
-    import Pagination from "../results/Pagination";
+    import Tooltip from "../../Tooltip.vue";
+    import SynonymEdit from "./SynonymEdit.vue";
+    import RuleEdit from "./RuleEdit.vue";
+    import Pagination from "../results/Pagination.vue";
     import {getSearchIndex} from "../../../utils/algoliaHelpers";
 
     import props from "../props";

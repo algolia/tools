@@ -26,7 +26,7 @@
 
 <script>
     import UserIcon from "common/icons/user.svg";
-    import CustomSelect from "common/components/selectors/CustomSelect";
+    import CustomSelect from "common/components/selectors/CustomSelect.vue";
     import {getClient} from "../../utils/algoliaHelpers";
     import {escapeHtml} from "../../utils/formatters";
 

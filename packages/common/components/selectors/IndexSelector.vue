@@ -27,8 +27,8 @@
     import Vue from "vue"
     import BoxIcon from "../../icons/box.svg";
     import ListIcon from "../../icons/list.svg";
-    import CustomSelect from "./CustomSelect";
-    import AppSelector from "./AppSelector";
+    import CustomSelect from "./CustomSelect.vue";
+    import AppSelector from "./AppSelector.vue";
     import {getClient} from "../../utils/algoliaHelpers";
     import {escapeHtml} from "../../utils/formatters";
 

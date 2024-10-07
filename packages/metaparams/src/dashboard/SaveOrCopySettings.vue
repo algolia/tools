@@ -125,11 +125,11 @@
 </template>
 
 <script>
-    import AppSelector from "common/components/selectors/AppSelector";
+    import AppSelector from "common/components/selectors/AppSelector.vue";
     import indexInfoMixin from "common/mixins/indexInfoMixin";
-    import Tooltip from "common/components/Tooltip";
+    import Tooltip from "common/components/Tooltip.vue";
 
-    import TaskGroupView from "common/components/TasksGroup";
+    import TaskGroupView from "common/components/TasksGroup.vue";
     import {Task, TasksGroup} from "common/utils/tasks";
     import paramsSpecs from 'common/params-specs';
     import {getClient} from 'common/utils/algoliaHelpers';

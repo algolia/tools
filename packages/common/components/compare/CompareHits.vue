@@ -110,7 +110,7 @@
 
 <script>
     import panelsMixin from "common/mixins/panelsMixin";
-    import TrackedElements from "./TrackedElements";
+    import TrackedElements from "./TrackedElements.vue";
 
     export default {
         name: 'CompareHits',
