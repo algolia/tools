@@ -1,27 +1,27 @@
-import { SearchIndex } from 'algoliasearch';
-import {encode} from "@algolia/client-common";
-import {serializeQueryParameters} from "@algolia/transporter";
+import { SearchIndex } from "algoliasearch";
+import { encode } from "@algolia/client-common";
+import { serializeQueryParameters } from "@algolia/transporter";
 import sleep from "../../../common/utils/time";
 
 export interface IndexData {
     settings: object;
     ids: {
-        records: string[],
-        synonyms: string[],
-        rules: string[],
-        settings: string[],
-    }
+        records: string[];
+        synonyms: string[];
+        rules: string[];
+        settings: string[];
+    };
     objects: {
-        records: any,
-        synonyms: any,
-        rules: any,
-        settings: any,
-    },
+        records: any;
+        synonyms: any;
+        rules: any;
+        settings: any;
+    };
     nbHits: {
-        records: number,
-        synonyms: number,
-        rules: number,
-        settings: any,
+        records: number;
+        synonyms: number;
+        rules: number;
+        settings: any;
     };
     complete: boolean;
     cursor: string | null;
@@ -87,7 +87,7 @@ export class IndexLoader {
         this.isLoaded = true;
     }
 
-    public async setBrowseParams (params: any) {
+    public async setBrowseParams(params: any) {
         this.browseParams = params;
         await this.loadRecords(true);
     }
@@ -101,11 +101,14 @@ export class IndexLoader {
 
         this.indexData.ids.settings = keys;
         this.indexData.nbHits.settings = keys.length;
-        this.indexData.objects.settings = keys.reduce((obj:any, key:string) => {
-            // @ts-ignore:
-            obj[key] = settings[key];
-            return obj;
-        }, {});
+        this.indexData.objects.settings = keys.reduce(
+            (obj: any, key: string) => {
+                // @ts-ignore:
+                obj[key] = settings[key];
+                return obj;
+            },
+            {}
+        );
     }
 
     public async loadSynonyms(): Promise<void> {
@@ -115,17 +118,22 @@ export class IndexLoader {
             hitsPerPage: 1000,
             batch: (fetchedSynonyms: any) => {
                 synonyms.push(...fetchedSynonyms);
-            }
+            },
         });
 
         synonyms.sort((a, b) => a.objectID.localeCompare(b.objectID));
 
-        this.indexData.ids.synonyms = synonyms.map((synonym) => synonym.objectID);
+        this.indexData.ids.synonyms = synonyms.map(
+            (synonym) => synonym.objectID
+        );
         this.indexData.nbHits.synonyms = synonyms.length;
-        this.indexData.objects.synonyms = synonyms.reduce((obj:any, synonym) => {
-            obj[synonym.objectID] = synonym;
-            return obj;
-        }, {});
+        this.indexData.objects.synonyms = synonyms.reduce(
+            (obj: any, synonym) => {
+                obj[synonym.objectID] = synonym;
+                return obj;
+            },
+            {}
+        );
     }
 
     public async loadRules(): Promise<void> {
@@ -135,14 +143,14 @@ export class IndexLoader {
             hitsPerPage: 1000,
             batch: (fetchedRules: any) => {
                 rules.push(...fetchedRules);
-            }
+            },
         });
 
         rules.sort((a, b) => a.objectID.localeCompare(b.objectID));
 
         this.indexData.ids.rules = rules.map((rule) => rule.objectID);
         this.indexData.nbHits.rules = rules.length;
-        this.indexData.objects.rules = rules.reduce((obj:any, rule) => {
+        this.indexData.objects.rules = rules.reduce((obj: any, rule) => {
             obj[rule.objectID] = rule;
             return obj;
         }, {});
@@ -180,22 +188,38 @@ export class IndexLoader {
 
             if (reset) {
                 this.indexData.cursor = null;
-                this.index.transporter.read({
-                    method: 'POST',
-                    path: encode('/1/indexes/%s/browse', this.index.indexName),
-                    data: {
-                        params: serializeQueryParameters({attributesToRetrieve: ['*'], ...this.browseParams}),
-                    },
-                }).then(fn);
+                this.index.transporter
+                    .read({
+                        method: "POST",
+                        path: encode(
+                            "/1/indexes/%s/browse",
+                            this.index.indexName
+                        ),
+                        data: {
+                            params: serializeQueryParameters({
+                                attributesToRetrieve: ["*"],
+                                ...this.browseParams,
+                            }),
+                        },
+                    })
+                    .then(fn);
             } else {
-                this.index.transporter.read({
-                    method: 'POST',
-                    path: encode('/1/indexes/%s/browse', this.index.indexName),
-                    data: {
-                        params: serializeQueryParameters({attributesToRetrieve: ['*'], ...this.browseParams}),
-                        cursor: this.indexData.cursor,
-                    },
-                }).then(fn);
+                this.index.transporter
+                    .read({
+                        method: "POST",
+                        path: encode(
+                            "/1/indexes/%s/browse",
+                            this.index.indexName
+                        ),
+                        data: {
+                            params: serializeQueryParameters({
+                                attributesToRetrieve: ["*"],
+                                ...this.browseParams,
+                            }),
+                            cursor: this.indexData.cursor,
+                        },
+                    })
+                    .then(fn);
             }
         });
     }
@@ -221,5 +245,4 @@ export class IndexLoader {
 
         this.isLoading = false;
     }
-
 }
