@@ -28,7 +28,8 @@
                 <div v-if="imageMode && imageSize >= 120" class="mb-8" :class="`w-${imageSize}`">
                     <div class="truncate">{{hit.objectID}}</div>
                     <div v-for="attribute in imageAttributes" :key="attribute">
-                        <div class="truncate" v-if="attribute" v-html="attribute" />
+                        <!-- XSS Check: all html entities are escaped using `escapeHtml` -->
+                        <div class="truncate" v-if="attribute" v-html="escapeHtml(attribute)" />
                     </div>
                 </div>
                 <div v-if="personalized || promoted || reranked" class="flex mb-12">
@@ -123,6 +124,7 @@
     import RankingInfo from './RankingInfo';
     import HitsTransformer from './hitsTransformer';
     import flattenRecord from 'common/utils/flattenRecordForImagePreview';
+    import {escapeHtml} from "common/utils/formatters";
     import HitEdit from './HitEdit';
     import HitDelete from './HitDelete';
     import HitImage from "./HitImage";
@@ -214,7 +216,8 @@
                 if (this.flattenHit[attributeName]) return this.flattenHit[attributeName];
 
                 return this.hit[attributeName];
-            }
+            },
+            escapeHtml,
         }
     }
 </script>

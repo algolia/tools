@@ -10,7 +10,8 @@
         @onBlur="onBlur"
     >
         <template slot="item" slot-scope="{ index, item }">
-            <div v-html="item"></div>
+            <!-- XSS Check: all html entities are escaped using `escapeHtml` -->
+            <div v-html="highlightStringBaseOnQuery(escapeHtml(item), query)"></div>
         </template>
     </autocomplete>
 </template>
@@ -18,6 +19,7 @@
 <script>
     import Autocomplete from "../../autocomplete/Autocomplete";
     import inputMixin from "../scripts/inputMixin";
+    import {escapeHtml, highlightStringBaseOnQuery} from "common/utils/formatters";
 
     export default {
         name: 'InputAttribute',
@@ -28,6 +30,7 @@
             return {
                 items: [],
                 extraAttrs: this.paramSpec.values || [],
+                query: '',
             }
         },
         watch: {
@@ -46,9 +49,9 @@
                 this.nextInput(e);
             },
             refine: function (query) {
+                this.query = query;
                 if (this.keysIndexer) {
                     let items = this.keysIndexer.search(query, 4, this.extraAttrs);
-
                     if (this.paramSpec.modifiers) {
                        const newItems = [];
 
@@ -74,6 +77,8 @@
                     this.items = items;
                 }
             },
+            escapeHtml,
+            highlightStringBaseOnQuery,
         }
     }
 </script>

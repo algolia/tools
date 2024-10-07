@@ -1,5 +1,6 @@
 <template>
     <div class="relative h-100 w-256">
+        <!-- XSS Check: the tokens are handled through `escapeHtml` -->
         <pre v-html="parsedValue"
              ref="pre"
              class="filter overflow-y-auto whitespace-pre-wrap absolute top-0 block w-full h-full bg-white text-telluric-blue resize-none shadow-none outline-none p-0 border-none font-mono text-base"
@@ -21,6 +22,7 @@
 <script>
     import Parser from 'algolia-filters-js-syntax-validator';
     import inputMixin from "../scripts/inputMixin";
+    import {escapeHtml} from "common/utils/formatters";
 
     export default {
         name: 'InputFilters',
@@ -32,7 +34,17 @@
         },
         computed: {
             parsedValue: function () {
-                return this.parser.parse(this.value).html;
+                if (!this.value) return '';
+                const response = this.parser.parse(this.value);
+                const content = response.tokens.map(function(token) {
+                    return `<span class="${token.cssClasses.join(' ')}">${
+                        escapeHtml(token.raw_value)
+                    }</span><span class="${token.afterSeparatorsCssClasses.join(' ')}">${
+                        escapeHtml(token.afterSeparators)
+                    }</span>`;
+                }).join('');
+
+                return content;
             }
         },
     }

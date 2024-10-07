@@ -1,7 +1,7 @@
-export default function(options, storage, key) {
+export default function(options, key) {
     options = options || {};
-    storage = options.storage || (window && window.localStorage);
     key = options.key || 'vuex';
+    const storage = window && window.sessionStorage;
     const timeBeforeSaving = 500;
     let timeout = null;
 

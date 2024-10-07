@@ -1,5 +1,6 @@
 <template>
     <div class="text-solstice-blue">
+        <!-- XSS Check: assumes diff2html is xss safe -->
         <div v-html="htmlDiff"></div>
     </div>
 </template>

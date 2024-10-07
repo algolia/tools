@@ -56,7 +56,7 @@
 <script>
     import ChevronDownIcon from "common/icons/chevron-down.svg";
     import Vue from 'vue';
-    import {highlightStringBaseOnQuery} from "../../utils/formatters";
+    import {highlightStringBaseOnQuery, escapeHtml} from "../../utils/formatters";
 
     export default {
         name: 'CustomSelect',
@@ -92,6 +92,7 @@
         },
         methods: {
             highlightString: function (s) {
+                // Not XSS safe, s must be escaped before calling this function.
                 return highlightStringBaseOnQuery(s, this.query);
             },
             fakeBlur: function () {
@@ -155,8 +156,7 @@
                         this.$refs.input.setSelectionRange(0, this.$refs.input.value.length);
                     });
                 }
-            }
+            },
         },
-
     }
 </script>

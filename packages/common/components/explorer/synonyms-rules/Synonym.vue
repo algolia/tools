@@ -13,10 +13,12 @@
             <div class="max-w-80p p-8">
                 <div class="flex flex-wrap">
                     <div>
+                        <!-- XSS Check: highlightInput is built by calling properHighlight which removes entity decl symbols -->
                         <span class="text-cosmos-black-opacity-70" v-html="highlightInput"></span>
                         <span class="mx-4">{{ isSynonym ? '<=>' : '=>'}}</span>
                     </div>
                     <div v-for="(s, index) in highlightSynonyms">
+                        <!-- XSS Check: the slice highlightSynonyms is built by calling properHighlight on each item and this removes entity decl symbols -->
                         <span class="text-cosmos-black-opacity-70" v-html="s">{{s}}</span>
                         <span class="mx-4" v-if="index < synonyms.length - 1">
                             {{isSynonym ? '<=>' : 'OR'}}
@@ -81,6 +83,7 @@
     import TrashIcon from 'common/icons/trash.svg';
     import FlipLeftIcon from "common/icons/flip-left.svg";
     import FlipRightIcon from "common/icons/flip-right.svg";
+    import {escapeHtml} from "common/utils/formatters";
 
     import SynonymDelete from "./SynonymDelete";
     import Tooltip from "../../Tooltip";
@@ -108,6 +111,7 @@
                 this.$root.$emit(`${this.jumpTo}SynonymJumping`, this.synonym);
                 window.scrollTo(0, 0);
             },
+            escapeHtml,
         },
     }
 </script>

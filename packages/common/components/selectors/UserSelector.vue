@@ -10,7 +10,8 @@
         <template slot="icon"><user-icon class="block -mt-1 mr-8 w-12 h-12"/></template>
         <template v-slot:default="{option, inDropDown, isSelected, highlightString}">
             <div>
-                <div v-html="inDropDown ? highlightString(userLabel(option.userID)) : userLabel(option)"></div>
+                <!-- XSS Check: all html entities are escaped using `escapeHtml` -->
+                <div v-html="inDropDown ? highlightString(escapeHtml(userLabel(option.userID))) : escapeHtml(userLabel(option))"></div>
                 <div
                     v-if="inDropDown"
                     :class="isSelected ? 'text-white': 'text-solstice-blue-opacity-50'"
@@ -27,6 +28,7 @@
     import UserIcon from "common/icons/user.svg";
     import CustomSelect from "common/components/selectors/CustomSelect";
     import {getClient} from "../../utils/algoliaHelpers";
+    import {escapeHtml} from "../../utils/formatters";
 
     export default {
         name: 'UserSelector',
@@ -89,7 +91,8 @@
                 if (userId === '*') return '* (shared objects)';
                 if (userId === '.') return '. (all objects in machine)';
                 return userId;
-            }
+            },
+            escapeHtml,
         },
     }
 </script>
