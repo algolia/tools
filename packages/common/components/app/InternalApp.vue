@@ -1,9 +1,7 @@
 <template>
     <div id="app" class="bg-moon-grey text-base font-sans-alt min-h-screen">
         <algolia-proxy :enabled="isProduction">
-            <template v-slot:loggedIn>
-                <!-- Content for loggedIn slot goes here if any -->
-            </template>
+            <template v-slot:loggedIn />
 
             <template v-slot:loggedOut>
                 <div class="h-screen flex justify-center items-center">
