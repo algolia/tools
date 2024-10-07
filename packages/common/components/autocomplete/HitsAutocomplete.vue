@@ -12,7 +12,7 @@
             :no-auto-width="true"
             v-on="$listeners"
         >
-            <template slot="item" slot-scope="{ index, item }">
+            <template v-slot:item="{ index, item }">
                 <promoted-hit
                     :hit="item"
                     class="w-240"

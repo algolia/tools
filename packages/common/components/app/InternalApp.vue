@@ -1,18 +1,24 @@
 <template>
     <div id="app" class="bg-moon-grey text-base font-sans-alt min-h-screen">
         <algolia-proxy :enabled="isProduction">
-            <slot slot="loggedIn" />
-            <div slot="loggedOut" class="h-screen flex justify-center items-center">
-                <div class="flex flex-col justify-center items-center">
-                    <loader-icon class="w-48 h-48 infinte-rotate" />
-                    <div class="mt-20">
-                        Connecting to your Algolia account
+            <template v-slot:loggedIn>
+                <!-- Content for loggedIn slot goes here if any -->
+            </template>
+
+            <template v-slot:loggedOut>
+                <div class="h-screen flex justify-center items-center">
+                    <div class="flex flex-col justify-center items-center">
+                        <loader-icon class="w-48 h-48 infinte-rotate" />
+                        <div class="mt-20">
+                            Connecting to your Algolia account
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div slot="unauthorized">
-                This an internal algolia app.
-            </div>
+            </template>
+
+            <template v-slot:unauthorized>
+                This is an internal Algolia app.
+            </template>
         </algolia-proxy>
     </div>
 

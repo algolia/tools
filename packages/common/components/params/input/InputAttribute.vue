@@ -9,7 +9,7 @@
         @onSelected="onSelected"
         @onBlur="onBlur"
     >
-        <template slot="item" slot-scope="{ index, item }">
+        <template v-slot:item="{ index, item }">
             <!-- XSS Check: all html entities are escaped using `escapeHtml` -->
             <div v-html="highlightStringBaseOnQuery(escapeHtml(item), query)"></div>
         </template>

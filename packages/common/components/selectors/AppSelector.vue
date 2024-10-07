@@ -6,7 +6,7 @@
         :options="appIds"
         :refine="refine"
     >
-        <template slot="icon"><box-icon class="block w-12 h-12 -mt-1 mr-8 fill-current"/></template>
+        <template v-slot:icon><box-icon class="block w-12 h-12 -mt-1 mr-8 fill-current"/></template>
         <template v-slot:default="{option, inDropDown, isSelected, highlightString}">
             <div>
                 <div class="flex">
