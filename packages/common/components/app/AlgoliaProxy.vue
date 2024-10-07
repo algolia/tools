@@ -1,44 +1,53 @@
 <template>
     <div>
-        <slot name="loggedIn" v-if="authorized && (!enabled || currentUser)" />
-        <slot name="loggedOut" v-else-if="authorized" />
-        <slot name="unauthorized" v-else />
+        <!-- Always render the default slot and pass down state -->
+        <slot
+            :authorized="authorized"
+            :current-user="currentUser"
+            :enabled="enabled"
+        ></slot>
     </div>
 </template>
 
 <script>
-    export default {
-        name: 'AlgoliaProxy',
-        props: ['enabled'],
-        data: function () {
-            return {
-                currentUser: null,
-                authorized: true,
-                paused: false,
+export default {
+    name: 'AlgoliaProxy',
+    props: {
+        enabled: {
+            type: Boolean,
+            required: true
+        }
+    },
+    data() {
+        return {
+            currentUser: null,
+            authorized: true,
+            paused: false,
+        };
+    },
+    created() {
+        this.connect();
+
+        this.$root.$on('onShouldPauseProxy', () => {
+            this.paused = true;
+        });
+
+        this.$root.$on('onShouldResumeProxy', () => {
+            this.paused = false;
+        });
+
+        window.addEventListener("focus", () => {
+            if (!this.paused) {
+                this.connect();
             }
-        },
-        created:  function () {
-            this.connect();
+        });
+    },
+    methods: {
+        async connect() {
+            if (!this.enabled) return;
 
-            this.$root.$on('onShouldPauseProxy', () => {
-                this.paused = true;
-            });
-
-            this.$root.$on('onShouldResumeProxy', () => {
-                this.paused = true;
-            });
-
-            window.addEventListener("focus", () => {
-                if (!this.paused) {
-                    this.connect();
-                }
-            });
-        },
-        methods: {
-            connect: async function () {
-                if (!this.enabled) return;
-
-                const backendEndpoint = process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT;
+            const backendEndpoint = process.env.VUE_APP_METAPARAMS_BACKEND_ENDPOINT;
+            try {
                 const res = await fetch(`${backendEndpoint}/user/info?redirect_to=${window.location.href}`, {
                     credentials: 'include',
                     headers: {
@@ -67,7 +76,11 @@
                 this.$store.commit('panels/setCurrentUserEmail', json.user.email);
 
                 this.currentUser = json;
+            } catch (error) {
+                console.error("Error connecting:", error);
+                this.authorized = false;
             }
         }
     }
+}
 </script>
