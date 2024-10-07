@@ -45,7 +45,7 @@
 
     import panelsMixin from "common/mixins/panelsMixin";
     import Vue from 'vue';
-    import Tooltip from "common/components/Tooltip";
+    import Tooltip from "common/components/Tooltip.vue";
 
     export default {
         name: 'IndexDelete',

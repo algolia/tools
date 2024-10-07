@@ -43,7 +43,7 @@
 </template>
 
 <script>
-    import HitEdit from "../hits/HitEdit";
+    import HitEdit from "../hits/HitEdit.vue";
     import props from "../props";
     import {getSearchIndex} from "../../../utils/algoliaHelpers";
     import LoaderIcon from 'common/icons/loader.svg'

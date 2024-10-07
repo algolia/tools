@@ -7,7 +7,7 @@
 </template>
 
 <script>
-    import Rule from "./Rule";
+    import Rule from "./Rule.vue";
     import {getSearchIndex} from "../../../utils/algoliaHelpers";
     import props from "../props";
 

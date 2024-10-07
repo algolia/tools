@@ -22,7 +22,7 @@
 
 <script>
     import SearchIcon from "common/icons/search.svg";
-    import CustomSelect from "common/components/selectors/CustomSelect";
+    import CustomSelect from "common/components/selectors/CustomSelect.vue";
     import panelsMixin from "common/mixins/panelsMixin";
     import {parseCurlCommand} from "common/utils/curlCommandExtractor";
     import indexInfoMixin from "common/mixins/indexInfoMixin";

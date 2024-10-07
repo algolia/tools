@@ -85,9 +85,9 @@
     import FlipRightIcon from "common/icons/flip-right.svg";
     import {escapeHtml} from "common/utils/formatters";
 
-    import SynonymDelete from "./SynonymDelete";
-    import Tooltip from "../../Tooltip";
-    import SynonymEdit from "./SynonymEdit";
+    import SynonymDelete from "./SynonymDelete.vue";
+    import Tooltip from "../../Tooltip.vue";
+    import SynonymEdit from "./SynonymEdit.vue";
     import synonymMixin from "./synonymMixin";
     import props from "../props";
 

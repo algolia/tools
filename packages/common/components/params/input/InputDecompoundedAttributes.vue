@@ -67,8 +67,8 @@
 
 <script>
     import inputMixin from "../scripts/inputMixin";
-    import InputParamValue from "./InputParamValue";
-    import InputAttribute from "./InputAttribute";
+    import InputParamValue from "./InputParamValue.vue";
+    import InputAttribute from "./InputAttribute.vue";
 
     import TrashIcon from "../../../icons/trash.svg"
 

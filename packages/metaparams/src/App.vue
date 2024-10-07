@@ -84,18 +84,18 @@
 </template>
 
 <script>
-    import InternalApp from "common/components/app/InternalApp";
-    import Dashboard from "@/dashboard/Dashboard";
-    import AppHeader from "common/components/header/AppHeader";
-    import AppManagement from "common/components/configuration/AppManagement";
-    import DisplayConfig from "@/dashboard/DisplayConfig";
-    import CompareHits from "common/components/compare/CompareHits";
+    import InternalApp from "common/components/app/InternalApp.vue";
+    import Dashboard from "@/dashboard/Dashboard.vue";
+    import AppHeader from "common/components/header/AppHeader.vue";
+    import AppManagement from "common/components/configuration/AppManagement.vue";
+    import DisplayConfig from "@/dashboard/DisplayConfig.vue";
+    import CompareHits from "common/components/compare/CompareHits.vue";
 
     import SplitIcon from "common/icons/split.svg";
     import CompareIcon from "common/icons/compare.svg";
     import BarChartIcon from 'common/icons/bar-chart.svg'
-    import ShareView from "@/dashboard/ShareView";
-    import SearchBox from "@/dashboard/SearchBox";
+    import ShareView from "@/dashboard/ShareView.vue";
+    import SearchBox from "@/dashboard/SearchBox.vue";
 
     import {goToAnchor} from "common/utils/domHelpers";
 

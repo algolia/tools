@@ -151,15 +151,15 @@
 <script>
     import {formatHumanNumber} from 'common/utils/formatters'
 
-    import PanelTabs from "common/components/tabs/PanelTabs";
-    import PerformSearch from "common/components/explorer/results/PerformSearch";
-    import Results from "common/components/explorer/results/Results";
-    import ErrorMessage from "common/components/explorer/results/ErrorMessage";
-    import Fetcher from "common/components/explorer/synonyms-rules/Fetcher";
-    import Checks from "common/components/explorer/checks/Checks";
+    import PanelTabs from "common/components/tabs/PanelTabs.vue";
+    import PerformSearch from "common/components/explorer/results/PerformSearch.vue";
+    import Results from "common/components/explorer/results/Results.vue";
+    import ErrorMessage from "common/components/explorer/results/ErrorMessage.vue";
+    import Fetcher from "common/components/explorer/synonyms-rules/Fetcher.vue";
+    import Checks from "common/components/explorer/checks/Checks.vue";
     import indexInfoMixin from "common/mixins/indexInfoMixin";
     import panelsMixin from "common/mixins/panelsMixin";
-    import Mcm from "./Mcm";
+    import Mcm from "./Mcm.vue";
 
     export default {
         name: 'Explorer',

@@ -17,7 +17,7 @@
 </template>
 
 <script>
-    import Autocomplete from "../../autocomplete/Autocomplete";
+    import Autocomplete from "../../autocomplete/Autocomplete.vue";
     import inputMixin from "../scripts/inputMixin";
     import {escapeHtml, highlightStringBaseOnQuery} from "common/utils/formatters";
 

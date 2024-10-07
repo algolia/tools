@@ -35,7 +35,7 @@
 </template>
 
 <script>
-    import TrackedElement from "./TrackedElement";
+    import TrackedElement from "./TrackedElement.vue";
 
     export default {
         name: 'TrackedElements',

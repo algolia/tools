@@ -90,10 +90,10 @@
 </template>
 
 <script>
-    import Synonym from "./Synonym";
-    import Rule from "./Rule";
-    import RuleBatch from "./RuleBatch";
-    import Tooltip from "../../Tooltip";
+    import Synonym from "./Synonym.vue";
+    import Rule from "./Rule.vue";
+    import RuleBatch from "./RuleBatch.vue";
+    import Tooltip from "../../Tooltip.vue";
     import props from "../props";
 
     export default {

@@ -30,7 +30,7 @@
 </template>
 
 <script>
-    import FacetRefinement from "./FacetRefinement";
+    import FacetRefinement from "./FacetRefinement.vue";
     import {getSearchIndex} from "../../../utils/algoliaHelpers";
 
     export default {

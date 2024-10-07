@@ -75,7 +75,7 @@
     import HistoryIcon from "common/icons/history.svg";
     import FlipLeftIcon from "common/icons/flip-left.svg";
     import FlipRightIcon from "common/icons/flip-right.svg";
-    import Tooltip from "common/components/Tooltip";
+    import Tooltip from "common/components/Tooltip.vue";
     import panelsMixin from "common/mixins/panelsMixin";
     import indexInfoMixin from "common/mixins/indexInfoMixin";
     import {algoliaParams} from "common/utils/algoliaHelpers";

@@ -120,30 +120,30 @@
 </template>
 
 <script>
-    import Explorer from "./Explorer";
-    import DashboardConfig from "./DashboardConfig";
-    import Queries from "@/queries/queries";
-    import IndexInfo from "@/dashboard/IndexInfo";
-    import IndexNew from "common/components/index/IndexNew";
-    import IndexRename from "common/components/index/IndexRename";
-    import AppSelector from "common/components/selectors/AppSelector";
-    import IndexSelector from "common/components/selectors/IndexSelector";
-    import ServerSelector from "common/components/selectors/ServerSelector";
-    import UserSelector from "common/components/selectors/UserSelector";
-    import Facets from "common/components/explorer/facets/Facets";
+    import Explorer from "./Explorer.vue";
+    import DashboardConfig from "./DashboardConfig.vue";
+    import Queries from "@/queries/queries.vue";
+    import IndexInfo from "@/dashboard/IndexInfo.vue";
+    import IndexNew from "common/components/index/IndexNew.vue";
+    import IndexRename from "common/components/index/IndexRename.vue";
+    import AppSelector from "common/components/selectors/AppSelector.vue";
+    import IndexSelector from "common/components/selectors/IndexSelector.vue";
+    import ServerSelector from "common/components/selectors/ServerSelector.vue";
+    import UserSelector from "common/components/selectors/UserSelector.vue";
+    import Facets from "common/components/explorer/facets/Facets.vue";
 
     import FlipLeftIcon from "common/icons/flip-left.svg";
     import FlipRightIcon from "common/icons/flip-right.svg";
     import MaximizeIcon from "common/icons/maximize.svg";
     import MinimizeIcon from "common/icons/minimize.svg";
-    import IndexDelete from "@/dashboard/IndexDelete";
-    import Tooltip from "common/components/Tooltip";
-    import SearchBox from "@/dashboard/SearchBox";
+    import IndexDelete from "@/dashboard/IndexDelete.vue";
+    import Tooltip from "common/components/Tooltip.vue";
+    import SearchBox from "@/dashboard/SearchBox.vue";
     import indexInfoMixin from "common/mixins/indexInfoMixin";
     import panelsMixin from "common/mixins/panelsMixin";
 
     import ownedByAlgoliaMixin from "common/mixins/ownedByAlgolia";
-    import IndexClear from "./IndexClear";
+    import IndexClear from "./IndexClear.vue";
 
     export default {
         name: 'Dashboard',

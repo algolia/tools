@@ -46,7 +46,7 @@
     import {getClient} from 'common/utils/algoliaHelpers';
 
     import Vue from 'vue';
-    import Tooltip from "common/components/Tooltip";
+    import Tooltip from "common/components/Tooltip.vue";
     import panelsMixin from "common/mixins/panelsMixin";
 
     export default {

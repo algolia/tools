@@ -8,7 +8,7 @@
 </template>
 
 <script>
-    import Attributes from "../hits/Attributes";
+    import Attributes from "../hits/Attributes.vue";
     import HitsTransformer from "../hits/hitsTransformer";
 
     export default {

@@ -30,7 +30,7 @@
 </template>
 
 <script>
-    import CustomSelect from './CustomSelect';
+    import CustomSelect from './CustomSelect.vue';
     import BoxIcon from '../../icons/box.svg';
     import ownedByAlgoliaMixin from "../../mixins/ownedByAlgolia";
     import {escapeHtml} from '../../utils/formatters';

@@ -72,7 +72,7 @@
 <script>
     import TrashIcon from '../../icons/trash.svg';
     import CloseIcon from '../../icons/x.svg';
-    import EditKey from "./EditKey";
+    import EditKey from "./EditKey.vue";
     import {getApplicationsIndex} from "../selectors/getClusterList";
 
     export default {

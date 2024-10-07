@@ -2,7 +2,7 @@
     "name": "experimental-apps-monorepo",
     "private": true,
     "dependencies": {
-        "express": "^4.16.4"
+        "express": "^4.21.0"
     },
     "devDependencies": {
         "@babel/eslint-parser": "7.12.16",

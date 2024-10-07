@@ -18,7 +18,7 @@
 
 <script>
     import inputMixin from "../scripts/inputMixin";
-    import AlgoliaAutocomplete from "../../autocomplete/AlgoliaAutocomplete";
+    import AlgoliaAutocomplete from "../../autocomplete/AlgoliaAutocomplete.vue";
 
     export default {
         name: 'InputParamValue',

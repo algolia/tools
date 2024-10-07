@@ -14,7 +14,7 @@
 
 <script>
     import ServerIcon from "common/icons/server.svg";
-    import CustomSelect from "common/components/selectors/CustomSelect";
+    import CustomSelect from "common/components/selectors/CustomSelect.vue";
     import getClusterList from "./getClusterList";
 
     export default {
