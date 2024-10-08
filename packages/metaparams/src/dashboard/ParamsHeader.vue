@@ -1,5 +1,5 @@
 <template>
-    <div class="text-telluric-blue text-xs uppercase tracking-wide flex items-center border-b border-proton-grey bg-white p-8 bg-proton-grey-opacity-40"
+    <div class="text-telluric-blue text-xs uppercase tracking-wide flex items-center border-b border-proton-grey p-8 bg-proton-grey-opacity-40"
          :class="configKey === 'indexSettings' ? 'border-t' : ''">
         <div class="mr-auto">{{ configKey !== 'indexSettings' ? 'Search Params': 'Index Settings'}}</div>
         <button class="relative group">
