@@ -6,11 +6,14 @@ const history = require('./customHistory');
 const app = express();
 
 app.use((req, res, next) => {
+    console.log("force https upgrade in production");
     if (process.env.NODE_ENV === 'production') {
         if (req.headers['x-forwarded-proto'] !== 'https') {
+            console.log("redirecting to https");
             return res.redirect('https://' + req.headers.host + req.url);
         }
     }
+    console.log("proceeding with https");
     return next();
 });
 
@@ -24,7 +27,14 @@ const apps = ['css', 'apps', 'logs', 'metaparams', 'index-manager', 'relevance-t
 
 apps.forEach((appName) => {
     const serveStaticFunc = serveStatic(__dirname + `/packages/${appName}/dist`);
-    app.use(`/${appName}`, (req, res, next) => serveStaticFunc(req, res, next));
+    app.use(`/${appName}`, (req, res, next) => {
+        console.log(`serving ${appName}`);
+        const wrappedNext = () => {
+            console.log(`fallthrough for ${appName}`);
+            next();
+        }
+        serveStaticFunc(req, res, wrappedNext);
+    });
 });
 
 const toolsInternalEndpoint = process.env.TOOLS_INTERNAL_ENDPOINT || 'http://127.0.0.1:8090';
@@ -34,6 +44,7 @@ app.use('/index-size', (req, res) => res.redirect(`${toolsInternalEndpoint}/inde
 app.use('/dictionaries', (req, res) => res.redirect(`${toolsInternalEndpoint}/dictionaries`));
 
 app.use((req, res) => {
+    console.log("redirecting to apps on tools endpoint", process.env.TOOLS_ENDPOINT);
     res.redirect(`${process.env.TOOLS_ENDPOINT || ''}/apps`);
 });
 
