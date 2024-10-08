@@ -15,7 +15,7 @@ module.exports = {
                 (options = options || {}),
                     (options.configFile = path.resolve(
                         __dirname,
-                        "../../.eslintrc"
+                        "./.eslintrc.js"
                     ));
                 return options;
             });

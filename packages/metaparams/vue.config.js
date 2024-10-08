@@ -14,7 +14,7 @@ module.exports = {
             .use("eslint-loader")
             .tap((options) => {
                 options = options || {};
-                options.configFile = path.resolve(__dirname, "../../.eslintrc");
+                options.configFile = path.resolve(__dirname, "./.eslintrc.js");
                 return options;
             });
 
