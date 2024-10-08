@@ -4,6 +4,7 @@
     "private": true,
     "scripts": {
         "serve": "vue-cli-service --openssl-legacy-provider serve",
+        "prebuild": "lerna run build --scope=css",
         "build": "vue-cli-service --openssl-legacy-provider build",
         "start": "node server.js",
         "lint": "vue-cli-service --openssl-legacy-provider lint"
