@@ -3,13 +3,14 @@
     "version": "0.1.0",
     "private": true,
     "scripts": {
-        "build": "NODE_ENV=production postcss main.scss -o dist/all.css && ./copy-css.sh"
+        "build:sass": "sass main.scss dist/compiled.css",
+        "build:css": "NODE_ENV=production postcss dist/compiled.css -o dist/all.css",
+        "build": "yarn run build:sass && yarn run build:css && ./copy-css.sh"
     },
     "devDependencies": {
-        "@csstools/postcss-sass": "^4.0.0",
         "autoprefixer": "^10.4.14",
         "cssnano": "^4.1.10",
-        "postcss": "8.0.8",
+        "postcss": "^8.4.31",
         "postcss-cli": "^10.1.0",
         "tailwindcss": "^3.3.2",
         "sass": "^1.79.4"
