@@ -12397,7 +12397,7 @@ vue2-brace-editor@^2.0.2:
   dependencies:
     brace "^0.11.0"
 
-vue@^2.6:
+vue@^2.7:
   version "2.7.16"
   resolved "https://registry.yarnpkg.com/vue/-/vue-2.7.16.tgz#98c60de9def99c0e3da8dae59b304ead43b967c9"
   integrity sha512-4gCtFXaAA3zYZdTp5s4Hl2sozuySsgz4jy1EnpBHNfpMa9dK1ZCG7viqBPCwXtmgc8nHqUsAu3G4gtmXkkY3Sw==
