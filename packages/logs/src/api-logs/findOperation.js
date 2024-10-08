@@ -72,7 +72,7 @@ const operations = [
 
     new Operation('DELETE', '/1/indexes/:idx/synonyms/:id', (logItem, idx, id) => `<code>Delete synonym</code> ${escapeHtml(id)} for index <code>${escapeHtml(idx)}</code>`),
     new Operation('POST', '/1/indexes/:idx/synonyms/clear', (logItem, idx) => `<code>Clear synonyms</code> for index <code>${escapeHtml(idx)}</code>`),
-    new Operation('POST', '/1/indexes/:idx/synonyms/batch', (logItem, idx) => `<code>Batch ${escapeHtml(logItem).nb_operations} synonyms</code> for index <code>${escapeHtml(idx)}</code>`),
+    new Operation('POST', '/1/indexes/:idx/synonyms/batch', (logItem, idx) => `<code>Batch ${escapeHtml(logItem.nb_operations)} synonyms</code> for index <code>${escapeHtml(idx)}</code>`),
     new Operation('POST', '/1/indexes/:idx/synonyms/search', (logItem, idx) => `Search synonyms in index <code>${escapeHtml(idx)}</code>`),
     new Operation('GET', '/1/indexes/:idx/synonyms/:id', (logItem, idx, id) => `<code>Get synonym</code> ${escapeHtml(id)} for index <code>${escapeHtml(idx)}</code>`),
     new Operation('PUT', '/1/indexes/:idx/synonyms/:id', (logItem, idx, id) => `<code>Add/Update synonym</code> ${escapeHtml(id)} for index <code>${escapeHtml(idx)}</code>`),
