@@ -3,11 +3,11 @@
     "version": "0.1.0",
     "private": true,
     "scripts": {
-        "serve": "vue-cli-service --openssl-legacy-provider serve",
+        "serve": "vue-cli-service serve --openssl-legacy-provider",
         "prebuild": "lerna run build --scope=css",
-        "build": "vue-cli-service --openssl-legacy-provider build",
+        "build": "vue-cli-service build --openssl-legacy-provider",
         "start": "node server.js",
-        "lint": "vue-cli-service --openssl-legacy-provider lint"
+        "lint": "vue-cli-service lint --openssl-legacy-provider"
     },
     "dependencies": {
         "algolia-filters-js-syntax-validator": "^1.0.2",
