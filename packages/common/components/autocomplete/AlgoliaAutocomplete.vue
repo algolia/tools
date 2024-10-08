@@ -9,7 +9,7 @@
             :empty-search-for-query-equals-value="true"
             v-on="$listeners"
         >
-            <template slot="item" slot-scope="{ index, item }">
+            <template v-slot:item="{ index, item }">
                 <slot v-bind:index="index" v-bind:item="item">
                     <!-- XSS Check: all values are being constructed using `escapeHtml` -->
                     <div

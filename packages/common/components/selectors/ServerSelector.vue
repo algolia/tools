@@ -5,7 +5,7 @@
         :options="options"
         class="text-solstice-blue text-sm border-b border-telluric-blue-opacity-60 pb-4"
     >
-        <template slot="icon">
+        <template v-slot:icon>
             <server-icon class="block -mt-1 mr-8 w-12 h-12"/>
         </template>
         <template v-slot:default="{option}">{{option}}</template>

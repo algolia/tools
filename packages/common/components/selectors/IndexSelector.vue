@@ -7,7 +7,7 @@
         :refine="refine"
         :allow-free-text="allowFreeText"
     >
-        <template slot="icon"><list-icon class="block w-12 h-12 mr-8 -mt-1 fill-current"/></template>
+        <template v-slot:icon><list-icon class="block w-12 h-12 mr-8 -mt-1 fill-current"/></template>
         <template v-slot:default="{option, inDropDown, isSelected, highlightString}">
             <!-- XSS Check: all html entities are escaped using `escapeHtml` -->
             <div v-html="inDropDown ? highlightString(escapeHtml(option.name)) : escapeHtml(option.name)"></div>
