@@ -1,3 +1,4 @@
+const path = require("path");
 const sizes = require("./definitions/sizes");
 const brandColors = require("./definitions/brand-colors");
 const opacityColors = require("./definitions/opacity-colors");
@@ -16,7 +17,10 @@ const colors = Object.assign(
 );
 
 module.exports = {
-    content: ["../**/*.{vue,html}"],
+    content: [
+        path.resolve(__dirname, "../**/src/**/*.vue"),
+        path.resolve(__dirname, "../**/public/index.html"),
+    ],
 
     theme: {
         extend: {
