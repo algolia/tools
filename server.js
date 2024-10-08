@@ -33,9 +33,9 @@ app.use('/infra-watch', (req, res) => res.redirect(`${toolsInternalEndpoint}/inf
 app.use('/index-size', (req, res) => res.redirect(`${toolsInternalEndpoint}/index-size`));
 app.use('/dictionaries', (req, res) => res.redirect(`${toolsInternalEndpoint}/dictionaries`));
 
-// app.use((req, res) => {
-//     res.redirect(`${process.env.TOOLS_ENDPOINT || ''}/apps`);
-// });
+app.use((req, res) => {
+    res.redirect(`${process.env.TOOLS_ENDPOINT || ''}/apps`);
+});
 
 const port = process.env.PORT || 80;
 app.listen(port);
