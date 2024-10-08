@@ -5,13 +5,14 @@
         "express": "^4.21.0"
     },
     "devDependencies": {
-        "@babel/eslint-parser": "7.12.16",
         "@babel/core": "7.11.0",
+        "@babel/eslint-parser": "7.12.16",
         "eslint": "^7.32.0",
         "eslint-plugin-vue": "^7.20.0",
         "lerna": "^8.1.8",
         "ts-loader": "8.2.0",
         "typescript": "^5.6.2",
+        "vue-eslint-parser": "^9.4.3",
         "vue-svg-loader": "^0.16.0",
         "vue-template-compiler": "^2.7.16"
     },
