@@ -17,9 +17,6 @@ const colors = Object.assign(
 );
 
 module.exports = {
-    // content: ["../**/*.{vue,html}"],
-
-    // exclude node_modules and dist folders
     content: [
         path.resolve(__dirname, "../**/src/**/*.vue"),
         path.resolve(__dirname, "../**/public/index.html"),
