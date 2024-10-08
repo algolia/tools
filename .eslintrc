@@ -1,11 +1,16 @@
+// root .eslintrc
 {
     "root": true,
     "env": {
-        "node": true
+        "node": true,
+        "browser": true
     },
     "extends": ["plugin:vue/essential", "eslint:recommended"],
-    "rules": {},
     "parserOptions": {
-        "parser": "@babel/eslint-parser"
+        "parser": "@babel/eslint-parser",
+        "requireConfigFile": false, // Allow ESLint to use the root Babel config
+        "babelOptions": {
+            "configFile": "./babel.config.js" // Explicitly specify the root Babel config
+        }
     }
 }

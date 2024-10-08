@@ -41,7 +41,6 @@
 <script>
     import ChevronDownIcon from "common/icons/chevron-down.svg";
     import panelsMixin from "common/mixins/panelsMixin";
-    import algoliasearch from "algoliasearch";
 
     export default {
         name: 'Queries',
