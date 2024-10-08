@@ -73,7 +73,7 @@
                 });
             },
             params: function () {
-                if (this.configKey !== 'indexSettings') return this.indexData[this.configKey] || {};
+                if (this.configKey !== 'indexSettings') return this.indexData[this.configKey] || {};
                 return Object.assign({}, this.refIndexSettingsRaw, this.indexSettingsRaw);
             },
             rawParams: function () {

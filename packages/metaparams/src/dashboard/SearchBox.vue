@@ -51,11 +51,12 @@
                 set (value) {
                     if (this.$store.state.panels.splitMode) {
                         try {
-                            const params = JSON.parse(selected);
+                            const params = JSON.parse(value);
                             Object.keys(params).map((key) => {
                                 this.setParamValue(key, params[key]);
                             });
                             return this.inputState.setInput('none');
+                        // eslint-disable-next-line no-empty
                         } catch (e) {}
 
                         if (!value) {
@@ -72,6 +73,7 @@
                         }
                     }
 
+                    // eslint-disable-next-line no-self-assign
                     this.panelMethod = this.panelMethod; // Expected, we need to override rightPanel in case we go back to one input;
                     this.$store.commit('panels/setTwoInputs', value);
                 }
@@ -102,6 +104,7 @@
                                     });
                                 }
                             });
+                        // eslint-disable-next-line no-empty
                         } catch (e) {}
                     }
 

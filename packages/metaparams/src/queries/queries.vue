@@ -23,6 +23,7 @@
                 <div class="max-h-300 overflow-y-scroll pb-24">
                     <div
                             v-for="(query, index) in topQueries"
+                            :key="index"
                             @click="goToQuery(query)"
                             class="px-16 py-4 cursor-pointer"
                             :class="`${query === panelQuery ? 'bg-proton-grey-opacity-50' : ''}`"

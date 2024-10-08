@@ -9,7 +9,7 @@
                     <td class="py-8 pr-32">Nb records</td>
                     <td class="py-8 pr-32">Data Size</td>
                 </tr>
-                <tr v-for="cluster in clusters" class="border-t border-proton-grey-opacity-20">
+                <tr v-for="cluster in clusters" :key="cluster.clusterName" class="border-t border-proton-grey-opacity-20">
                     <td class="py-8 pr-32">{{cluster.clusterName}}</td>
                     <td class="py-8 pr-32">{{numberWithCommas(cluster.nbUserIDs)}}</td>
                     <td class="py-8 pr-32">{{numberWithCommas(cluster.nbRecords)}}</td>
@@ -34,7 +34,7 @@
                     <td class="py-8 pr-32">Nb records</td>
                     <td class="py-8 pr-32">Data Size</td>
                 </tr>
-                <tr v-for="user in users" class="border-t border-proton-grey-opacity-20 hit">
+                <tr v-for="user in users" :key="user.userID" class="border-t border-proton-grey-opacity-20 hit">
                     <!-- XSS Check: all html entities are escaped using `escapeHtml` -->
                     <td class="py-8 pr-32" v-html="escapeHtml(user.userID)"></td>
                     <!-- XSS Check: all html entities are escaped using `escapeHtml` -->
