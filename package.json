@@ -5,6 +5,7 @@
         "express": "^4.21.0"
     },
     "devDependencies": {
+        "@babel/core": "~7.11.0",
         "@babel/eslint-parser": "7.12.16",
         "eslint": "^7.32.0",
         "eslint-plugin-vue": "^7.20.0",
