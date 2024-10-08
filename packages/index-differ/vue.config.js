@@ -32,8 +32,5 @@ module.exports = {
             .test(/\.tsx?$/)
             .use("ts-loader")
             .loader("ts-loader");
-
-        // Webpack alias configuration
-        config.resolve.alias.set("@", path.resolve(__dirname, "src"));
     },
 };

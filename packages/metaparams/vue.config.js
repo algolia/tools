@@ -24,8 +24,5 @@ module.exports = {
             .test(/\.ya?ml$/)
             .use("js-yaml-loader")
             .loader("js-yaml-loader");
-
-        // Webpack alias configuration
-        config.resolve.alias.set("@", path.resolve(__dirname, "src"));
     },
 };
