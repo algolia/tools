@@ -13,7 +13,6 @@
         "algoliasearch": "^4.1.0",
         "chart.js": "^2.8.0",
         "common": "^0.0.0",
-        "create-hmac": "^1.1.7",
         "d3-dsv": "^1.1.1",
         "decode-uri-component": "^0.2.0",
         "dedent": "^0.7.0",
