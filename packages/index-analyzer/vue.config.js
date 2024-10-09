@@ -4,7 +4,7 @@ module.exports = {
     publicPath:
         process.env.NODE_ENV === "production" ? "/index-analyzer/" : "/",
     chainWebpack: (config) => {
-        const commonPath = path.resolve(__dirname, "../common"); // Adjust this path as needed
+        const commonPath = path.resolve(__dirname, "../common");
         config.module
             .rule("svg")
             .exclude.add(path.resolve(commonPath, "icons"))
