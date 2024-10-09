@@ -18,16 +18,9 @@ const colors = Object.assign(
 
 module.exports = {
     content: [
-        path.resolve(__dirname, "../apps/{src,public}/**/*.vue"),
-        path.resolve(__dirname, "../common/**/*.vue"),
-        path.resolve(__dirname, "../index-analyzer/{src,public}/**/*.vue"),
-        path.resolve(__dirname, "../index-differ/{src,public}/**/*.vue"),
-        path.resolve(__dirname, "../index-manager/{src,public}/**/*.vue"),
-        path.resolve(__dirname, "../insights-ui/{src,public}/**/*.vue"),
-        path.resolve(__dirname, "../logs/{src,public}/**/*.vue"),
-        path.resolve(__dirname, "../metaparams/{src,public}/**/*.vue"),
-        path.resolve(__dirname, "../relevance-tuning/{src,public}/**/*.vue"),
-        path.resolve(__dirname, "../transform/{src,public}/**/*.vue"),
+        path.resolve(__dirname, "../**/*.{vue,js,ts}"),
+        `!${path.resolve(__dirname, "../**/node_modules/**")}`,
+        `!${path.resolve(__dirname, "../**/dist/**")}`,
     ],
 
     theme: {
