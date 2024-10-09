@@ -16,7 +16,7 @@
         "decode-uri-component": "^0.2.0",
         "dedent": "^0.7.0",
         "diff": "^4.0.1",
-        "diff2html": "^2.11.3",
+        "diff2html": "^3.4.5",
         "moment": "^2.24.0",
         "prismjs": "^1.15.0",
         "serve-static": "^1.13.2",
