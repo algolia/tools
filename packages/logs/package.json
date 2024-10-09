@@ -27,7 +27,7 @@
     "devDependencies": {
         "@vue/cli-plugin-babel": "^5.0.8",
         "@vue/cli-plugin-eslint": "^5.0.8",
-        "@vue/cli-service": "^3.3.0",
+        "@vue/cli-service": "^5.0.8",
         "yaml-loader": "^0.8.1"
     },
     "browserslist": [

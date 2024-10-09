@@ -4,7 +4,6 @@
     "private": true,
     "scripts": {
         "serve": "vue-cli-service serve --openssl-legacy-provider",
-        "prebuild": "lerna run build --scope=css",
         "build": "vue-cli-service build --openssl-legacy-provider",
         "start": "node server.js",
         "lint": "vue-cli-service lint --openssl-legacy-provider"
@@ -31,7 +30,7 @@
     "devDependencies": {
         "@vue/cli-plugin-babel": "^5.0.8",
         "@vue/cli-plugin-eslint": "^5.0.8",
-        "@vue/cli-service": "^3.3.0",
+        "@vue/cli-service": "^5.0.8",
         "yaml-loader": "^0.8.1"
     },
     "browserslist": [
