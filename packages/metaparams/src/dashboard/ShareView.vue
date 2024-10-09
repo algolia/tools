@@ -1,33 +1,42 @@
 <template>
-    <div class="flex">
-        <div class="rounded bg-white m-16 mr-64 border border-solid border-proton-grey-opacity-60 min-w-25p">
-            <div class="text-telluric-blue text-xs uppercase tracking-wide flex items-center border-b border-t-0 border-proton-grey bg-white p-8 bg-proton-grey-opacity-80">
-                <div>Current state sharing link</div>
-                <close-icon
-                    class="cursor-pointer ml-auto w-12 h-12"
-                    @click="$store.commit('panels/setShareStatePanel', false)"
-                />
-            </div>
-            <div>
-                <div class="text-nova-grey bg-moon-grey-opacity-50 border border-proton-grey-opacity-20 m-8 p-8">
-                    The link will be valid for 6 months
-                </div>
-                <div v-if="newLink" class="flex items-center">
-                    <div class="p-8">
-                        {{newLink}}
-                    </div>
-                    <div class="p-8">
-                        <button @click="copy" class="bg-white rounded border border-b-0 border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out px-16 p-8 text-sm">
-                            Copy link
-                        </button>
-                    </div>
-                    <div class="p-8" v-if="copied">
-                        Copied!
-                    </div>
-                </div>
-            </div>
+  <div class="flex">
+    <div class="rounded bg-white m-16 mr-64 border border-solid border-proton-grey-opacity-60 min-w-25p">
+      <div class="text-telluric-blue text-xs uppercase tracking-wide flex items-center border-b border-t-0 border-proton-grey bg-white p-8 bg-proton-grey-opacity-80">
+        <div>Current state sharing link</div>
+        <close-icon
+          class="cursor-pointer ml-auto w-12 h-12"
+          @click="$store.commit('panels/setShareStatePanel', false)"
+        />
+      </div>
+      <div>
+        <div class="text-nova-grey bg-moon-grey-opacity-50 border border-proton-grey-opacity-20 m-8 p-8">
+          The link will be valid for 6 months
         </div>
+        <div
+          v-if="newLink"
+          class="flex items-center"
+        >
+          <div class="p-8">
+            {{ newLink }}
+          </div>
+          <div class="p-8">
+            <button
+              class="bg-white rounded border border-b-0 border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out px-16 p-8 text-sm"
+              @click="copy"
+            >
+              Copy link
+            </button>
+          </div>
+          <div
+            v-if="copied"
+            class="p-8"
+          >
+            Copied!
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
 </template>
 
 <script>
@@ -45,17 +54,6 @@
                 newLink: null,
                 copied: false,
             }
-        },
-        created: function () {
-            this.createShortLink();
-        },
-        watch: {
-            exportableData: {
-                deep: true,
-                handler: function () {
-                    this.$emit('onShouldClose');
-                }
-            },
         },
         computed: {
             origin: function () {
@@ -96,6 +94,17 @@
 
                 return exportableState;
             }
+        },
+        watch: {
+            exportableData: {
+                deep: true,
+                handler: function () {
+                    this.$emit('onShouldClose');
+                }
+            },
+        },
+        created: function () {
+            this.createShortLink();
         },
         methods: {
             copy: function () {

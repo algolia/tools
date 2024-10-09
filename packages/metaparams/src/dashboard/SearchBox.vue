@@ -1,23 +1,32 @@
 <template>
-    <div class="flex items-center pl-16 bg-white rounded border border-proton-grey-opacity-80 h-40">
-        <search-icon class="block w-16 h-16 mr-16 text-telluric-blue fill-current"/>
-        <input
-            class="flex-1 block h-full bg-transparent text-telluric-blue leading-normal"
-            placeholder="Enter query, searchParams, curl command, ..."
-            ref="search"
-            v-model="query"
-        >
-        <div class="text-telluric-blue-opacity-40" v-if="$store.state.panels.splitMode && (!panelKey || panelKey === 'leftPanel')">
-            ≠ queries <input type="checkbox" class="align-middle ml-2" v-model="twoInputs" />
-        </div>
-        <custom-select
-            v-model="panelMethod"
-            :options="Object.keys(methodOptions)"
-            class="ml-16 bg-moon-grey h-full pl-16 px-8 flex items-center text-telluric-blue rounded-r"
-        >
-            <template v-slot:default="{option}">{{methodOptions[option]}}</template>
-        </custom-select>
+  <div class="flex items-center pl-16 bg-white rounded border border-proton-grey-opacity-80 h-40">
+    <search-icon class="block w-16 h-16 mr-16 text-telluric-blue fill-current" />
+    <input
+      ref="search"
+      v-model="query"
+      class="flex-1 block h-full bg-transparent text-telluric-blue leading-normal"
+      placeholder="Enter query, searchParams, curl command, ..."
+    >
+    <div
+      v-if="$store.state.panels.splitMode && (!panelKey || panelKey === 'leftPanel')"
+      class="text-telluric-blue-opacity-40"
+    >
+      ≠ queries <input
+        v-model="twoInputs"
+        type="checkbox"
+        class="align-middle ml-2"
+      >
     </div>
+    <custom-select
+      v-model="panelMethod"
+      :options="Object.keys(methodOptions)"
+      class="ml-16 bg-moon-grey h-full pl-16 px-8 flex items-center text-telluric-blue rounded-r"
+    >
+      <template #default="{option}">
+        {{ methodOptions[option] }}
+      </template>
+    </custom-select>
+  </div>
 </template>
 
 <script>
@@ -29,9 +38,9 @@
 
     export default {
         name: 'SearchBox',
-        props: ['panelKey'],
-        mixins: [panelsMixin, indexInfoMixin],
         components: {SearchIcon, CustomSelect},
+        mixins: [panelsMixin, indexInfoMixin],
+        props: ['panelKey'],
         data: function () {
             return {
                 methodOptions: {'search': 'Search', 'browse': 'Browse'},

@@ -1,42 +1,55 @@
 <template>
-    <div>
-        <div class="flex p-8 border-b border-proton-grey bg-proton-grey-opacity-40 text-telluric-blue text-xs uppercase tracking-wide">
-            <div>
-                Query management
-            </div>
-            <div class="ml-auto w-8 h-8 leading-none flex items-center justify-center cursor-pointer" @click="open = !open">
-                <chevron-down-icon
-                    :class="`flex-grow-0 w-8 h-8 flex-shrink-0 block fill-current ${open ? '' : 'rotate-180'}`"
-                />
-            </div>
-        </div>
-        <div v-if="open" class="border-b border-proton-grey">
-            <div>
-                <h4 class="p-16">Last Query</h4>
-                <pre
-                        :class="`px-16 py-4 cursor-pointer ${currentQuery === panelQuery ? 'bg-proton-grey-opacity-50' : ''}`"
-                        @click="goToQuery(currentQuery)"
-                >"{{currentQuery}}"</pre>
-            </div>
-            <div>
-                <h4 class="p-16">Top Queries (last 7 days)</h4>
-                <div class="max-h-300 overflow-y-scroll pb-24">
-                    <div
-                            v-for="(query, index) in topQueries"
-                            :key="index"
-                            @click="goToQuery(query)"
-                            class="px-16 py-4 cursor-pointer"
-                            :class="`${query === panelQuery ? 'bg-proton-grey-opacity-50' : ''}`"
-                    >
-                        <span>{{index + 1}}.</span>&nbsp;<span>{{query}}</span>
-                    </div>
-                    <div v-if="topQueries.length <= 0" class="ml-16 italic">
-                        No top queries yet
-                    </div>
-                </div>
-            </div>
-        </div>
+  <div>
+    <div class="flex p-8 border-b border-proton-grey bg-proton-grey-opacity-40 text-telluric-blue text-xs uppercase tracking-wide">
+      <div>
+        Query management
+      </div>
+      <div
+        class="ml-auto w-8 h-8 leading-none flex items-center justify-center cursor-pointer"
+        @click="open = !open"
+      >
+        <chevron-down-icon
+          :class="`flex-grow-0 w-8 h-8 flex-shrink-0 block fill-current ${open ? '' : 'rotate-180'}`"
+        />
+      </div>
     </div>
+    <div
+      v-if="open"
+      class="border-b border-proton-grey"
+    >
+      <div>
+        <h4 class="p-16">
+          Last Query
+        </h4>
+        <pre
+          :class="`px-16 py-4 cursor-pointer ${currentQuery === panelQuery ? 'bg-proton-grey-opacity-50' : ''}`"
+          @click="goToQuery(currentQuery)"
+        >"{{ currentQuery }}"</pre>
+      </div>
+      <div>
+        <h4 class="p-16">
+          Top Queries (last 7 days)
+        </h4>
+        <div class="max-h-300 overflow-y-scroll pb-24">
+          <div
+            v-for="(query, index) in topQueries"
+            :key="index"
+            class="px-16 py-4 cursor-pointer"
+            :class="`${query === panelQuery ? 'bg-proton-grey-opacity-50' : ''}`"
+            @click="goToQuery(query)"
+          >
+            <span>{{ index + 1 }}.</span>&nbsp;<span>{{ query }}</span>
+          </div>
+          <div
+            v-if="topQueries.length <= 0"
+            class="ml-16 italic"
+          >
+            No top queries yet
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -46,8 +59,8 @@
     export default {
         name: 'Queries',
         components: {ChevronDownIcon},
-        props: ['panelKey'],
         mixins: [panelsMixin],
+        props: ['panelKey'],
         data: function () {
             return {
                 open: false,
@@ -55,22 +68,6 @@
                 lastQuery: null,
                 lastQueryJustSaved: false,
                 topQueries: [],
-            }
-        },
-        mounted: function () {
-            this.fetchTopQueries();
-        },
-        watch: {
-            panelAppId: function () { this.fetchTopQueries(); },
-            panelIndexName: function () { this.fetchTopQueries(); },
-            panelQuery: function (val, oldVal) {
-                if (this.lastQueryJustSaved) {
-                    this.lastQueryJustSaved = false;
-
-                    if (this.lastQuery === null) this.lastQuery = oldVal;
-                } else {
-                    this.lastQuery = val;
-                }
             }
         },
         computed: {
@@ -88,6 +85,22 @@
                     this.$store.commit("panels/setQuery", value);
                 }
             },
+        },
+        watch: {
+            panelAppId: function () { this.fetchTopQueries(); },
+            panelIndexName: function () { this.fetchTopQueries(); },
+            panelQuery: function (val, oldVal) {
+                if (this.lastQueryJustSaved) {
+                    this.lastQueryJustSaved = false;
+
+                    if (this.lastQuery === null) this.lastQuery = oldVal;
+                } else {
+                    this.lastQuery = val;
+                }
+            }
+        },
+        mounted: function () {
+            this.fetchTopQueries();
         },
         methods: {
             fetchTopQueries: async function () {
