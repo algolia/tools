@@ -1,5 +1,3 @@
-const path = require("path");
-
 module.exports = {
     publicPath: "index-differ",
     chainWebpack: (config) => {
@@ -7,16 +5,6 @@ module.exports = {
         const svgRule = config.module.rule("svg");
         svgRule.uses.clear();
         svgRule.use("vue-svg-loader").loader("vue-svg-loader");
-
-        // ESLint configuration
-        config.module
-            .rule("eslint")
-            .use("eslint-loader")
-            .tap((options) => {
-                options = options || {};
-                options.configFile = path.resolve(__dirname, "../../.eslintrc");
-                return options;
-            });
 
         // YAML loader
         config.module
@@ -32,8 +20,5 @@ module.exports = {
             .test(/\.tsx?$/)
             .use("ts-loader")
             .loader("ts-loader");
-
-        // Webpack alias configuration
-        config.resolve.alias.set("@", path.resolve(__dirname, "src"));
     },
 };

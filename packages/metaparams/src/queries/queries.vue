@@ -23,6 +23,7 @@
                 <div class="max-h-300 overflow-y-scroll pb-24">
                     <div
                             v-for="(query, index) in topQueries"
+                            :key="index"
                             @click="goToQuery(query)"
                             class="px-16 py-4 cursor-pointer"
                             :class="`${query === panelQuery ? 'bg-proton-grey-opacity-50' : ''}`"
@@ -41,7 +42,6 @@
 <script>
     import ChevronDownIcon from "common/icons/chevron-down.svg";
     import panelsMixin from "common/mixins/panelsMixin";
-    import algoliasearch from "algoliasearch";
 
     export default {
         name: 'Queries',

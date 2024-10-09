@@ -84,7 +84,8 @@
 
                     if (indexData) {
                         const {
-                            lastUsed = 0, // Remove last used to allow for caching
+                            // eslint-disable-next-line no-unused-vars
+                            lastUsed, // Remove last used to allow for caching
                             ...appState
                         } = indexData;
                         exportableState.apps[appId] = {};
