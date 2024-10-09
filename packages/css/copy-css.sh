@@ -1,4 +1,3 @@
-# Define an array of target directories
 TARGET_DIRS=(
     "../apps/public/"
     "../index-differ/public/"
@@ -11,7 +10,6 @@ TARGET_DIRS=(
     "../transform/public/"
 )
 
-# Loop through each target directory
 for DIR in "${TARGET_DIRS[@]}"; do
     # Copy all.css if it exists
     if [ -f ./dist/all.css ]; then
@@ -23,6 +21,5 @@ for DIR in "${TARGET_DIRS[@]}"; do
         cp ./dist/all.css.map "$DIR";
     fi
 
-    # Copy favicon.ico to each directory
     cp ./favicon.ico "$DIR";
 done
