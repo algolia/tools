@@ -1,5 +1,5 @@
 module.exports = {
-    publicPath: "insights-ui",
+    publicPath: process.env.NODE_ENV === "production" ? "/insights-ui/" : "/",
     chainWebpack: (config) => {
         const svgRule = config.module.rule("svg");
         svgRule.uses.clear();

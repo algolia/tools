@@ -1,5 +1,5 @@
 module.exports = {
-    publicPath: "metaparams",
+    publicPath: process.env.NODE_ENV === "production" ? "/metaparams/" : "/",
     chainWebpack: (config) => {
         // Configure SVG handling
         const svgRule = config.module.rule("svg");

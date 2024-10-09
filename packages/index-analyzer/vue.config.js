@@ -1,7 +1,7 @@
 const MonacoEditorPlugin = require("monaco-editor-webpack-plugin");
 
 module.exports = {
-    publicPath: "index-analyzer",
+    publicPath: process.env.NODE_ENV === "production" ? "index-analyzer" : "/",
     chainWebpack: (config) => {
         const svgRule = config.module.rule("svg");
         svgRule.uses.clear();

@@ -1,5 +1,5 @@
 module.exports = {
-    publicPath: "index-differ",
+    publicPath: process.env.NODE_ENV === "production" ? "/index-differ/" : "/",
     chainWebpack: (config) => {
         // Configure SVG handling
         const svgRule = config.module.rule("svg");

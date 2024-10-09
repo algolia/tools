@@ -1,5 +1,6 @@
 module.exports = {
-    publicPath: "relevance-testing",
+    publicPath:
+        process.env.NODE_ENV === "production" ? "/relevance-testing/" : "/",
     chainWebpack: (config) => {
         const svgRule = config.module.rule("svg");
         svgRule.uses.clear();
