@@ -1,7 +1,8 @@
 const MonacoEditorPlugin = require("monaco-editor-webpack-plugin");
 const path = require("path");
 module.exports = {
-    publicPath: process.env.NODE_ENV === "production" ? "index-analyzer" : "/",
+    publicPath:
+        process.env.NODE_ENV === "production" ? "/index-analyzer/" : "/",
     chainWebpack: (config) => {
         const commonPath = path.resolve(__dirname, "../common"); // Adjust this path as needed
         config.module
