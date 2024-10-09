@@ -1,10 +1,18 @@
 <template>
-    <div>
-        <params-panel :panel-key="panelKey" :config-key="searchConfigKey" :read-only="readOnly" />
-        <div v-if="isLeftPanel || !sameIndexOnEachPanel">
-            <params-panel :panel-key="panelKey" config-key="indexSettings" :read-only="readOnly" />
-        </div>
+  <div>
+    <params-panel
+      :panel-key="panelKey"
+      :config-key="searchConfigKey"
+      :read-only="readOnly"
+    />
+    <div v-if="isLeftPanel || !sameIndexOnEachPanel">
+      <params-panel
+        :panel-key="panelKey"
+        config-key="indexSettings"
+        :read-only="readOnly"
+      />
     </div>
+  </div>
 </template>
 
 <script>

@@ -1,36 +1,42 @@
 <template>
-    <div v-if="indexData">
-        <params-header
-            :panel-key="panelKey"
-            :config-key="configKey"
-            :keys="sortedKeys"
-            :open="open"
-            @onSetOpen="open = $event"
+  <div v-if="indexData">
+    <params-header
+      :panel-key="panelKey"
+      :config-key="configKey"
+      :keys="sortedKeys"
+      :open="open"
+      @onSetOpen="open = $event"
+    />
+    <div
+      class="bg-white"
+      :class="open ? 'p-8 py-12' : ''"
+    >
+      <params
+        :id="`${panelKey}-${configKey}`"
+        :panel-key="panelKey"
+        :config-key="configKey"
+        :params="params"
+        :ref-params="refParams"
+        v-if="open"
+        :raw-params="rawParams"
+        :keys="sortedKeys"
+        :keys-indexer="indexKeysIndexer"
+        @onSetParamValue="onSetParamValue"
+        @onSetParamEnabled="onSetParamEnabled"
+        @onAddArrayElement="onAddArrayElement"
+        @onDeleteArrayElement="onDeleteArrayElement"
+        @onDeleteKey="onDeleteKey"
+        @onRestoreKey="onRestoreKey"
+      />
+      <div v-if="configKey === 'indexSettings'">
+        <div class="mt-24 border-t border-proton-grey-opacity-20" />
+        <save-or-copy-settings
+          :panel-key="panelKey"
+          :read-only="readOnly"
         />
-        <div class="bg-white" :class="open ? 'p-8 py-12' : ''">
-            <params
-                :id="`${panelKey}-${configKey}`"
-                :panel-key="panelKey"
-                :config-key="configKey"
-                :params="params"
-                :ref-params="refParams"
-                :raw-params="rawParams"
-                :keys="sortedKeys"
-                :keys-indexer="indexKeysIndexer"
-                @onSetParamValue="onSetParamValue"
-                @onSetParamEnabled="onSetParamEnabled"
-                @onAddArrayElement="onAddArrayElement"
-                @onDeleteArrayElement="onDeleteArrayElement"
-                @onDeleteKey="onDeleteKey"
-                @onRestoreKey="onRestoreKey"
-                v-if="open"
-            />
-            <div v-if="configKey === 'indexSettings'">
-                <div class="mt-24 border-t border-proton-grey-opacity-20"></div>
-                <save-or-copy-settings :panel-key="panelKey" :read-only="readOnly" />
-            </div>
-        </div>
+      </div>
     </div>
+  </div>
 </template>
 
 <script>
@@ -43,8 +49,8 @@
     export default {
         name: 'ParamsPanel',
         components: {SaveOrCopySettings, Params, ParamsHeader},
-        props: ['panelKey', 'configKey', 'readOnly'],
         mixins: [indexInfoMixin, panelsMixin],
+        props: ['panelKey', 'configKey', 'readOnly'],
         data: function () {
             return {
                 open: true,

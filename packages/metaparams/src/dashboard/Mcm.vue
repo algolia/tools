@@ -1,62 +1,108 @@
 <template>
-    <div>
-        <h3 class="text-solstice-blue-opacity-80 mt-8 mb-16">Clusters</h3>
-        <div v-if="clusters.length > 0">
-            <table class="w-full">
-                <tr class="tracking-wide text-xs uppercase text-cosmos-black-opacity-70">
-                    <td class="py-8 pr-32">Cluster name</td>
-                    <td class="py-8 pr-32">Nb users</td>
-                    <td class="py-8 pr-32">Nb records</td>
-                    <td class="py-8 pr-32">Data Size</td>
-                </tr>
-                <tr v-for="cluster in clusters" :key="cluster.clusterName" class="border-t border-proton-grey-opacity-20">
-                    <td class="py-8 pr-32">{{cluster.clusterName}}</td>
-                    <td class="py-8 pr-32">{{numberWithCommas(cluster.nbUserIDs)}}</td>
-                    <td class="py-8 pr-32">{{numberWithCommas(cluster.nbRecords)}}</td>
-                    <td class="py-8 pr-32">{{formatHumanNumber(cluster.dataSize, 2, ['B', 'KB', 'MB', 'GB'], 1000)}}</td>
-                </tr>
-            </table>
-        </div>
-        <div v-else>
-            No clusters found
-        </div>
-        <h3 class="text-solstice-blue-opacity-80 mt-48 mb-16">Users</h3>
-        <input
-            v-model="query"
-            placeholder="search users"
-            class="px-8 bg-proton-grey-opacity-20 rounded py-8 text-telluric-blue"
-        />
-        <div v-if="users.length > 0">
-            <table class="w-full mt-16">
-                <tr class="tracking-wide text-xs uppercase text-cosmos-black-opacity-70 hit">
-                    <td class="py-8 pr-32">User name</td>
-                    <td class="py-8 pr-32">Cluster name</td>
-                    <td class="py-8 pr-32">Nb records</td>
-                    <td class="py-8 pr-32">Data Size</td>
-                </tr>
-                <tr v-for="user in users" :key="user.userID" class="border-t border-proton-grey-opacity-20 hit">
-                    <!-- XSS Check: all html entities are escaped using `escapeHtml` -->
-                    <td class="py-8 pr-32" v-html="escapeHtml(user.userID)"></td>
-                    <!-- XSS Check: all html entities are escaped using `escapeHtml` -->
-                    <td class="py-8 pr-32" v-html="escapeHtml(user.clusterName)"></td>
-                    <td class="py-8 pr-32">{{numberWithCommas(user.nbRecords)}}</td>
-                    <td class="py-8 pr-32">{{formatHumanNumber(user.dataSize, 2, ['B', 'KB', 'MB', 'GB'], 1000)}}</td>
-                </tr>
-            </table>
-            <div class="flex">
-                <pagination
-                    v-if="query.length > 0"
-                    class="mx-auto"
-                    @onUpdatePage="page = $event"
-                    :page="page"
-                    :nb-pages="Math.ceil(nbHits / hitsPerPage)"
-                />
-            </div>
-        </div>
-        <div v-else>
-            No users found
-        </div>
+  <div>
+    <h3 class="text-solstice-blue-opacity-80 mt-8 mb-16">
+      Clusters
+    </h3>
+    <div v-if="clusters.length > 0">
+      <table class="w-full">
+        <tr class="tracking-wide text-xs uppercase text-cosmos-black-opacity-70">
+          <td class="py-8 pr-32">
+            Cluster name
+          </td>
+          <td class="py-8 pr-32">
+            Nb users
+          </td>
+          <td class="py-8 pr-32">
+            Nb records
+          </td>
+          <td class="py-8 pr-32">
+            Data Size
+          </td>
+        </tr>
+        <tr
+          v-for="cluster in clusters"
+          :key="cluster.clusterName"
+          class="border-t border-proton-grey-opacity-20"
+        >
+          <td class="py-8 pr-32">
+            {{ cluster.clusterName }}
+          </td>
+          <td class="py-8 pr-32">
+            {{ numberWithCommas(cluster.nbUserIDs) }}
+          </td>
+          <td class="py-8 pr-32">
+            {{ numberWithCommas(cluster.nbRecords) }}
+          </td>
+          <td class="py-8 pr-32">
+            {{ formatHumanNumber(cluster.dataSize, 2, ['B', 'KB', 'MB', 'GB'], 1000) }}
+          </td>
+        </tr>
+      </table>
     </div>
+    <div v-else>
+      No clusters found
+    </div>
+    <h3 class="text-solstice-blue-opacity-80 mt-48 mb-16">
+      Users
+    </h3>
+    <input
+      v-model="query"
+      placeholder="search users"
+      class="px-8 bg-proton-grey-opacity-20 rounded py-8 text-telluric-blue"
+    >
+    <div v-if="users.length > 0">
+      <table class="w-full mt-16">
+        <tr class="tracking-wide text-xs uppercase text-cosmos-black-opacity-70 hit">
+          <td class="py-8 pr-32">
+            User name
+          </td>
+          <td class="py-8 pr-32">
+            Cluster name
+          </td>
+          <td class="py-8 pr-32">
+            Nb records
+          </td>
+          <td class="py-8 pr-32">
+            Data Size
+          </td>
+        </tr>
+        <tr
+          v-for="user in users"
+          :key="user.userID"
+          class="border-t border-proton-grey-opacity-20 hit"
+        >
+          <!-- XSS Check: all html entities are escaped using `escapeHtml` -->
+          <td
+            class="py-8 pr-32"
+            v-html="escapeHtml(user.userID)"
+          />
+          <!-- XSS Check: all html entities are escaped using `escapeHtml` -->
+          <td
+            class="py-8 pr-32"
+            v-html="escapeHtml(user.clusterName)"
+          />
+          <td class="py-8 pr-32">
+            {{ numberWithCommas(user.nbRecords) }}
+          </td>
+          <td class="py-8 pr-32">
+            {{ formatHumanNumber(user.dataSize, 2, ['B', 'KB', 'MB', 'GB'], 1000) }}
+          </td>
+        </tr>
+      </table>
+      <div class="flex">
+        <pagination
+          v-if="query.length > 0"
+          class="mx-auto"
+          :page="page"
+          :nb-pages="Math.ceil(nbHits / hitsPerPage)"
+          @onUpdatePage="page = $event"
+        />
+      </div>
+    </div>
+    <div v-else>
+      No users found
+    </div>
+  </div>
 </template>
 
 <script>
@@ -67,9 +113,9 @@
 
     export default {
         name: 'Mcm',
-        props: ['panelKey'],
-        mixins: [panelsMixin],
         components: {Pagination},
+        mixins: [panelsMixin],
+        props: ['panelKey'],
         data: function () {
             return {
                 clusters: [],

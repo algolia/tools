@@ -1,54 +1,65 @@
 <template>
-    <div>
-        <div v-if="indexInfo" class="flex items-center text-sm text-solstice-blue-opacity-80">
-            <div class="border-b border-dotted border-telluric-blue-opacity-60">
-                Records: {{numberWithCommas(indexInfo.entries)}}
-            </div>
-            <div class="border-b border-dotted border-telluric-blue-opacity-60 ml-12">
-                Index size: {{formatHumanNumber(indexInfo.fileSize, 2, ['B', 'KB', 'MB', 'GB'], 1000)}}
-            </div>
-            <div class="border-b border-dotted border-telluric-blue-opacity-60 ml-12"
-                 v-if="avgRecordSize > 5000"
-            >
-                Avg record size: {{formatHumanNumber(avgRecordSize, 2, ['B', 'KB', 'MB', 'GB'], 1000)}}
-            </div>
-            <div class="border-b border-dotted border-telluric-blue-opacity-60 ml-12"
-                 v-if="nbBuildingJobs > 0"
-            >
-                Index jobs: {{nbBuildingJobs}}
-            </div>
-            <div class="border-b border-dotted border-telluric-blue-opacity-60 ml-12"
-                 v-if="sumBuildingJobs > 0"
-            >
-                App jobs: {{sumBuildingJobs}}
-            </div>
-            <div class="border-b border-dotted border-telluric-blue-opacity-60 ml-12"
-                 v-if="nbShards > 1 || indexInfo.fileSize > 2048000000"
-            >
-                Nb Shards: {{nbShards}}
-            </div>
-            <div class="border-b border-dotted border-telluric-blue-opacity-60 ml-12"
-                 v-if="replicas.length > 0"
-            >
-                replicas: {{replicas.length}}
-            </div>
-            <div class="border-b border-dotted border-telluric-blue-opacity-60 ml-12"
-                 v-if="indexSettings.primary"
-            >
-                Primary: {{indexSettings.primary}}
-            </div>
-            <div class="border-b border-dotted border-telluric-blue-opacity-60 ml-12"
-                 v-if="indexSettings.primary && isVirtual"
-            >
-                Virtual: {{isVirtual}}
-            </div>
-            <div class="border-b border-dotted border-telluric-blue-opacity-60 ml-12"
-                 v-if="this.$store.state.apps[this.panelAppId].__log_region"
-            >
-                Logs region: {{this.$store.state.apps[this.panelAppId].__log_region}}
-            </div>
-        </div>
+  <div>
+    <div
+      v-if="indexInfo"
+      class="flex items-center text-sm text-solstice-blue-opacity-80"
+    >
+      <div class="border-b border-dotted border-telluric-blue-opacity-60">
+        Records: {{ numberWithCommas(indexInfo.entries) }}
+      </div>
+      <div class="border-b border-dotted border-telluric-blue-opacity-60 ml-12">
+        Index size: {{ formatHumanNumber(indexInfo.fileSize, 2, ['B', 'KB', 'MB', 'GB'], 1000) }}
+      </div>
+      <div
+        v-if="avgRecordSize > 5000"
+        class="border-b border-dotted border-telluric-blue-opacity-60 ml-12"
+      >
+        Avg record size: {{ formatHumanNumber(avgRecordSize, 2, ['B', 'KB', 'MB', 'GB'], 1000) }}
+      </div>
+      <div
+        v-if="nbBuildingJobs > 0"
+        class="border-b border-dotted border-telluric-blue-opacity-60 ml-12"
+      >
+        Index jobs: {{ nbBuildingJobs }}
+      </div>
+      <div
+        v-if="sumBuildingJobs > 0"
+        class="border-b border-dotted border-telluric-blue-opacity-60 ml-12"
+      >
+        App jobs: {{ sumBuildingJobs }}
+      </div>
+      <div
+        v-if="nbShards > 1 || indexInfo.fileSize > 2048000000"
+        class="border-b border-dotted border-telluric-blue-opacity-60 ml-12"
+      >
+        Nb Shards: {{ nbShards }}
+      </div>
+      <div
+        v-if="replicas.length > 0"
+        class="border-b border-dotted border-telluric-blue-opacity-60 ml-12"
+      >
+        replicas: {{ replicas.length }}
+      </div>
+      <div
+        v-if="indexSettings.primary"
+        class="border-b border-dotted border-telluric-blue-opacity-60 ml-12"
+      >
+        Primary: {{ indexSettings.primary }}
+      </div>
+      <div
+        v-if="indexSettings.primary && isVirtual"
+        class="border-b border-dotted border-telluric-blue-opacity-60 ml-12"
+      >
+        Virtual: {{ isVirtual }}
+      </div>
+      <div
+        v-if="$store.state.apps[panelAppId].__log_region"
+        class="border-b border-dotted border-telluric-blue-opacity-60 ml-12"
+      >
+        Logs region: {{ $store.state.apps[panelAppId].__log_region }}
+      </div>
     </div>
+  </div>
 </template>
 
 <script>
@@ -59,9 +70,9 @@
 
     export default {
         name: 'IndexInfo',
-        props: ['panelKey'],
-        mixins: [indexInfoMixin, panelsMixin],
         components: {},
+        mixins: [indexInfoMixin, panelsMixin],
+        props: ['panelKey'],
         data: function () {
             return {
                 indexInfo: null,
@@ -69,20 +80,6 @@
                 formatHumanNumber: formatHumanNumber,
                 numberWithCommas: numberWithCommas,
             }
-        },
-        watch: {
-            panelAppId: function (o, n) { if (o !== n) this.fetchIndexData(this.panelIndexName); },
-            panelIndexName: function (o, n) { if (o !== n) this.fetchIndexData(this.panelIndexName); },
-            panelServer: function (o, n) { if (o !== n) this.fetchIndexData(this.panelIndexName); },
-        },
-        created: function () {
-            this.fetchBuildingIndices();
-            this.fetchIndexData(this.panelIndexName);
-
-            window.setInterval(() => {
-                this.fetchBuildingIndices();
-                this.fetchIndexData(this.panelIndexName);
-            }, 15000);
         },
         computed: {
             appId: function () { // Needed for indexInfoMixin
@@ -114,6 +111,20 @@
             isVirtual: function(){
                 return this.indexInfo.virtual == 1;
             }
+        },
+        watch: {
+            panelAppId: function (o, n) { if (o !== n) this.fetchIndexData(this.panelIndexName); },
+            panelIndexName: function (o, n) { if (o !== n) this.fetchIndexData(this.panelIndexName); },
+            panelServer: function (o, n) { if (o !== n) this.fetchIndexData(this.panelIndexName); },
+        },
+        created: function () {
+            this.fetchBuildingIndices();
+            this.fetchIndexData(this.panelIndexName);
+
+            window.setInterval(() => {
+                this.fetchBuildingIndices();
+                this.fetchIndexData(this.panelIndexName);
+            }, 15000);
         },
         methods: {
             fetchIndexData: async function (indexName) {

@@ -1,152 +1,152 @@
 <template>
-    <div>
-        <panel-tabs
-            v-if="$store.state.panels.showResultTabs"
-            v-model="panelCurrentTab"
-            :options="[
-                {value: 'hits', label: 'Hits', labelAppend: ` (${formatHumanNumber(nbHits)})`, labelAppendCondition: !isNaN(nbHits)},
-                {value: 'synonyms', label: 'Synonyms', labelAppend: ` (${formatHumanNumber(nbSynonyms)})`, labelAppendCondition: true},
-                {value: 'rules', label: 'Rules', labelAppend: ` (${formatHumanNumber(nbRules)})`, labelAppendCondition: true},
-                {value: 'checks', label: 'Checks', labelAppend: ` (${formatHumanNumber(nbChecks)})`, labelAppendCondition: true},
-                {condition: panelUserId, value: 'mcm', label: 'MCM'},
-            ]"
-        />
-        <div class="p-8">
-            <perform-search
-                :search-params="searchParams"
-                :app-id="panelAppId"
-                :api-key="panelAdminAPIKey"
-                :server="panelServer"
-                :index-name="panelIndexName"
-                :method="panelMethod"
-                :user-id="panelUserId"
-                :query="$store.state.panels.query"
-                :title-attribute-name="indexTitleAttribute"
-                :fetch-explain="$store.state.panels.displayRankingInfo"
-                :analyse-hits-per-page="$store.state.panels.analyseMaxNbPoints"
-                :fetch-facets="true"
-                :panel-key="panelKey"
-                @onUpdateAutoTitleAttributeName="indexAutoTitleAttributeName = $event"
-                @onFetchHits="onFetchHits"
-                @onFetchAnalyseHits="onFetchAnalyseHits"
-                @onUpdateError="errorMessage = $event"
-            />
-            <error-message
-                v-if="errorMessage"
-                :error-message="errorMessage"
-                :app-id="panelAppId"
-                :api-key="panelAdminAPIKey"
-                @onUpdateApiKey="panelAdminAPIKey = $event"
-            />
-            <results
-                v-show="panelCurrentTab === 'hits'"
-                class="w-full"
-                :panel-key="panelKey"
-                :search-response="algoliaResponse"
-                :analyse-response="analyseAlgoliaResponse"
-                :search-params="searchParams"
-                :index-settings="refIndexSettings"
-                :analyse-max-nb-points="analyseMaxNbPoints"
-                :read-only="readOnly"
-                :is-replica="isReplica"
-                :app-id="panelAppId"
-                :api-key="panelAdminAPIKey"
-                :index-name="panelIndexName"
-                :server="panelServer"
-                :user-id="panelUserId"
-                :method="panelMethod"
-                :harcoded-query="false"
-                :has-no-records="hasNoRecords"
-                :query="searchParams.query !== undefined ? searchParams.query : $store.state.panels.query"
-                :display-mode="displayMode"
-                :showSearchableAttributes="$store.state.panels.showSearchableAttributes"
-                :showCustomRanking="$store.state.panels.showCustomRanking"
-                :showAttributesForFaceting="$store.state.panels.showAttributesForFaceting"
-                :showOnlyMatchingAttributes="$store.state.panels.showOnlyMatchingAttributes"
-                :can-jump-rules="canJumpRules"
-                :can-jump-records="canJumpRecords"
-                :jump-to="otherPanelKey"
-                :ignore-image-proxy="indexIgnoreImageProxy"
-                :image-size="indexImageSize"
-                :image-attribute="indexImageAttributeName"
-                :image-base-url="indexImageBaseUrl"
-                :image-suffix-url="indexImageSuffixUrl"
-                :title-attribute-name="indexTitleAttribute"
-                :auto-title-attribute-name="indexAutoTitleAttributeName"
-                :keys-indexer="indexKeysIndexer"
-                :display-ranking-info="$store.state.panels.displayRankingInfo"
-                @onUpdateAnalyseMaxNbPoint="analyseMaxNbPoints = $event"
-                @onUpdateDisplayMode="displayMode = $event"
-                @onUpdatePage="onSetParamValue('page', $event)"
-                @onSetParamValue="onSetParamValue"
-                @onDeleteParam="onDeleteParam"
-                @onUpdateIgnoreImageProxy="indexIgnoreImageProxy = $event"
-                @onUpdateImageAttribute="indexImageAttributeName = $event"
-                @onUpdateImageBaseUrl="indexImageBaseUrl = $event"
-                @onUpdateImageSuffixUrl="indexImageSuffixUrl = $event"
-                @onUpdateImageSize="indexImageSize = $event"
-                @onUpdateTitleAttributeName="indexTitleAttribute = $event"
-                @onUpdateAutoTitleAttributeName="indexAutoTitleAttributeName = $event"
-                @onShouldUpdateQuery="onShouldUpdateQuery($event)"
-            />
-            <fetcher
-                v-show="panelCurrentTab === 'synonyms'"
-                :current-tab="panelCurrentTab"
-                method-name="searchSynonyms"
-                :panel-key="panelKey"
-                @onFetch="onFetchSynonyms"
-                :app-id="panelAppId"
-                :api-key="panelAdminAPIKey"
-                :index-name="panelIndexName"
-                :server="panelServer"
-                :user-id="panelUserId"
-                :ignore-image-proxy="indexIgnoreImageProxy"
-                :image-size="indexImageSize"
-                :image-attribute="indexImageAttributeName"
-                :image-base-url="indexImageBaseUrl"
-                :image-suffix-url="indexImageSuffixUrl"
-                :title-attribute-name="indexTitleAttribute"
-                :auto-title-attribute-name="indexAutoTitleAttributeName"
-                :read-only="readOnly"
-                :can-jump-synonyms="canJumpSynonyms"
-                :jump-to="otherPanelKey"
-            />
-            <fetcher
-                v-show="panelCurrentTab === 'rules'"
-                :current-tab="panelCurrentTab"
-                method-name="searchRules"
-                :panel-key="panelKey"
-                @onFetch="onFetchRules"
-                :app-id="panelAppId"
-                :api-key="panelAdminAPIKey"
-                :index-name="panelIndexName"
-                :index-settings="refIndexSettings"
-                :server="panelServer"
-                :user-id="panelUserId"
-                :ignore-image-proxy="indexIgnoreImageProxy"
-                :image-size="indexImageSize"
-                :image-attribute="indexImageAttributeName"
-                :image-base-url="indexImageBaseUrl"
-                :image-suffix-url="indexImageSuffixUrl"
-                :title-attribute-name="indexTitleAttribute"
-                :auto-title-attribute-name="indexAutoTitleAttributeName"
-                :read-only="readOnly"
-                :can-jump-rules="canJumpRules"
-                :jump-to="otherPanelKey"
-            />
-            <checks
-                v-show="panelCurrentTab === 'checks'"
-                :index-analyser="indexData.indexAnalyzer"
-                :searchParams="searchParams"
-                :indexSettings="indexSettings"
-                @onUpdateCount="onUpdateChecksCount"
-            />
-            <mcm
-                v-if="panelCurrentTab === 'mcm'"
-                :panel-key="panelKey"
-            />
-        </div>
+  <div>
+    <panel-tabs
+      v-if="$store.state.panels.showResultTabs"
+      v-model="panelCurrentTab"
+      :options="[
+        {value: 'hits', label: 'Hits', labelAppend: ` (${formatHumanNumber(nbHits)})`, labelAppendCondition: !isNaN(nbHits)},
+        {value: 'synonyms', label: 'Synonyms', labelAppend: ` (${formatHumanNumber(nbSynonyms)})`, labelAppendCondition: true},
+        {value: 'rules', label: 'Rules', labelAppend: ` (${formatHumanNumber(nbRules)})`, labelAppendCondition: true},
+        {value: 'checks', label: 'Checks', labelAppend: ` (${formatHumanNumber(nbChecks)})`, labelAppendCondition: true},
+        {condition: panelUserId, value: 'mcm', label: 'MCM'},
+      ]"
+    />
+    <div class="p-8">
+      <perform-search
+        :search-params="searchParams"
+        :app-id="panelAppId"
+        :api-key="panelAdminAPIKey"
+        :server="panelServer"
+        :index-name="panelIndexName"
+        :method="panelMethod"
+        :user-id="panelUserId"
+        :query="$store.state.panels.query"
+        :title-attribute-name="indexTitleAttribute"
+        :fetch-explain="$store.state.panels.displayRankingInfo"
+        :analyse-hits-per-page="$store.state.panels.analyseMaxNbPoints"
+        :fetch-facets="true"
+        :panel-key="panelKey"
+        @onUpdateAutoTitleAttributeName="indexAutoTitleAttributeName = $event"
+        @onFetchHits="onFetchHits"
+        @onFetchAnalyseHits="onFetchAnalyseHits"
+        @onUpdateError="errorMessage = $event"
+      />
+      <error-message
+        v-if="errorMessage"
+        :error-message="errorMessage"
+        :app-id="panelAppId"
+        :api-key="panelAdminAPIKey"
+        @onUpdateApiKey="panelAdminAPIKey = $event"
+      />
+      <results
+        v-show="panelCurrentTab === 'hits'"
+        class="w-full"
+        :panel-key="panelKey"
+        :search-response="algoliaResponse"
+        :analyse-response="analyseAlgoliaResponse"
+        :search-params="searchParams"
+        :index-settings="refIndexSettings"
+        :analyse-max-nb-points="analyseMaxNbPoints"
+        :read-only="readOnly"
+        :is-replica="isReplica"
+        :app-id="panelAppId"
+        :api-key="panelAdminAPIKey"
+        :index-name="panelIndexName"
+        :server="panelServer"
+        :user-id="panelUserId"
+        :method="panelMethod"
+        :harcoded-query="false"
+        :has-no-records="hasNoRecords"
+        :query="searchParams.query !== undefined ? searchParams.query : $store.state.panels.query"
+        :display-mode="displayMode"
+        :show-searchable-attributes="$store.state.panels.showSearchableAttributes"
+        :show-custom-ranking="$store.state.panels.showCustomRanking"
+        :show-attributes-for-faceting="$store.state.panels.showAttributesForFaceting"
+        :show-only-matching-attributes="$store.state.panels.showOnlyMatchingAttributes"
+        :can-jump-rules="canJumpRules"
+        :can-jump-records="canJumpRecords"
+        :jump-to="otherPanelKey"
+        :ignore-image-proxy="indexIgnoreImageProxy"
+        :image-size="indexImageSize"
+        :image-attribute="indexImageAttributeName"
+        :image-base-url="indexImageBaseUrl"
+        :image-suffix-url="indexImageSuffixUrl"
+        :title-attribute-name="indexTitleAttribute"
+        :auto-title-attribute-name="indexAutoTitleAttributeName"
+        :keys-indexer="indexKeysIndexer"
+        :display-ranking-info="$store.state.panels.displayRankingInfo"
+        @onUpdateAnalyseMaxNbPoint="analyseMaxNbPoints = $event"
+        @onUpdateDisplayMode="displayMode = $event"
+        @onUpdatePage="onSetParamValue('page', $event)"
+        @onSetParamValue="onSetParamValue"
+        @onDeleteParam="onDeleteParam"
+        @onUpdateIgnoreImageProxy="indexIgnoreImageProxy = $event"
+        @onUpdateImageAttribute="indexImageAttributeName = $event"
+        @onUpdateImageBaseUrl="indexImageBaseUrl = $event"
+        @onUpdateImageSuffixUrl="indexImageSuffixUrl = $event"
+        @onUpdateImageSize="indexImageSize = $event"
+        @onUpdateTitleAttributeName="indexTitleAttribute = $event"
+        @onUpdateAutoTitleAttributeName="indexAutoTitleAttributeName = $event"
+        @onShouldUpdateQuery="onShouldUpdateQuery($event)"
+      />
+      <fetcher
+        v-show="panelCurrentTab === 'synonyms'"
+        :current-tab="panelCurrentTab"
+        method-name="searchSynonyms"
+        :panel-key="panelKey"
+        :app-id="panelAppId"
+        :api-key="panelAdminAPIKey"
+        :index-name="panelIndexName"
+        :server="panelServer"
+        :user-id="panelUserId"
+        :ignore-image-proxy="indexIgnoreImageProxy"
+        :image-size="indexImageSize"
+        :image-attribute="indexImageAttributeName"
+        :image-base-url="indexImageBaseUrl"
+        @onFetch="onFetchSynonyms"
+        :image-suffix-url="indexImageSuffixUrl"
+        :title-attribute-name="indexTitleAttribute"
+        :auto-title-attribute-name="indexAutoTitleAttributeName"
+        :read-only="readOnly"
+        :can-jump-synonyms="canJumpSynonyms"
+        :jump-to="otherPanelKey"
+      />
+      <fetcher
+        v-show="panelCurrentTab === 'rules'"
+        :current-tab="panelCurrentTab"
+        method-name="searchRules"
+        :panel-key="panelKey"
+        :app-id="panelAppId"
+        :api-key="panelAdminAPIKey"
+        :index-name="panelIndexName"
+        :index-settings="refIndexSettings"
+        :server="panelServer"
+        :user-id="panelUserId"
+        :ignore-image-proxy="indexIgnoreImageProxy"
+        :image-size="indexImageSize"
+        :image-attribute="indexImageAttributeName"
+        @onFetch="onFetchRules"
+        :image-base-url="indexImageBaseUrl"
+        :image-suffix-url="indexImageSuffixUrl"
+        :title-attribute-name="indexTitleAttribute"
+        :auto-title-attribute-name="indexAutoTitleAttributeName"
+        :read-only="readOnly"
+        :can-jump-rules="canJumpRules"
+        :jump-to="otherPanelKey"
+      />
+      <checks
+        v-show="panelCurrentTab === 'checks'"
+        :index-analyser="indexData.indexAnalyzer"
+        :search-params="searchParams"
+        :index-settings="indexSettings"
+        @onUpdateCount="onUpdateChecksCount"
+      />
+      <mcm
+        v-if="panelCurrentTab === 'mcm'"
+        :panel-key="panelKey"
+      />
     </div>
+  </div>
 </template>
 <script>
     import {formatHumanNumber} from 'common/utils/formatters'
@@ -164,8 +164,8 @@
     export default {
         name: 'Explorer',
         components: {PanelTabs, Mcm, Checks, Fetcher, Results, PerformSearch, ErrorMessage},
-        props: ['panelKey', 'readOnly', 'hasNoRecords'],
         mixins: [indexInfoMixin, panelsMixin],
+        props: ['panelKey', 'readOnly', 'hasNoRecords'],
         data: function () {
             return {
                 nbHits: 0,
@@ -176,11 +176,6 @@
                 algoliaResponse: null,
                 analyseAlgoliaResponse: null,
             };
-        },
-        created: function () {
-            if (!this.panelUserId && this.panelCurrentTab === 'mcm') {
-                this.panelCurrentTab = 'hits';
-            }
         },
         computed: {
             appId: function () { // Needed for indexInfoMixin
@@ -234,6 +229,11 @@
 
                 return !indexData.refIndexSettings.primary;
             },
+        },
+        created: function () {
+            if (!this.panelUserId && this.panelCurrentTab === 'mcm') {
+                this.panelCurrentTab = 'hits';
+            }
         },
         methods: {
             formatHumanNumber,

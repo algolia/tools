@@ -8,9 +8,9 @@ module.exports = {
 
         // YAML loader
         config.module
-            .rule("yml")
+            .rule("yaml")
             .test(/\.ya?ml$/)
-            .use("js-yaml-loader")
-            .loader("js-yaml-loader");
+            .use("yaml-loader")
+            .loader("yaml-loader");
     },
 };

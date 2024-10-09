@@ -1,127 +1,211 @@
 <template>
-    <div class="mt-24">
-        <div v-if="!tasksGroup && !displayCopyOption" class="flex">
-            <button
-                v-if="!readOnly && isIndexSettingsDirty"
-                @click="saveSettings()"
-                class="block bg-white rounded border border-saturn-2 text-saturn-1 shadow-sm hover:shadow transition-fast-out mr-8 px-16 p-8 text-sm relative group"
-            >
-                Save in current index
-                <tooltip :position="panelKey === 'leftPanel' ? 'left' : 'right'">Launch a setSettings immediately</tooltip>
-            </button>
-            <button
-                class="block bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out mr-8 px-16 p-8 text-sm relative group"
-                @click="displayOptions"
-            >
-                {{ isIndexSettingsDirty ? 'Save in copy' : 'Copy Index' }}
-                <tooltip :position="panelKey === 'leftPanel' ? 'left' : 'right'">Display copy options.<br>Will ask for confirmation</tooltip>
-            </button>
-        </div>
-        <div v-if="displayCopyOption && !tasksGroup">
-            <h4 class="mb-8">
-                {{ isIndexSettingsDirty ? 'Copy and save in' : 'Copy to' }}
-            </h4>
-            <div class="flex text-solstice-blue">
-                <app-selector v-model="dstAppId" class="mr-16" :only-algolia="readOnly" />
-                <input v-model="dstIndexName" class="input-custom mr-8 w-124">
-            </div>
-            <div v-if="indexName.length > 0" class="mt-16">
-                <div v-if="sameAppIdAsPanel">
-                    <label>
-                        <input v-model="inReplicaCopy" type="checkbox" class="mr-2" />
-                        In a replica
-                    </label>
-                </div>
-                <div v-if="!inReplicaCopy">
-                    <div>
-                        <div>
-                            <label>
-                                <input v-model="limitCopy.enabled" type="checkbox" class="mr-2" />
-                                Limit number of hits
-                                <span v-if="limitCopy.enabled">
-                                    : <input v-model="limitCopy.nbHits" class="input-custom inline w-72" type="number" min="0" step="1000" />
-                                </span>
-                            </label>
-                        </div>
-                        <div v-if="!sameAppCopyMethod">
-                            <label>
-                                <input v-model="configureBatchSize" type="checkbox" class="mr-2" />
-                                Configure batch size
-                                <span v-if="configureBatchSize">
-                                    : <input v-model="batchSize" class="input-custom inline w-72" type="number" min="1" max="1000" step="100" />
-                                </span>
-                            </label>
-                        </div>
-                        <div>
-                            <label>
-                                <input v-model="limitCopy.currentQueryOnly" type="checkbox" class="mr-2" />
-                                Limit to current query
-                            </label>
-                        </div>
-                        <div>
-                            <label>
-                                <input v-model="overwriteDefaultTimeout" type="checkbox" class="mr-2" />
-                                Force write timeout
-                                <span v-if="overwriteDefaultTimeout">
-                                    : <input v-model="writeTimeout" class="input-custom inline w-72" type="number" min="30" max="1000" step="10" /> secs
-                                </span>
-                            </label>
-                        </div>
-                        <div>
-                            <label>
-                                <input v-model="copyResources.partial" type="checkbox" class="mr-2" />
-                                Copy only some resources
-                            </label>
-                            <div v-if="copyResources.partial" class="ml-12">
-                                <div>
-                                    <label>
-                                        <input v-model="copyResources.records" type="checkbox" class="mr-2" />
-                                        Copy records
-                                    </label>
-                                </div>
-                                <div>
-                                    <label>
-                                        <input v-model="copyResources.synonyms" type="checkbox" class="mr-2" />
-                                        Copy synonyms
-                                    </label>
-                                </div>
-                                <div>
-                                    <label>
-                                        <input v-model="copyResources.rules" type="checkbox" class="mr-2" />
-                                        Copy rules
-                                    </label>
-                                </div>
-                                <div>
-                                    <label>
-                                        <input v-model="copyResources.settings" type="checkbox" class="mr-2" />
-                                        Copy settings
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="flex mt-16">
-                    <button
-                        class="block bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out mr-8 px-16 p-8 text-sm relative group"
-                        @click="displayCopyOption = false"
-                    >
-                        Cancel
-                    </button>
-                    <button
-                        @click="copyIndex"
-                        class="block bg-white rounded border border-saturn-2 text-saturn-1 shadow-sm hover:shadow transition-fast-out mr-8 px-16 p-8 text-sm relative group">
-                        {{ isIndexSettingsDirty ? 'Copy, save, open in other panel' : 'Copy, open in other panel' }}
-                        <tooltip>Launch the copy immediately</tooltip>
-                    </button>
-                </div>
-            </div>
-        </div>
-        <task-group-view :tasks-group="tasksGroup" />
-        <div v-if="errorMessage.length > 0" class="border border-mars-1 mt-16 p-8 rounded">
-            <div>{{errorMessage}}</div>
-        </div>
+  <div class="mt-24">
+    <div
+      v-if="!tasksGroup && !displayCopyOption"
+      class="flex"
+    >
+      <button
+        v-if="!readOnly && isIndexSettingsDirty"
+        class="block bg-white rounded border border-saturn-2 text-saturn-1 shadow-sm hover:shadow transition-fast-out mr-8 px-16 p-8 text-sm relative group"
+        @click="saveSettings()"
+      >
+        Save in current index
+        <tooltip :position="panelKey === 'leftPanel' ? 'left' : 'right'">
+          Launch a setSettings immediately
+        </tooltip>
+      </button>
+      <button
+        class="block bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out mr-8 px-16 p-8 text-sm relative group"
+        @click="displayOptions"
+      >
+        {{ isIndexSettingsDirty ? 'Save in copy' : 'Copy Index' }}
+        <tooltip :position="panelKey === 'leftPanel' ? 'left' : 'right'">
+          Display copy options.<br>Will ask for confirmation
+        </tooltip>
+      </button>
     </div>
+    <div v-if="displayCopyOption && !tasksGroup">
+      <h4 class="mb-8">
+        {{ isIndexSettingsDirty ? 'Copy and save in' : 'Copy to' }}
+      </h4>
+      <div class="flex text-solstice-blue">
+        <app-selector
+          v-model="dstAppId"
+          class="mr-16"
+          :only-algolia="readOnly"
+        />
+        <input
+          v-model="dstIndexName"
+          class="input-custom mr-8 w-124"
+        >
+      </div>
+      <div
+        v-if="indexName.length > 0"
+        class="mt-16"
+      >
+        <div v-if="sameAppIdAsPanel">
+          <label>
+            <input
+              v-model="inReplicaCopy"
+              type="checkbox"
+              class="mr-2"
+            >
+            In a replica
+          </label>
+        </div>
+        <div v-if="!inReplicaCopy">
+          <div>
+            <div>
+              <label>
+                <input
+                  v-model="limitCopy.enabled"
+                  type="checkbox"
+                  class="mr-2"
+                >
+                Limit number of hits
+                <span v-if="limitCopy.enabled">
+                  : <input
+                    v-model="limitCopy.nbHits"
+                    class="input-custom inline w-72"
+                    type="number"
+                    min="0"
+                    step="1000"
+                  >
+                </span>
+              </label>
+            </div>
+            <div v-if="!sameAppCopyMethod">
+              <label>
+                <input
+                  v-model="configureBatchSize"
+                  type="checkbox"
+                  class="mr-2"
+                >
+                Configure batch size
+                <span v-if="configureBatchSize">
+                  : <input
+                    v-model="batchSize"
+                    class="input-custom inline w-72"
+                    type="number"
+                    min="1"
+                    max="1000"
+                    step="100"
+                  >
+                </span>
+              </label>
+            </div>
+            <div>
+              <label>
+                <input
+                  v-model="limitCopy.currentQueryOnly"
+                  type="checkbox"
+                  class="mr-2"
+                >
+                Limit to current query
+              </label>
+            </div>
+            <div>
+              <label>
+                <input
+                  v-model="overwriteDefaultTimeout"
+                  type="checkbox"
+                  class="mr-2"
+                >
+                Force write timeout
+                <span v-if="overwriteDefaultTimeout">
+                  : <input
+                    v-model="writeTimeout"
+                    class="input-custom inline w-72"
+                    type="number"
+                    min="30"
+                    max="1000"
+                    step="10"
+                  > secs
+                </span>
+              </label>
+            </div>
+            <div>
+              <label>
+                <input
+                  v-model="copyResources.partial"
+                  type="checkbox"
+                  class="mr-2"
+                >
+                Copy only some resources
+              </label>
+              <div
+                v-if="copyResources.partial"
+                class="ml-12"
+              >
+                <div>
+                  <label>
+                    <input
+                      v-model="copyResources.records"
+                      type="checkbox"
+                      class="mr-2"
+                    >
+                    Copy records
+                  </label>
+                </div>
+                <div>
+                  <label>
+                    <input
+                      v-model="copyResources.synonyms"
+                      type="checkbox"
+                      class="mr-2"
+                    >
+                    Copy synonyms
+                  </label>
+                </div>
+                <div>
+                  <label>
+                    <input
+                      v-model="copyResources.rules"
+                      type="checkbox"
+                      class="mr-2"
+                    >
+                    Copy rules
+                  </label>
+                </div>
+                <div>
+                  <label>
+                    <input
+                      v-model="copyResources.settings"
+                      type="checkbox"
+                      class="mr-2"
+                    >
+                    Copy settings
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="flex mt-16">
+          <button
+            class="block bg-white rounded border border-proton-grey-opacity-40 shadow-sm hover:shadow transition-fast-out mr-8 px-16 p-8 text-sm relative group"
+            @click="displayCopyOption = false"
+          >
+            Cancel
+          </button>
+          <button
+            class="block bg-white rounded border border-saturn-2 text-saturn-1 shadow-sm hover:shadow transition-fast-out mr-8 px-16 p-8 text-sm relative group"
+            @click="copyIndex"
+          >
+            {{ isIndexSettingsDirty ? 'Copy, save, open in other panel' : 'Copy, open in other panel' }}
+            <tooltip>Launch the copy immediately</tooltip>
+          </button>
+        </div>
+      </div>
+    </div>
+    <task-group-view :tasks-group="tasksGroup" />
+    <div
+      v-if="errorMessage.length > 0"
+      class="border border-mars-1 mt-16 p-8 rounded"
+    >
+      <div>{{ errorMessage }}</div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -138,8 +222,8 @@
     export default {
         name: 'SaveOrCopySettings',
         components: {Tooltip, AppSelector, TaskGroupView},
-        props: ['panelKey', 'readOnly'],
         mixins: [indexInfoMixin, panelsMixin],
+        props: ['panelKey', 'readOnly'],
         data: function () {
             return {
                 errorMessage: '',
@@ -166,10 +250,6 @@
                 displayCopyOption: false,
             }
         },
-        created: function () {
-            this.dstAppId = !this.readOnly ? this.panelAppId : null;
-            this.dstIndexName = `${this.panelIndexName}_test`;
-        },
         computed: {
             appId: function () { // Needed for indexInfoMixin
                 return this.panelAppId;
@@ -183,6 +263,10 @@
             sameAppCopyMethod: function () {
                 return this.sameAppIdAsPanel && !this.limitCopy.enabled && !this.limitCopy.currentQueryOnly && !this.copyResources.partial;
             }
+        },
+        created: function () {
+            this.dstAppId = !this.readOnly ? this.panelAppId : null;
+            this.dstIndexName = `${this.panelIndexName}_test`;
         },
         methods: {
             displayOptions: function () {
