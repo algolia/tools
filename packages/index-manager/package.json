@@ -4,10 +4,10 @@
     "private": true,
     "scripts": {
         "serve": "vue-cli-service serve --openssl-legacy-provider",
+        "prebuild": "lerna run build --scope=css",
         "build": "vue-cli-service build --openssl-legacy-provider",
         "start": "node server.js",
-        "lint": "vue-cli-service lint --openssl-legacy-provider",
-        "css": "tailwind build src/assets/css/main.scss -c tailwind.js -o src/assets/css/all.css"
+        "lint": "vue-cli-service lint --openssl-legacy-provider"
     },
     "dependencies": {
         "algolia-filters-js-syntax-validator": "^1.0.2",
