@@ -19,8 +19,13 @@ This repo contains a set of tools that helps working on algolia related topics l
 
 ## Install
 
-After making sure that node and yarn are install, at the root of the repo run:
+This node version for project (>=14.x <=18.x):
+```sh
+nvm install 18
+nvm use 18
+```
 
+After making sure that node and yarn are install, at the root of the repo run:
 ```sh
 yarn install
 ```
