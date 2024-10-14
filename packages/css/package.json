@@ -5,7 +5,7 @@
     "scripts": {
         "build:sass": "sass main.scss dist/compiled.css",
         "build:css": "NODE_ENV=production postcss dist/compiled.css -o dist/all.css",
-        "build": "yarn run build:sass && yarn run build:css && ./copy-css.sh"
+        "build": "yarn run build:sass && yarn run build:css"
     },
     "devDependencies": {
         "autoprefixer": "^10.4.14",

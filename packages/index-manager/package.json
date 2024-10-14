@@ -6,8 +6,7 @@
         "serve": "vue-cli-service serve --openssl-legacy-provider",
         "build": "vue-cli-service build --openssl-legacy-provider",
         "start": "node server.js",
-        "lint": "vue-cli-service lint --openssl-legacy-provider",
-        "css": "tailwind build src/assets/css/main.scss -c tailwind.js -o src/assets/css/all.css"
+        "lint": "vue-cli-service lint --openssl-legacy-provider"
     },
     "dependencies": {
         "algolia-filters-js-syntax-validator": "^1.0.2",
@@ -27,7 +26,7 @@
     "devDependencies": {
         "@vue/cli-plugin-babel": "^5.0.8",
         "@vue/cli-plugin-eslint": "^5.0.8",
-        "@vue/cli-service": "^3.3.0",
+        "@vue/cli-service": "^5.0.8",
         "yaml-loader": "^0.8.1"
     },
     "browserslist": [
