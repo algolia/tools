@@ -99,7 +99,25 @@ app.use((req, res, next) => {
             ip: getRealIp(req),
             timestamp: new Date().toISOString(),
         });
-        return res.redirect(`https://${req.headers.host}${req.url}`);
+
+        // validate that the host is one of process.env.TOOLS_ENDPOINT or process.env.TOOLS_INTERNAL_ENDPOINT
+        const host = req.headers.host.split(":")[0];
+        const allowedHosts = [
+            process.env.TOOLS_ENDPOINT,
+            process.env.TOOLS_INTERNAL_ENDPOINT,
+        ].filter(Boolean);
+
+        if (!allowedHosts.includes(host)) {
+            logger.warn("Invalid host", {
+                host,
+                allowedHosts,
+                ip: getRealIp(req),
+                timestamp: new Date().toISOString(),
+            });
+            return res.status(400).send("Invalid host");
+        }
+
+        return res.redirect(301, `https://${req.headers.host}${req.url}`);
     }
     next();
 });
