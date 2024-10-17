@@ -91,7 +91,8 @@ app.post("/log", logLimiter, (req, res) => {
 app.use((req, res, next) => {
     if (
         process.env.NODE_ENV === "production" &&
-        req.headers["x-forwarded-proto"] !== "https"
+        req.headers["x-forwarded-proto"] !== "https" &&
+        !req.secure
     ) {
         logger.info("Redirecting to HTTPS", {
             host: req.headers.host,
@@ -100,10 +101,27 @@ app.use((req, res, next) => {
             timestamp: new Date().toISOString(),
         });
 
+        const validDomains = [
+            process.env.TOOLS_ENDPOINT,
+            process.env.TOOLS_INTERNAL_ENDPOINT,
+        ];
+
+        // Match the domain of the request header to the host and use the valid domain
+        const requestedDomain = validDomains.find((domain) => {
+            return req.headers.host.includes(domain);
+        });
+
         // We intentionally exclude the url when upgrading to HTTPS to
         // prevent XSS vulnerabilities
         // see https://cheatsheetseries.owasp.org/cheatsheets/Unvalidated_Redirects_and_Forwards_Cheat_Sheet.html#preventing-unvalidated-redirects-and-forwards
-        return res.redirect(301, `https://${req.headers.host}`);
+        return res.redirect(
+            301,
+            `https://${
+                requestedDomain ||
+                process.env.TOOLS_ENDPOINT ||
+                "tools.algolia.com"
+            }`
+        );
     }
     next();
 });
