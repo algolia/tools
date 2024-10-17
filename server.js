@@ -100,24 +100,11 @@ app.use((req, res, next) => {
             timestamp: new Date().toISOString(),
         });
 
-        // validate that the host is one of process.env.TOOLS_ENDPOINT or process.env.TOOLS_INTERNAL_ENDPOINT
-        const host = req.headers.host.split(":")[0];
-        const allowedHosts = [
-            process.env.TOOLS_ENDPOINT,
-            process.env.TOOLS_INTERNAL_ENDPOINT,
-        ].filter(Boolean);
+        // sanitize the host header and req.url to prevent XSS attacks
+        const sanitizedHost = req.headers.host.replace(/[^a-zA-Z0-9.-]/g, "");
+        const sanitizedUrl = req.url.replace(/[^a-zA-Z0-9./-]/g, "");
 
-        if (!allowedHosts.includes(host)) {
-            logger.warn("Invalid host", {
-                host,
-                allowedHosts,
-                ip: getRealIp(req),
-                timestamp: new Date().toISOString(),
-            });
-            return res.status(400).send("Invalid host");
-        }
-
-        return res.redirect(301, `https://${req.headers.host}${req.url}`);
+        return res.redirect(301, `https://${sanitizedHost}${sanitizedUrl}`);
     }
     next();
 });
@@ -181,7 +168,7 @@ app.use((req, res) => {
 // Start the Server
 // =======================
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 80;
 app.listen(port, () => {
     logger.info(`Server started on http://localhost:${port}`, {
         timestamp: new Date().toISOString(),
