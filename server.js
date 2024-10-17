@@ -3,6 +3,7 @@ const express = require("express");
 const serveStatic = require("serve-static");
 const history = require("./customHistory");
 const winston = require("winston");
+const { combine, timestamp, json, errors } = winston.format;
 const morgan = require("morgan");
 const rateLimit = require("express-rate-limit");
 
@@ -13,25 +14,8 @@ const app = express();
 // =======================
 
 const logger = winston.createLogger({
-    level: "info",
-    format: winston.format.combine(
-        winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
-        winston.format.metadata({
-            fillExcept: ["message", "level", "timestamp"],
-        }),
-        winston.format.printf(({ timestamp, level, message, metadata }) => {
-            let log = `${timestamp} [${level.toUpperCase()}]: `;
-            if (message && Object.keys(message).length > 0) {
-                log += `${JSON.stringify(message)}`;
-            } else {
-                log += message;
-            }
-            if (metadata && Object.keys(metadata).length > 0) {
-                log += ` ${JSON.stringify(metadata)}`;
-            }
-            return log;
-        })
-    ),
+    level: process.env.LOG_LEVEL || "info",
+    format: combine(errors({ stack: true }), timestamp(), json()),
     transports: [new winston.transports.Console({ handleExceptions: true })],
     exitOnError: false,
 });
