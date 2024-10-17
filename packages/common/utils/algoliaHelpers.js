@@ -4,6 +4,8 @@ import { createConsoleLogger } from "@algolia/logger-console";
 import { addMethods } from "@algolia/client-common";
 import getSignature from "./signature";
 import customIndexMethods from "./customIndexMethods";
+import { sendLog, redactApiKey } from "./logger";
+import store from "../store/store";
 
 const isLocalAppId = function (appId) {
     return (
@@ -98,6 +100,57 @@ export async function getClient(appId, apiKey, server, userId, noSignature) {
                         const promise = mcmMethod(param, options);
                         const waitMethod = promise.wait;
                         promise.wait = () => waitMethod({ headers });
+
+                        // Attach logging to the promise
+                        promise
+                            .then((response) => {
+                                const currentUser =
+                                    window !== undefined
+                                        ? window.currentUserEmail
+                                        : store && store.getters
+                                        ? store.getters[
+                                              "panels/getCurrentUserEmail"
+                                          ]
+                                        : userId || this.userId();
+
+                                const responseSize =
+                                    response && JSON.stringify(response).length
+                                        ? JSON.stringify(response).length
+                                        : 0;
+                                sendLog({
+                                    action: methodName,
+                                    user: currentUser,
+                                    appId,
+                                    apiKey: redactApiKey(apiKey),
+                                    status: "success",
+                                    responseSize: responseSize,
+                                }).catch((err) => {
+                                    console.error("Logging failed:", err);
+                                });
+                                // Return the original response
+                                return response;
+                            })
+                            .catch((error) => {
+                                const currentUser =
+                                    window !== undefined
+                                        ? window.currentUserEmail
+                                        : store && store.getters
+                                        ? store.getters[
+                                              "panels/getCurrentUserEmail"
+                                          ]
+                                        : userId || this.userId();
+                                sendLog({
+                                    action: methodName,
+                                    user: currentUser,
+                                    appId,
+                                    apiKey: redactApiKey(apiKey),
+                                    status: `fail: ${error.message}`,
+                                }).catch((err) => {
+                                    console.error("Logging failed:", err);
+                                });
+                                // Re-throw the original error to maintain promise rejection
+                                throw error;
+                            });
 
                         return promise;
                     };

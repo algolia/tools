@@ -2,20 +2,127 @@
 const express = require("express");
 const serveStatic = require("serve-static");
 const history = require("./customHistory");
+const winston = require("winston");
+const morgan = require("morgan");
+const rateLimit = require("express-rate-limit");
 
 const app = express();
 
-app.use((req, res, next) => {
-    console.log("force https upgrade in production");
-    if (process.env.NODE_ENV === "production") {
-        if (req.headers["x-forwarded-proto"] !== "https") {
-            console.log("redirecting to https");
-            return res.redirect("https://" + req.headers.host + req.url);
-        }
-    }
-    console.log("proceeding with https");
-    return next();
+// =======================
+// Logger Configuration
+// =======================
+
+const logger = winston.createLogger({
+    level: "info",
+    format: winston.format.combine(
+        winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
+        winston.format.metadata({
+            fillExcept: ["message", "level", "timestamp"],
+        }),
+        winston.format.printf(({ timestamp, level, message, metadata }) => {
+            let log = `${timestamp} [${level.toUpperCase()}]: `;
+            if (message && Object.keys(message).length > 0) {
+                log += `${JSON.stringify(message)}`;
+            } else {
+                log += message;
+            }
+            if (metadata && Object.keys(metadata).length > 0) {
+                log += ` ${JSON.stringify(metadata)}`;
+            }
+            return log;
+        })
+    ),
+    transports: [new winston.transports.Console({ handleExceptions: true })],
+    exitOnError: false,
 });
+
+logger.stream = { write: (message) => logger.info(message.trim()) };
+
+// =======================
+// Body Parser & Request Logging
+// =======================
+
+app.use(express.json({ limit: "10kb" }));
+app.use(morgan("combined", { stream: logger.stream }));
+
+// =======================
+// Rate Limiting
+// =======================
+
+// Can't exceed 100 logger requests within 1 minute
+const logLimiter = rateLimit({
+    windowMs: 1 * 60 * 1000,
+    max: 100,
+    message: {
+        status: 429,
+        error: "Too many logging requests from this IP, please try again after 1 minutes.",
+    },
+    standardHeaders: true,
+    legacyHeaders: false,
+});
+
+// =======================
+// Log Endpoint
+// =======================
+
+const redactApiKey = (apiKey) =>
+    apiKey ? apiKey.replace(/.(?=.{4})/g, "*") : "N/A";
+
+const getRealIp = (req) =>
+    req.headers["x-forwarded-for"]?.split(",")[0].trim() ||
+    req.connection.remoteAddress ||
+    "Unknown";
+
+app.post("/log", logLimiter, (req, res) => {
+    const { action, user, appId, apiKey, status, responseSize } = req.body;
+
+    if (!action || !appId || !apiKey || !status) {
+        logger.warn("Incomplete log data received", {
+            receivedData: JSON.stringify(req.body),
+            ip: getRealIp(req),
+            timestamp: new Date().toISOString(),
+        });
+        return res.status(400).json({ error: "Incomplete log data" });
+    }
+
+    const logMessage = {
+        action,
+        user,
+        appId,
+        apiKey: redactApiKey(apiKey),
+        status,
+        userAgent: req.headers["user-agent"] || "Unknown",
+        ip: getRealIp(req),
+        ...(responseSize && { responseSize }),
+    };
+
+    logger.info(logMessage);
+    res.status(200).json({ message: "Log received" });
+});
+
+// =======================
+// HTTPS Enforcement Middleware
+// =======================
+
+app.use((req, res, next) => {
+    if (
+        process.env.NODE_ENV === "production" &&
+        req.headers["x-forwarded-proto"] !== "https"
+    ) {
+        logger.info("Redirecting to HTTPS", {
+            host: req.headers.host,
+            url: req.url,
+            ip: getRealIp(req),
+            timestamp: new Date().toISOString(),
+        });
+        return res.redirect(`https://${req.headers.host}${req.url}`);
+    }
+    next();
+});
+
+// =======================
+// History API Fallback & Static Files
+// =======================
 
 app.use(
     history({
@@ -42,22 +149,18 @@ const apps = [
 ];
 
 apps.forEach((appName) => {
-    const serveStaticFunc = serveStatic(
-        __dirname + `/packages/${appName}/dist`
+    app.use(
+        `/${appName}`,
+        serveStatic(__dirname + `/packages/${appName}/dist`)
     );
-    app.use(`/${appName}`, (req, res, next) => {
-        console.log(`serving ${appName}`);
-        const wrappedNext = () => {
-            console.log(`fallthrough for ${appName}`);
-            next();
-        };
-        serveStaticFunc(req, res, wrappedNext);
-    });
 });
+
+// =======================
+// Internal Tool Redirects
+// =======================
 
 const toolsInternalEndpoint =
     process.env.TOOLS_INTERNAL_ENDPOINT || "http://127.0.0.1:8090";
-// Private
 app.use("/infra-watch", (req, res) =>
     res.redirect(`${toolsInternalEndpoint}/infra-watch`)
 );
@@ -69,13 +172,16 @@ app.use("/dictionaries", (req, res) =>
 );
 
 app.use((req, res) => {
-    console.log(
-        "redirecting to apps on tools endpoint",
-        process.env.TOOLS_ENDPOINT
-    );
     res.redirect(`${process.env.TOOLS_ENDPOINT || ""}/apps`);
 });
 
-const port = process.env.PORT || 80;
-app.listen(port);
-console.log("server started http://localhost:" + port);
+// =======================
+// Start the Server
+// =======================
+
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+    logger.info(`Server started on http://localhost:${port}`, {
+        timestamp: new Date().toISOString(),
+    });
+});
