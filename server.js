@@ -100,11 +100,10 @@ app.use((req, res, next) => {
             timestamp: new Date().toISOString(),
         });
 
-        // sanitize the host header and req.url to prevent XSS attacks
-        const sanitizedHost = req.headers.host.replace(/[^a-zA-Z0-9.-]/g, "");
-        const sanitizedUrl = req.url.replace(/[^a-zA-Z0-9./-]/g, "");
-
-        return res.redirect(301, `https://${sanitizedHost}${sanitizedUrl}`);
+        // We intentionally exclude the url when upgrading to HTTPS to
+        // prevent XSS vulnerabilities
+        // see https://cheatsheetseries.owasp.org/cheatsheets/Unvalidated_Redirects_and_Forwards_Cheat_Sheet.html#preventing-unvalidated-redirects-and-forwards
+        return res.redirect(301, `https://${req.headers.host}`);
     }
     next();
 });
