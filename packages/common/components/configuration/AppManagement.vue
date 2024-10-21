@@ -19,7 +19,7 @@
           </p>
           <p>
             <strong>
-              Always assess if the key you are using is using the least amount of privileges necessary for your needs:
+              Always assess if the key you are using has the least amount of privileges necessary for your needs:
             </strong>
           </p>
           <details
