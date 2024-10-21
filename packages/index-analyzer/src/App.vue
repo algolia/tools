@@ -14,6 +14,7 @@
                                 v-model="indexName"
                                 :app-id="appId"
                                 class="ml-24"
+                                allow-free-text="true"
                             />
                             <div class="flex flex-grow">
                                 <input placeholder="attributeName" class="rounded ml-24 px-8 max-w-third flex-grow" v-model="attributeName" />

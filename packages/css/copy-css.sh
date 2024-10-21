@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 TARGET_DIRS=(
     "../apps/public/"
     "../index-differ/public/"

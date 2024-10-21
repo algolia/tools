@@ -26,6 +26,7 @@
             v-model="indexName"
             :app-id="appId"
             class="ml-12 mb-12"
+            allow-free-text="true"
           />
           <user-selector
             v-model="panelUserId"

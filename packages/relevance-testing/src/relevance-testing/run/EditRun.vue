@@ -2,7 +2,7 @@
     <div class="p-8 h-full text-telluric-blue text-sm">
         <div class="flex flex-col h-full">
             <app-selector v-model="run.app_id" />
-            <index-selector v-model="run.index_name" :app-id="run.app_id" />
+            <index-selector v-model="run.index_name" :app-id="run.app_id" allow-free-text="true"/>
             <div class="flex my-12">
                 <div>Page size:</div>
                 <input v-model="run.hits_per_page" type="number" min="1" max="1000" class="input-custom ml-8" />

@@ -1,26 +1,31 @@
 <template>
-    <custom-select
-        v-model="indexInfo"
-        class="min-w-140 border-b border-telluric-blue-opacity-60 text-solstice-blue pb-4"
-        string-value-attribute="name"
-        :options="indicesWithForced"
-        :refine="refine"
-        :allow-free-text="allowFreeText"
-    >
-        <template v-slot:icon><list-icon class="block w-12 h-12 mr-8 -mt-1 fill-current"/></template>
-        <template v-slot:default="{option, inDropDown, isSelected, highlightString}">
-            <!-- XSS Check: all html entities are escaped using `escapeHtml` -->
-            <div v-html="inDropDown ? highlightString(escapeHtml(option.name)) : escapeHtml(option.name)"></div>
-            <div v-if="inDropDown" class="ml-auto"></div>
-            <div
-                v-if="inDropDown && option.entries !== undefined"
-                class="ml-16"
-                :class="isSelected ? 'text-white': 'text-solstice-blue-opacity-50'"
-            >
-                {{option.entries}} records
-            </div>
-        </template>
-    </custom-select>
+  <custom-select
+    v-model="indexInfo"
+    class="min-w-140 border-b border-telluric-blue-opacity-60 text-solstice-blue pb-4"
+    string-value-attribute="name"
+    :options="indicesWithForced"
+    :refine="refine"
+    :allow-free-text="allowFreeText"
+  >
+    <template #icon>
+      <list-icon class="block w-12 h-12 mr-8 -mt-1 fill-current" />
+    </template>
+    <template #default="{option, inDropDown, isSelected, highlightString}">
+      <!-- XSS Check: all html entities are escaped using `escapeHtml` -->
+      <div v-html="inDropDown ? highlightString(escapeHtml(option.name)) : escapeHtml(option.name)" />
+      <div
+        v-if="inDropDown"
+        class="ml-auto"
+      />
+      <div
+        v-if="inDropDown && option.entries !== undefined"
+        class="ml-16"
+        :class="isSelected ? 'text-white': 'text-solstice-blue-opacity-50'"
+      >
+        {{ option.entries }} records
+      </div>
+    </template>
+  </custom-select>
 </template>
 
 <script>
@@ -46,10 +51,6 @@
                 nbPages: 1,
                 maxNbPagesInMemory: 5,
             };
-        },
-        created: function () {
-            this.registerIndex();
-            this.updateIndices(false);
         },
         computed: {
             indicesWithForced: function () {
@@ -88,6 +89,10 @@
             adminAPIKey: function () {
                 this.updateIndices(true);
             }
+        },
+        created: function () {
+            this.registerIndex();
+            this.updateIndices(false);
         },
         methods: {
             registerIndex: function () {
@@ -143,29 +148,37 @@
 
                 const client = await getClient(this.appId, this.adminAPIKey);
 
-                let data = await client.listIndices({
-                    queryParameters: {
-                        page: 0
+                try {
+                    let data = await client.listIndices({
+                        queryParameters: {
+                            page: 0
+                        }
+                    });
+                    this.nbPages = data.nbPages;
+
+                    if (this.nbPages > 1 && this.nbPages <= this.maxNbPagesInMemory) {
+                        data = await client.listIndices();
                     }
-                });
-                this.nbPages = data.nbPages;
 
-                if (this.nbPages > 1 && this.nbPages <= this.maxNbPagesInMemory) {
-                    data = await client.listIndices();
-                }
+                    this.allIndices = data.items.sort((a, b) => {
+                        if (a.updatedAt < b.updatedAt) return 1;
+                        if (a.updatedAt > b.updatedAt) return -1;
+                        return 0;
+                    });
+                    this.indices = this.allIndices;
 
-                this.allIndices = data.items.sort((a, b) => {
-                    if (a.updatedAt < b.updatedAt) return 1;
-                    if (a.updatedAt > b.updatedAt) return -1;
-                    return 0;
-                });
-                this.indices = this.allIndices;
+                    if (this.indices.length <= 0) return;
 
-                if (this.indices.length <= 0) return;
-
-                if ((shouldSetIndex && this.indexInfo.name !== this.value) || this.value === null) {
-                    this.indexInfo.name = this.value ? this.value : (this.$store.state.apps[this.appId].lastIndexName || this.indices[0].name);
-                    this.$emit('input', this.indexInfo.name);
+                    if ((shouldSetIndex && this.indexInfo.name !== this.value) || this.value === null) {
+                        this.indexInfo.name = this.value ? this.value : (this.$store.state.apps[this.appId].lastIndexName || this.indices[0].name);
+                        this.$emit('input', this.indexInfo.name);
+                    }
+                } catch (e) {
+                    // graceful degradation if the apiKey does not have listIndices permissions.
+                    console.warn('updateIndices ignored due to apiKey restrictions', e)
+                    this.nbPages = 0
+                    this.allIndices = [];
+                    this.indices = [];
                 }
             },
             escapeHtml,

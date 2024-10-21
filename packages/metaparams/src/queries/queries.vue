@@ -106,24 +106,28 @@
             fetchTopQueries: async function () {
                 this.topQueries = [];
 
-                const topQueriesQuery = await fetch(`https://analytics.${this.region}.algolia.com/2/searches?index=${this.panelIndexName}&limit=100`, {
-                    headers: {
-                        'X-Algolia-Application-Id': this.panelAppId,
-                        'X-Algolia-API-Key': this.panelAdminAPIKey,
-                    }
-                });
+                try {
+                    const topQueriesQuery = await fetch(`https://analytics.${this.region}.algolia.com/2/searches?index=${this.panelIndexName}&limit=100`, {
+                        headers: {
+                            'X-Algolia-Application-Id': this.panelAppId,
+                            'X-Algolia-API-Key': this.panelAdminAPIKey,
+                        }
+                    });
 
-                if (topQueriesQuery.status !== 200) return;
+                    if (topQueriesQuery.status !== 200) return;
 
-                const topQueries = await topQueriesQuery.json();
+                    const topQueries = await topQueriesQuery.json();
 
-                if (topQueries.searches === null) return;
+                    if (topQueries.searches === null) return;
 
-                this.topQueries = topQueries.searches.filter((query) => {
-                    return query.search.length > 0;
-                }).map((query) => {
-                    return query.search;
-                });
+                    this.topQueries = topQueries.searches.filter((query) => {
+                        return query.search.length > 0;
+                    }).map((query) => {
+                        return query.search;
+                    });
+                } catch (e) {
+                    console.warn('fetchTopQueries ignored due to apiKey restrictions', e)
+                }
             },
             goToQuery: function (query) {
                 this.lastQueryJustSaved = true;
