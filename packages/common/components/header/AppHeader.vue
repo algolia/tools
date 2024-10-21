@@ -36,7 +36,13 @@
     export default {
         name: 'AppHeader',
         components: {AlgoliaLogoExperimental, ChevronLeft},
-        props: ['appName'],
+        props: {
+            appName: {
+                type: String,
+                required: false,
+                default: ''
+            }
+        },
         computed: {
             hostUrl: function () {
                 if (process.env.NODE_ENV === "production" && process.env.VUE_APP_TOOLS_INTERNAL_ENDPOINT && window.currentUserEmail && window.currentUserEmail.endsWith('@algolia.com')) {
@@ -52,9 +58,7 @@
             storeData() {
                 window.globalData = {
                     ...window.globalData,
-                    ...{
-                        appName: this.appName,
-                    },
+                    appName: this.appName
                 };
             },
         },
