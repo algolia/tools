@@ -75,6 +75,17 @@ export async function getClient(appId, apiKey, server, userId, noSignature) {
         headers: headers,
     });
 
+    // Check the window.globalData object to see if we have the app name stored,
+    // and if so, add it to the user agent.
+    if (window.globalData && window.globalData.appName) {
+        baseClient.addAlgoliaAgent(
+            `Algolia Tools - ${window.globalData.appName}`,
+            "1.0.0"
+        );
+    } else {
+        baseClient.addAlgoliaAgent("Algolia Tools", "1.0.0");
+    }
+
     const client = addMethods(baseClient, {
         customInitIndex: function (base) {
             return function (indexName) {
