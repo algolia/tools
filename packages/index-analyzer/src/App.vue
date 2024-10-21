@@ -1,45 +1,45 @@
 <template>
-    <internal-app>
-        <div class="min-h-screen pb-48">
-            <app-header app-name="Index Analyzer">
-                <display-config class="mt-0 ml-auto" />
-            </app-header>
-            <div class="px-48 mt-24">
-                <app-management @onAddedAppId="appId = $event" />
-                <div class="max-w-960 mx-auto mt-24">
-                    <div class="rounded border border-proton-grey-opacity-60 mt-24">
-                        <div class="flex bg-white p-8 pb-12 bg-proton-grey-opacity-40 text-telluric-blue">
-                            <app-selector v-model="appId" />
-                            <index-selector
-                                v-model="indexName"
-                                :app-id="appId"
-                                class="ml-24"
-                                allow-free-text="true"
-                            />
-                            <div class="flex flex-grow">
-                                <input placeholder="attributeName" class="rounded ml-24 px-8 max-w-third flex-grow" v-model="attributeName" />
-                                <input v-if="attributeName.length > 0" placeholder="type" class="rounded ml-24 px-8 max-w-third flex-grow" v-model="typeFilter" />
-                                <input v-if="attributeName.length > 0" placeholder="value" class="rounded ml-24 px-8 max-w-third flex-grow" v-model="valueFilter" />
-                            </div>
-                        </div>
-                        <div class="bg-white text-nova-grey">
-                            <metrics
-                                :app-id="appId"
-                                :index-name="indexName"
-                                :attribute-name="attributeName"
-                                :attributes="attributes"
-                                :typeFilter="typeFilter"
-                                :valueFilter="valueFilter"
-                                @onUpdateAttributeName="attributeName = $event"
-                                @onUpdateValueFilter="valueFilter = $event"
-                                @onUpdateTypeFilter="typeFilter = $event"
-                            />
-                        </div>
-                    </div>
-                </div>
+  <internal-app>
+    <div class="min-h-screen pb-48">
+      <app-header app-name="Index Analyzer">
+        <display-config class="mt-0 ml-auto" />
+      </app-header>
+      <div class="px-48 mt-24">
+        <app-management @onAddedAppId="appId = $event" />
+        <div class="max-w-960 mx-auto mt-24">
+          <div class="rounded border border-proton-grey-opacity-60 mt-24">
+            <div class="flex bg-white p-8 pb-12 bg-proton-grey-opacity-40 text-telluric-blue">
+              <app-selector v-model="appId" />
+              <index-selector
+                v-model="indexName"
+                :app-id="appId"
+                class="ml-24"
+                allow-free-text="true"
+              />
+              <div class="flex flex-grow">
+                <input placeholder="attributeName" class="rounded ml-24 px-8 max-w-third flex-grow" v-model="attributeName" />
+                <input v-if="attributeName.length > 0" placeholder="type" class="rounded ml-24 px-8 max-w-third flex-grow" v-model="typeFilter" />
+                <input v-if="attributeName.length > 0" placeholder="value" class="rounded ml-24 px-8 max-w-third flex-grow" v-model="valueFilter" />
+              </div>
             </div>
+            <div class="bg-white text-nova-grey">
+              <metrics
+                :app-id="appId"
+                :index-name="indexName"
+                :attribute-name="attributeName"
+                :attributes="attributes"
+                :typeFilter="typeFilter"
+                :valueFilter="valueFilter"
+                @onUpdateAttributeName="attributeName = $event"
+                @onUpdateValueFilter="valueFilter = $event"
+                @onUpdateTypeFilter="typeFilter = $event"
+              />
+            </div>
+          </div>
         </div>
-    </internal-app>
+      </div>
+    </div>
+  </internal-app>
 </template>
 
 <script>

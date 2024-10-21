@@ -9,7 +9,7 @@
                 <div class="bg-white rounded border border-proton-grey-opacity-60">
                     <div class="flex bg-white p-8 pb-12 border-nova-grey-opacity-20 bg-proton-grey-opacity-80 text-telluric-blue">
                         <app-selector v-model="appId" class="mr-16" />
-                        <index-selector v-model="indexName" :app-id="appId" class="" allow-free-text="true"/>
+                        <index-selector v-model="indexName" :app-id="appId" class="" allow-free-text="true" />
                     </div>
                     <div v-if="indexData && this.apiKey">
                         <div class="flex bg-proton-grey-opacity-40 text-telluric-blue">
