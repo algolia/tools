@@ -12,7 +12,7 @@
                         <div class="flex items-center w-full justify-between p-12 pb-8">
                             <div class="flex">
                                 <app-selector v-model="refIndexInfo.appId" class="mb-4" />
-                                <index-selector v-model="refIndexInfo.indexName" :app-id="refIndexInfo.appId" class="ml-12 mb-4" />
+                                <index-selector v-model="refIndexInfo.indexName" :app-id="refIndexInfo.appId" class="ml-12 mb-4" allow-free-text="true"/>
                             </div>
                         </div>
                     </div>
@@ -93,7 +93,7 @@
                                 <div class="flex w-full justify-between p-16">
                                     <div class="flex w-full items-center">
                                         <app-selector v-model="indexInfo.appId" class="mb-4" />
-                                        <index-selector v-model="indexInfo.indexName" :app-id="indexInfo.appId" class="ml-12 mb-4" />
+                                        <index-selector v-model="indexInfo.indexName" :app-id="indexInfo.appId" class="ml-12 mb-4" allow-free-text="true"/>
                                         <swap-icon
                                             @click="swapIndex(i)"
                                             class="ml-auto rotate-90 -mt-8 w-16 h-16 cursor-pointer text-solstice-blue"

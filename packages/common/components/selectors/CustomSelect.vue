@@ -1,56 +1,59 @@
 <template>
-    <div>
+  <div>
+    <div
+      class="relative focus:outline-none"
+      tabindex="-1"
+      @keyup="onKeyUp"
+      @keydown="onKeyDown"
+      @blur="fakeBlur"
+    >
+      <div
+        v-if="!dropdownOpened || !refine"
+        class="flex items-center py-4 cursor-pointer text-sm leading-none"
+        @click="openDropDown"
+      >
+        <slot name="icon" />
+        <slot
+          :option="value"
+          :in-drop-down="false"
+        />
+        <span class="ml-auto" />
+        <chevron-down-icon
+          class="block ml-24 w-8 h-8 fill-current"
+        />
+      </div>
+      <input
+        v-if="dropdownOpened && refine"
+        ref="input"
+        v-model="query"
+        class="px-8 py-4 text-solstice-blue rounded text-base bg-moon-grey w-full"
+        @keyup="onKeyUp"
+        @keydown="onKeyDown"
+        @blur="onBlur"
+      >
+      <div
+        v-if="dropdownOpened"
+        class="shadow absolute z-10 bg-white dropdown mt-4 max-h-312 min-w-full overflow-y-scroll"
+      >
         <div
-            class="relative focus:outline-none"
-            tabindex="-1"
-            @keyup="onKeyUp"
-            @keydown="onKeyDown"
-            @blur="fakeBlur"
+          v-for="(option, index) in options"
+          :class="`${selectedIndex === index ? 'bg-nebula-blue text-white hover:bg-nebula-blue hover:text-white' : ''}`"
+          class="flex p-8 cursor-pointer"
+          @mousedown="allowBlur = false"
+          @mousemove="selectedIndex = index"
+          @mouseleave="selectedIndex = -1"
+          @click="selectedIndex = index; onSelected($event); allowBlur = true;"
         >
-            <div
-                v-if="!dropdownOpened || !refine"
-                @click="openDropDown"
-                class="flex items-center py-4 cursor-pointer text-sm leading-none"
-            >
-                <slot name="icon" />
-                <slot v-bind:option="value" v-bind:inDropDown="false" />
-                <span class="ml-auto"></span>
-                <chevron-down-icon
-                    class="block ml-24 w-8 h-8 fill-current"
-                />
-            </div>
-            <input
-                v-if="dropdownOpened && refine"
-                ref="input"
-                class="px-8 py-4 text-solstice-blue rounded text-base bg-moon-grey w-full"
-                v-model="query"
-                @keyup="onKeyUp"
-                @keydown="onKeyDown"
-                @blur="onBlur"
-            />
-            <div
-                v-if="dropdownOpened"
-                class="shadow absolute z-10 bg-white dropdown mt-4 max-h-312 min-w-full overflow-y-scroll"
-            >
-                <div
-                    v-for="(option, index) in options"
-                    :class="`${selectedIndex === index ? 'bg-nebula-blue text-white hover:bg-nebula-blue hover:text-white' : ''}`"
-                    class="flex p-8 cursor-pointer"
-                    @mousedown="allowBlur = false"
-                    @mousemove="selectedIndex = index"
-                    @mouseleave="selectedIndex = -1"
-                    @click="selectedIndex = index; onSelected($event); allowBlur = true;"
-                >
-                    <slot
-                        v-bind:option="option"
-                        v-bind:inDropDown="true"
-                        v-bind:isSelected="selectedIndex === index"
-                        v-bind:highlightString="highlightString"
-                    />
-                </div>
-            </div>
+          <slot
+            :option="option"
+            :in-drop-down="true"
+            :is-selected="selectedIndex === index"
+            :highlight-string="highlightString"
+          />
         </div>
+      </div>
     </div>
+  </div>
 </template>
 
 <script>
@@ -60,8 +63,8 @@
 
     export default {
         name: 'CustomSelect',
-        props: ['value', 'options', 'displayEmptyQuery', 'refine', 'stringValueAttribute', 'allowFreeText'],
         components: {ChevronDownIcon},
+        props: ['value', 'options', 'displayEmptyQuery', 'refine', 'stringValueAttribute', 'allowFreeText'],
         data: function () {
             const value = this.stringValueAttribute && this.value ? this.value[this.stringValueAttribute] : this.value;
             return {
@@ -69,6 +72,11 @@
                 selectedIndex: -1,
                 dropdownOpened: false,
                 query: value || '',
+            }
+        },
+        computed: {
+            stringValue: function () {
+                return this.stringValueAttribute && this.value ? this.value[this.stringValueAttribute] : (this.value || '');
             }
         },
         watch: {
@@ -83,11 +91,6 @@
                 if (!this.refine) return;
 
                 this.query = this.stringValue;
-            }
-        },
-        computed: {
-            stringValue: function () {
-                return this.stringValueAttribute && this.value ? this.value[this.stringValueAttribute] : (this.value || '');
             }
         },
         methods: {

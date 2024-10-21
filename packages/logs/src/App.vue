@@ -34,6 +34,7 @@
                             :app-id="appId"
                             :forced-indices="[{name: 'All Indices'}]"
                             class="mr-16"
+                            allow-free-text="true"
                         />
                         <custom-select
                             v-model="logsType"

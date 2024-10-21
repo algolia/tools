@@ -130,31 +130,38 @@
             fetchIndexData: async function (indexName) {
                 if (!this.indexData) return;
 
-                const client = await getClient(this.panelAppId, this.panelAdminAPIKey, this.panelServer);
-                const res = await client.listIndices({
-                    queryParameters: {
-                        page: 0, prefix: indexName
-                    }
-                });
+                try {
+                    const client = await getClient(this.panelAppId, this.panelAdminAPIKey, this.panelServer);
+                    const res = await client.listIndices({
+                        queryParameters: {
+                            page: 0, prefix: indexName
+                        }
+                    });
 
-                res.items.forEach((indexInfo) => {
-                    if (indexInfo.name === indexName) {
-                        this.indexInfo = indexInfo;
-                    }
-                });
+                    res.items.forEach((indexInfo) => {
+                        if (indexInfo.name === indexName) {
+                            this.indexInfo = indexInfo;
+                        }
+                    });
 
-                this.$emit('onUpdateHasNoRecord', this.indexInfo !== null && this.indexInfo.entries === 0);
+                    this.$emit('onUpdateHasNoRecord', this.indexInfo !== null && this.indexInfo.entries === 0);
+                } catch(e) {
+                    console.warn("listIndices ignored due to apiKey restrictions", e)
+                }
             },
             fetchBuildingIndices: async function () {
                 if (!this.indexData) return;
 
-                const client = await getClient(this.panelAppId, this.panelAdminAPIKey, this.panelServer);
-                const data = await client.transporter.write({
-                    method: 'GET',
-                    path: '1/indexes/*/stats',
-                });
-
-                this.buildingIndices = data.building;
+                try {
+                    const client = await getClient(this.panelAppId, this.panelAdminAPIKey, this.panelServer);
+                    const data = await client.transporter.write({
+                        method: 'GET',
+                        path: '1/indexes/*/stats',
+                    });
+                    this.buildingIndices = data.building;
+                } catch(e) {
+                    console.warn("buildingIndices call ignored due to apiKey restrictions", e)
+                }
             }
         }
     }

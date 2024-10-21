@@ -83,6 +83,7 @@
                         v-model="indexInfo.indexName"
                         :app-id="indexInfo.appId"
                         class="ml-24"
+                        allow-free-text="true"
                     />
                     <div class="flex ml-48">
                         Fetch extra record:
