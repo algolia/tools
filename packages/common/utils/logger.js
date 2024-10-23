@@ -22,11 +22,15 @@ export async function sendLog(logData) {
 
 /**
  * Redacts sensitive information from the API key.
+ * It removes all but the first 4 characters and obfuscates the rest
+ * with asterisks.
  *
  * @param {string} apiKey - The original API key.
  * @returns {string} - The redacted API key.
  */
 export function redactApiKey(apiKey) {
     if (!apiKey) return "N/A";
-    return apiKey.replace(/.(?=.{4})/g, "*"); // Redacts all but last 4 characters
+    const ss = apiKey.substring(0, 4);
+    const rest = apiKey.substring(4).replace(/./g, "*");
+    return ss + rest;
 }

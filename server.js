@@ -6,6 +6,7 @@ const winston = require("winston");
 const { combine, timestamp, json, errors } = winston.format;
 const morgan = require("morgan");
 const rateLimit = require("express-rate-limit");
+// const { LoggingWinston } = require("@google-cloud/logging-winston");
 
 const app = express();
 
@@ -16,7 +17,10 @@ const app = express();
 const logger = winston.createLogger({
     level: process.env.LOG_LEVEL || "info",
     format: combine(errors({ stack: true }), timestamp(), json()),
-    transports: [new winston.transports.Console({ handleExceptions: true })],
+    transports: [
+        new winston.transports.Console({ handleExceptions: true }),
+        // new LoggingWinston(),
+    ],
     exitOnError: false,
 });
 
@@ -49,8 +53,12 @@ const logLimiter = rateLimit({
 // Log Endpoint
 // =======================
 
-const redactApiKey = (apiKey) =>
-    apiKey ? apiKey.replace(/.(?=.{4})/g, "*") : "N/A";
+const redactApiKey = (apiKey) => {
+    if (!apiKey) return "N/A";
+    const ss = apiKey.substring(0, 4);
+    const rest = apiKey.substring(4).replace(/./g, "*");
+    return ss + rest;
+};
 
 const getRealIp = (req) =>
     req.headers["x-forwarded-for"]?.split(",")[0].trim() ||
