@@ -7,7 +7,6 @@ const { combine, timestamp, json, errors } = winston.format;
 const morgan = require("morgan");
 const rateLimit = require("express-rate-limit");
 const { LoggingWinston } = require("@google-cloud/logging-winston");
-require("dotenv").config();
 
 const app = express();
 
