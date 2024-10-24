@@ -6,7 +6,8 @@ const winston = require("winston");
 const { combine, timestamp, json, errors } = winston.format;
 const morgan = require("morgan");
 const rateLimit = require("express-rate-limit");
-// const { LoggingWinston } = require("@google-cloud/logging-winston");
+const { LoggingWinston } = require("@google-cloud/logging-winston");
+require("dotenv").config();
 
 const app = express();
 
@@ -14,14 +15,52 @@ const app = express();
 // Logger Configuration
 // =======================
 
+if (
+    !process.env.GCP_PROJECT_ID ||
+    !process.env.GCP_CLIENT_EMAIL ||
+    !process.env.GCP_PRIVATE_KEY
+) {
+    throw new Error("Missing GCP credentials... exiting");
+}
+
+const loadPkey = () => {
+    let pkey = Buffer.from(process.env.GCP_PRIVATE_KEY, "base64").toString(
+        "utf-8"
+    );
+
+    // Trim off any double quotes that may be present in the private key
+    // and replace escaped newline characters with actual newlines
+    pkey = pkey.replace(/\\n/g, "\n");
+    pkey = pkey.replace(/"/g, "");
+
+    return pkey;
+};
+
+const gcpTransport = new LoggingWinston({
+    projectId: process.env.GCP_PROJECT_ID,
+    credentials: {
+        client_email: process.env.GCP_CLIENT_EMAIL,
+        private_key: loadPkey(),
+    },
+});
+
+const globalFormat = combine(
+    errors({ stack: true }), // Capture stack traces for errors
+    timestamp() // Add timestamps to logs
+);
+
 const logger = winston.createLogger({
     level: process.env.LOG_LEVEL || "info",
-    format: combine(errors({ stack: true }), timestamp(), json()),
+    format: globalFormat,
     transports: [
-        new winston.transports.Console({ handleExceptions: true }),
-        // new LoggingWinston(),
+        // Console transport with JSON formatting for readability
+        new winston.transports.Console({
+            handleExceptions: true,
+            format: combine(globalFormat, json()),
+        }),
+        gcpTransport,
     ],
-    exitOnError: false,
+    exitOnError: false, // Do not exit on handled exceptions
 });
 
 logger.stream = { write: (message) => logger.info(message.trim()) };
@@ -88,7 +127,10 @@ app.post("/log", logLimiter, (req, res) => {
         ...(responseSize && { responseSize }),
     };
 
-    logger.info(logMessage);
+    logger.info(
+        `[${appId}] - ${user || "UNKNOWN"} performed ${action}`,
+        logMessage
+    );
     res.status(200).json({ message: "Log received" });
 });
 
