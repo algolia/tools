@@ -1,0 +1,36 @@
+name: CI Workflow
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Node.js environment and specify the version
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18' # You can specify the Node.js version here
+
+      # Step 3: Install dependencies using yarn
+      - name: Install dependencies
+        run: yarn
+
+      # Step 4: Build the project
+      - name: Build the project
+        run: yarn build
+
+      # Step 5: Run tests using Jest
+      - name: Run Jest tests
+        run: yarn test
