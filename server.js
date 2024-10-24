@@ -7,6 +7,7 @@ const { combine, timestamp, json, errors } = winston.format;
 const morgan = require("morgan");
 const rateLimit = require("express-rate-limit");
 const { LoggingWinston } = require("@google-cloud/logging-winston");
+const { redactApiKey } = require("./utils");
 
 const app = express();
 
@@ -90,13 +91,6 @@ const logLimiter = rateLimit({
 // =======================
 // Log Endpoint
 // =======================
-
-const redactApiKey = (apiKey) => {
-    if (!apiKey) return "N/A";
-    const ss = apiKey.substring(0, 4);
-    const rest = apiKey.substring(4).replace(/./g, "*");
-    return ss + rest;
-};
 
 const getRealIp = (req) =>
     req.headers["x-forwarded-for"]?.split(",")[0].trim() ||

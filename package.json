@@ -24,7 +24,8 @@
         "prepare-css": "cd packages/css && yarn build && ./copy-css.sh",
         "build": "yarn lerna run build",
         "start": "node server.js",
-        "lint": "yarn lerna run lint"
+        "lint": "yarn lerna run lint",
+        "test": "yarn jest"
     },
     "engines": {
         "node": ">=14.x <=18.x"
