@@ -7,7 +7,7 @@ const { combine, timestamp, json, errors } = winston.format;
 const morgan = require("morgan");
 const rateLimit = require("express-rate-limit");
 const { LoggingWinston } = require("@google-cloud/logging-winston");
-const { redactApiKey } = require("./utils");
+const { redactApiKey, getObfuscatedIP } = require("./utils");
 
 const app = express();
 
@@ -92,18 +92,13 @@ const logLimiter = rateLimit({
 // Log Endpoint
 // =======================
 
-const getRealIp = (req) =>
-    req.headers["x-forwarded-for"]?.split(",")[0].trim() ||
-    req.connection.remoteAddress ||
-    "Unknown";
-
 app.post("/log", logLimiter, (req, res) => {
     const { action, user, appId, apiKey, status, responseSize } = req.body;
 
     if (!action || !appId || !apiKey || !status) {
         logger.warn("Incomplete log data received", {
             receivedData: JSON.stringify(req.body),
-            ip: getRealIp(req),
+            ip: getObfuscatedIP(req),
             timestamp: new Date().toISOString(),
         });
         return res.status(400).json({ error: "Incomplete log data" });
@@ -116,7 +111,7 @@ app.post("/log", logLimiter, (req, res) => {
         apiKey: redactApiKey(apiKey),
         status,
         userAgent: req.headers["user-agent"] || "Unknown",
-        ip: getRealIp(req),
+        ip: getObfuscatedIP(req),
         ...(responseSize && { responseSize }),
     };
 
@@ -140,7 +135,7 @@ app.use((req, res, next) => {
         logger.info("Redirecting to HTTPS", {
             host: req.headers.host,
             url: req.url,
-            ip: getRealIp(req),
+            ip: getObfuscatedIP(req),
             timestamp: new Date().toISOString(),
         });
 
