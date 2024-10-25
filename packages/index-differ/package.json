@@ -20,7 +20,7 @@
         "moment": "^2.24.0",
         "prismjs": "^1.15.0",
         "serve-static": "^1.13.2",
-        "vue": "^2.6",
+        "vue": "^3.0",
         "vue-chartjs": "^3.4.2",
         "vue-input-autowidth": "^1.0.3",
         "vue2-brace-editor": "^2.0.2",
