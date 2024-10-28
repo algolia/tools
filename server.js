@@ -6,7 +6,8 @@ const winston = require("winston");
 const { combine, timestamp, json, errors } = winston.format;
 const morgan = require("morgan");
 const rateLimit = require("express-rate-limit");
-// const { LoggingWinston } = require("@google-cloud/logging-winston");
+const { LoggingWinston } = require("@google-cloud/logging-winston");
+const { redactApiKey, getObfuscatedIP } = require("./utils");
 
 const app = express();
 
@@ -14,14 +15,52 @@ const app = express();
 // Logger Configuration
 // =======================
 
+if (
+    !process.env.GCP_PROJECT_ID ||
+    !process.env.GCP_CLIENT_EMAIL ||
+    !process.env.GCP_PRIVATE_KEY
+) {
+    throw new Error("Missing GCP credentials... exiting");
+}
+
+const loadPkey = () => {
+    let pkey = Buffer.from(process.env.GCP_PRIVATE_KEY, "base64").toString(
+        "utf-8"
+    );
+
+    // Trim off any double quotes that may be present in the private key
+    // and replace escaped newline characters with actual newlines
+    pkey = pkey.replace(/\\n/g, "\n");
+    pkey = pkey.replace(/"/g, "");
+
+    return pkey;
+};
+
+const gcpTransport = new LoggingWinston({
+    projectId: process.env.GCP_PROJECT_ID,
+    credentials: {
+        client_email: process.env.GCP_CLIENT_EMAIL,
+        private_key: loadPkey(),
+    },
+});
+
+const globalFormat = combine(
+    errors({ stack: true }), // Capture stack traces for errors
+    timestamp() // Add timestamps to logs
+);
+
 const logger = winston.createLogger({
     level: process.env.LOG_LEVEL || "info",
-    format: combine(errors({ stack: true }), timestamp(), json()),
+    format: globalFormat,
     transports: [
-        new winston.transports.Console({ handleExceptions: true }),
-        // new LoggingWinston(),
+        // Console transport with JSON formatting for readability
+        new winston.transports.Console({
+            handleExceptions: true,
+            format: combine(globalFormat, json()),
+        }),
+        gcpTransport,
     ],
-    exitOnError: false,
+    exitOnError: false, // Do not exit on handled exceptions
 });
 
 logger.stream = { write: (message) => logger.info(message.trim()) };
@@ -53,25 +92,13 @@ const logLimiter = rateLimit({
 // Log Endpoint
 // =======================
 
-const redactApiKey = (apiKey) => {
-    if (!apiKey) return "N/A";
-    const ss = apiKey.substring(0, 4);
-    const rest = apiKey.substring(4).replace(/./g, "*");
-    return ss + rest;
-};
-
-const getRealIp = (req) =>
-    req.headers["x-forwarded-for"]?.split(",")[0].trim() ||
-    req.connection.remoteAddress ||
-    "Unknown";
-
 app.post("/log", logLimiter, (req, res) => {
     const { action, user, appId, apiKey, status, responseSize } = req.body;
 
     if (!action || !appId || !apiKey || !status) {
         logger.warn("Incomplete log data received", {
             receivedData: JSON.stringify(req.body),
-            ip: getRealIp(req),
+            ip: getObfuscatedIP(req),
             timestamp: new Date().toISOString(),
         });
         return res.status(400).json({ error: "Incomplete log data" });
@@ -84,11 +111,14 @@ app.post("/log", logLimiter, (req, res) => {
         apiKey: redactApiKey(apiKey),
         status,
         userAgent: req.headers["user-agent"] || "Unknown",
-        ip: getRealIp(req),
+        ip: getObfuscatedIP(req),
         ...(responseSize && { responseSize }),
     };
 
-    logger.info(logMessage);
+    logger.info(
+        `[${appId}] - ${user || "UNKNOWN"} performed ${action}`,
+        logMessage
+    );
     res.status(200).json({ message: "Log received" });
 });
 
@@ -105,7 +135,7 @@ app.use((req, res, next) => {
         logger.info("Redirecting to HTTPS", {
             host: req.headers.host,
             url: req.url,
-            ip: getRealIp(req),
+            ip: getObfuscatedIP(req),
             timestamp: new Date().toISOString(),
         });
 
