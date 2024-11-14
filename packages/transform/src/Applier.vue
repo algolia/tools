@@ -111,9 +111,9 @@ export default {
             copySettings: false,
             copyResources: {
                 partial: false,
-                settings: true,
-                synonyms: true,
-                rules: true,
+                settings: false,
+                synonyms: false,
+                rules: false,
             },
         }
     },
