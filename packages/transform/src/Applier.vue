@@ -10,10 +10,10 @@
             </div>
             <div v-if="indexInfo">
                 <label>
-                    <input v-model="copyResources.partial" type="checkbox" class="mr-2">
+                    <input v-model="copyResources.parent" type="checkbox" class="mr-2">
                     Copy additional index resources
                 </label>
-                <div v-if="copyResources.partial" class="ml-12">
+                <div v-if="copyResources.parent" class="ml-12">
                     <div>
                     </div>
                     <div>
@@ -110,10 +110,10 @@ export default {
             createIfNotExists: true,
             copySettings: false,
             copyResources: {
-                partial: false,
-                settings: false,
-                synonyms: false,
-                rules: false,
+                parent: false,
+                settings: true,
+                synonyms: true,
+                rules: true,
             },
         }
     },
@@ -202,7 +202,7 @@ export default {
                 tasksGroup.addTask(browseTask);
 
                         // Add task for copying settings
-        if (!this.copyResources.partial || this.copyResources.settings) {
+        if (this.copyResources.parent && this.copyResources.settings) {
             tasksGroup.addTask(new Task('Copy settings', async () => {
                 const newSettings = await srcIndex.getSettings();
                 delete newSettings.replicas;
@@ -211,7 +211,7 @@ export default {
         }
 
         // Add task for copying synonyms
-        if (!this.copyResources.partial || this.copyResources.synonyms) {
+        if (this.copyResources.parent && this.copyResources.synonyms) {
             tasksGroup.addTask(new Task('Copy synonyms', async () => {
                 await srcIndex.browseSynonyms({
                     hitsPerPage: 1000,
@@ -223,7 +223,7 @@ export default {
         }
 
         // Add task for copying rules
-        if (!this.copyResources.partial || this.copyResources.rules) {
+        if (this.copyResources.parent && this.copyResources.rules) {
             tasksGroup.addTask(new Task('Copy rules', async () => {
                 await srcIndex.browseRules({
                     hitsPerPage: 1000,
