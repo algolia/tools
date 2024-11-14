@@ -28,6 +28,6 @@
         "test": "yarn jest"
     },
     "engines": {
-        "node": ">=14.x <=18.x"
+        "node": "18.x"
     }
 }
