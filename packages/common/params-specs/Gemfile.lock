@@ -1,0 +1,19 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    algoliasearch (1.27.5)
+      httpclient (~> 2.8, >= 2.8.3)
+      json (>= 1.5.1)
+    dotenv (2.8.1)
+    httpclient (2.8.3)
+    json (2.9.0)
+
+PLATFORMS
+  arm64-darwin-22
+
+DEPENDENCIES
+  algoliasearch
+  dotenv
+
+BUNDLED WITH
+   2.4.6
