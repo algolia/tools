@@ -3,7 +3,7 @@
         <div
             @click="closePanel"
             :class="open ? 'uncollapsed' : 'collapsed'"
-            class="transition rotate fixed z-10 rotate-270 inset-y-full overflow-hidden"
+            class="transition rotate fixed z-10 rotate-270 inset-y-full"
             style="right: calc(100% - 500px - 41px); top: calc((100vh - 94px) / 2 - 48px);"
         >
             <div
