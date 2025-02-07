@@ -4,7 +4,7 @@
             @click="closePanel"
             :class="open ? 'uncollapsed' : 'collapsed'"
             class="transition rotate fixed z-10 rotate-270 inset-y-full"
-            style="right: calc(100% - 500px - 41px); top: calc((100vh - 94px) / 2 - 48px);"
+            style="right: calc(100% - 517px);top: 94px;"
         >
             <div
                 class="mt-12 ml-12 mr-12 text-sm text-proton-grey rounded-tl rounded-tr bg-white cursor-pointer px-24 py-8"
