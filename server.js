@@ -15,12 +15,16 @@ const app = express();
 // Logger Configuration
 // =======================
 
-if (
-    !process.env.GCP_PROJECT_ID ||
-    !process.env.GCP_CLIENT_EMAIL ||
-    !process.env.GCP_PRIVATE_KEY
-) {
-    throw new Error("Missing GCP credentials... exiting");
+if (!process.env.GCP_PROJECT_ID) {
+    throw new Error("GCP_PROJECT_ID is not set, exiting");
+}
+
+if (!process.env.GCP_PRIVATE_KEY) {
+    throw new Error("GCP_PRIVATE_KEY is not set, exiting");
+}
+
+if (!process.env.GCP_CLIENT_EMAIL) {
+    throw new Error("GCP_CLIENT_EMAIL is not set, exiting");
 }
 
 const loadPkey = () => {
