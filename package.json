@@ -46,9 +46,6 @@
         "webpack": "^5.104.1",
         "**/@types/request/form-data": "2.5.5",
         "nth-check": "^2.0.1",
-        "@octokit/plugin-paginate-rest": "9.2.2",
-        "@octokit/request": "8.4.1",
-        "@octokit/request-error": "5.1.1",
         "**/diff2html/diff": "5.2.2"
     }
 }
