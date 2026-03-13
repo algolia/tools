@@ -17,7 +17,7 @@
         "decode-uri-component": "^0.2.0",
         "dedent": "^0.7.0",
         "moment": "^2.24.0",
-        "prismjs": "^1.15.0",
+        "prismjs": "^1.30.0",
         "serve-static": "^1.13.2",
         "vue": "^2.6",
         "vue-chartjs": "^3.4.2",

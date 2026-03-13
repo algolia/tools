@@ -17,7 +17,7 @@
         "copy-to-clipboard": "^3.2.0",
         "dedent": "^0.7.0",
         "greenlet": "^1.0.1",
-        "prismjs": "^1.15.0",
+        "prismjs": "^1.30.0",
         "string-argv": "^0.3.2",
         "vue": "^2.6",
         "vue-chartjs": "^3.4.2",
