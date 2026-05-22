@@ -194,6 +194,7 @@ const apps = [
     "index-analyzer",
     "transform",
     "insights-ui",
+    "composition-runner",
 ];
 
 apps.forEach((appName) => {

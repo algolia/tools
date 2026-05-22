@@ -10,6 +10,7 @@ TARGET_DIRS=(
     "../index-analyzer/public/"
     "../insights-ui/public/"
     "../transform/public/"
+    "../composition-runner/public/"
 )
 
 for DIR in "${TARGET_DIRS[@]}"; do

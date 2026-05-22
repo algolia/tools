@@ -1,0 +1,27 @@
+{
+    "name": "composition-runner",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "serve": "vue-cli-service serve --openssl-legacy-provider",
+        "build": "vue-cli-service build --openssl-legacy-provider",
+        "start": "node server.js",
+        "lint": "vue-cli-service lint --openssl-legacy-provider"
+    },
+    "dependencies": {
+        "@algolia/composition": "^1.13.0",
+        "algoliasearch": "^4.1.0",
+        "common": "^0.0.0",
+        "copy-to-clipboard": "^3.2.0",
+        "vue": "^2.6",
+        "vuex": "^3.1.0"
+    },
+    "devDependencies": {
+        "@vue/cli-plugin-babel": "^5.0.8",
+        "@vue/cli-plugin-eslint": "^5.0.8",
+        "@vue/cli-service": "^5.0.8"
+    },
+    "browserslist": [
+        "last 2 years"
+    ]
+}

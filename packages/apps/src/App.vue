@@ -79,6 +79,13 @@
                 {name: 'Insights UI', url: '/insights-ui', isPublic: true},
             ]
         },
+        {
+            name: 'Composition Tools',
+            description: 'Search through compositions and build new ones',
+            apps: [
+                {name: 'Composition Runner', url: '/composition-runner', isPublic: true},
+            ],
+        },
     ];
 
     export default {
