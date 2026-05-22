@@ -1,0 +1,547 @@
+UI LAYOUT — composition-runner
+==============================
+
+Contents
+────────
+  1. Empty state — first load
+  2. Filled inputs — ready to submit
+  3. Loading state — request in flight
+  4. Error state
+  5. Success — overview
+     5a. Results banner
+     5b. Strip header
+     5c. Hit card
+     5d. Hit details modal
+     5e. Pagination
+     5f. Injection vs multifeed
+  6. Validation
+  7. Empty success
+  8. Responsive
+  9. Implementation pointers
+
+
+This is the runtime "Run a query" playground for Algolia's Composition API.
+It is the only surface in this tool that talks to a deployed composition;
+there is no author-time UI here.
+
+Two stacked regions inside the standard tool shell (the shared
+`InternalApp` + `AppHeader` from `packages/common`):
+
+  1. INPUT FORM  — App ID (dropdown), Composition ID (dropdown — each
+                   option label is rendered as `{objectID} | {name}` so
+                   the human-readable name is visible right alongside
+                   the technical ID), and the Run payload (JSON,
+                   AceEditor). One primary button to fire the request.
+                   Stays visible after submission so the user can tweak
+                   and re-run without losing state. Below the button: a
+                   collapsible "Show curl ▾" block that mirrors the
+                   request as a copy-pasteable shell command — the user
+                   replicates the call there for any deeper inspection of
+                   the raw response.
+  2. RESULT SETS — Zero, one, or many result sets returned by the
+                   Composition API, each rendered as its own horizontal
+                   strip ("line") with the hits as inline cards. If a set
+                   has more pages, the right end of the strip shows a "→"
+                   that fetches and replaces the strip with the next page.
+
+The same horizontal-strip layout is used for every response — multifeed
+(N strips, one per feed) and injection (1 strip, single result set). No
+in-page JSON view of hits in the strip itself: clicking a card opens a
+modal with the full hit JSON.
+
+The page lives at `packages/composition-runner/src/App.vue`. Sub-components
+sit under `src/components/`. The business-logic module (the official-client
+wrapper, the curl builder, the payload parser, and the `listCompositions`
+fetcher) lives at `packages/composition-runner/src/lib/runner.js`.
+
+Credentials never live in the form. They are managed exclusively through
+the shared **AppIDs** panel
+(`packages/common/components/configuration/AppManagement.vue`), reached via
+the AppIDs button already wired into the top bar. The form's App ID
+dropdown lists the keys of `$store.state.apps`; selecting one is enough to
+authenticate the request, because the API key is pulled from
+`state.apps[<selectedAppId>].key` at submission time. If the selected app
+has no key set, the form surfaces an inline "missing key" link that opens
+the AppIDs panel.
+
+Visual style follows the existing tool palette in `packages/common` —
+Tailwind classes like `text-telluric-blue`, `text-solstice-blue`,
+`text-nebula-blue` (action), `text-nova-grey` (secondary), `bg-white`,
+`bg-proton-grey-opacity-*` (cards / dividers), `bg-saturn-1` (highlight,
+e.g. smart-group), `bg-mars-1` (error). **Do not introduce new colors or
+custom hex codes**; reuse the same classes other tools use (see
+`packages/metaparams/src/**` and `AppManagement.vue` for live examples).
+
+
+1. Empty state — first load
+───────────────────────────
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│  Run a query                                                                 │
+│  Send a run request to a deployed composition and view its result sets.     │
+├──────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  App ID                                Composition ID                        │
+│  [ ───── select an app ───── ▾ ]       [ select an app first       ▾ ]       │
+│                                                                              │
+│  Run payload                                                                 │
+│  ┌────────────────────────────────────────────────────────────────────────┐  │
+│  │ {                                                                      │  │
+│  │   "params": {                                                          │  │
+│  │     "getRankingInfo": true                                             │  │
+│  │   }                                                                    │  │
+│  │ }                                                                      │  │
+│  └────────────────────────────────────────────────────────────────────────┘  │
+│                                                                              │
+│  [ Run query ]  (disabled — fill all fields first)                           │
+│                                                                              │
+│  Show curl ▾                                                                 │
+│                                                                              │
+├──────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  No results yet. Pick an App ID and a Composition ID above, optionally       │
+│  edit the payload, then click "Run query" to see the response.               │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+Notes
+- Page sits inside `<internal-app>` with the shared
+  `<app-header app-name="Composition Runner">` and the AppIDs toggle in
+  the header. Title uses `text-telluric-blue text-xl font-bold`,
+  subtitle `text-nova-grey text-base`.
+- Inputs row is a 2-column CSS grid (App ID / Composition ID). Both
+  selectors come from the shared `packages/common/components/selectors/`
+  family — same visual language and keyboard behaviour as metaparams'
+  App / Index pickers.
+    • **App ID** — `<app-selector>`. Same component metaparams uses.
+      Typeahead, box icon, commits `apps/addAppId` automatically.
+    • **Composition ID** — `<composition-selector>` (sibling of
+      `IndexSelector`, lives in `common` so other composition-aware
+      tools can pick it up). Lists what's in the app, dropdown rows
+      render as `{objectID} | {name}` when name is set. **Auto-falls-
+      back to free-text on a 403 from `listCompositions`** (the key
+      lacks `settings` ACL — only `search` is needed for `run`) and
+      renders its own inline hint below the field. Re-selecting the
+      App ID refetches; there is no manual refresh button.
+- Form controls all use `text-base` with `px-12 py-10`; labels use
+  `text-sm uppercase tracking-wide`. Drops to a single column on the
+  narrow breakpoint shared with other tools.
+- The Algolia API key is never an input. It's pulled from
+  `state.apps[<selectedAppId>].key` at submission time. If the key is
+  missing for the selected app, the Run button is disabled and an
+  inline link "Add the API key for this app" opens the shared AppIDs
+  panel (toggles `panels/setManageAppsPanel`).
+- **Run payload** is an `AceEditor` in `json` mode (~8 rows, full
+  width) from `packages/common/components/editor/AceEditor.vue`. It is
+  pre-populated with a minimal, immediately-runnable default body
+  (`{ "params": { "getRankingInfo": true } }`, two-space indent). The
+  user can edit or clear it freely; the value persists across reloads
+  via `sessionStorage` (the store-wide `myStorage.js` plugin).
+  Contents are validated as JSON on every change; invalid JSON shows
+  an inline message below the editor (`text-mars-1 text-sm`) and
+  disables the Run button.
+- **"Show curl ▾"** is a `text-nebula-blue` link that expands the curl
+  block inline below it. The curl always reflects the *current* form
+  state, not the last submitted state — useful for grabbing a working
+  command even before clicking Run.
+- Result region in the idle state is a single `text-nova-grey`
+  paragraph; no border, no card chrome.
+- There is no Reset button. To clear the results, fire another run
+  (or reload the tab, which drops the sessionStorage cache). Form
+  fields stay populated across runs and reloads.
+
+
+2. Filled inputs — ready to submit
+──────────────────────────────────
+
+Same layout as section 1, with values filled and the Run button enabled
+(`bg-nebula-blue text-white`, hover state from the existing button
+conventions in `packages/metaparams`).
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│  App ID                                Composition ID                        │
+│  [ LATENCY_APP_ID                ▾ ]   [ products-comp | Products Feed   ▾ ] │
+│                                                                              │
+│  Run payload                                                                 │
+│  ┌────────────────────────────────────────────────────────────────────────┐  │
+│  │ {                                                                      │  │
+│  │   "params": { "query": "shoe", "hitsPerPage": 10 }                     │  │
+│  │ }                                                                      │  │
+│  └────────────────────────────────────────────────────────────────────────┘  │
+│                                                                              │
+│  [ Run query → ]                                                             │
+│                                                                              │
+│  Show curl ▴                                                                 │
+│  ☐ Embed API key in snippet                                                  │
+│  ┌────────────────────────────────────────────────────────────────────────┐  │
+│  │ curl -X POST \                                                         │  │
+│  │   "https://LATENCY_APP_ID.algolia.net/1/compositions/products-comp/    │  │
+│  │   run" \                                                               │  │
+│  │   -H "x-algolia-application-id: LATENCY_APP_ID" \                      │  │
+│  │   -H "x-algolia-api-key: <YOUR_API_KEY>" \                             │  │
+│  │   -H "Content-Type: application/json" \                                │  │
+│  │   -d '{"params":{"query":"shoe","hitsPerPage":10}}'    [ Copy ]        │  │
+│  └────────────────────────────────────────────────────────────────────────┘  │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+Notes
+- The "Embed API key in snippet" checkbox controls whether the literal
+  key from `state.apps[<selectedAppId>].key` is written into the curl
+  snippet, or replaced with the `<YOUR_API_KEY>` placeholder. Default
+  is **off** (placeholder shown) to avoid leaking the key when
+  copy-pasting the command into chat or a ticket.
+- Endpoint shape: `POST https://<appId>.algolia.net/1/compositions/<compositionID>/run`
+  (verbatim from the REST docs at
+  https://www.algolia.com/doc/rest-api/composition).
+- App ID, Composition ID, the run payload, and the curl-checkbox state
+  all persist in the dedicated `compositionrunner` Vuex module, which
+  the store-wide `myStorage.js` plugin auto-persists to
+  sessionStorage. The API key persists alongside via
+  `state.apps[<appId>].key`, which is set through the shared AppIDs
+  panel.
+- Copy button reuses the `copy-to-clipboard` package already in
+  metaparams.
+
+
+3. Loading state — request in flight
+────────────────────────────────────
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│  [form area unchanged; inputs disabled, Run button replaced by spinner]      │
+│                                                                              │
+│  [   ⟳ Running…   ]                                                          │
+│                                                                              │
+├──────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│              ⟳   Running query against composition "products-comp"           │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+Notes
+- All inputs disable (`readonly`) while loading so the user can't edit a
+  request mid-flight. The curl block stays visible but greyed.
+- Spinner uses the existing spinner pattern from
+  `packages/metaparams` (CSS rotation, ~16 px, `text-nebula-blue`).
+- Driven by `status === 'loading'` in the `compositionrunner` Vuex module.
+
+
+4. Error state
+──────────────
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│  [form area unchanged, Run button re-enabled]                                │
+├──────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  ┌────────────────────────────────────────────────────────────────────────┐  │
+│  │ ✗  Request failed — 403 Forbidden                                      │  │
+│  ├────────────────────────────────────────────────────────────────────────┤  │
+│  │ The API key is not authorized for composition "products-comp" on      │  │
+│  │ app "LATENCY_APP_ID". Check that the key has the `search` ACL and     │  │
+│  │ that the composition exists in this app.                              │  │
+│  │                                                                        │  │
+│  │ To reproduce: copy the curl block above and run it in your terminal.  │  │
+│  └────────────────────────────────────────────────────────────────────────┘  │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+Notes
+- Error panel: white background, 4 px `border-mars-1` left border, body
+  `text-nova-grey`, title `text-mars-1` weight-600. Reuses the same
+  classes other tools use for danger/error markers (see how the
+  `setSettings` chip is styled in `AppManagement.vue`).
+- The panel does NOT echo the raw response body — by design, since the
+  user can replay the request via curl to see it. Keeps the in-page error
+  tight.
+- Network errors (timeout, DNS) use the same panel with a generic title.
+- Errors do NOT clear on edit — they stay until the next submission.
+- The Composition API client (`@algolia/composition`) throws an error
+  object exposing `status` + `message`; the panel maps that into the
+  title + body.
+
+
+5. Success — one result set per "line", hits wrap when they overflow
+────────────────────────────────────────────────────────────────────
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│  [form area unchanged]                                                       │
+├──────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  ┌────────────────────────────────────────────────────────────────────────┐  │
+│  │ 3 result sets returned · 47 ms total                                   │  │
+│  │ Applied composition rules (2):  [ promote-promo ] [ boost-trending ]   │  │
+│  └────────────────────────────────────────────────────────────────────────┘  │
+│                                                                              │
+│  ══ 0 - featured (index: products) - 5 hits - 1 page(s) - page 0 - 10 hits per page ══   │
+│  ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐                 │
+│  │ #prod-  │ │ #prod-  │ │ #prod-  │ │ #prod-  │ │ #prod-  │                 │
+│  │  123    │ │  456    │ │  789    │ │  012    │ │  345    │                 │
+│  │ Comfy   │ │ Lamp    │ │ Couch   │ │ Table   │ │ Mirror  │                 │
+│  └─────────┘ └─────────┘ └─────────┘ └─────────┘ └─────────┘                 │
+│                                                                              │
+│  ══ 1 - trending (index: trending_v2) - 18 hits - 2 page(s) - page 0 - 10 hits per page ══ │
+│  ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐     │
+│  │ #prod-  │ │ #prod-  │ │ #prod-  │ │ #prod-  │ │ #prod-  │ │ #prod-  │     │
+│  │  999    │ │  998    │ │  997    │ │  996    │ │  995    │ │  994    │     │
+│  │ ...     │ │ ...     │ │ ...     │ │ ...     │ │ ...     │ │ ...     │     │
+│  └─────────┘ └─────────┘ └─────────┘ └─────────┘ └─────────┘ └─────────┘     │
+│  ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐                         ⟶   │
+│  │ #prod-  │ │ #prod-  │ │ #prod-  │ │ #prod-  │                              │
+│  │  993    │ │  992    │ │  991    │ │  990    │                              │
+│  │ ...     │ │ ...     │ │ ...     │ │ ...     │                              │
+│  └─────────┘ └─────────┘ └─────────┘ └─────────┘                              │
+│                       Page 1 of 2 — click ⟶ for the next page                │
+│                                                                              │
+│  ══ 2 - recently-viewed (index: products) - 3 hits - 1 page(s) - page 0 - 10 hits per page ══ │
+│  ┌─────────┐ ┌─────────┐ ┌─────────┐                                         │
+│  │ #...    │ │ #...    │ │ #...    │                                         │
+│  └─────────┘ └─────────┘ └─────────┘                                         │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+5a. Results banner
+──────────────────
+
+Sits above the first result-set strip as a clearly framed card.
+Container: `bg-saturn-5` (a pale warm cream, #fdf1d4) + a
+`border-saturn-3` border, rounded, `p-16`, `mb-24`. The saturn-tinted
+background ties the banner to the saturn-2 chip borders on the rule
+pills and the smart-group injection treatment on hit cards, so the
+whole "composition engine acted here" visual language stays
+consistent.
+
+The banner stacks two pieces of run-level metadata on **two distinct
+lines** (never side-by-side), each rendered as a heading with the same
+typography (`text-telluric-blue text-lg font-bold`):
+
+- **Line 1 — Run summary**: `<n> result sets returned · <total> ms
+  total`. For a single result set (injection): `1 result set returned ·
+  <ms>`.
+- **Line 2 — Applied composition rules** (only when rules fired): the
+  label "Applied composition rules (<n>):" in the same heading
+  typography, followed by one pill per rule on the same line. Pill
+  style: `bg-white border border-saturn-2 text-telluric-blue text-base
+  px-12 py-4 rounded`.
+
+**Source — strict**: read only from `response.compositions.run`, which
+is an array of `{ objectID, appliedRules }` entries (one per
+composition involved in the run). Union each entry's `appliedRules`,
+extracting `objectID` (rules are typed `{ objectID: "<rule-id>" }`;
+plain strings are accepted as-is for forward-compat). De-duplicate.
+Do **not** walk the response tree for other `appliedRules` arrays —
+per-feed `results[i].appliedRules` is the standard index-level rule
+trace and is intentionally ignored. Whole line hidden when no rules
+fire.
+
+The same banner chrome is reused for the empty-success panel
+(section 7).
+
+
+5b. Strip header
+────────────────
+
+Each strip is one line conceptually: a header rule, hit cards laid
+out horizontally, and right-anchored pagination affordances. The
+header rule is a multi-part typographic hierarchy, baseline-aligned in
+a flex-wrap row, on a 1 px `border-proton-grey-opacity-60` bottom
+border:
+
+- `<set-index>` — 0-indexed position of the set in the response.
+  Monospace, `text-xs`, weight 600, `text-nova-grey-opacity-60`. Tiny
+  counter at the start of the line.
+- `<feedID>` — the feed ID for a multifeed strip; for the single strip
+  of an injection composition, the composition's main label
+  (e.g. `products-comp (main)`). `text-telluric-blue`, weight 700,
+  `text-lg`. Dominant element on the line.
+- `on <indexName>` — to the right of the feed ID. `text-sm
+  text-nova-grey`, with `<indexName>` itself in italic. Omitted when
+  the response doesn't expose an index name.
+- `<stats>` — `<nbHits> hits · <nbPages> page(s) · page <page> ·
+  <hitsPerPage>/page`. Pushed to the right end (`margin-left: auto`),
+  `text-xs text-nova-grey-opacity-60`, `tabular-nums` so numbers don't
+  shift width across re-renders, middle-dot separators.
+
+
+5c. Hit card
+────────────
+
+The strip body is a flex container that **wraps** hits onto multiple
+rows when the result set overflows. Cards keep a fixed width of
+~140 px; subsequent rows align flush-left. No horizontal scroll —
+every hit on the current page is visible without panning sideways.
+Card chrome: `bg-white border-proton-grey-opacity-60 rounded`, hover
+`shadow`.
+
+Content (top → bottom):
+
+- **Smart-group badge** (optional) — when a hit carries
+  `_extra._injectedItemKey` (set by the Composition API on hits emitted
+  by an injection smart group), the card renders a small pill at the
+  top showing the `_injectedItemKey` value. Uppercase, `text-xs`,
+  `bg-saturn-1 text-white`, rounded, ellipsis-truncated. The card
+  itself also adopts a `border-saturn-2` border so smart-group hits
+  stand out within an interleaved injection result set.
+- **`#<objectID>` chip** — monospace, `text-xs`, `text-telluric-blue`,
+  truncated with ellipsis if longer than the card.
+- **Thumbnail OR preview line** — image detection is **content-based,
+  not name-based**. Every top-level value on the hit (and every entry
+  of any array-valued field) is scanned, and the first string that
+  matches an absolute or protocol-relative image URL is used as the
+  thumbnail. The accepted extensions are `.png`, `.jpg`, `.jpeg`,
+  `.gif`, `.webp`, `.svg`, `.avif`, `.bmp`, optionally followed by
+  `?query` and/or `#fragment`, case-insensitive. Image style:
+  `aspect-ratio: 4 / 3; object-fit: cover`, lazy-loaded,
+  `referrerpolicy="no-referrer"`. `alt` falls back to the preview
+  text, then to the objectID. If no value looks like an image URL,
+  the card shows the first short string field (`title`, `name`,
+  `label`, …) as a `text-xs` two-line clamp instead.
+
+
+5d. Hit details modal — opens on card click
+───────────────────────────────────────────
+
+Clicking a hit card (or pressing Enter / Space when the card is
+focused) opens a modal overlay that shows the full hit JSON. The card
+itself stays in place — it is not transformed or resized. Closing
+mechanisms: the × button in the modal header, a click on the dimmed
+backdrop, or the Escape key.
+
+                  ╔══════════════════════════════════════════════╗
+                  ║  #prod-123  ( PROMOTED )                 [×] ║
+                  ║                                              ║
+                  ║  Comfy chair                                 ║
+                  ║                                              ║
+                  ║  ┌────────────────────────────────────────┐  ║
+                  ║  │ {                                      │  ║
+                  ║  │   "objectID": "prod-123",              │  ║
+                  ║  │   "title": "Comfy chair",              │  ║
+                  ║  │   "price": 199,                        │  ║
+                  ║  │   "_extra": {                          │  ║
+                  ║  │     "_injectedItemKey": "promoted"     │  ║
+                  ║  │   }                                    │  ║
+                  ║  │ }                                      │  ║
+                  ║  └────────────────────────────────────────┘  ║
+                  ╚══════════════════════════════════════════════╝
+                       (centred over a dimmed backdrop, ~680 px wide)
+
+- Each card is a `<button>` so it's natively focusable and reachable
+  with the keyboard.
+- Only one modal can be open at a time; state lives in the
+  `compositionrunner` Vuex module under `openHit`. Clicking a hit on
+  a different strip replaces the modal contents.
+- The modal lays out the same elements as the card, plus a `<pre>`
+  block with the full hit JSON pretty-printed
+  (`JSON.stringify(hit, null, 2)`). Monospace `text-xs`, on a
+  `bg-proton-grey-opacity-40` background, internally scrollable when
+  the JSON is large.
+- If the hit has a recognised image URL the modal renders a larger
+  version (centred, `max-height: 300 px`, `object-fit: contain`)
+  above the JSON block.
+- Backdrop is a translucent overlay. Clicks and key events **inside**
+  the modal panel are `stopPropagation`'d so selecting and copying
+  JSON doesn't dismiss the modal.
+
+
+5e. Pagination
+──────────────
+
+Pagination affordances (`⟵` / `⟶`) sit at the left and right edges
+of the strip, vertically centred against the wrapped block of cards:
+
+- `⟶` is visible iff `page < nbPages - 1` in the per-feed response.
+- `⟵` is visible iff `page > 0`.
+- Click writes `params.page = <new>` back into the run payload editor
+  (so the change is visible in the form AND in the curl preview),
+  then re-fires the query.
+- Page indicator below the strip (`Page <n> of <N>`) shows the
+  current window; hidden when no pagination is needed.
+
+
+5f. Injection vs multifeed
+──────────────────────────
+
+A multifeed composition yields N strips (one per feed). An injection
+composition yields one strip whose hits are the main source's results
+with smart-group injections interleaved in their actual response
+positions. The `border-saturn-2` border + smart-group badge mark the
+injected hits visually. The same badge renders next to the
+`#<objectID>` chip inside the modal so the provenance stays visible
+alongside the raw JSON.
+
+
+6. Validation surface
+─────────────────────
+
+- Inline error below the offending field, `text-xs`, `text-mars-1` —
+  reuses the same red treatment as the danger ACL chip in `AppManagement.vue`.
+- Required fields: App ID (a value must be selected and the selected app
+  must have a key set in `state.apps`), Composition ID (a value must be
+  selected from the dropdown). Payload must parse as JSON. Run button is
+  disabled while any required field is unmet or the payload is invalid.
+- App ID + Composition ID are both `<select>` elements, so their values
+  are structurally valid — no regex validation needed.
+- If the selected app has no key (`state.apps[<id>].key` is empty), the
+  Run button is disabled and an inline link "Add the API key for this
+  app" appears under the App ID dropdown; clicking it opens the shared
+  AppIDs panel (commits `panels/setManageAppsPanel: true`).
+- The API key is never validated client-side. The Algolia API tells us
+  if it's invalid via the error panel.
+- Composition listing failures (e.g. `listCompositions` returns 403)
+  surface as a single inline message under the Composition ID dropdown,
+  not as a full error panel — they happen before the user even tries to
+  submit.
+
+
+7. Empty success — composition returned zero hits
+─────────────────────────────────────────────────
+
+If the composition succeeds but returns no hits at all:
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│  [form area unchanged]                                                       │
+├──────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  Request succeeded — 0 result sets returned · 8 ms                           │
+│                                                                              │
+│  The composition ran without errors but produced no result sets. Verify     │
+│  that the composition has at least one feed configured, that the run       │
+│  payload matches a documented schema, and try a less restrictive query.    │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+Notes
+- A composition with zero feeds is a valid configuration but won't return
+  anything. Same panel handles a feed that returned zero hits.
+- Body uses `text-nova-grey` on the standard white background — no
+  bespoke panel chrome.
+
+
+8. Responsive behaviour (out of scope for first iteration)
+──────────────────────────────────────────────────────────
+
+- Below the existing narrow breakpoint used by the other tools: the
+  2-column input row drops to a single column.
+- Strip cards retain their ~140 px width and `overflow-x: auto`, so on a
+  narrow viewport the user scrolls horizontally inside each strip — the
+  "⟶" pagination button is still right-anchored and remains tappable.
+
+
+9. Implementation pointers
+──────────────────────────
+
+- Page mount: `packages/composition-runner/src/App.vue`. Sub-components
+  in `src/components/`.
+- Business-logic module: `src/lib/runner.js` — `runComposition`,
+  `executeRun(store)`, `parsePayload`, `buildCurl`.
+- `listCompositions` is **not** in `runner.js`. It lives inside the
+  shared selector at
+  `packages/common/components/selectors/CompositionSelector.vue` —
+  fetched on App ID change, cached locally to the component, and
+  used by both this tool and any future composition-aware tool.
+- Vuex module: `packages/common/store/modules/compositionrunner.js`
+  (registered globally in `packages/common/store/store.js`).
+- The official `@algolia/composition` JS client is a separate npm
+  package from `algoliasearch`. It coexists with the repo's pinned
+  `algoliasearch@^4` — no monorepo-wide upgrade is needed.
+- See `./AGENTS.md` for the contribution contract (build/lint rules
+  + design tokens).
