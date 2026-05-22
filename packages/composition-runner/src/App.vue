@@ -38,6 +38,7 @@
         style="max-width: 1400px;"
       >
         <run-form />
+        <run-results />
       </div>
     </div>
   </internal-app>
@@ -49,10 +50,11 @@
     import AppManagement from "common/components/configuration/AppManagement";
     import BoxIcon from "common/icons/box.svg";
     import RunForm from "./components/RunForm.vue";
+    import RunResults from "./components/RunResults.vue";
 
     export default {
         name: 'CompositionRunner',
-        components: {InternalApp, AppHeader, AppManagement, BoxIcon, RunForm},
+        components: {InternalApp, AppHeader, AppManagement, BoxIcon, RunForm, RunResults},
         computed: {
             manageAppsPanel: {
                 get() {
