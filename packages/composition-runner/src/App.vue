@@ -37,7 +37,7 @@
         class="mx-auto mt-24 pb-24 px-16"
         style="max-width: 1400px;"
       >
-        <!-- Tool body lands in follow-up commits. -->
+        <run-form />
       </div>
     </div>
   </internal-app>
@@ -48,10 +48,11 @@
     import AppHeader from "common/components/header/AppHeader";
     import AppManagement from "common/components/configuration/AppManagement";
     import BoxIcon from "common/icons/box.svg";
+    import RunForm from "./components/RunForm.vue";
 
     export default {
         name: 'CompositionRunner',
-        components: {InternalApp, AppHeader, AppManagement, BoxIcon},
+        components: {InternalApp, AppHeader, AppManagement, BoxIcon, RunForm},
         computed: {
             manageAppsPanel: {
                 get() {
