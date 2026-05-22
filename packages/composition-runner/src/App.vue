@@ -40,6 +40,7 @@
         <run-form />
         <run-results />
       </div>
+      <hit-modal />
     </div>
   </internal-app>
 </template>
@@ -51,10 +52,11 @@
     import BoxIcon from "common/icons/box.svg";
     import RunForm from "./components/RunForm.vue";
     import RunResults from "./components/RunResults.vue";
+    import HitModal from "./components/HitModal.vue";
 
     export default {
         name: 'CompositionRunner',
-        components: {InternalApp, AppHeader, AppManagement, BoxIcon, RunForm, RunResults},
+        components: {InternalApp, AppHeader, AppManagement, BoxIcon, RunForm, RunResults, HitModal},
         computed: {
             manageAppsPanel: {
                 get() {
