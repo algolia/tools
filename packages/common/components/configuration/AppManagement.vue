@@ -147,6 +147,22 @@
               </ul>
             </div>
           </details>
+          <details
+            :open="currentTool == 'composition-runner'"
+            class="mt-8"
+          >
+            <summary>Composition Runner</summary>
+            <div class="p-8">
+              <ul>
+                <li class="leading-normal">
+                  <code class="text-xs bg-proton-grey p-4 rounded">search</code> You can run compositions
+                </li>
+                <li class="leading-normal">
+                  <code class="text-xs bg-saturn-1 text-white p-4 rounded">settings</code> (optional) The tool can list the available compositions in the app and offer them as a dropdown instead of asking you to type the Composition ID by hand.
+                </li>
+              </ul>
+            </div>
+          </details>
         </div>
         <table>
           <tr class="text-left">

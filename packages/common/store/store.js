@@ -10,6 +10,7 @@ import indexanalyzer from './modules/indexanalyzer';
 import indexmanager from "./modules/indexmanager";
 import relevancetesting from "./modules/relevancetesting";
 import insightsui from "./modules/insightsui";
+import compositionrunner from "./modules/compositionrunner";
 import stateReducer from "./stateReducer";
 
 Vue.use(Vuex);
@@ -24,6 +25,7 @@ export default new Vuex.Store({
         indexmanager,
         insightsui,
         indexanalyzer,
+        compositionrunner,
     },
     plugins: [createPersistedState({
         reducer: stateReducer
