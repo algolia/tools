@@ -67,3 +67,11 @@
         }
     }
 </script>
+
+<style>
+    /* Shared design tokens for composition-runner scoped styles. */
+    :root {
+        --cr-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
+        --cr-saturn-1: #ec8b63;
+    }
+</style>
