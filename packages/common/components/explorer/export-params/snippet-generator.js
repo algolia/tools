@@ -22,6 +22,7 @@ const SnippetGenerator = function () {
                 .replace(/__METHOD__/g, dedent(templates[config.method][config.language]))
                 .replace(/__QUERY__/g, query)
                 .replace(/__PARAMS__/g, this.params_template(config))
+                .replace(/__CURL_SEARCH_BODY__/g, this.curlSearchBody(config))
                 .replace(/__APP_ID__/g, config.appId)
                 .replace(/__API_KEY__/g, config.apiKey)
                 .replace(/__INDEX_NAME__/g, config.indexName);
@@ -35,12 +36,15 @@ const SnippetGenerator = function () {
         }
 
         const params = Object.keys(config.params).map((key) => {
+            if (config.language === 'curl' && key === 'extensions') {
+                return '';
+            }
             const value = this.getStringValue(config.params[key], config.language);
             if (config.language === 'php') {
-                return `    '${key}': ${value}`;
+                return `    '${key}' => ${value}`;
             }
             if (config.language === 'ruby') {
-                return `    :${key}: ${value}`;
+                return `    ${key}: ${value}`;
             }
             if (config.language === 'python') {
                 return `    "${key}": ${value}`;
@@ -58,22 +62,93 @@ const SnippetGenerator = function () {
         return params.join('');
     };
 
-    this.getStringValue = function (value, language) {
+    this.curlParamValue = function (value) {
+        if (Array.isArray(value) || (value && typeof value === 'object')) {
+            return JSON.stringify(value);
+        }
+        return value;
+    };
+
+    this.curlSearchBody = function (config) {
+        const params = Object.keys(config.params)
+            .filter((key) => key !== 'extensions')
+            .map((key) => {
+                return `&${key}=${encodeURIComponent(this.curlParamValue(config.params[key]))}`;
+            })
+            .join('');
+
+        const body = {
+            params: `query=${encodeURIComponent(config.query)}${params}`,
+        };
+
+        if (config.params.extensions !== undefined) {
+            body.extensions = config.params.extensions;
+        }
+
+        return this.escapeBashSingleQuotedString(JSON.stringify(body));
+    };
+
+    this.escapeBashSingleQuotedString = function (value) {
+        return value.split("'").join("'\\''");
+    };
+
+    this.getQuotedString = function (value, quote) {
+        return `${quote}${String(value).replace(/\\/g, '\\\\').split(quote).join(`\\${quote}`)}${quote}`;
+    };
+
+    this.getObjectKey = function (key, language) {
+        if (language === 'php') return `'${key}' =>`;
+        if (language === 'ruby') return `${key}:`;
+        if (language === 'python') return `"${key}":`;
+        return `${key}:`;
+    };
+
+    this.getNullValue = function (language) {
+        if (language === 'python') return 'None';
+        if (language === 'ruby') return 'nil';
+        return 'null';
+    };
+
+    this.getBooleanValue = function (value, language) {
+        if (language === 'python') return value ? 'True' : 'False';
+        return value ? 'true' : 'false';
+    };
+
+    this.getStringValue = function (value, language, indentLevel = 1) {
         if (isString(value)) {
-            if (language === 'python') return `"${value}"`;
-            return `'${value}'`;
+            if (language === 'python') return this.getQuotedString(value, '"');
+            return this.getQuotedString(value, "'");
+        }
+
+        if (value === null) {
+            return this.getNullValue(language);
         }
 
         if (typeof value === "boolean") {
-            return value;
+            return this.getBooleanValue(value, language);
         }
 
-        if (Number.isInteger(value)) {
+        if (typeof value === 'number') {
             return value;
         }
 
         if (Array.isArray(value)) {
-            return `[\n      ${value.map((v) => this.getStringValue(v, language)).join(',\n      ')}\n    ]`;
+            if (value.length === 0) return '[]';
+            const indent = '    '.repeat(indentLevel);
+            const childIndent = '    '.repeat(indentLevel + 1);
+            return `[\n${childIndent}${value.map((v) => this.getStringValue(v, language, indentLevel + 1)).join(`,\n${childIndent}`)}\n${indent}]`;
+        }
+
+        if (value && typeof value === 'object') {
+            const open = language === 'php' ? '[' : '{';
+            const close = language === 'php' ? ']' : '}';
+            if (Object.keys(value).length === 0) return `${open}${close}`;
+            const indent = '    '.repeat(indentLevel);
+            const childIndent = '    '.repeat(indentLevel + 1);
+            const entries = Object.keys(value).map((key) => {
+                return `${childIndent}${this.getObjectKey(key, language)} ${this.getStringValue(value[key], language, indentLevel + 1)}`;
+            });
+            return `${open}\n${entries.join(',\n')}\n${indent}${close}`;
         }
     };
 };

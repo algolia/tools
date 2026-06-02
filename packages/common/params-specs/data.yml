@@ -1300,6 +1300,15 @@ enableABTest:
     - false
   default: true
 
+extensions:
+  scope:
+    - search
+  value_type: object
+  object_type: extensions
+  default:
+    workflowSelector:
+      name: ""
+
 decompoundedAttributes:
   scope:
     - settings

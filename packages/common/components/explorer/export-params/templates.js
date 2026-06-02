@@ -86,7 +86,7 @@ export default {
             curl -X POST \\
             -H "X-Algolia-Application-Id: __APP_ID__" \\
             -H "X-Algolia-API-Key: __API_KEY__" \\
-            --data-binary '{ "params": "query=__QUERY____PARAMS__" }' \\
+            --data-binary '__CURL_SEARCH_BODY__' \\
             "https://__APP_ID__-dsn.algolia.net/1/indexes/__INDEX_NAME__/query"
         `
     },
