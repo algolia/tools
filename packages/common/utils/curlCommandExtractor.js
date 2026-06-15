@@ -1,7 +1,21 @@
 import parseArgsStringToArgv from "string-argv";
 import paramsSpecs from "common/params-specs/data.yml";
 
-const isFakeArray = (val) => val.startsWith("[") && val.endsWith("]");
+const isSerializedJsonParam = (val) => {
+    return (
+        (val.startsWith("[") && val.endsWith("]")) ||
+        (val.startsWith("{") && val.endsWith("}"))
+    );
+};
+
+const parseJsonParam = (val) => {
+    if (!isSerializedJsonParam(val)) return null;
+    try {
+        return JSON.parse(val);
+    } catch (e) {
+        return null;
+    }
+};
 
 /**
  * Converts escaped JSON strings into unescaped JSON.
@@ -38,8 +52,9 @@ const decode = function (data) {
         if (key === "params") {
             return Object.fromEntries(
                 [...new URLSearchParams(val)].map(([k, v]) => {
-                    if (isFakeArray(v)) {
-                        return [k, JSON.parse(v)];
+                    const parsedJsonParam = parseJsonParam(v);
+                    if (parsedJsonParam !== null) {
+                        return [k, parsedJsonParam];
                     }
                     return [k, castValue(k, v)];
                 })
@@ -96,9 +111,10 @@ export function parseCurlCommand(command) {
                 if (i >= argv.length) break;
                 const headerString = argv[i];
                 const split = headerString.split(": ");
-                if (split[0] === "x-algolia-user-token")
+                const headerName = split[0].toLowerCase();
+                if (headerName === "x-algolia-user-token")
                     params.userToken = split[1];
-                if (split[0] === "x-algolia-application-id") appId = split[1];
+                if (headerName === "x-algolia-application-id") appId = split[1];
                 continue;
             }
             if (["-d", "--data", "--data-binary", "--data-raw"].includes(arg)) {
@@ -122,6 +138,9 @@ export function parseCurlCommand(command) {
                 if (request.params) {
                     params = request.params;
                 }
+                if (request.extensions) {
+                    params.extensions = request.extensions;
+                }
             } else {
                 const matches = pathName.match(/\/1\/indexes\/(.*?)\/query/);
                 if (matches) {
@@ -130,6 +149,9 @@ export function parseCurlCommand(command) {
                         params = data.params;
                     } else {
                         params = data;
+                    }
+                    if (data.extensions) {
+                        params.extensions = data.extensions;
                     }
                 }
             }

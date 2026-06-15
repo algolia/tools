@@ -22,6 +22,7 @@
       :display-empty-query="inputKey !== 'root'"
       display-attribute-name="camel_case_label"
       :search-params="{ hitsPerPage: 4, ...searchFilters }"
+      :local-items="localParamItems"
       @onSelected="onSelected"
       @onBlur="inputState.setInput('none')"
     />
@@ -35,6 +36,14 @@ import inputMixin from "../scripts/inputMixin";
 
 const isObject = function (obj) {
     return obj && typeof obj === 'object' && obj.constructor === Object;
+};
+
+const cloneDefault = function (paramName) {
+    return JSON.parse(JSON.stringify(paramsSpecs[paramName].default));
+};
+
+const specHasScope = function (spec, scope) {
+    return Array.isArray(spec.scope) ? spec.scope.includes(scope) : spec.scope === scope;
 };
 
 export default {
@@ -57,6 +66,20 @@ export default {
                 return { filters: 'scope:search' }
             }
             return { filters: 'scope:settings' }
+        },
+        localParamItems: function () {
+            const scope = this.configKey.startsWith('searchParams') ? 'search' : 'settings';
+            return Object.keys(paramsSpecs).filter((paramName) => {
+                return specHasScope(paramsSpecs[paramName], scope);
+            }).map((paramName) => {
+                return {
+                    ...paramsSpecs[paramName],
+                    name: paramName,
+                    param_name: paramName,
+                    type: 'param',
+                    camel_case_label: paramName,
+                };
+            });
         },
     },
     methods: {
@@ -110,6 +133,10 @@ export default {
                     }
                 }
                 else {
+                    if (paramsSpecs[selected]) {
+                        this.setParamValue(selected, cloneDefault(selected));
+                        return this.inputState.setInput(selected);
+                    }
                     this.setParamValue(selected, '');
                     return this.inputState.setInput(selected);
                 }

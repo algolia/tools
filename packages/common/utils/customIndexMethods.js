@@ -12,6 +12,14 @@ const getNewParams = function (params) {
     return newQuery;
 };
 
+const splitExtensions = function (params) {
+    const {extensions, ...paramsWithoutExtensions} = params;
+    return {
+        extensions,
+        paramsWithoutExtensions,
+    };
+};
+
 const buildFacetFilters = function (facetFilters, needle) {
     return facetFilters.map((facetFilter) => {
         const refinements = Array.isArray(facetFilter) ? facetFilter : [facetFilter];
@@ -54,7 +62,7 @@ const _getSearchParams = function(args, params) {
 };
 
 
-const getDisjunctiveRequests = function (indexName, disjunctiveFacets, refinedFacets, paramsWithoutDisjunctiveFacets) {
+const getDisjunctiveRequests = function (indexName, disjunctiveFacets, refinedFacets, paramsWithoutDisjunctiveFacets, extensions) {
     const requests = [];
 
     requests.push({
@@ -63,6 +71,7 @@ const getDisjunctiveRequests = function (indexName, disjunctiveFacets, refinedFa
             ...paramsWithoutDisjunctiveFacets,
             facets: disjunctiveFacets,
         }, ''),
+        ...(extensions ? {extensions} : {}),
     });
 
     refinedFacets.forEach((facetName) => {
@@ -83,6 +92,7 @@ const getDisjunctiveRequests = function (indexName, disjunctiveFacets, refinedFa
         requests.push({
             indexName: indexName,
             params: _getSearchParams(Object.assign({}, paramsWithoutDisjunctiveFacets, forcedParams), ''),
+            ...(extensions ? {extensions} : {}),
         });
     });
 
@@ -90,7 +100,8 @@ const getDisjunctiveRequests = function (indexName, disjunctiveFacets, refinedFa
 };
 
 const disjunctiveSearch = async function (params) {
-    const {disjunctiveFacets, ...paramsWithoutDisjunctiveFacets} = params;
+    const {extensions, paramsWithoutExtensions} = splitExtensions(params);
+    const {disjunctiveFacets, ...paramsWithoutDisjunctiveFacets} = paramsWithoutExtensions;
 
     const facetFilters = paramsWithoutDisjunctiveFacets.facetFilters || [];
     const facetRefinements = {};
@@ -109,7 +120,7 @@ const disjunctiveSearch = async function (params) {
         return facetRefinements[facetName].length > 0;
     });
 
-    const requests = getDisjunctiveRequests(this.indexName, disjunctiveFacets, refinedFacets, paramsWithoutDisjunctiveFacets);
+    const requests = getDisjunctiveRequests(this.indexName, disjunctiveFacets, refinedFacets, paramsWithoutDisjunctiveFacets, extensions);
     const requestOptions = {};
     if (this.userId() !== undefined) requestOptions.headers = {'X-Algolia-User-ID': this.userId()};
 
@@ -144,8 +155,24 @@ const customSearch = function (params) {
     if (newParams.disjunctiveFacets && newParams.disjunctiveFacets.length > 0) return this.disjunctiveSearch(newParams);
     delete (newParams.disjunctiveFacets);
 
-    if (this.userId() !== undefined) newParams.headers = {'X-Algolia-User-ID': this.userId()};
-    return this.search(newParams.query || '', newParams);
+    const {extensions, paramsWithoutExtensions} = splitExtensions(newParams);
+
+    if (extensions) {
+        const requestOptions = {};
+        if (this.userId() !== undefined) requestOptions.headers = {'X-Algolia-User-ID': this.userId()};
+
+        return this.transporter.read({
+            method: 'POST',
+            path: encode('/1/indexes/%s/query', this.indexName),
+            data: {
+                params: serializeQueryParameters(paramsWithoutExtensions),
+                extensions,
+            },
+        }, requestOptions);
+    }
+
+    if (this.userId() !== undefined) paramsWithoutExtensions.headers = {'X-Algolia-User-ID': this.userId()};
+    return this.search(paramsWithoutExtensions.query || '', paramsWithoutExtensions);
 };
 
 const customBrowse = function (params) {
@@ -154,7 +181,8 @@ const customBrowse = function (params) {
     delete (newParams.disjunctiveFacets);
     delete (newParams.cursor);
 
-    const data = { params: serializeQueryParameters(newParams) };
+    const {paramsWithoutExtensions} = splitExtensions(newParams);
+    const data = { params: serializeQueryParameters(paramsWithoutExtensions) };
     if (cursor) data.cursor = cursor;
 
     const requestOptions = {};

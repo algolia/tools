@@ -26,6 +26,8 @@
     import InputDecompoundedAttributes from "./InputDecompoundedAttributes.vue";
     import InputIntegerSlider from "./InputIntegerSlider.vue";
     import InputDevFeatureFlags from "./InputDevFeatureFlags.vue";
+    import InputJsonObject from "./InputJsonObject.vue";
+    import InputExtensions from "./InputExtensions.vue";
 
     export default {
         name: 'InputValue',
@@ -45,7 +47,9 @@
                     filters: InputFilters,
                     param_name: InputParamName,
                     decompounded_attributes: InputDecompoundedAttributes,
-                    dev_feature_flags: InputDevFeatureFlags
+                    dev_feature_flags: InputDevFeatureFlags,
+                    json_object: InputJsonObject,
+                    extensions: InputExtensions,
                 }
             }
         },
